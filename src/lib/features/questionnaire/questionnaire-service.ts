@@ -1,4 +1,4 @@
-import type { Answer, QuestionnaireAnswers } from '$lib/domain';
+import type { QuestionnaireAnswers } from '$lib/domain';
 import { journey } from '$lib/journey/journey.svelte';
 import {
 	QUESTIONNAIRE_SCHEMA,
@@ -10,13 +10,14 @@ import {
 	getQuestionnaireStepAccess,
 	getResumeQuestionnaireStep,
 	normalizeQuestionnaireAnswers,
-	validateQuestionnaireAnswer
+	validateQuestionnaireStep
 } from './schema';
 import type {
 	QuestionnaireProgress,
 	QuestionnaireStep,
 	QuestionnaireStepAccess,
-	ValidationResult
+	StepAnswers,
+	StepValidationResult
 } from './types';
 
 /**
@@ -31,9 +32,9 @@ export interface QuestionnaireService {
 	getStepAccess(stepId: string): QuestionnaireStepAccess;
 	getResumeStepId(): string | null;
 	getAnswers(): QuestionnaireAnswers;
-	getAnswer(stepId: string): Answer | undefined;
-	validate(step: QuestionnaireStep, answer: Answer | undefined): ValidationResult;
-	saveAnswer(stepId: string, answer: Answer): void;
+	getStepAnswers(stepId: string): StepAnswers | undefined;
+	validate(step: QuestionnaireStep, answers: StepAnswers | undefined): StepValidationResult;
+	saveAnswer(stepId: string, answers: StepAnswers): void;
 	setCompleted(completed: boolean): void;
 	clear(): void;
 }
@@ -72,20 +73,20 @@ class MockQuestionnaireService implements QuestionnaireService {
 		);
 	}
 
-	getAnswer(stepId: string): Answer | undefined {
+	getStepAnswers(stepId: string): StepAnswers | undefined {
 		return this.getAnswers().byQuestionId[stepId];
 	}
 
-	validate(step: QuestionnaireStep, answer: Answer | undefined): ValidationResult {
-		return validateQuestionnaireAnswer(step, answer);
+	validate(step: QuestionnaireStep, answers: StepAnswers | undefined): StepValidationResult {
+		return validateQuestionnaireStep(step, answers);
 	}
 
 	/**
 	 * The service decides the marker, not the caller: writing the answer and its recomputed
 	 * index through one mutation is what keeps the two from drifting apart.
 	 */
-	saveAnswer(stepId: string, answer: Answer): void {
-		const byQuestionId = { ...this.getAnswers().byQuestionId, [stepId]: answer };
+	saveAnswer(stepId: string, answers: StepAnswers): void {
+		const byQuestionId = { ...this.getAnswers().byQuestionId, [stepId]: answers };
 
 		journey.saveQuestionnaireAnswer({
 			byQuestionId,

@@ -203,16 +203,30 @@ claims are not approved production content.
   feature finishes on a working screen without implementing the questionnaire
   content.
 
-- [ ] 8. **Questionnaire content and completion** - Every remaining question
-  from the reference, reusing the single-select type built in feature 7 and
-  adding multi select with an exclusive "none of the above", numeric inputs with
-  unit selection, and contact fields, all composing the adapted `checkbox`,
-  `input-group`, `input`, `select` and `field`. Answer cards are questionnaire
-  components, not new primitives. Mid-step projection on the adapted `Tabs`, motivation
-  interstitial, treatment preference, and the completion state. Resume lands on
-  the first unanswered question, and a guard blocks direct entry to an
-  unreachable step. One canonical question count that the interstitials never
-  shift.
+- [ ] 8. **Questionnaire content and completion**
+  - [x] 8a. **Multi-field steps and the remaining field kinds** - Revise the
+    feature 7 schema so a step owns an ordered list of fields rather than one
+    kind, because the reference puts a single-select and two numerics on
+    question 1 and pairs a multi-select with a yes/no on questions 5, 6 and 7.
+    Add the multi-select renderer with an exclusive "none of the above", the
+    numeric renderer with unit selection, and the contact renderer, all
+    composing the adapted `checkbox`, `input-group`, `input`, `select` and
+    `field`. Complete questions 1 to 3 on the new contract. Answer cards are
+    questionnaire components, not new primitives.
+  - [ ] 8b. **The medical questions** - Questions 4 to 7 (medical conditions,
+    health history, eating disorders, allergies and medications) as fixture
+    content on 8a's contract, with no new renderers. The questionnaire collects
+    only: no pass/fail logic, no BMI threshold, no contraindication branch.
+  - [ ] 8c. **Questionnaire interstitials** - The projection mid-step, reusing
+    `projection.ts` and the adapted `Tabs` against the patient's own height and
+    weight, and the motivation mid-step. Interstitials never shift the canonical
+    question count. Repairs finding F-07 so `Tabs` associates each panel with
+    its tab in the primitive rather than at the call site.
+  - [ ] 8d. **Treatment preference and completion** - Question 8's bespoke
+    treatment cards over the canonical domain catalogue with a preference-aware
+    continue action, and the completion state. Sets `questionnaire.completed`
+    and `selectedTreatmentId`, unlocking checkout. Resume lands on the first
+    unanswered question, and a guard blocks direct entry to an unreachable step.
 
 - [ ] 9. **Checkout foundation** - `(checkout)` route group, `CheckoutService`
   and `MockCheckoutService`, a bespoke sequential `CheckoutStep`, account and

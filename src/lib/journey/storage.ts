@@ -42,11 +42,15 @@ function isAnswer(value: unknown): value is Answer {
 	}
 }
 
+function isStepAnswers(value: unknown): value is Record<string, Answer> {
+	return isRecord(value) && Object.values(value).every(isAnswer);
+}
+
 function isQuestionnaireAnswers(value: unknown): value is QuestionnaireAnswers {
 	if (!isRecord(value)) return false;
 	if (!Number.isInteger(value.firstUnansweredIndex)) return false;
 
-	return isRecord(value.byQuestionId) && Object.values(value.byQuestionId).every(isAnswer);
+	return isRecord(value.byQuestionId) && Object.values(value.byQuestionId).every(isStepAnswers);
 }
 
 function isPatientDetails(value: unknown): value is PatientDetails {

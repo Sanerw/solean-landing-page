@@ -545,8 +545,13 @@ is accepted.
 
 ## 11. Open decisions
 
-1. **Eligibility rule.** The reference never states the pass/fail logic for the
-   16 contraindications or a BMI threshold. The prototype needs one to drive the
-   recommendation step. Placeholder until decided.
+1. **Eligibility rule. Resolved: the questionnaire never judges.** The reference
+   states no pass/fail logic for the 16 contraindications, shows no BMI
+   threshold, and has no fail path or ineligibility screen. The prototype
+   follows it: the questionnaire collects answers and every path reaches the
+   completion screen. Approval, decline, and requests for more information stay
+   order states in feature 11, reachable through seeded mock IDs. No
+   contraindication branch, BMI threshold, or medical judgement is encoded
+   anywhere in the questionnaire.
 2. **Recurring billing rules.** See section 6.
 3. **Deployment target.** See section 8.

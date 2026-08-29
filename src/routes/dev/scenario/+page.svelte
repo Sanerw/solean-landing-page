@@ -17,7 +17,7 @@
 		getQuestionnaireStepAccess,
 		QUESTIONNAIRE_SCHEMA,
 		QUESTIONNAIRE_START_STEP_ID,
-		validateQuestionnaireAnswer
+		validateQuestionnaireStep
 	} from '$lib/features/questionnaire/schema';
 	import { journey } from '$lib/journey/journey.svelte';
 	import { STAGES, canEnter } from '$lib/journey/stages';
@@ -39,22 +39,32 @@
 		QUESTIONNAIRE_SCHEMA,
 		QUESTIONNAIRE_START_STEP_ID
 	);
-	if (!questionnaireStartStep || questionnaireStartStep.kind !== 'single-select') {
-		throw new Error('The questionnaire start step must be a single-select question.');
+	if (!questionnaireStartStep || questionnaireStartStep.kind !== 'question') {
+		throw new Error('The questionnaire start step must be an answer-producing question.');
 	}
-	const questionnaireStartOption = questionnaireStartStep.options[0];
+	const questionnaireStartField = questionnaireStartStep.fields[0];
+	if (!questionnaireStartField || questionnaireStartField.kind !== 'single-select') {
+		throw new Error('The questionnaire start step must open with a single-select field.');
+	}
+	const questionnaireStartOption = questionnaireStartField.options[0];
 	if (!questionnaireStartOption) {
-		throw new Error('The questionnaire start step must have an option.');
+		throw new Error('The questionnaire start field must have an option.');
 	}
 	const questionnaireProgress = getQuestionnaireProgress(
 		QUESTIONNAIRE_SCHEMA,
 		QUESTIONNAIRE_START_STEP_ID
 	);
-	const missingAnswerResult = validateQuestionnaireAnswer(questionnaireStartStep, undefined);
-	const validAnswerResult = validateQuestionnaireAnswer(questionnaireStartStep, {
-		kind: 'single-select',
-		optionId: questionnaireStartOption.id
+	const missingAnswerResult = validateQuestionnaireStep(questionnaireStartStep, undefined);
+	const validAnswerResult = validateQuestionnaireStep(questionnaireStartStep, {
+		[questionnaireStartField.id]: {
+			kind: 'single-select',
+			optionId: questionnaireStartOption.id
+		}
 	});
+	const missingFieldMessage = (() => {
+		const result = missingAnswerResult.byControlId[questionnaireStartField.id];
+		return result && !result.valid ? result.message : null;
+	})();
 	const unknownQuestionnaireStep = getQuestionnaireStep(QUESTIONNAIRE_SCHEMA, 'not-a-step');
 	const questionnaireStepAccess = getQuestionnaireStepAccess(
 		QUESTIONNAIRE_SCHEMA,
@@ -118,6 +128,7 @@
 	>
 		<dl class="max-w-3xl">
 			{@render field('Start step id', questionnaireStartStep.id)}
+			{@render field('First field id', questionnaireStartField.id)}
 			{@render field(
 				'Progress',
 				questionnaireProgress
@@ -135,7 +146,7 @@
 			{@render field('Unknown step lookup', unknownQuestionnaireStep === null ? 'null' : 'unexpected')}
 			{@render field(
 				'Missing answer',
-				missingAnswerResult.valid ? 'unexpectedly valid' : `invalid: ${missingAnswerResult.message}`
+				missingFieldMessage === null ? 'unexpectedly valid' : `invalid: ${missingFieldMessage}`
 			)}
 			{@render field('Listed option answer', validAnswerResult.valid ? 'valid' : 'unexpectedly invalid')}
 			{@render field(
@@ -226,8 +237,10 @@
 						size="sm"
 						onclick={() =>
 							questionnaireService.saveAnswer(questionnaireStartStep.id, {
-								kind: 'single-select',
-								optionId: questionnaireStartOption.id
+								[questionnaireStartField.id]: {
+									kind: 'single-select',
+									optionId: questionnaireStartOption.id
+								}
 							})}
 					>
 						Answer question 1

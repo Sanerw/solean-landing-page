@@ -1,13 +1,21 @@
 import type { Answer, QuestionnaireAnswers } from '$lib/domain';
 import type {
-	MultiSelectStep,
+	ContactField,
+	ContactInput,
+	FieldValue,
+	MultiSelectField,
+	QuestionField,
 	QuestionnaireProgress,
 	QuestionnaireSchema,
 	QuestionnaireStep,
 	QuestionnaireStepAccess,
 	QuestionStep,
-	SingleSelectStep,
-	ValidationResult
+	SingleSelectField,
+	StepAnswers,
+	StepValidationResult,
+	StepValues,
+	ValidationResult,
+	ValidationRule
 } from './types';
 
 const SAFE_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
@@ -16,11 +24,11 @@ const INVALID_ANSWER_MESSAGE = 'Please choose one of the available options.';
 export const QUESTIONNAIRE_START_STEP_ID = 'about-you';
 
 function isQuestionStep(step: QuestionnaireStep): step is QuestionStep {
-	return step.kind !== 'interstitial';
+	return step.kind === 'question';
 }
 
-function hasOptions(step: QuestionStep): step is SingleSelectStep | MultiSelectStep {
-	return step.kind === 'single-select' || step.kind === 'multi-select';
+function hasOptions(field: QuestionField): field is SingleSelectField | MultiSelectField {
+	return field.kind === 'single-select' || field.kind === 'multi-select';
 }
 
 function defineQuestionnaireSchema(schema: QuestionnaireSchema): QuestionnaireSchema {
@@ -48,9 +56,21 @@ function defineQuestionnaireSchema(schema: QuestionnaireSchema): QuestionnaireSc
 		}
 		questionNumbers.add(step.questionNumber);
 
-		if (hasOptions(step)) {
+		if (step.fields.length === 0) {
+			throw new Error(`An answer-producing step must have at least one field: ${step.id}`);
+		}
+
+		const fieldIds = new Set<string>();
+		for (const field of step.fields) {
+			if (!SAFE_ID.test(field.id) || fieldIds.has(field.id)) {
+				throw new Error(`Question field id must be unique within its step: ${field.id}`);
+			}
+			fieldIds.add(field.id);
+
+			if (!hasOptions(field)) continue;
+
 			const optionIds = new Set<string>();
-			for (const option of step.options) {
+			for (const option of field.options) {
 				if (!SAFE_ID.test(option.id) || optionIds.has(option.id)) {
 					throw new Error(`Question option id must be unique and URL-safe: ${option.id}`);
 				}
@@ -66,17 +86,158 @@ export const QUESTIONNAIRE_SCHEMA = defineQuestionnaireSchema({
 	questionCount: 9,
 	steps: [
 		{
+			kind: 'question',
 			id: QUESTIONNAIRE_START_STEP_ID,
-			kind: 'single-select',
 			questionNumber: 1,
 			title: 'Tell us about yourself',
 			help: 'We use this to check your eligibility',
-			label: 'Biological sex',
-			options: [
-				{ id: 'female', label: 'Female' },
-				{ id: 'male', label: 'Male' }
+			fields: [
+				{
+					id: 'biological-sex',
+					kind: 'single-select',
+					label: 'Biological sex',
+					options: [
+						{ id: 'female', label: 'Female' },
+						{ id: 'male', label: 'Male' }
+					],
+					validation: [{ type: 'required', message: 'Select an option to continue.' }]
+				},
+				{
+					id: 'height',
+					kind: 'numeric',
+					label: 'Height',
+					width: 'half',
+					unit: 'cm',
+					placeholder: '178',
+					validation: [
+						{ type: 'required', message: 'Enter your height.' },
+						{ type: 'numeric', message: 'Height must be a number.' },
+						{
+							type: 'numeric-range',
+							min: 120,
+							max: 230,
+							integer: true,
+							message: 'Height must be a whole number between 120 and 230 cm.'
+						}
+					]
+				},
+				{
+					id: 'weight',
+					kind: 'numeric',
+					label: 'Weight',
+					width: 'half',
+					unit: 'kg',
+					placeholder: '96',
+					validation: [
+						{ type: 'required', message: 'Enter your weight.' },
+						{ type: 'numeric', message: 'Weight must be a number.' },
+						{
+							type: 'numeric-range',
+							min: 40,
+							max: 300,
+							message: 'Weight must be between 40 and 300 kg.'
+						}
+					]
+				}
+			]
+		},
+		{
+			kind: 'question',
+			id: 'your-details',
+			questionNumber: 2,
+			title: "Let's save your progress",
+			help: 'So you can pick up right where you left off, anytime',
+			fields: [
+				{
+					id: 'contact',
+					kind: 'contact',
+					label: 'Your details',
+					// The reference labels each input and shows no heading over the group.
+					labelHidden: true,
+					validation: [],
+					inputs: [
+						{
+							id: 'first-name',
+							label: 'First name',
+							type: 'text',
+							autocomplete: 'given-name',
+							width: 'half',
+							validation: [
+								{ type: 'required', message: 'Enter your first name.' },
+								{ type: 'max-length', max: 60, message: 'First name is too long.' }
+							]
+						},
+						{
+							id: 'last-name',
+							label: 'Last name',
+							type: 'text',
+							autocomplete: 'family-name',
+							width: 'half',
+							validation: [
+								{ type: 'required', message: 'Enter your last name.' },
+								{ type: 'max-length', max: 60, message: 'Last name is too long.' }
+							]
+						},
+						{
+							id: 'email',
+							label: 'E-mail address',
+							type: 'email',
+							autocomplete: 'email',
+							placeholder: 'name@example.com',
+							validation: [
+								{ type: 'required', message: 'Enter your e-mail address.' },
+								{
+									type: 'email',
+									message: 'Enter an e-mail address in the form name@example.com.'
+								},
+								{ type: 'max-length', max: 254, message: 'E-mail address is too long.' }
+							]
+						},
+						{
+							id: 'phone',
+							label: 'Phone number, optional',
+							type: 'tel',
+							autocomplete: 'tel',
+							placeholder: '+49 151 234 56 78',
+							help: 'Get order updates, exclusive discounts and tips by SMS. Opt out anytime.',
+							validation: [{ type: 'max-length', max: 32, message: 'Phone number is too long.' }]
+						}
+					]
+				}
 			],
-			validation: [{ type: 'required', message: 'Select an option to continue.' }]
+			notice: {
+				variant: 'default',
+				text: "We'll email you a secure link so you can continue where you left off."
+			}
+		},
+		{
+			kind: 'question',
+			id: 'pregnancy',
+			questionNumber: 3,
+			title: 'Are you pregnant, breastfeeding, or planning a pregnancy?',
+			help: 'Select all that apply',
+			fields: [
+				{
+					id: 'pregnancy-status',
+					kind: 'multi-select',
+					label: 'Pregnancy status',
+					labelHidden: true,
+					options: [
+						{ id: 'pregnant', label: 'I am currently pregnant' },
+						{ id: 'breastfeeding', label: 'I am breastfeeding' },
+						{ id: 'planning', label: 'I am planning a pregnancy in the next 2 months' },
+						{ id: 'none', label: 'None of these', exclusive: true }
+					],
+					validation: [
+						{ type: 'required', message: 'Choose an option, or select "None of these".' },
+						{ type: 'min-selected', count: 1, message: 'Choose at least one option.' }
+					]
+				}
+			],
+			notice: {
+				variant: 'default',
+				text: 'The medication must be stopped at least 2 months before a planned pregnancy.'
+			}
 		}
 	]
 });
@@ -124,40 +285,247 @@ export function getNextQuestionnaireStep(
 	return index >= 0 ? (schema.steps[index + 1] ?? null) : null;
 }
 
-function requiredMessage(step: QuestionStep): string | null {
-	return step.validation.find((rule) => rule.type === 'required')?.message ?? null;
+function ruleMessage(field: QuestionField, type: ValidationRule['type']): string | null {
+	return field.validation.find((rule) => rule.type === type)?.message ?? null;
 }
 
-export function validateQuestionnaireAnswer(
-	step: QuestionnaireStep,
-	answer: Answer | undefined
+/**
+ * The one place a field's rules are applied. `malformed` means the user typed something
+ * this kind cannot represent at all, which is a different failure from leaving it empty.
+ */
+function checkField(
+	field: QuestionField,
+	answer: Answer | undefined,
+	malformed: boolean
 ): ValidationResult {
-	if (!isQuestionStep(step)) return { valid: true };
+	if (malformed) {
+		return { valid: false, message: ruleMessage(field, 'numeric') ?? INVALID_ANSWER_MESSAGE };
+	}
 
 	if (!answer) {
-		const message = requiredMessage(step);
+		const message = ruleMessage(field, 'required');
 		return message ? { valid: false, message } : { valid: true };
 	}
 
-	if (answer.kind !== step.kind) {
+	if (answer.kind !== field.kind) {
 		return { valid: false, message: INVALID_ANSWER_MESSAGE };
 	}
 
-	if (step.kind === 'single-select' && answer.kind === 'single-select') {
-		return step.options.some((option) => option.id === answer.optionId)
+	if (field.kind === 'single-select' && answer.kind === 'single-select') {
+		return field.options.some((option) => option.id === answer.optionId)
 			? { valid: true }
 			: { valid: false, message: INVALID_ANSWER_MESSAGE };
 	}
 
-	if (step.kind === 'multi-select' && answer.kind === 'multi-select') {
-		return answer.optionIds.every((optionId) =>
-			step.options.some((option) => option.id === optionId)
-		)
-			? { valid: true }
-			: { valid: false, message: INVALID_ANSWER_MESSAGE };
+	if (field.kind === 'multi-select' && answer.kind === 'multi-select') {
+		if (!answer.optionIds.every((optionId) => field.options.some((option) => option.id === optionId))) {
+			return { valid: false, message: INVALID_ANSWER_MESSAGE };
+		}
+
+		const minSelected = field.validation.find((rule) => rule.type === 'min-selected');
+		if (minSelected && answer.optionIds.length < minSelected.count) {
+			return { valid: false, message: minSelected.message };
+		}
+	}
+
+	if (field.kind === 'numeric' && answer.kind === 'numeric') {
+		const range = field.validation.find((rule) => rule.type === 'numeric-range');
+		if (range) {
+			const outOfRange = answer.value < range.min || answer.value > range.max;
+			const notWhole = range.integer === true && !Number.isInteger(answer.value);
+			if (outOfRange || notWhole) return { valid: false, message: range.message };
+		}
 	}
 
 	return { valid: true };
+}
+
+/** Validates a stored answer. Resume and progress read persisted state, never form input. */
+export function validateQuestionField(
+	field: QuestionField,
+	answer: Answer | undefined
+): ValidationResult {
+	return checkField(field, answer, false);
+}
+
+// Deliberately permissive: one @, something either side, a dot in the domain. A stricter
+// pattern rejects addresses that are legal, and this is a prototype, not a mail server.
+const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+function checkContactInput(input: ContactInput, raw: string): ValidationResult {
+	const value = raw.trim();
+
+	if (value === '') {
+		const message = input.validation.find((rule) => rule.type === 'required')?.message;
+		return message ? { valid: false, message } : { valid: true };
+	}
+
+	for (const rule of input.validation) {
+		if (rule.type === 'max-length' && value.length > rule.max) {
+			return { valid: false, message: rule.message };
+		}
+		if (rule.type === 'email' && !EMAIL.test(value)) {
+			return { valid: false, message: rule.message };
+		}
+	}
+
+	return { valid: true };
+}
+
+/** `fieldId.inputId` for a contact input, plain `fieldId` for every other kind. */
+export function controlId(fieldId: string, inputId?: string): string {
+	return inputId === undefined ? fieldId : `${fieldId}.${inputId}`;
+}
+
+export function emptyFieldValue(field: QuestionField): FieldValue {
+	switch (field.kind) {
+		case 'multi-select':
+			return [];
+		case 'contact':
+			return Object.fromEntries(field.inputs.map((input) => [input.id, '']));
+		default:
+			return '';
+	}
+}
+
+export function fieldValueFromAnswer(field: QuestionField, answer: Answer | undefined): FieldValue {
+	if (!answer || answer.kind !== field.kind) return emptyFieldValue(field);
+
+	switch (answer.kind) {
+		case 'single-select':
+			return answer.optionId;
+		case 'multi-select':
+			return answer.optionIds;
+		case 'numeric':
+			return String(answer.value);
+		case 'contact':
+			// Narrowed by kind above, so the empty value for a contact field is always a record.
+			return { ...(emptyFieldValue(field) as Record<string, string>), ...answer.fields };
+	}
+}
+
+interface FieldDraft {
+	answer: Answer | undefined;
+	malformed: boolean;
+}
+
+function draftFromValue(field: QuestionField, value: FieldValue): FieldDraft {
+	switch (field.kind) {
+		case 'single-select': {
+			const optionId = typeof value === 'string' ? value : '';
+			return { answer: optionId ? { kind: 'single-select', optionId } : undefined, malformed: false };
+		}
+		case 'multi-select': {
+			const selected = new Set(Array.isArray(value) ? value : []);
+			// Ordered by the schema, not by when each box was ticked, so a restored answer
+			// always renders the same way.
+			const optionIds = field.options
+				.filter((option) => selected.has(option.id))
+				.map((option) => option.id);
+
+			return {
+				answer: optionIds.length > 0 ? { kind: 'multi-select', optionIds } : undefined,
+				malformed: false
+			};
+		}
+		case 'contact': {
+			const record = typeof value === 'object' && !Array.isArray(value) ? value : {};
+			const fields: Record<string, string> = {};
+			for (const input of field.inputs) {
+				const entry = (record as Record<string, string>)[input.id]?.trim() ?? '';
+				if (entry !== '') fields[input.id] = entry;
+			}
+
+			return {
+				answer: Object.keys(fields).length > 0 ? { kind: 'contact', fields } : undefined,
+				malformed: false
+			};
+		}
+		case 'numeric': {
+			const raw = typeof value === 'string' ? value.trim() : '';
+			if (raw === '') return { answer: undefined, malformed: false };
+
+			// Number('') and Number(' ') are 0, which is why the empty case is handled first.
+			const parsed = Number(raw);
+			if (!Number.isFinite(parsed)) return { answer: undefined, malformed: true };
+
+			return { answer: { kind: 'numeric', value: parsed, unit: field.unit }, malformed: false };
+		}
+		default:
+			return { answer: undefined, malformed: false };
+	}
+}
+
+export function fieldValueToAnswer(field: QuestionField, value: FieldValue): Answer | undefined {
+	return draftFromValue(field, value).answer;
+}
+
+/** Validates live form input, so a half-typed value is judged before it becomes an answer. */
+export function validateFieldValue(field: QuestionField, value: FieldValue): ValidationResult {
+	const draft = draftFromValue(field, value);
+	return checkField(field, draft.answer, draft.malformed);
+}
+
+export function validateStepValues(
+	step: QuestionnaireStep,
+	values: StepValues
+): StepValidationResult {
+	if (!isQuestionStep(step)) return { valid: true, byControlId: {} };
+
+	const byControlId: Record<string, ValidationResult> = {};
+	for (const field of step.fields) {
+		const value = values[field.id] ?? emptyFieldValue(field);
+
+		if (field.kind === 'contact') {
+			const record = (typeof value === 'object' && !Array.isArray(value) ? value : {}) as Record<
+				string,
+				string
+			>;
+			for (const input of field.inputs) {
+				byControlId[controlId(field.id, input.id)] = checkContactInput(input, record[input.id] ?? '');
+			}
+			continue;
+		}
+
+		byControlId[field.id] = validateFieldValue(field, value);
+	}
+
+	return { valid: Object.values(byControlId).every((result) => result.valid), byControlId };
+}
+
+export function stepValuesToAnswers(step: QuestionStep, values: StepValues): StepAnswers {
+	const answers: StepAnswers = {};
+	for (const field of step.fields) {
+		const answer = fieldValueToAnswer(field, values[field.id] ?? emptyFieldValue(field));
+		if (answer) answers[field.id] = answer;
+	}
+	return answers;
+}
+
+function contactValues(field: ContactField, answer: Answer | undefined): Record<string, string> {
+	return answer?.kind === 'contact' ? answer.fields : {};
+}
+
+export function validateQuestionnaireStep(
+	step: QuestionnaireStep,
+	answers: StepAnswers | undefined
+): StepValidationResult {
+	if (!isQuestionStep(step)) return { valid: true, byControlId: {} };
+
+	const byControlId: Record<string, ValidationResult> = {};
+	for (const field of step.fields) {
+		if (field.kind === 'contact') {
+			const values = contactValues(field, answers?.[field.id]);
+			for (const input of field.inputs) {
+				byControlId[controlId(field.id, input.id)] = checkContactInput(input, values[input.id] ?? '');
+			}
+			continue;
+		}
+
+		byControlId[field.id] = validateQuestionField(field, answers?.[field.id]);
+	}
+
+	return { valid: Object.values(byControlId).every((result) => result.valid), byControlId };
 }
 
 export function getFirstUnansweredIndex(
@@ -166,7 +534,7 @@ export function getFirstUnansweredIndex(
 ): number {
 	const questionSteps = getQuestionSteps(schema);
 	const index = questionSteps.findIndex(
-		(step) => !validateQuestionnaireAnswer(step, answers.byQuestionId[step.id]).valid
+		(step) => !validateQuestionnaireStep(step, answers.byQuestionId[step.id]).valid
 	);
 	return index < 0 ? questionSteps.length : index;
 }

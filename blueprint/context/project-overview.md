@@ -345,8 +345,11 @@ Node-capable adapter.
 Resolve each before the feature named below, then
 re-run `/overview` if a plan changes.
 
-1. **Eligibility rule.** The reference never states pass/fail logic for the 16
-   contraindications or a BMI threshold. Blocks feature 8.
+1. ~~**Eligibility rule.**~~ Resolved: the questionnaire never judges. It
+   collects answers and every path reaches completion; approval, decline, and
+   more-information stay feature 11 order states reachable by seeded mock IDs.
+   No contraindication branch, BMI threshold, or medical judgement lives in the
+   questionnaire. Feature 8 is unblocked.
 2. **Testing decision, required before feature 9.** There is no test runner and
    no `test` command. Either run `/tests` first so the pricing engine ships with
    unit tests, or accept that it is verified by browser walkthrough, typecheck,

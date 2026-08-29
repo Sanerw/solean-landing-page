@@ -31,7 +31,8 @@ export type Answer =
 	| { kind: 'contact'; fields: Record<string, string> };
 
 export interface QuestionnaireAnswers {
-	byQuestionId: Record<string, Answer>;
+	/** Step id to field id to answer: the reference puts several fields on one step. */
+	byQuestionId: Record<string, Record<string, Answer>>;
 	/** Drives resume. The questionnaire service owns it, because only the schema knows step order. */
 	firstUnansweredIndex: number;
 }

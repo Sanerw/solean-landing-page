@@ -1,7 +1,10 @@
 import type { PatientDetails, QuestionnaireAnswers, ShippingAddress } from '$lib/domain';
 
+// 2: an answer became a record of field id to answer, because one step now holds several
+// fields. Feature 7 sessions are deliberately discarded rather than migrated: the stored
+// data is one fictional answer in a prototype, so a migration path would outlive its worth.
 /** Bumped whenever the persisted shape changes; a mismatch discards the session. */
-export const SESSION_VERSION = 1;
+export const SESSION_VERSION = 2;
 
 export interface JourneySession {
 	version: typeof SESSION_VERSION;
