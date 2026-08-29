@@ -1,45 +1,90 @@
-@import 'tailwindcss';
+@import 'tailwindcss' source(none);
 @import "tw-animate-css";
 @import "shadcn-svelte/tailwind.css";
-@import "@fontsource-variable/inter";
+@import "@fontsource-variable/inter-tight";
+@import "@fontsource-variable/dm-sans";
+
+/* Automatic source detection was scanning design/ (the 42MB Pencil export) and
+   blueprint/ (whose docs quote banned classes as examples), generating utilities
+   for canvas-only arbitrary values. That bloated the build and made a repo-wide
+   arbitrary-value check meaningless, so scanning is pinned to app source. */
+@source "../../src";
 
 @custom-variant dark (&:is(.dark *));
 
+/* Values are hex because blueprint/reference/design-system.md is authoritative
+   in hex, and the done-when checks compare against those exact values. */
 :root {
-	--background: oklch(1 0 0);
-	--foreground: oklch(0.145 0 0);
-	--card: oklch(1 0 0);
-	--card-foreground: oklch(0.145 0 0);
-	--popover: oklch(1 0 0);
-	--popover-foreground: oklch(0.145 0 0);
-	--primary: oklch(0.205 0 0);
-	--primary-foreground: oklch(0.985 0 0);
-	--secondary: oklch(0.97 0 0);
-	--secondary-foreground: oklch(0.205 0 0);
-	--muted: oklch(0.97 0 0);
-	--muted-foreground: oklch(0.556 0 0);
-	--accent: oklch(0.97 0 0);
-	--accent-foreground: oklch(0.205 0 0);
-	--destructive: oklch(0.577 0.245 27.325);
-	--border: oklch(0.922 0 0);
-	--input: oklch(0.922 0 0);
-	--ring: oklch(0.708 0 0);
-	--chart-1: oklch(0.87 0 0);
-	--chart-2: oklch(0.556 0 0);
-	--chart-3: oklch(0.439 0 0);
-	--chart-4: oklch(0.371 0 0);
-	--chart-5: oklch(0.269 0 0);
-	--radius: 0.625rem;
-	--sidebar: oklch(0.985 0 0);
-	--sidebar-foreground: oklch(0.145 0 0);
-	--sidebar-primary: oklch(0.205 0 0);
-	--sidebar-primary-foreground: oklch(0.985 0 0);
-	--sidebar-accent: oklch(0.97 0 0);
-	--sidebar-accent-foreground: oklch(0.205 0 0);
-	--sidebar-border: oklch(0.922 0 0);
-	--sidebar-ring: oklch(0.708 0 0);
+	--background: #FBFAF7;
+	--foreground: #173824;
+	--card: #FFFFFF;
+	--card-foreground: #173824;
+	--popover: #FFFFFF;
+	--popover-foreground: #173824;
+	--primary: #E2B64F;
+	--primary-foreground: #172019;
+	--primary-hover: #D9971C;
+	--secondary: #F7F8F5;
+	--secondary-foreground: #173824;
+	--muted: #F4F3EC;
+	--accent: #EEF3EC;
+	--accent-foreground: #173824;
+	--border: #E5E7E2;
+	/* --border is decorative and stays at the reference hairline. --input is the
+	   boundary that identifies a form control, so it needs WCAG 3:1 for non-text
+	   contrast; the reference value measured 1.19:1 against the page. F-02. */
+	--input: #8C8D89;
+
+	/* Deep green, not gold: gold measured 1.00:1 against the primary button and
+	   was indistinct on the warm ground. */
+	--ring: #173824;
+
+	/* Provisional. The design reference contains no red across its 21 artboards.
+	   Approved as a temporary technical token for the prototype only; needs final
+	   brand review before any production use. */
+	--destructive: #C34E45;
+	--destructive-foreground: #FFFFFF;
+	--destructive-hover: #B23F37;
+	--destructive-active: #A4322C;
+	/* The fill tone reads 4.47:1 as text on --background, under AA. This is the
+	   darkest point of the same hue that clears 4.5:1 on every light surface. */
+	--destructive-text: #BC483F;
+
+	--highlight: #F7EBCB;
+	--surface-warm: #F3ECDD;
+	--surface-subtle: #FFFDF8;
+	--surface-tint: #DDE4DD;
+
+	/* Text roles, corrected for contrast. The reference values measured 3.45:1,
+	   4.14:1 and 2.40:1 against the page ground, all under the 4.5:1 AA floor for
+	   normal text; disclaimers and clinical notes are the worst of them. Darkened
+	   along constant hue and chroma, and re-spaced rather than all pushed to the
+	   floor, so the three-step hierarchy survives. F-01.
+	   --highlight-foreground took one further step for F-03: its documented role is
+	   text on --highlight, a tinted surface darker than any page ground, where
+	   #956400 measured 4.32:1. Contrast is a property of a pairing, not a token, so
+	   section 1b of design-system.md now records the full role-by-surface matrix. */
+	--highlight-foreground: #906100;
+	--muted-foreground: #405756;
+	--text-tertiary: #57655C;
+	--text-faint: #647168;
+
+	/* The high-emphasis solid CTA. The fill is --foreground, which design-system.md
+	   already sanctions for dark surfaces; only the two state values are new. The
+	   reference captures no hover or active state anywhere, so these are derived the
+	   same way as the destructive family (same hue and chroma, stepped lightness)
+	   and are provisional pending brand review. */
+	--inverse-hover: #0F301D;
+	--inverse-active: #082A17;
+
+	/* Stars only. Never success, validation, or destructive. */
+	--rating: #00B67A;
+
+	--radius: 1.25rem;
 }
 
+/* Dark mode is out of scope: no toggle, no QA, not approved design. This block is
+   the untouched shadcn scaffold default. New Solean tokens are not mirrored here. */
 .dark {
 	--background: oklch(0.145 0 0);
 	--foreground: oklch(0.985 0 0);
@@ -75,38 +120,46 @@
 }
 
 @theme inline {
-	--font-sans: 'Inter Variable', sans-serif;
-	--color-sidebar-ring: var(--sidebar-ring);
-	--color-sidebar-border: var(--sidebar-border);
-	--color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
-	--color-sidebar-accent: var(--sidebar-accent);
-	--color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
-	--color-sidebar-primary: var(--sidebar-primary);
-	--color-sidebar-foreground: var(--sidebar-foreground);
-	--color-sidebar: var(--sidebar);
-	--color-chart-5: var(--chart-5);
-	--color-chart-4: var(--chart-4);
-	--color-chart-3: var(--chart-3);
-	--color-chart-2: var(--chart-2);
-	--color-chart-1: var(--chart-1);
-	--color-ring: var(--ring);
-	--color-input: var(--input);
-	--color-border: var(--border);
-	--color-destructive: var(--destructive);
-	--color-accent-foreground: var(--accent-foreground);
-	--color-accent: var(--accent);
-	--color-muted-foreground: var(--muted-foreground);
-	--color-muted: var(--muted);
-	--color-secondary-foreground: var(--secondary-foreground);
-	--color-secondary: var(--secondary);
-	--color-primary-foreground: var(--primary-foreground);
-	--color-primary: var(--primary);
-	--color-popover-foreground: var(--popover-foreground);
-	--color-popover: var(--popover);
-	--color-card-foreground: var(--card-foreground);
-	--color-card: var(--card);
-	--color-foreground: var(--foreground);
+	--font-sans: 'DM Sans Variable', ui-sans-serif, system-ui, sans-serif;
+	--font-display: 'Inter Tight Variable', ui-sans-serif, system-ui, sans-serif;
+
 	--color-background: var(--background);
+	--color-foreground: var(--foreground);
+	--color-card: var(--card);
+	--color-card-foreground: var(--card-foreground);
+	--color-popover: var(--popover);
+	--color-popover-foreground: var(--popover-foreground);
+	--color-primary: var(--primary);
+	--color-primary-foreground: var(--primary-foreground);
+	--color-primary-hover: var(--primary-hover);
+	--color-secondary: var(--secondary);
+	--color-secondary-foreground: var(--secondary-foreground);
+	--color-muted: var(--muted);
+	--color-muted-foreground: var(--muted-foreground);
+	--color-accent: var(--accent);
+	--color-accent-foreground: var(--accent-foreground);
+	--color-border: var(--border);
+	--color-input: var(--input);
+	--color-ring: var(--ring);
+
+	--color-destructive: var(--destructive);
+	--color-destructive-foreground: var(--destructive-foreground);
+	--color-destructive-hover: var(--destructive-hover);
+	--color-destructive-active: var(--destructive-active);
+	--color-destructive-text: var(--destructive-text);
+
+	--color-inverse-hover: var(--inverse-hover);
+	--color-inverse-active: var(--inverse-active);
+
+	--color-highlight: var(--highlight);
+	--color-highlight-foreground: var(--highlight-foreground);
+	--color-surface-warm: var(--surface-warm);
+	--color-surface-subtle: var(--surface-subtle);
+	--color-surface-tint: var(--surface-tint);
+	--color-text-tertiary: var(--text-tertiary);
+	--color-text-faint: var(--text-faint);
+	--color-rating: var(--rating);
+
 	--radius-sm: calc(var(--radius) * 0.6);
 	--radius-md: calc(var(--radius) * 0.8);
 	--radius-lg: var(--radius);

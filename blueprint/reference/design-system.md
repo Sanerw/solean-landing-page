@@ -36,7 +36,7 @@ appearance.
 | `--accent` | `#EEF3EC` | Green-tinted badges and banners | 26 |
 | `--accent-foreground` | `#173824` | Text on accent | - |
 | `--border` | `#E5E7E2` | Default 1px hairline | 117 |
-| `--input` | `#E5E7E2` | Field borders | - |
+| `--input` | `#8C8D89` | Field borders. **Corrected for contrast, see 1b** | - |
 | `--ring` | `#173824` | Focus ring. Deep green, not gold; see section 1a | - |
 | `--destructive` | `#C34E45` | Provisional validation and destructive token; see section 1a | 0 |
 | `--destructive-foreground` | `#FFFFFF` | Text on destructive fills, 4.66:1 | - |
@@ -46,12 +46,12 @@ appearance.
 | Token | Value | Role | Uses |
 | --- | --- | --- | --- |
 | `--highlight` | `#F7EBCB` | Light emphasis surface: chips, article category | 14 |
-| `--highlight-foreground` | `#B07E12` | Text on highlight; eyebrows, discount values | 21 |
+| `--highlight-foreground` | `#906100` | Text on highlight; eyebrows, discount values. **Corrected, see 1b** | 21 |
 | `--surface-warm` | `#F3ECDD` | Chart gridlines, article hero | 13 |
 | `--surface-subtle` | `#FFFDF8` | Order summary, treatment option panels | 10 |
 | `--surface-tint` | `#DDE4DD` | FAQ items, dividers, secondary card borders | 34 |
-| `--text-tertiary` | `#6F7D74` | Tertiary text | 31 |
-| `--text-faint` | `#9AA79E` | Disclaimers, clinical notes | 55 |
+| `--text-tertiary` | `#57655C` | Tertiary text. **Corrected, see 1b** | 31 |
+| `--text-faint` | `#647168` | Disclaimers, clinical notes. **Corrected, see 1b** | 55 |
 | `--rating` | `#00B67A` | Rating and star color only | 5 |
 
 `--rating` is **not** a general success color. Do not reuse it for success
@@ -116,6 +116,64 @@ borders, the text token for message copy.
 **Prototype decision:** use the two-token split. `--destructive` is for fills
 and borders; `--destructive-text` is for validation and destructive message
 copy on light surfaces. Final production colours still require brand review.
+
+### 1b. Text and boundary contrast corrections
+
+Four values measured from the export fail WCAG 2.1 AA and were corrected during
+Feature 1. Findings F-01 and F-02 in `blueprint/context/findings.md`.
+
+The build plan already rules that **reference errors are not requirements**. These
+are that category: the artboards were never contrast-tested, and transcribing them
+would have shipped disclaimers and clinical notes at 2.40:1.
+
+| Token | Export value | Ratio on `--background` | Corrected to | New ratio |
+| --- | --- | --- | --- | --- |
+| `--text-faint` | `#9AA79E` | **2.40:1** | `#647168` | 4.90:1 |
+| `--highlight-foreground` | `#B07E12` | **3.45:1** | `#906100` | 5.16:1 |
+| `--text-tertiary` | `#6F7D74` | **4.14:1** | `#57655C` | 5.88:1 |
+| `--input` | `#E5E7E2` | **1.19:1** | `#8C8D89` | 3.20:1 |
+
+**Method.** Each value was darkened along constant hue and chroma in oklch, the
+same method that produced `--destructive-text`, so the hue relationship to the
+reference is preserved.
+
+**The three text roles were re-spaced, not flattened.** Pushing all of them to the
+4.5:1 floor collapsed `--text-tertiary` and `--text-faint` to within one step of
+each other and destroyed the hierarchy. They are instead spaced across the
+available range.
+
+**Contrast is a property of a pairing, not a token.** The first pass validated
+these roles against the four page grounds only. The token set defines nine light
+surfaces, and the tinted ones are darker than any page ground, so a role that
+clears AA on the page can still fail on a chip or panel. Finding F-03 was exactly
+that: `--highlight-foreground` at `#956400` measured 4.32:1 on `--highlight`, its
+own documented surface, in `text-xs` Badge copy. It took one further step to
+`#906100`. The full matrix, AA normal text needs **4.5:1**:
+
+| Role | Value | `--card` | `--background` | `--surface-subtle` | `--secondary` | `--muted` | `--accent` | `--surface-warm` | `--highlight` | `--surface-tint` |
+| --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
+| `--muted-foreground` | `#405756` | 7.73 | 7.41 | 7.61 | 7.25 | 6.95 | 6.87 | 6.57 | 6.52 | 5.97 |
+| `--text-tertiary` | `#57655C` | 6.14 | 5.88 | 6.04 | 5.76 | 5.52 | 5.46 | 5.22 | 5.17 | **4.74** |
+| `--highlight-foreground` | `#906100` | 5.39 | 5.16 | 5.30 | 5.06 | 4.85 | 4.79 | 4.58 | 4.54 | **4.16** |
+| `--text-faint` | `#647168` | 5.12 | 4.90 | 5.03 | 4.80 | 4.60 | 4.55 | 4.35 | 4.31 | **3.95** |
+| `--destructive-text` | `#BC483F` | 5.08 | 4.86 | 4.99 | 4.76 | 4.56 | 4.51 | 4.32 | 4.28 | **3.92** |
+
+**Surfaces that are not safe for every role.** `--surface-tint` `#DDE4DD` is the
+darkest sanctioned light surface and only `--muted-foreground` and
+`--text-tertiary` clear AA on it. `--surface-warm` `#F3ECDD` and `--highlight`
+`#F7EBCB` carry the top three roles but not `--text-faint` or
+`--destructive-text`. Neither `bg-surface-warm` nor `bg-surface-tint` is used in
+`src/` yet; features 3 to 6 introduce them, and this table is the check to run
+before pairing text with either. F-04 tracks that gap.
+
+**`--border` was not changed.** It stays at the reference `#E5E7E2` because a
+decorative hairline carries no contrast requirement. Only `--input`, which is the
+boundary that identifies a form control, was corrected. The two tokens previously
+held the same value, which is what hid the problem.
+
+These are accessibility corrections, not brand changes, but the hue shift is
+visible and should be confirmed at design review alongside the provisional
+destructive family.
 
 ### Focus-visible
 

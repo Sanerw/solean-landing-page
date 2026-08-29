@@ -76,12 +76,18 @@
 - Tailwind v4 CSS-first config: theme tokens live in `src/routes/layout.css`,
   there is no `tailwind.config.js`
 - Use the semantic theme variables (`bg-background`, `text-muted-foreground`,
-  `border-border`) rather than raw color utilities, so light and dark stay in sync
+  `border-border`) rather than raw color utilities, so a colour is changed in one
+  place and every consumer follows
 - Merge conditional classes with `cn()` from `$lib/utils`
 - Reach for a shadcn-svelte component before writing a new primitive
 - No inline `style` attributes except for genuinely dynamic values
-- Both light and dark themes are defined in `layout.css`; dark is applied via the
-  `.dark` class variant. Any new color must be added to both blocks.
+- **Dark mode is out of scope for this project.** There is no toggle, no
+  dark-mode QA, and the `.dark` block is not approved design. New Solean tokens
+  are defined for the light theme only, in the `:root` block of `layout.css`, and
+  are **not** mirrored into `.dark`. Leave the existing technical `.dark` block
+  the shadcn scaffold shipped exactly as it is. See the Dark mode ruling in
+  `blueprint/reference/design-system.md` section 1 and the UI/UX section of
+  `project-overview.md`.
 
 ## Data and Validation
 

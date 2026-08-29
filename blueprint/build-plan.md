@@ -111,7 +111,7 @@ claims are not approved production content.
 
 ## Features
 
-- [ ] 1. **Design system and core UI components** - The full shared foundation
+- [x] 1. **Design system and core UI components** - The full shared foundation
   every later feature builds on.
   - Semantic colour tokens mapped from the design reference, `--radius: 1.25rem`,
     the provisional `--destructive` family, and `--ring` as deep green `#173824`
