@@ -7,9 +7,6 @@
 		base: [
 			"group/button inline-flex shrink-0 items-center justify-center gap-2 whitespace-nowrap",
 			"border border-transparent font-sans font-semibold transition-colors outline-none select-none",
-			// Deep green ring on a background-coloured offset. On a dark surface the ring
-			// would measure 1.00:1, so those call sites pass the gold override documented
-			// on the design-system showcase.
 			"focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
 			"active:translate-y-px motion-reduce:active:translate-y-0",
 			"disabled:pointer-events-none disabled:opacity-50",
@@ -36,24 +33,53 @@
 				lg: "h-17 rounded-full px-8 text-lg",
 				icon: "size-10 rounded-full",
 			},
+			surface: {
+				default: "",
+				dark: "focus-visible:ring-primary focus-visible:ring-offset-foreground",
+			},
 		},
 		compoundVariants: [
 			// A link is inline text, so it takes no button box from the size scale.
 			{ variant: "link", class: "h-auto rounded-none px-0 active:translate-y-0" },
+			{
+				variant: "inverse",
+				surface: "dark",
+				class: "bg-background text-foreground hover:bg-secondary active:bg-muted",
+			},
+			{
+				variant: "outline",
+				surface: "dark",
+				class:
+					"border-background bg-transparent text-background hover:bg-background hover:text-foreground active:bg-secondary active:text-secondary-foreground",
+			},
+			{
+				variant: "ghost",
+				surface: "dark",
+				class:
+					"bg-transparent text-background hover:bg-background hover:text-foreground active:bg-secondary active:text-secondary-foreground",
+			},
+			{
+				variant: "link",
+				surface: "dark",
+				class: "text-background hover:text-primary active:text-primary-hover",
+			},
 		],
 		defaultVariants: {
 			variant: "default",
 			size: "default",
+			surface: "default",
 		},
 	});
 
 	export type ButtonVariant = VariantProps<typeof buttonVariants>["variant"];
 	export type ButtonSize = VariantProps<typeof buttonVariants>["size"];
+	export type ButtonSurface = VariantProps<typeof buttonVariants>["surface"];
 
 	export type ButtonProps = WithElementRef<HTMLButtonAttributes> &
 		WithElementRef<HTMLAnchorAttributes> & {
 			variant?: ButtonVariant;
 			size?: ButtonSize;
+			surface?: ButtonSurface;
 		};
 </script>
 
@@ -62,6 +88,7 @@
 		class: className,
 		variant = "default",
 		size = "default",
+		surface = "default",
 		ref = $bindable(null),
 		href = undefined,
 		type = "button",
@@ -75,7 +102,7 @@
 	<a
 		bind:this={ref}
 		data-slot="button"
-		class={cn(buttonVariants({ variant, size }), className)}
+		class={cn(buttonVariants({ variant, size, surface }), className)}
 		href={disabled ? undefined : href}
 		aria-disabled={disabled}
 		role={disabled ? "link" : undefined}
@@ -88,7 +115,7 @@
 	<button
 		bind:this={ref}
 		data-slot="button"
-		class={cn(buttonVariants({ variant, size }), className)}
+		class={cn(buttonVariants({ variant, size, surface }), className)}
 		{type}
 		{disabled}
 		{...restProps}

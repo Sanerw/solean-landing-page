@@ -1,6 +1,6 @@
 # Solean - Project Overview
 
-<!-- blueprint:source-hash 5597fd7f51cc2659b0aa2a8147ca1b444990cc6ba5ed15196bcc80a044d8d929 -->
+<!-- blueprint:source-hash a85e75d2041f31c78c364d726229bdfaec5b8c7ab27ef7d0ec8dd87843f4997d -->
 
 > A complete, clickable, responsive UI prototype of a doctor-led GLP-1
 > weight-loss funnel, built on mocked data so the design and UX can be judged
@@ -31,15 +31,18 @@ surface is in scope.
 
 ## Features
 
-Twelve features in build-plan order. The headline is the funnel itself,
-delivered across 7 through 11.
+Twelve top-level features in build-plan order. Feature 3 is split into a design
+system completion pass and the marketing shell. The headline is the funnel
+itself, delivered across 7 through 11.
 
 1. **Design system and core UI components** - semantic tokens, two fonts,
-   radii, brand foundations, and all thirteen shared shadcn primitives installed
-   *and adapted*, proven on a showcase at `/dev/design-system`.
+   radii, brand foundations, and the initial thirteen shared shadcn primitives
+   installed *and adapted*, proven on a showcase at `/dev/design-system`.
 2. **Prototype architecture** - feature-first layout, domain types, journey
    state, service contracts, proven by a small scenario page.
-3. **Marketing shell and hero** - the first page a visitor can land on and
+3a. **Design system completion** - nine reference-proven primitives, the
+   seven-variant Button contract, and outstanding showcase and contrast repairs.
+3b. **Marketing shell and hero** - the first page a visitor can land on and
    navigate.
 4. **Landing page product story** - projection, results, bento, how it works.
 5. **Landing page social proof** - testimonials, clinical team, FAQ.
@@ -168,7 +171,7 @@ directly by marketing and editorial components.
 | **Svelte 5, runes** | All components; runes forced in `vite.config.ts` |
 | **TypeScript strict** | Domain types and service contracts |
 | **Tailwind CSS v4** | Styling, CSS-first config, semantic tokens only |
-| **shadcn-svelte** (`luma`) | Behavior and accessibility layer; all thirteen currently known shared primitives are adapted in Feature 1 |
+| **shadcn-svelte** (`luma`) | Behavior and accessibility layer; the initial thirteen primitives are adapted in Feature 1 and the nine reference-proven gaps in Feature 3a |
 | **Lucide** | Icons |
 | **pnpm** | Package manager |
 
@@ -259,21 +262,31 @@ calculated progress positions are exempt.
 
 ### Shared UI primitives
 
-**All currently known shared primitives are installed, adapted and verified in
-Feature 1.** Later features may add one only when an unforeseen interaction
-genuinely requires it, and must adapt it in the same feature. There is no
-per-feature drip.
+Feature 1 delivered the initial primitive foundation. Feature 3a completes the
+known set proven by the 21 reference artboards before page implementation.
+Later features may add one only when a genuinely unforeseen interaction
+requires it, and must adapt it in the same feature.
 
 Feature 1 set: `button`, `input`, `textarea`, `label`, `select`, `checkbox`,
 `radio-group`, `card`, `badge`, `separator`, `dialog`, `sheet`, `accordion`.
 
-Button: six variants (default, secondary, outline, ghost, link, destructive),
+Feature 3a set: `field`, `input-group`, `progress`, `navigation-menu`, `tabs`,
+`carousel`, `alert`, `breadcrumb`, `collapsible`.
+
+Button: seven variants (default, inverse, secondary, outline, ghost, link,
+destructive),
 four sizes (`sm` `h-10`, `default` `h-12`, `lg` `h-17` `rounded-full`, `icon`
 `size-10`). `h-17` is verified to compile to exactly 68px in this project's
 Tailwind v4, matching the reference pill. Textarea and Select derive from Input.
 
-Deferred: `carousel`, `tooltip`, `sonner`, `skeleton`, `tabs`, `chart`,
-`navigation-menu`.
+Still deferred: `popover`, `tooltip`, `sonner`, `skeleton`, `chart`.
+
+Desktop site navigation uses `NavigationMenu`; mobile navigation uses `Sheet`.
+The projection horizon uses `Tabs`; mock payment methods remain a `RadioGroup`.
+The bespoke `CheckoutStep` composes `Collapsible` for disclosure behavior.
+The language control uses `Select`, with English selected and Deutsch disabled
+until translations and routing exist. `Alert` covers delivery, medical review
+and status notices; `Breadcrumb` covers the learn article hierarchy.
 
 **Installing a primitive is not completion.** Each is adapted to the design
 reference with semantic tokens and stock scales, preserving accessible behavior
@@ -313,7 +326,7 @@ Development surfaces, not public routes:
 
 | Route | What's there |
 | --- | --- |
-| `/dev/design-system` | Feature 1 showcase: tokens, type, every adapted primitive and its states |
+| `/dev/design-system` | Features 1 and 3a showcase: tokens, type, every adapted primitive and its states |
 
 > TODO: feature 2's prototype scenario page has no named route yet. Decide at
 > spec time; `/dev/scenario` would sit alongside the showcase.
@@ -329,7 +342,7 @@ Node-capable adapter.
 
 ## Open questions
 
-These do not block Feature 1. Resolve each before the feature named below, then
+Resolve each before the feature named below, then
 re-run `/overview` if a plan changes.
 
 1. **Eligibility rule.** The reference never states pass/fail logic for the 16

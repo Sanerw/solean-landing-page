@@ -32,22 +32,23 @@
 			</Card.Content>
 		</Card.Root>
 
-		<Card.Root
-			class="cursor-pointer transition-colors hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-			role="link"
-			tabindex={0}
+		<a
+			href="/dev/scenario"
+			class="block rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 		>
-			<Card.Header>
-				<Card.Title>Interactive Card</Card.Title>
-				<Card.Description>Hover and focus this one.</Card.Description>
-			</Card.Header>
-			<Card.Content>
-				<p class="text-base text-muted-foreground">
-					Hover reuses <code class="font-mono text-sm">accent</code>, matching the shared
-					interaction-state table. It is keyboard focusable and shows the deep green ring.
-				</p>
-			</Card.Content>
-		</Card.Root>
+			<Card.Root class="h-full cursor-pointer transition-colors hover:bg-accent">
+				<Card.Header>
+					<Card.Title>Interactive Card</Card.Title>
+					<Card.Description>Open the prototype scenario.</Card.Description>
+				</Card.Header>
+				<Card.Content>
+					<p class="text-base text-muted-foreground">
+						Hover reuses <code class="font-mono text-sm">accent</code>, matching the shared
+						interaction-state table. The real link is keyboard focusable and Enter follows it.
+					</p>
+				</Card.Content>
+			</Card.Root>
+		</a>
 	</div>
 
 	<div class="mt-6">

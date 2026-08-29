@@ -39,7 +39,7 @@ appearance.
 | `--input` | `#8C8D89` | Field borders. **Corrected for contrast, see 1b** | - |
 | `--ring` | `#173824` | Focus ring. Deep green, not gold; see section 1a | - |
 | `--destructive` | `#C34E45` | Provisional validation and destructive token; see section 1a | 0 |
-| `--destructive-foreground` | `#FFFFFF` | Text on destructive fills, 4.66:1 | - |
+| `--destructive-foreground` | `#FFFFFF` | Text on destructive fills, 4.67:1 | - |
 
 ### Semantic extensions
 
@@ -99,10 +99,10 @@ Measured contrast, WCAG 2.1:
 
 | Pairing | Ratio | Verdict |
 | --- | --- | --- |
-| `--destructive-foreground` white on `--destructive` | 4.66:1 | Passes AA normal text |
-| White on `--destructive-hover` | 5.76:1 | Passes |
-| White on `--destructive-active` | 6.85:1 | Passes |
-| `--destructive` as text on `card` `#FFFFFF` | 4.66:1 | Passes AA |
+| `--destructive-foreground` white on `--destructive` | 4.67:1 | Passes AA normal text |
+| White on `--destructive-hover` | 5.74:1 | Passes |
+| White on `--destructive-active` | 6.84:1 | Passes |
+| `--destructive` as text on `card` `#FFFFFF` | 4.67:1 | Passes AA |
 | `--destructive` as text on `background` `#FBFAF7` | **4.47:1** | **Fails AA normal text** |
 | `--destructive` as text on `muted` `#F4F3EC` | **4.19:1** | **Fails AA normal text** |
 | `--destructive-text` on all three light surfaces | 4.56 to 5.07:1 | Passes AA everywhere |
@@ -205,6 +205,29 @@ Measured, focus indicators need 3:1:
 
 On dark surfaces use a variant-appropriate contrasting ring, gold `#E2B64F` at
 6.78:1, but only where the default deep green would not be visible.
+
+The Button primitive owns this through `surface="default" | "dark"`. Call sites
+declare the surface instead of passing focus, border or text class overrides.
+The dark contract uses a gold ring outside a deep-green offset, so the visible
+focus boundary measures 6.78:1 against the offset.
+
+### 1c. Button text on the dark surface
+
+The deep-green `--foreground` surface is used by the editorial CTA and dark
+marketing panels. Every Button variant has an explicit safe pairing there:
+
+| Variant | Resting pairing | Ratio | Hover and active pairing | Lowest ratio |
+| --- | --- | --- | --- | --- |
+| `default` | primary foreground on primary | 8.78:1 | primary foreground on primary hover | 6.68:1 |
+| `inverse` | foreground on background | 12.36:1 | foreground on secondary or muted | 11.60:1 |
+| `secondary` | secondary foreground on secondary | 12.10:1 | foreground on accent or muted | 11.47:1 |
+| `outline` | background on foreground | 12.36:1 | foreground on background or secondary | 12.10:1 |
+| `ghost` | background on foreground | 12.36:1 | foreground on background or secondary | 12.10:1 |
+| `link` | background on foreground | 12.36:1 | primary on foreground | 6.78:1 |
+| `destructive` | destructive foreground on destructive | 4.67:1 | destructive foreground on darker destructive states | 5.74:1 |
+
+`surface="dark"` changes only the pairings that would otherwise disappear and
+the shared focus treatment. The appearance variant remains a separate choice.
 
 **Accessibility takes priority here** because the design reference defines no
 focus states at all.
@@ -316,9 +339,9 @@ page.**
 ### When primitives are installed
 
 **All currently known shared UI primitives are installed, adapted and verified
-in Feature 1. Later features may add a new primitive only when an unforeseen
-interaction genuinely requires it. Any newly added primitive must be adapted to
-the Solean design system in the same feature.**
+across Feature 1 and Feature 3a. Later features may add a new primitive only
+when an unforeseen interaction genuinely requires it. Any newly added primitive
+must be adapted to the Solean design system in the same feature.**
 
 There is no per-feature drip of known primitives. A feature that needs `Button`
 finds it already adapted.
@@ -331,12 +354,21 @@ checkbox  radio-group  card  badge  separator
 dialog  sheet  accordion
 ```
 
-Thirteen primitives. This is not the whole library.
+Thirteen primitives.
+
+### Shared primitive set, Feature 3a
+
+```
+field  input-group  progress  navigation-menu  tabs
+carousel  alert  breadcrumb  collapsible
+```
+
+Nine primitives, all reference-proven by the 21 artboards. This is not the
+whole library.
 
 ### Deferred
 
-`carousel`, `tooltip`, `sonner`, `skeleton`, `tabs`, `chart`,
-`navigation-menu`
+`popover`, `tooltip`, `sonner`, `skeleton`, `chart`
 
 Deferred until a feature proves it genuinely needs one. Adding it then is
 allowed and carries the adaptation requirement with it.
@@ -369,7 +401,7 @@ shadcn-svelte variant approach. **Do not create redundant wrappers such as
 | `src/lib/components/brand/` | Global brand visuals: `SoleanLogo`, `StarRating` |
 | `src/lib/features/<feature>/` | Feature-specific product components |
 
-Feature 1 builds shared primitives and global brand foundations only.
+Features 1 and 3a build shared primitives and global brand foundations only.
 Product-specific components are built by the feature that owns their domain
 semantics, and they compose the already adapted primitives:
 
@@ -389,6 +421,7 @@ Do not create a hover token per component.
 | Variant | Default | Hover | Active |
 | --- | --- | --- | --- |
 | primary | `bg-primary` | `bg-primary-hover` | `bg-primary-hover` plus a subtle stock pressed treatment |
+| inverse | `bg-foreground` | `bg-inverse-hover` | `bg-inverse-active` |
 | secondary | `bg-secondary` | `bg-accent` | `bg-muted` |
 | outline | `bg-transparent border-border` | `bg-accent` | `bg-muted` |
 | ghost | `bg-transparent` | `bg-accent` | `bg-muted` |
@@ -408,10 +441,14 @@ surfaces; there is no accordion-hover token.
 
 ### Button variants and sizes
 
-Six variants, no more: `default` (primary gold CTA), `secondary` (back and
-low-emphasis), `outline` (outlined CTA from the reference), `ghost` (navigation
-and low-emphasis icon actions), `link` (inline actions), `destructive` (remove
-and destructive actions).
+Seven variants, no more: `default` (primary gold CTA), `inverse` (high-emphasis
+solid CTA), `secondary` (back and low emphasis), `outline` (outlined CTA from
+the reference), `ghost` (navigation and low-emphasis icon actions), `link`
+(inline actions), `destructive` (remove and destructive actions).
+
+Surface is an independent dimension: `default` for light grounds and `dark` for
+the sanctioned deep-green ground. It changes contrast-dependent text, border,
+state and focus pairings without multiplying appearance variants.
 
 Four sizes:
 
@@ -459,8 +496,14 @@ height. **No arbitrary dimensions, no separate textarea colour system.**
 | "Learn more" | A link or a dialog, **not** a tooltip |
 | Projection chart | Custom responsive SVG. No chart library unless that proves insufficient |
 | Visual panels | Not every panel needs to be a shadcn `Card` |
-| Payment radio group | Acceptable only as mock UI |
+| Payment radio group | Acceptable only as mock UI, on `RadioGroup`, **not** `Tabs` |
 | Mobile navigation | Uses the adapted `Sheet`, designed as a considered responsive adaptation. The export has no mobile artboards |
+| Desktop site navigation | The adapted `NavigationMenu`, including the Treatments link collection |
+| Projection horizon switch | The adapted `Tabs` (3 / 6 / 12 months), **not** a `ToggleGroup` |
+| Checkout step disclosure | `CheckoutStep` composes the adapted `Collapsible` for open/close behavior; progression logic stays feature-owned |
+| Notice surfaces | The adapted `Alert`. Visual variant (`default`, `highlighted`, `destructive`) and live-region urgency (`role` unset, `status`, or `alert`) are independent choices |
+| Editorial hierarchy | The adapted `Breadcrumb`, with a labelled nav landmark and `aria-current="page"` on the current item |
+| Testimonial and clinician browsing | The adapted `Carousel` (Embla), one card at 375px and three at desktop; card content stays feature-owned |
 
 ## 5. Layout
 

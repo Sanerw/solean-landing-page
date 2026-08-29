@@ -20,9 +20,6 @@
 		{ value: 'icon', spec: 'size-10' }
 	];
 
-	/* On a dark panel the deep green ring measures 1.00:1 and its background-coloured
-	   offset disappears too, so both are retargeted at the call site. */
-	const ON_DARK = 'focus-visible:ring-primary focus-visible:ring-offset-foreground';
 </script>
 
 <ShowcaseSection
@@ -98,8 +95,8 @@
 	<h3 class="mt-12 font-display text-xl font-semibold">Focus ring on a dark surface</h3>
 	<p class="mt-2 max-w-3xl text-sm text-muted-foreground">
 		The default ring is deep green on a background-coloured offset, which reads 12.36:1 on the page
-		ground. On a dark surface it measures 1.00:1 and vanishes, so those call sites pass the gold
-		override. Tab into both panels to compare.
+		ground. On a dark surface it measures 1.00:1 and vanishes, so the primitive's surface contract
+		switches to a gold ring and dark offset. Tab into both panels to compare.
 	</p>
 	<div class="mt-6 grid gap-6 lg:grid-cols-2">
 		<div class="rounded-xl border border-border bg-background p-8">
@@ -113,13 +110,14 @@
 		</div>
 		<div class="rounded-xl bg-foreground p-8">
 			<p class="text-xs font-semibold uppercase tracking-widest text-primary">
-				Dark surface, gold ring
+				Dark surface, surface="dark"
 			</p>
 			<div class="mt-4 flex flex-wrap gap-4">
-				<Button size="lg" class={ON_DARK}>Check your eligibility</Button>
-				<Button variant="inverse" size="lg" class={ON_DARK}>Keep my plan</Button>
+				{#each VARIANTS as variant (variant.value)}
+					<Button variant={variant.value} surface="dark">{variant.value}</Button>
+				{/each}
 			</div>
-			<code class="mt-4 block font-sans text-xs text-background/70">class="{ON_DARK}"</code>
+			<code class="mt-4 block font-sans text-xs text-background/70">surface="dark"</code>
 		</div>
 	</div>
 </ShowcaseSection>

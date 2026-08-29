@@ -7,7 +7,7 @@
 > finding is `open` or `fixed`, then archives resolved findings with the work
 > and resets this file.
 
-### F-05 [P3] open - Field and option-card composition strings are copied across showcase sections
+### F-05 [P3] fixed - Field and option-card composition strings are copied across showcase sections
 
 **File:** src/routes/dev/design-system/ExampleFormSection.svelte:11
 **Found:** 2026-08-29 by /audit (scope: current; lens: quality)
@@ -27,9 +27,15 @@ feature 7 or 8 extracts the real `TreatmentOption` product component, lift the
 option-card composition with it and have the showcase consume that component
 instead. `FIELD_LABEL` can move to a shared module under
 `src/routes/dev/design-system/` in the meantime.
-**Resolution:**
+**Resolution:** Fixed in Feature 3a Step 2. The adapted `Field` primitive now
+owns both patterns: `FieldLabel` carries the eyebrow typography by default, so
+the five hand-maintained `FIELD_LABEL` constants are deleted; the option-card
+border, background and checked-state treatment lives in `FieldLabel`'s
+`has-[>[data-slot=field]]` composition instead of being restated at each of the
+five call sites. `InputSection`, `TextareaSelectSection`, `ExampleFormSection`
+and `ChoiceControlsSection` all compose `Field` now.
 
-### F-06 [P2] open - The contrast record and the link Button have no dark-surface story
+### F-06 [P2] fixed - The contrast record and the link Button have no dark-surface story
 
 **File:** blueprint/reference/design-system.md:120
 **Found:** 2026-08-29 by /audit (scope: current; lens: all)
@@ -51,4 +57,7 @@ companion table, then give `link` an on-dark treatment the same way `default` go
 the gold ring override, for example `--background` (12.36:1) or `--primary`
 (6.78:1) as the on-dark link colour. Decide it before feature 5 places a link on
 the deep green card, not after.
-**Resolution:**
+**Resolution:** Fixed in Feature 3a Step 1. Button now exposes a typed
+`surface="default" | "dark"` contract, all seven variants have measured
+dark-surface text and focus pairings, the showcase demonstrates the matrix
+without call-site class overrides, and the contrast record documents it.

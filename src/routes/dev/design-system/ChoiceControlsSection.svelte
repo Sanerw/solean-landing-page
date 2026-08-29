@@ -1,5 +1,15 @@
 <script lang="ts">
 	import { Checkbox } from '$lib/components/ui/checkbox';
+	import {
+		Field,
+		FieldContent,
+		FieldDescription,
+		FieldError,
+		FieldLabel,
+		FieldLegend,
+		FieldSet,
+		FieldTitle
+	} from '$lib/components/ui/field';
 	import { Label } from '$lib/components/ui/label';
 	import * as RadioGroup from '$lib/components/ui/radio-group';
 	import ShowcaseSection from './ShowcaseSection.svelte';
@@ -46,63 +56,52 @@
 			/>
 			<div>
 				<Label for="checkbox-invalid" class="leading-snug">Invalid</Label>
-				<p id="checkbox-invalid-error" class="mt-1 text-sm text-destructive-text">
-					Confirm before continuing.
-				</p>
+				<FieldError id="checkbox-invalid-error" class="mt-1">Confirm before continuing.</FieldError>
 			</div>
 		</div>
 	</div>
 
 	<div class="mt-12">
-		<fieldset>
-			<legend class="font-display text-xl font-semibold">Which treatment would you prefer?</legend>
-			<p id="treatment-description" class="mt-2 text-sm text-muted-foreground">
+		<FieldSet>
+			<FieldLegend>Which treatment would you prefer?</FieldLegend>
+			<FieldDescription id="treatment-description">
 				Choose one option. Your clinician confirms what is safe and suitable.
-			</p>
+			</FieldDescription>
 
 			<RadioGroup.Root
 				bind:value={treatment}
 				aria-describedby="treatment-description"
 				class="mt-6"
 			>
-				<Label
-					for="treatment-mounjaro"
-					class="flex cursor-pointer items-center gap-4 rounded-md border border-border bg-card p-4 leading-snug has-data-checked:border-primary has-data-checked:bg-surface-subtle"
-				>
-					<RadioGroup.Item id="treatment-mounjaro" value="mounjaro" />
-					<span>
-						<span class="block font-display text-lg font-semibold">Mounjaro</span>
-						<span class="mt-1 block text-sm font-normal text-muted-foreground">
-							Injection, lose up to 23% body weight
-						</span>
-					</span>
-				</Label>
+				<FieldLabel for="treatment-mounjaro">
+					<Field orientation="horizontal">
+						<RadioGroup.Item id="treatment-mounjaro" value="mounjaro" />
+						<FieldContent>
+							<FieldTitle class="font-display text-lg font-semibold">Mounjaro</FieldTitle>
+							<FieldDescription>Injection, lose up to 23% body weight</FieldDescription>
+						</FieldContent>
+					</Field>
+				</FieldLabel>
 
-				<Label
-					for="treatment-wegovy"
-					class="flex cursor-pointer items-center gap-4 rounded-md border border-border bg-card p-4 leading-snug has-data-checked:border-primary has-data-checked:bg-surface-subtle"
-				>
-					<RadioGroup.Item id="treatment-wegovy" value="wegovy" />
-					<span>
-						<span class="block font-display text-lg font-semibold">Wegovy</span>
-						<span class="mt-1 block text-sm font-normal text-muted-foreground">
-							Injection, lose up to 21% body weight
-						</span>
-					</span>
-				</Label>
+				<FieldLabel for="treatment-wegovy">
+					<Field orientation="horizontal">
+						<RadioGroup.Item id="treatment-wegovy" value="wegovy" />
+						<FieldContent>
+							<FieldTitle class="font-display text-lg font-semibold">Wegovy</FieldTitle>
+							<FieldDescription>Injection, lose up to 21% body weight</FieldDescription>
+						</FieldContent>
+					</Field>
+				</FieldLabel>
 
-				<Label
-					for="treatment-pill"
-					class="flex cursor-pointer items-center gap-4 rounded-md border border-border bg-card p-4 leading-snug has-data-checked:border-primary has-data-checked:bg-surface-subtle"
-				>
-					<RadioGroup.Item id="treatment-pill" value="pill" />
-					<span>
-						<span class="block font-display text-lg font-semibold">Wegovy Pill</span>
-						<span class="mt-1 block text-sm font-normal text-muted-foreground">
-							Tablet, lose up to 17% body weight
-						</span>
-					</span>
-				</Label>
+				<FieldLabel for="treatment-pill">
+					<Field orientation="horizontal">
+						<RadioGroup.Item id="treatment-pill" value="pill" />
+						<FieldContent>
+							<FieldTitle class="font-display text-lg font-semibold">Wegovy Pill</FieldTitle>
+							<FieldDescription>Tablet, lose up to 17% body weight</FieldDescription>
+						</FieldContent>
+					</Field>
+				</FieldLabel>
 
 				<Label
 					for="treatment-disabled"
@@ -112,12 +111,12 @@
 					<span>Unavailable treatment</span>
 				</Label>
 			</RadioGroup.Root>
-		</fieldset>
+		</FieldSet>
 	</div>
 
 	<div class="mt-12">
-		<fieldset>
-			<legend class="font-display text-xl font-semibold">Invalid RadioGroup</legend>
+		<FieldSet>
+			<FieldLegend>Invalid RadioGroup</FieldLegend>
 			<RadioGroup.Root
 				bind:value={invalidTreatment}
 				aria-invalid="true"
@@ -133,9 +132,9 @@
 					<Label for="radio-invalid-two">Second option</Label>
 				</div>
 			</RadioGroup.Root>
-			<p id="radio-invalid-error" class="mt-2 text-sm text-destructive-text">
+			<FieldError id="radio-invalid-error" class="mt-2">
 				Choose one option before continuing.
-			</p>
-		</fieldset>
+			</FieldError>
+		</FieldSet>
 	</div>
 </ShowcaseSection>

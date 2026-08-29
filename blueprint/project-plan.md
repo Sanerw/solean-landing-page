@@ -394,19 +394,29 @@ Base `--radius: 1.25rem`. Only stock classes: `rounded-sm`, `rounded-md`,
 
 shadcn is a behavior and accessibility layer, not the finished look of the page.
 
-**All currently known shared UI primitives are installed, adapted and verified
-in Feature 1. Later features may add a new primitive only when an unforeseen
-interaction genuinely requires it. Any newly added primitive must be adapted to
-the Solean design system in the same feature.**
+Feature 1 delivered the initial shared primitive foundation. A reference audit
+before page implementation found nine additional behavior primitives already
+proven by the 21 artboards. Feature 3a completes that known set before the
+marketing, questionnaire and checkout surfaces consume it. Later features may
+add another primitive only when a genuinely unforeseen interaction requires it,
+and must adapt it to the Solean design system in the same feature.
 
-Shared primitive set, all delivered by Feature 1:
+Initial primitive set delivered by Feature 1:
 
 `button`, `input`, `textarea`, `label`, `select`, `checkbox`, `radio-group`,
 `card`, `badge`, `separator`, `dialog`, `sheet`, `accordion`
 
-This is not the whole library. Deferred until a feature proves it genuinely
-needs one: `carousel`, `tooltip`, `sonner`, `skeleton`, `tabs`, `chart`,
-`navigation-menu`.
+Reference-proven completion set delivered by Feature 3a:
+
+`field`, `input-group`, `progress`, `navigation-menu`, `tabs`, `carousel`,
+`alert`, `breadcrumb`, `collapsible`
+
+Button's stable API has seven variants: `default`, `inverse`, `secondary`,
+`outline`, `ghost`, `link`, and `destructive`; and four sizes: `sm`, `default`,
+`lg`, and `icon`.
+
+Still deferred until a feature proves it genuinely needs one: `popover`,
+`tooltip`, `sonner`, `skeleton`, `chart`.
 
 **Installing a shadcn primitive is not completion. Each primitive must be
 visually adapted to the Solean design reference using semantic tokens and
@@ -423,13 +433,25 @@ shadcn-svelte variant approach. Do not create redundant wrappers such as
 Specific rulings:
 
 - Checkout steps are a bespoke sequential component, not an Accordion
+- The bespoke `CheckoutStep` composes the adapted `Collapsible` for disclosure
+  behavior while keeping progression rules in the checkout feature
 - "Learn more" is a link or a dialog, not a tooltip
 - The projection chart is a custom responsive SVG; no chart library unless that
   proves insufficient
+- The projection horizon uses adapted `Tabs`; mock payment methods remain a
+  `RadioGroup`, because they select submitted form data
 - Not every visual panel needs to be a shadcn `Card`
 - The payment radio group is acceptable only as mock UI
-- Mobile navigation uses the adapted `Sheet`, designed as a considered
-  responsive adaptation, because the export contains no mobile artboards
+- Desktop site navigation uses adapted `NavigationMenu`; mobile navigation uses
+  the adapted `Sheet`, designed as a considered responsive adaptation because
+  the export contains no mobile artboards
+- The language control uses the adapted `Select`, not `Popover`. English is
+  selected and Deutsch is visible but disabled until translations and routing
+  exist
+- Static informational banners compose `Alert` without an assertive live-region
+  role; urgent runtime feedback opts into `role="alert"`
+- Editorial hierarchy uses `Breadcrumb` with a labelled navigation landmark and
+  `aria-current="page"` on the current item
 
 ### Component boundaries
 
@@ -439,9 +461,9 @@ Specific rulings:
 | `src/lib/components/brand/` | Global brand visuals: `SoleanLogo`, `StarRating` |
 | `src/lib/features/<feature>/` | Feature-specific product components |
 
-Feature 1 builds shared primitives and global brand foundations only. It does
-not build product components. These belong to the feature that owns their domain
-semantics and compose the already adapted primitives:
+Features 1 and 3a build shared primitives and global brand foundations only.
+They do not build product components. These belong to the feature that owns
+their domain semantics and compose the already adapted primitives:
 
 `TreatmentOption`, `AddOnCard`, `OrderSummary`, `CheckoutStep`, `ReviewTimeline`,
 questionnaire answer cards, `CountdownTimer`, `ProgressProjectionChart`,
@@ -511,8 +533,8 @@ Explicitly excluded, and not to be added as implementation tasks now:
 - Authentication
 - A real medical backend
 - Dark mode
-- Multi-language routing (copy goes through a message layer, but only English
-  exists and the language selector is inert)
+- Multi-language routing and translated content. The language `Select` exposes
+  English as selected and Deutsch as a disabled prototype placeholder
 - Undesigned routes linked from nav and footer (treatments index, product pages,
   about, contact, legal pages, clinician profiles, member account). Links remain
   inert.

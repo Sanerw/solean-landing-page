@@ -61,10 +61,11 @@ Completion criteria, not separate tasks.
 
 shadcn is a behavior and accessibility layer, not the finished look of the page.
 
-**All currently known shared UI primitives are installed, adapted and verified
-in Feature 1. Later features may add a new primitive only when an unforeseen
-interaction genuinely requires it. Any newly added primitive must be adapted to
-the Solean design system in the same feature.**
+Feature 1 delivered the initial shared primitive foundation. Feature 3a closes
+the reference-proven gaps before page implementation. Later features may add a
+new primitive only when an unforeseen interaction genuinely requires it. Any
+newly added primitive must be adapted to the Solean design system in the same
+feature.
 
 **Installing a shadcn primitive is not completion. Each primitive must be
 visually adapted to the Solean design reference using semantic tokens and
@@ -75,8 +76,10 @@ Variants are centralized in the primitive implementation using the existing
 shadcn-svelte variant approach. No redundant wrappers such as `SoleanButton`
 when the difference is only visual styling.
 
-Deferred until a feature proves it genuinely needs one: `carousel`, `tooltip`,
-`sonner`, `skeleton`, `tabs`, `chart`, `navigation-menu`.
+Feature 3a adds and adapts `field`, `input-group`, `progress`,
+`navigation-menu`, `tabs`, `carousel`, `alert`, `breadcrumb`, and `collapsible`.
+Still deferred until a feature proves it genuinely needs one: `popover`,
+`tooltip`, `sonner`, `skeleton`, `chart`.
 
 Checkout steps are a bespoke sequential component, not an Accordion. "Learn
 more" is a link or a dialog, not a tooltip by default. Not every visual panel
@@ -86,12 +89,12 @@ needs to be a shadcn `Card`.
 
 | Location | Holds |
 | --- | --- |
-| `src/lib/components/ui/` | Adapted shadcn primitives, all from Feature 1 |
+| `src/lib/components/ui/` | Adapted shadcn primitives from Features 1 and 3a |
 | `src/lib/components/brand/` | Global brand visuals: `SoleanLogo`, `StarRating` |
 | `src/lib/features/<feature>/` | Feature-specific product components |
 
-Feature 1 delivers shared primitives and brand foundations. It does not build
-product components. `TreatmentOption`, `AddOnCard`, `OrderSummary`,
+Features 1 and 3a deliver shared primitives and brand foundations. They do not
+build product components. `TreatmentOption`, `AddOnCard`, `OrderSummary`,
 `CheckoutStep`, `ReviewTimeline`, questionnaire answer cards and the rest belong
 to the feature that owns their domain semantics, and they compose the already
 adapted primitives.
@@ -126,8 +129,8 @@ claims are not approved production content.
   - Each adapted primitive demonstrates default, hover, active, focus-visible,
     disabled, invalid, and checked or selected states where applicable, plus its
     supported sizes and variants, keyboard behavior, and responsive behavior
-  - Button ships six variants (default, secondary, outline, ghost, link,
-    destructive) and four sizes (`sm`, `default`, `lg`, `icon`). Textarea and
+  - Button ships seven variants (default, inverse, secondary, outline, ghost,
+    link, destructive) and four sizes (`sm`, `default`, `lg`, `icon`). Textarea and
     Select derive from Input. Hover and active reuse semantic surface tokens;
     only `--primary-hover` and the destructive family are dedicated state
     tokens. Exact specs in `blueprint/reference/design-system.md`
@@ -157,11 +160,21 @@ claims are not approved production content.
   functional, not an admin dashboard; it can later serve as a local QA scenario
   launcher.
 
-- [ ] 3. **Marketing shell and hero** - `(marketing)` route group, page
-  container, header with desktop navigation and products dropdown, mobile
-  navigation on the adapted `Sheet`, inert language selector, announcement bar,
-  hero, trust benefits, and footer. The first page a visitor can land on and
-  navigate.
+- [ ] 3. **Design system completion and marketing shell**
+  - [x] 3a. **Design system completion** - Add and adapt the nine primitives
+    already proven by the reference: `field`, `input-group`, `progress`,
+    `navigation-menu`, `tabs`, `carousel`, `alert`, `breadcrumb`, and
+    `collapsible`. Extend
+    `/dev/design-system`, normalize the seven-variant Button contract, repair the
+    non-functional interactive Card example, and close the recorded form
+    composition and dark-surface contrast gaps before page features consume the
+    system.
+  - [ ] 3b. **Marketing shell and hero** - `(marketing)` route group, page
+    container, header with desktop navigation on the adapted `NavigationMenu`
+    and products dropdown, mobile navigation on the adapted `Sheet`, compact
+    language `Select` with English selected and Deutsch disabled, announcement
+    bar, hero, trust benefits, and footer. The
+    first page a visitor can land on and navigate.
 
 - [ ] 4. **Landing page product story** - Progress projection, results and
   support, treatment bento, how it works, and the CTAs tying them together.
@@ -169,9 +182,8 @@ claims are not approved production content.
 
 - [ ] 5. **Landing page social proof** - Testimonials, clinical team, and FAQ
   from typed, deduplicated content fixtures, the FAQ on the adapted `Accordion`.
-  Keyboard and mobile operable. `carousel` stays deferred; add it only if the
-  testimonial and team browsing genuinely cannot be built without it, and adapt
-  it in this feature if so.
+  Keyboard and mobile operable, with testimonial and team browsing on the
+  adapted `Carousel`.
 
 - [ ] 6. **Learn article** - `/learn/blog/[slug]` from a typed article fixture:
   hero, medical-review metadata, body typography, table of contents, treatment
@@ -182,15 +194,16 @@ claims are not approved production content.
   state, SSR-safe persistence, progress, back and continue, per-step validation
   infrastructure, journey guards, and resume infrastructure. Carried end to end
   by one complete single-select question as the vertical slice, composing the
-  adapted `radio-group`, `label` and `button` from Feature 1, so the feature
-  finishes on a working screen without implementing the questionnaire content.
+  adapted `progress`, `field`, `radio-group`, `label` and `button`, so the
+  feature finishes on a working screen without implementing the questionnaire
+  content.
 
 - [ ] 8. **Questionnaire content and completion** - Every remaining question
   from the reference, reusing the single-select type built in feature 7 and
   adding multi select with an exclusive "none of the above", numeric inputs with
   unit selection, and contact fields, all composing the adapted `checkbox`,
-  `input`, `select` and `label` from Feature 1. Answer cards are questionnaire
-  components, not new primitives. Mid-step projection, motivation
+  `input-group`, `input`, `select` and `field`. Answer cards are questionnaire
+  components, not new primitives. Mid-step projection on the adapted `Tabs`, motivation
   interstitial, treatment preference, and the completion state. Resume lands on
   the first unanswered question, and a guard blocks direct entry to an
   unreachable step. One canonical question count that the interstitials never
@@ -198,11 +211,13 @@ claims are not approved production content.
 
 - [ ] 9. **Checkout foundation** - `(checkout)` route group, `CheckoutService`
   and `MockCheckoutService`, a bespoke sequential `CheckoutStep`, account and
-  shipping steps with inline validation, order summary, and the central pricing
+  shipping steps with inline validation using the adapted `Field` and
+  `InputGroup`, order summary, and the central pricing
   engine at `src/lib/features/checkout/pricing.ts`. The pricing engine consumes
   the canonical catalogue and fixture price list from `src/lib/domain/`; the
-  calculation itself remains owned by checkout. Delivery estimate presented as
-  conditional on clinical approval.
+  calculation itself remains owned by checkout. `CheckoutStep` composes the
+  adapted `Collapsible` for disclosure behavior. Delivery estimate is presented
+  as conditional on clinical approval.
 
 - [ ] 10. **Checkout customization and mock payment** - Treatment switching and
   the consultation offer on the adapted `dialog`, add-ons with adding and

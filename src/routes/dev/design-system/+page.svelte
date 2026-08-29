@@ -1,12 +1,20 @@
 <script lang="ts">
+	import AlertSection from './AlertSection.svelte';
 	import BrandSection from './BrandSection.svelte';
+	import BreadcrumbSection from './BreadcrumbSection.svelte';
 	import ButtonSection from './ButtonSection.svelte';
+	import CarouselSection from './CarouselSection.svelte';
+	import CollapsibleSection from './CollapsibleSection.svelte';
 	import ExampleFormSection from './ExampleFormSection.svelte';
 	import ChoiceControlsSection from './ChoiceControlsSection.svelte';
 	import OverlaysSection from './OverlaysSection.svelte';
 	import SurfacesSection from './SurfacesSection.svelte';
+	import InputGroupSection from './InputGroupSection.svelte';
 	import InputSection from './InputSection.svelte';
+	import NavigationMenuSection from './NavigationMenuSection.svelte';
+	import ProgressSection from './ProgressSection.svelte';
 	import ShowcaseSection from './ShowcaseSection.svelte';
+	import TabsSection from './TabsSection.svelte';
 	import TextareaSelectSection from './TextareaSelectSection.svelte';
 	import TokenSwatch from './TokenSwatch.svelte';
 	import TypeSpecimen from './TypeSpecimen.svelte';
@@ -247,6 +255,14 @@
 
 	<ButtonSection />
 	<InputSection />
+	<InputGroupSection />
+	<ProgressSection />
+	<NavigationMenuSection />
+	<TabsSection />
+	<CarouselSection />
+	<AlertSection />
+	<BreadcrumbSection />
+	<CollapsibleSection />
 	<TextareaSelectSection />
 	<ChoiceControlsSection />
 
