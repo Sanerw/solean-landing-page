@@ -176,12 +176,12 @@ claims are not approved production content.
     bar, hero, trust benefits, and footer. The
     first page a visitor can land on and navigate.
 
-- [ ] 4. **Landing page product story** - Progress projection, results and
+- [x] 4. **Landing page product story** - Progress projection, results and
   support, treatment bento, how it works, and the CTAs tying them together.
   - [x] 4a. **Product story panels** - The treatment bento, the results and
     support band, and the how-it-works steps: three tinted content panels built
     from typed fixtures, with the CTAs that tie them to the questionnaire.
-  - [ ] 4b. **Progress projection** - The custom responsive SVG projection chart
+  - [x] 4b. **Progress projection** - The custom responsive SVG projection chart
     on the adapted `Tabs`, its accessible non-visual alternative, and the
     medical-framing panel and CTAs beside it.
 

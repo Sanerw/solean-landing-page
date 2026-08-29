@@ -61,3 +61,25 @@ the deep green card, not after.
 `surface="default" | "dark"` contract, all seven variants have measured
 dark-surface text and focus pairings, the showcase demonstrates the matrix
 without call-site class overrides, and the contrast record documents it.
+
+### F-07 [P2] open - The adapted Tabs primitive associates no panel with its tab
+
+**File:** src/lib/components/ui/tabs/tabs-trigger.svelte:1
+**Found:** 2026-08-29 by /implement (feature 4b; recorded here rather than lost, since
+the ledger is the durable record. Not an /audit verdict.)
+**Why it matters:** bits-ui emits `role="tab"`, `role="tabpanel"` and `aria-selected`
+correctly, but **neither `aria-controls` on the trigger nor `aria-labelledby` on the
+panel**. The only link between the two is a matching `data-value`, which assistive
+technology does not read. A screen reader user on a tab is therefore not told which
+region it controls, and the panel it reaches has no name from its tab. Verified in the
+rendered output of `/`: three tabs and three panels, every `aria-controls` absent
+before the call-site repair below. This affects every future consumer, including
+feature 8's questionnaire projection interstitial, which the 4b spec names as the
+second caller of this chart.
+**Suggested fix:** Generate a shared id in `tabs.svelte`'s context and have Trigger and
+Content derive `aria-controls` and `aria-labelledby` from it plus the item value, so
+every consumer gets the association without restating it. Feature 4b worked around it
+at the call site by passing an explicit `id` to `Tabs.Content` and a matching
+`aria-controls` to `Tabs.Trigger` through the primitive's public props; that repairs the
+one usage, not the primitive.
+**Resolution:**

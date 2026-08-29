@@ -321,3 +321,72 @@ export const HOW_IT_WORKS = {
 		}
 	] satisfies HowItWorksStep[]
 } as const;
+
+export interface ProjectionPoint {
+	/** Months from now. Spacing on the axis is ordinal, not proportional to this value. */
+	month: number;
+	label: string;
+	kg: number;
+}
+
+export interface ProjectionHorizon {
+	month: number;
+	label: string;
+}
+
+/**
+ * Illustrative figures, not clinical ones. The artboard plots these four points evenly
+ * spaced, so 0-to-3 months and 6-to-12 months occupy the same width; the axis is a
+ * sequence of milestones rather than a time line, and the geometry follows that.
+ */
+export const PROJECTION_SERIES: readonly ProjectionPoint[] = [
+	{ month: 0, label: 'Now', kg: 96 },
+	{ month: 3, label: '3 months', kg: 88 },
+	{ month: 6, label: '6 months', kg: 82 },
+	{ month: 12, label: '12 months', kg: 78 }
+];
+
+/** The "lifestyle alone" comparison, measured off the artboard at the same milestones. */
+export const PROJECTION_COMPARISON: readonly ProjectionPoint[] = [
+	{ month: 0, label: 'Now', kg: 96 },
+	{ month: 3, label: '3 months', kg: 94 },
+	{ month: 6, label: '6 months', kg: 92 },
+	{ month: 12, label: '12 months', kg: 90 }
+];
+
+/** Derived from the series so a horizon can never name a milestone with no data point. */
+export const PROJECTION_HORIZONS: readonly ProjectionHorizon[] = PROJECTION_SERIES.filter(
+	(p) => p.month > 0
+).map((p) => ({ month: p.month, label: p.label }));
+
+export const DEFAULT_HORIZON_MONTH = 6;
+
+export const PROJECTION = {
+	title: 'Projected progress with Solean.',
+	lead: 'Illustrative weight change when treatment is combined with clinical support.',
+	seriesLabel: 'With Solean',
+	comparisonLabel: 'Lifestyle alone',
+	tabsLabel: 'Projection horizon',
+	disclaimer:
+		'Illustrative projection only. Actual outcomes vary by treatment, dose, adherence and individual health factors.',
+	tableCaption: 'Modelled weight at each milestone'
+} as const;
+
+export interface MedicalFactor {
+	icon: 'brain' | 'activity' | 'dna';
+	label: string;
+}
+
+export const MEDICAL_FRAMING = {
+	title: 'Weight loss isn’t a motivational issue, it’s a medical one.',
+	// The artboard credits a competitor here; project-plan.md section 9 rules that
+	// competitor names become Solean.
+	body: 'Medicated weight loss isn’t ‘cheating’. Stress, hormones and genetics can all influence your weight. Solean evens the playing field.',
+	factors: [
+		{ icon: 'brain', label: 'Stress' },
+		{ icon: 'activity', label: 'Hormones' },
+		{ icon: 'dna', label: 'Genetics' }
+	] satisfies MedicalFactor[],
+	primaryCta: 'Check your eligibility',
+	secondaryCta: 'Explore treatments'
+} as const;

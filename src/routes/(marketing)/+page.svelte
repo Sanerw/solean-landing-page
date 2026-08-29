@@ -2,6 +2,7 @@
 	import BentoGrid from '$lib/features/marketing/BentoGrid.svelte';
 	import HeroSection from '$lib/features/marketing/HeroSection.svelte';
 	import HowItWorks from '$lib/features/marketing/HowItWorks.svelte';
+	import ProjectionSection from '$lib/features/marketing/ProjectionSection.svelte';
 	import ResultsBand from '$lib/features/marketing/ResultsBand.svelte';
 	import TrustBenefits from '$lib/features/marketing/TrustBenefits.svelte';
 </script>
@@ -24,4 +25,5 @@
 	<BentoGrid />
 	<ResultsBand />
 	<HowItWorks />
+	<ProjectionSection />
 </div>
