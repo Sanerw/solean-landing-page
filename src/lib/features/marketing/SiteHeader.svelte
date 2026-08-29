@@ -10,11 +10,9 @@
 	interface Props {
 		/** `overlay` sits inside the hero card on the scrim; `solid` is every other page. */
 		variant?: 'overlay' | 'solid';
-		/** Keeps planned funnel CTAs honest until the questionnaire route exists. */
-		eligibilityAvailable?: boolean;
 	}
 
-	let { variant = 'solid', eligibilityAvailable = true }: Props = $props();
+	let { variant = 'solid' }: Props = $props();
 
 	const surface = $derived(variant === 'overlay' ? ('dark' as const) : ('default' as const));
 </script>
@@ -85,18 +83,14 @@
 		<div class="flex flex-1 items-center justify-end gap-2">
 			<LanguageSelect {surface} class="hidden sm:inline-flex" />
 			<Button
-				href={eligibilityAvailable ? ROUTES.questionnaire : undefined}
-				disabled={!eligibilityAvailable}
-				aria-label={
-					eligibilityAvailable ? HERO.primaryCta : `${HERO.primaryCta}, available with the questionnaire`
-				}
+				href={ROUTES.questionnaire}
 				surface={surface}
 				size="sm"
 				class="hidden rounded-full sm:inline-flex"
 			>
 				{HERO.primaryCta}
 			</Button>
-			<MobileNav {surface} {eligibilityAvailable} />
+			<MobileNav {surface} />
 		</div>
 	</div>
 </header>

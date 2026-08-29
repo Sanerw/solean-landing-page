@@ -32,7 +32,7 @@ export type Answer =
 
 export interface QuestionnaireAnswers {
 	byQuestionId: Record<string, Answer>;
-	/** Drives resume. Feature 7 sets it, because only the schema knows step order. */
+	/** Drives resume. The questionnaire service owns it, because only the schema knows step order. */
 	firstUnansweredIndex: number;
 }
 

@@ -5,7 +5,7 @@
 	import { FEATURED_ARTICLE_SLUG, ROUTES } from '$lib/features/marketing/content';
 </script>
 
-<SiteHeader eligibilityAvailable={false} />
+<SiteHeader />
 
 <section class={[CONTAINER, 'py-20 text-center lg:py-32']} aria-labelledby="article-error-title">
 	<p class="text-xs font-semibold uppercase tracking-widest text-highlight-foreground">

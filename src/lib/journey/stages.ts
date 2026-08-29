@@ -8,7 +8,7 @@ export type StageAccess = { allowed: true } | { allowed: false; redirectTo: stri
 /** Ordered, one stage per route group, so the guard maps onto routing directly. */
 export const STAGES: readonly JourneyStage[] = ['browsing', 'questionnaire', 'checkout', 'order'];
 
-// Feature 7 owns the questionnaire entry point; this is the group root it redirects from.
+// The questionnaire feature owns this entry point; it resolves the resume step in the browser.
 const QUESTIONNAIRE_ENTRY = '/questionnaire';
 const CHECKOUT_ENTRY = '/checkout/account';
 

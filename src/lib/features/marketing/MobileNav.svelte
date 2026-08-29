@@ -8,10 +8,9 @@
 
 	interface Props {
 		surface?: 'default' | 'dark';
-		eligibilityAvailable?: boolean;
 	}
 
-	let { surface = 'default', eligibilityAvailable = true }: Props = $props();
+	let { surface = 'default' }: Props = $props();
 
 	let open = $state(false);
 
@@ -84,19 +83,9 @@
 
 		<Sheet.Footer>
 			<Separator class="mb-4" />
-			<Button
-				href={eligibilityAvailable ? ROUTES.questionnaire : undefined}
-				disabled={!eligibilityAvailable}
-				size="lg"
-				class="w-full"
-			>
+			<Button href={ROUTES.questionnaire} size="lg" class="w-full" onclick={() => (open = false)}>
 				{HERO.primaryCta}
 			</Button>
-			{#if !eligibilityAvailable}
-				<p class="mt-2 text-xs text-text-tertiary">
-					Available with the questionnaire in Feature 7.
-				</p>
-			{/if}
 			<LanguageSelect display="full" showIcon class="mt-2 self-start" />
 		</Sheet.Footer>
 	</Sheet.Content>

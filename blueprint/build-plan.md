@@ -194,7 +194,7 @@ claims are not approved production content.
   hero, medical-review metadata, body typography, table of contents, treatment
   comparison, related content. Static editorial content, so no service interface.
 
-- [ ] 7. **Questionnaire foundation** - Typed question schema,
+- [x] 7. **Questionnaire foundation** - Typed question schema,
   `QuestionnaireService` and `MockQuestionnaireService`, route shell, rune-based
   state, SSR-safe persistence, progress, back and continue, per-step validation
   infrastructure, journey guards, and resume infrastructure. Carried end to end

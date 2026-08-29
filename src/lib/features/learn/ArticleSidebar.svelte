@@ -3,6 +3,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import ShieldCheckIcon from '@lucide/svelte/icons/shield-check';
 	import SparklesIcon from '@lucide/svelte/icons/sparkles';
+	import { ROUTES } from '$lib/features/marketing/content';
 	import { formatArticleDate } from './format-article-date';
 	import type { Article } from './types';
 
@@ -33,12 +34,7 @@
 		<p class="mt-3 text-sm text-background/80">
 			A clinical questionnaire will help a qualified prescriber assess suitability.
 		</p>
-		<Button disabled aria-describedby="eligibility-unavailable" class="mt-5 w-full">
-			Check your eligibility
-		</Button>
-		<p id="eligibility-unavailable" class="mt-3 text-xs text-background/70">
-			Eligibility checking becomes available with the questionnaire in Feature 7.
-		</p>
+		<Button href={ROUTES.questionnaire} class="mt-5 w-full">Check your eligibility</Button>
 	</section>
 
 	<section id="sources" class="scroll-mt-6 rounded-lg bg-secondary p-6" aria-labelledby="sources-title">

@@ -17,7 +17,7 @@
 	<meta name="description" content={data.article.summary} />
 </svelte:head>
 
-<SiteHeader eligibilityAvailable={false} />
+<SiteHeader />
 
 <article>
 	<ArticleHero article={data.article} />

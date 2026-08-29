@@ -9,6 +9,16 @@
 	import { checkoutService } from '$lib/features/checkout/checkout-service';
 	import { orderService } from '$lib/features/order-status/order-service';
 	import { questionnaireService } from '$lib/features/questionnaire/questionnaire-service';
+	import {
+		getNextQuestionnaireStep,
+		getPreviousQuestionnaireStep,
+		getQuestionnaireProgress,
+		getQuestionnaireStep,
+		getQuestionnaireStepAccess,
+		QUESTIONNAIRE_SCHEMA,
+		QUESTIONNAIRE_START_STEP_ID,
+		validateQuestionnaireAnswer
+	} from '$lib/features/questionnaire/schema';
 	import { journey } from '$lib/journey/journey.svelte';
 	import { STAGES, canEnter } from '$lib/journey/stages';
 
@@ -25,8 +35,32 @@
 	const treatments = checkoutService.listTreatments();
 	const addOns = checkoutService.listAddOns();
 
-	// A stand-in for a real questionnaire answer, which feature 7's schema will define.
-	const SAMPLE_ANSWER_ID = 'scenario-sample';
+	const questionnaireStartStep = getQuestionnaireStep(
+		QUESTIONNAIRE_SCHEMA,
+		QUESTIONNAIRE_START_STEP_ID
+	);
+	if (!questionnaireStartStep || questionnaireStartStep.kind !== 'single-select') {
+		throw new Error('The questionnaire start step must be a single-select question.');
+	}
+	const questionnaireStartOption = questionnaireStartStep.options[0];
+	if (!questionnaireStartOption) {
+		throw new Error('The questionnaire start step must have an option.');
+	}
+	const questionnaireProgress = getQuestionnaireProgress(
+		QUESTIONNAIRE_SCHEMA,
+		QUESTIONNAIRE_START_STEP_ID
+	);
+	const missingAnswerResult = validateQuestionnaireAnswer(questionnaireStartStep, undefined);
+	const validAnswerResult = validateQuestionnaireAnswer(questionnaireStartStep, {
+		kind: 'single-select',
+		optionId: questionnaireStartOption.id
+	});
+	const unknownQuestionnaireStep = getQuestionnaireStep(QUESTIONNAIRE_SCHEMA, 'not-a-step');
+	const questionnaireStepAccess = getQuestionnaireStepAccess(
+		QUESTIONNAIRE_SCHEMA,
+		QUESTIONNAIRE_START_STEP_ID,
+		{ byQuestionId: {}, firstUnansweredIndex: 0 }
+	);
 </script>
 
 <svelte:head>
@@ -48,9 +82,10 @@
 		</p>
 		<h1 class="mt-3 font-display text-4xl font-medium sm:text-5xl">Prototype scenario</h1>
 		<p class="mt-4 max-w-3xl text-base text-muted-foreground md:text-lg">
-			The journey session, the stage derived from it, and the guards that decide what a visitor may
-			enter. Every value below is read through a service or the journey module, never from a
-			fixture or session storage directly. Not a public route and not linked from the app.
+			The journey session, the stage derived from it, and the guards that decide what a visitor
+			may enter. Stateful values come through a service or the journey module; static questionnaire
+			contracts are exercised through their pure helpers. Not a public route and not linked from
+			the app.
 		</p>
 		<p class="mt-4 max-w-3xl text-sm text-text-faint">
 			State lives in sessionStorage under solean.journey and is per tab. Nothing here is a design
@@ -74,6 +109,41 @@
 				The furthest stage the session justifies. An empty session reads browsing.
 			</p>
 		</div>
+	</ShowcaseSection>
+
+	<ShowcaseSection
+		id="questionnaire-schema"
+		title="Questionnaire schema"
+		description="Runtime evidence for the foundation contract before its public route exists. Every value is resolved from the schema rather than restated by this surface."
+	>
+		<dl class="max-w-3xl">
+			{@render field('Start step id', questionnaireStartStep.id)}
+			{@render field(
+				'Progress',
+				questionnaireProgress
+					? `${questionnaireProgress.current} of ${questionnaireProgress.total}`
+					: 'missing'
+			)}
+			{@render field(
+				'Previous implemented step',
+				getPreviousQuestionnaireStep(QUESTIONNAIRE_SCHEMA, questionnaireStartStep.id)?.id ?? 'none'
+			)}
+			{@render field(
+				'Next implemented step',
+				getNextQuestionnaireStep(QUESTIONNAIRE_SCHEMA, questionnaireStartStep.id)?.id ?? 'none'
+			)}
+			{@render field('Unknown step lookup', unknownQuestionnaireStep === null ? 'null' : 'unexpected')}
+			{@render field(
+				'Missing answer',
+				missingAnswerResult.valid ? 'unexpectedly valid' : `invalid: ${missingAnswerResult.message}`
+			)}
+			{@render field('Listed option answer', validAnswerResult.valid ? 'valid' : 'unexpectedly invalid')}
+			{@render field(
+				'Start step access',
+				questionnaireStepAccess.allowed ? 'allowed' : 'unexpectedly denied'
+			)}
+			{@render field('Resume step id', questionnaireService.getResumeStepId() ?? 'none')}
+		</dl>
 	</ShowcaseSection>
 
 	<ShowcaseSection
@@ -137,8 +207,8 @@
 			<fieldset>
 				<legend class="font-display text-xl font-semibold">Questionnaire</legend>
 				<p class="mt-2 text-sm text-muted-foreground">
-					QuestionnaireService.setCompleted, saveAnswer and clear. Feature 7 owns the real schema,
-					so the recorded answer is a stand-in.
+					QuestionnaireService.setCompleted, saveAnswer and clear. The recorded answer is the real
+					schema fixture, resolved through the service rather than restated here.
 				</p>
 				<div class="mt-6 flex items-center gap-3">
 					<Checkbox
@@ -155,12 +225,12 @@
 						variant="outline"
 						size="sm"
 						onclick={() =>
-							questionnaireService.saveAnswer(SAMPLE_ANSWER_ID, {
+							questionnaireService.saveAnswer(questionnaireStartStep.id, {
 								kind: 'single-select',
-								optionId: 'yes'
+								optionId: questionnaireStartOption.id
 							})}
 					>
-						Record a sample answer
+						Answer question 1
 					</Button>
 					<Button variant="outline" size="sm" onclick={() => questionnaireService.clear()}>
 						Clear answers

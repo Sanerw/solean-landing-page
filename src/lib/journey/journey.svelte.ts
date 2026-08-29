@@ -1,4 +1,4 @@
-import type { Answer } from '$lib/domain';
+import type { QuestionnaireAnswers } from '$lib/domain';
 import { emptySession, type JourneySession } from './session';
 import { reachedStage, type JourneyStage } from './stages';
 import { clearSession, readSession, writeSession } from './storage';
@@ -25,16 +25,15 @@ export const journey = {
 		return stage;
 	},
 
-	setAnswer(questionId: string, answer: Answer): void {
+	/**
+	 * One mutation for the whole answer map and its progress marker. Splitting them into two
+	 * setters is what would let a resume point drift away from the answers it describes, so
+	 * the questionnaire service hands both over together and this never recomputes either.
+	 */
+	saveQuestionnaireAnswer(answers: QuestionnaireAnswers): void {
 		update((current) => ({
 			...current,
-			questionnaire: {
-				...current.questionnaire,
-				answers: {
-					...current.questionnaire.answers,
-					byQuestionId: { ...current.questionnaire.answers.byQuestionId, [questionId]: answer }
-				}
-			}
+			questionnaire: { ...current.questionnaire, answers }
 		}));
 	},
 
