@@ -160,7 +160,7 @@ claims are not approved production content.
   functional, not an admin dashboard; it can later serve as a local QA scenario
   launcher.
 
-- [ ] 3. **Design system completion and marketing shell**
+- [x] 3. **Design system completion and marketing shell**
   - [x] 3a. **Design system completion** - Add and adapt the nine primitives
     already proven by the reference: `field`, `input-group`, `progress`,
     `navigation-menu`, `tabs`, `carousel`, `alert`, `breadcrumb`, and
@@ -169,7 +169,7 @@ claims are not approved production content.
     non-functional interactive Card example, and close the recorded form
     composition and dark-surface contrast gaps before page features consume the
     system.
-  - [ ] 3b. **Marketing shell and hero** - `(marketing)` route group, page
+  - [x] 3b. **Marketing shell and hero** - `(marketing)` route group, page
     container, header with desktop navigation on the adapted `NavigationMenu`
     and products dropdown, mobile navigation on the adapted `Sheet`, compact
     language `Select` with English selected and Deutsch disabled, announcement
