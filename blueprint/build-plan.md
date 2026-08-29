@@ -143,7 +143,7 @@ claims are not approved production content.
   The showcase is a development and visual QA surface, not a public marketing
   route and not an admin dashboard.
 
-- [ ] 2. **Prototype architecture** - Feature-first layout under
+- [x] 2. **Prototype architecture** - Feature-first layout under
   `src/lib/features/`, thin SvelteKit routes, `src/lib/domain/` holding
   `Treatment`, `AddOn`, `Money`, `PatientProfile` and `Order`, and
   `src/lib/journey/`
