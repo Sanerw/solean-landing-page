@@ -477,14 +477,16 @@ export interface Clinician {
 	portrait?: string;
 }
 
+export const JURAJ_GALAN: Clinician = {
+	name: 'Dr. Juraj Galan',
+	role: 'Consulting physician',
+	description:
+		'Provides medical consultations, reviews your health profile and helps determine a safe, appropriate treatment plan.',
+	portrait: jurajGalanPortrait
+};
+
 export const CLINICIANS: readonly Clinician[] = [
-	{
-		name: 'Dr. Juraj Galan',
-		role: 'Consulting physician',
-		description:
-			'Provides medical consultations, reviews your health profile and helps determine a safe, appropriate treatment plan.',
-		portrait: jurajGalanPortrait
-	},
+	JURAJ_GALAN,
 	{
 		name: 'Gredel',
 		role: 'Weight-loss coach',
