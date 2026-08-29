@@ -1,9 +1,12 @@
 <script lang="ts">
 	import BentoGrid from '$lib/features/marketing/BentoGrid.svelte';
+	import ClinicalTeamSection from '$lib/features/marketing/ClinicalTeamSection.svelte';
+	import FaqSection from '$lib/features/marketing/FaqSection.svelte';
 	import HeroSection from '$lib/features/marketing/HeroSection.svelte';
 	import HowItWorks from '$lib/features/marketing/HowItWorks.svelte';
 	import ProjectionSection from '$lib/features/marketing/ProjectionSection.svelte';
 	import ResultsBand from '$lib/features/marketing/ResultsBand.svelte';
+	import TestimonialsSection from '$lib/features/marketing/TestimonialsSection.svelte';
 	import TrustBenefits from '$lib/features/marketing/TrustBenefits.svelte';
 </script>
 
@@ -26,4 +29,7 @@
 	<ResultsBand />
 	<HowItWorks />
 	<ProjectionSection />
+	<TestimonialsSection />
+	<ClinicalTeamSection />
+	<FaqSection />
 </div>

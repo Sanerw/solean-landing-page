@@ -6,6 +6,10 @@ import planPanel from '$lib/assets/panels/plan.jpg';
 import resultsPanel from '$lib/assets/panels/results.jpg';
 import supportPanel from '$lib/assets/panels/support.jpg';
 import treatmentPanel from '$lib/assets/panels/treatment.jpg';
+import eliasVossPortrait from '$lib/assets/people/elias-voss.jpg';
+import gredelPortrait from '$lib/assets/people/gredel.jpg';
+import jurajGalanPortrait from '$lib/assets/people/juraj-galan.jpg';
+import storyPhoto from '$lib/assets/people/story-photo.jpg';
 
 /**
  * Every cross-feature destination in one place. Features 6 and 7 make these real by
@@ -389,4 +393,164 @@ export const MEDICAL_FRAMING = {
 	] satisfies MedicalFactor[],
 	primaryCta: 'Check your eligibility',
 	secondaryCta: 'Explore treatments'
+} as const;
+
+export interface Testimonial {
+	name: string;
+	memberLabel: string;
+	kgLost: number;
+	quote: string;
+	rating: number;
+	/** A domain id, not a label: a catalogue rename cannot orphan a testimonial. */
+	treatmentId: string;
+	verified: boolean;
+	/** Present on the photo variant only. */
+	photo?: string;
+}
+
+/**
+ * The artboard gives all three people the same 22 kg and repeats one treatment across
+ * two of them. project-plan.md section 9 rules that duplication out, so each story here
+ * carries its own figure and the treatments span the catalogue.
+ */
+export const TESTIMONIALS: readonly Testimonial[] = [
+	{
+		name: 'Amy R.',
+		memberLabel: 'Solean member',
+		kgLost: 22,
+		quote: 'I finally feel in control of my health. The support was personal, clear and built around real life.',
+		rating: 5,
+		treatmentId: 'wegovy',
+		verified: true
+	},
+	{
+		name: 'Maya R.',
+		memberLabel: 'Solean member',
+		kgLost: 17,
+		quote: 'Having a clinician actually read my history changed how I felt about starting at all.',
+		rating: 5,
+		treatmentId: 'mounjaro',
+		verified: true,
+		photo: storyPhoto
+	},
+	{
+		name: 'Sarah T.',
+		memberLabel: 'Solean member',
+		kgLost: 14,
+		quote: 'The plan felt achievable from day one. I have more energy, more confidence and support when I need it.',
+		rating: 5,
+		treatmentId: 'wegovy-pill',
+		verified: true
+	},
+	{
+		name: 'Tom B.',
+		memberLabel: 'Solean member',
+		kgLost: 19,
+		quote: 'Being able to message the care team between reviews is what kept me going through the first month.',
+		rating: 5,
+		treatmentId: 'mounjaro',
+		verified: true
+	},
+	{
+		name: 'Priya N.',
+		memberLabel: 'Solean member',
+		kgLost: 11,
+		quote: 'No pharmacy queues, no awkward conversations. It arrived discreetly and the check-ins were genuinely useful.',
+		rating: 4,
+		treatmentId: 'wegovy',
+		verified: true
+	}
+];
+
+export const TESTIMONIALS_SECTION = {
+	title: 'Real stories. Real results.',
+	lead: 'Real experiences from members supported by Solean.',
+	carouselLabel: 'Member stories',
+	weightLostLabel: 'Weight lost',
+	verifiedLabel: 'Verified story'
+} as const;
+
+export interface Clinician {
+	name: string;
+	role: string;
+	description: string;
+	portrait?: string;
+}
+
+export const CLINICIANS: readonly Clinician[] = [
+	{
+		name: 'Dr. Juraj Galan',
+		role: 'Consulting physician',
+		description:
+			'Provides medical consultations, reviews your health profile and helps determine a safe, appropriate treatment plan.',
+		portrait: jurajGalanPortrait
+	},
+	{
+		name: 'Gredel',
+		role: 'Weight-loss coach',
+		description:
+			'Offers practical, one-to-one coaching to help you build sustainable habits and stay on track throughout your journey.',
+		portrait: gredelPortrait
+	},
+	{
+		name: 'Dr. Elias Voss',
+		role: 'Prescribing clinician',
+		description:
+			'Reviews treatment progress, answers medication questions and adjusts your care when clinically appropriate.',
+		portrait: eliasVossPortrait
+	}
+];
+
+export const CLINICAL_TEAM = {
+	title: 'Doctors who stay with you.',
+	lead: 'Your doctor helps identify the right treatment and supports you through every stage of your plan.',
+	carouselLabel: 'Clinical team',
+	learnMore: 'Learn more'
+} as const;
+
+export interface FaqItem {
+	question: string;
+	answer: string;
+}
+
+export const FAQ = {
+	title: 'Frequently asked questions.',
+	lead: 'Clear answers about treatment, eligibility, delivery and ongoing support.',
+	items: [
+		{
+			question: 'Are they safe, and what side effects should I expect?',
+			answer:
+				'Weight-loss medicines are clinically tested and prescribed only when a doctor considers them suitable for you. Common side effects can include nausea, constipation, diarrhoea or reduced appetite, and they often improve as your body adjusts. Your clinician will explain the risks, monitor your progress and advise you if symptoms persist or feel severe.'
+		},
+		{
+			question: 'Will I regain weight if I stop taking it?',
+			answer:
+				'Some weight regain is common after stopping, which is why treatment is paired with coaching and habit support. Your clinician will discuss how to taper and what to expect before you make that decision.'
+		},
+		{
+			question: 'Am I eligible?',
+			answer:
+				'Eligibility depends on your health profile, your medical history and your current measurements. The online questionnaire collects what a clinician needs, and they confirm whether treatment is appropriate for you.'
+		},
+		{
+			question: 'I don’t want anyone to know I’m receiving weight-loss treatment. Can I keep it private?',
+			answer:
+				'Yes. Consultations happen online, your data is handled under GDPR, and medication arrives in discreet, unbranded packaging.'
+		},
+		{
+			question: 'What’s included in the price?',
+			answer:
+				'Your plan covers the treatment itself, clinical review, and ongoing support from the care team. Optional extras such as coaching or a smart scale are priced separately and always shown before you pay.'
+		},
+		{
+			question: 'How quickly will I see results?',
+			answer:
+				'Most people notice changes within the first few months, though the pace varies by treatment, dose, adherence and individual health factors. Your clinician sets realistic expectations at the start.'
+		},
+		{
+			question: 'Will I lose my appetite completely, or still be able to enjoy food?',
+			answer:
+				'These treatments reduce appetite rather than remove it. Most people eat smaller portions and feel full sooner, while still enjoying meals normally.'
+		}
+	] satisfies FaqItem[]
 } as const;

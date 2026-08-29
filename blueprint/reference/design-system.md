@@ -52,10 +52,10 @@ appearance.
 | `--surface-tint` | `#DDE4DD` | FAQ items, dividers, secondary card borders | 34 |
 | `--text-tertiary` | `#57655C` | Tertiary text. **Corrected, see 1b** | 31 |
 | `--text-faint` | `#647168` | Disclaimers, clinical notes. **Corrected, see 1b** | 55 |
-| `--rating` | `#00B67A` | Rating and star color only | 5 |
+| `--rating` | `#00B67A` | The platform trust-badge star treatment only; see 1d | 5 |
 
 `--rating` is **not** a general success color. Do not reuse it for success
-states.
+states. It is also **not** the colour of every star: see section 1d.
 
 Do not reintroduce appearance-based names such as `cream`, `sand`, `gold-deep`,
 or `gold-subtle`. Components consume roles:
@@ -231,6 +231,32 @@ The Button primitive owns this through `surface="default" | "dark"`. Call sites
 declare the surface instead of passing focus, border or text class overrides.
 The dark contract uses a gold ring outside a deep-green offset, so the visible
 focus boundary measures 6.78:1 against the offset.
+
+### 1d. Star ratings have two treatments
+
+The reference draws ratings two different ways, and the earlier line that
+`--rating` is "rating and star colour only" was written before the second one was
+built:
+
+| Treatment | Where | Mark | Colour |
+| --- | --- | --- | --- |
+| `badge` | The hero trust badge | Filled square holding a white star | `--rating` `#00B67A` |
+| `inline` | Testimonial cards | Bare star glyph | The gold family, see below |
+
+`StarRating` selects between them with `treatment`, and `inline` additionally
+takes `surface`, because the testimonial cards come in light and photographic
+variants and **no single gold serves both**. Inline stars carry the score on
+their own, with no numeral beside them, so they are a meaningful graphic needing
+3:1:
+
+| Star colour | On the light card `#FBFAF7` | On the photo card scrim |
+| --- | --- | --- |
+| `--primary` `#E2B64F` | **1.82 fail** | 6.78 pass |
+| `--highlight-foreground` `#906100` | 5.16 pass | **2.39 fail** |
+
+So `surface="default"` uses `--highlight-foreground` and `surface="dark"` uses
+`--primary`. Measured on the rendered page: 5.16 and 6.83 respectively. The
+`badge` treatment is untouched and the hero renders pixel-identical to before.
 
 ### 1c. Button text on the dark surface
 

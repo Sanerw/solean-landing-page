@@ -185,7 +185,7 @@ claims are not approved production content.
     on the adapted `Tabs`, its accessible non-visual alternative, and the
     medical-framing panel and CTAs beside it.
 
-- [ ] 5. **Landing page social proof** - Testimonials, clinical team, and FAQ
+- [x] 5. **Landing page social proof** - Testimonials, clinical team, and FAQ
   from typed, deduplicated content fixtures, the FAQ on the adapted `Accordion`.
   Keyboard and mobile operable, with testimonial and team browsing on the
   adapted `Carousel`.

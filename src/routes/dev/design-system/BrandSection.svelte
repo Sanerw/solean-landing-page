@@ -7,7 +7,7 @@
 <ShowcaseSection
 	id="brand"
 	title="Brand foundations"
-	description="The logo is one normalised viewBox composing the export's seven glyph paths, filled with currentColor so it inherits from its surface. StarRating is the only consumer of --rating."
+	description="The logo is one normalised viewBox composing the export's seven glyph paths, filled with currentColor so it inherits from its surface. StarRating is the only consumer of --rating, and only in its badge treatment."
 >
 	<h3 class="font-display text-xl font-semibold">SoleanLogo</h3>
 	<div class="mt-6 grid gap-6 md:grid-cols-2">
@@ -52,6 +52,31 @@
 			<span class="text-base text-muted-foreground">
 				4.7 of 5, small, as in the hero reviews block
 			</span>
+		</div>
+	</div>
+
+	<h3 class="mt-12 font-display text-xl font-semibold">Inline treatment, surface-aware</h3>
+	<p class="mt-2 max-w-3xl text-sm text-muted-foreground">
+		Testimonial cards use bare stars rather than the badge squares. They carry the score with
+		no numeral beside them, so they are a meaningful graphic needing 3:1, and no single gold
+		clears that on both card grounds. See design-system.md section 1d.
+	</p>
+	<div class="mt-6 grid gap-4 sm:grid-cols-2">
+		<div class="rounded-lg border border-border bg-background p-6">
+			<p class="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
+				surface="default" on a light card
+			</p>
+			<StarRating rating={5} size="sm" treatment="inline" class="mt-3" />
+			<code class="mt-3 block font-sans text-xs text-muted-foreground">
+				--highlight-foreground, 5.16:1
+			</code>
+		</div>
+		<div class="rounded-lg bg-foreground p-6">
+			<p class="text-xs font-semibold uppercase tracking-widest text-primary">
+				surface="dark" on a photo card
+			</p>
+			<StarRating rating={5} size="sm" treatment="inline" surface="dark" class="mt-3" />
+			<code class="mt-3 block font-sans text-xs text-background/70">--primary, 6.78:1</code>
 		</div>
 	</div>
 	<p class="mt-4 text-sm text-muted-foreground">
