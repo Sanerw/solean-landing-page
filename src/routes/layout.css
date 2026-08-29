@@ -50,6 +50,13 @@
 	   darkest point of the same hue that clears 4.5:1 on every light surface. */
 	--destructive-text: #BC483F;
 
+	/* Bento category surfaces. The reference colour-codes the five cards; three of its
+	   grounds already exist (--surface-warm, --accent, --muted) and only these two are
+	   new. Named for the category they carry, never for the colour. Contrast per text
+	   role is recorded in design-system.md section 1b. */
+	--surface-care: #F6DED2;
+	--surface-delivery: #DFE8EA;
+
 	--highlight: #F7EBCB;
 	--surface-warm: #F3ECDD;
 	--surface-subtle: #FFFDF8;
@@ -151,6 +158,8 @@
 	--color-inverse-hover: var(--inverse-hover);
 	--color-inverse-active: var(--inverse-active);
 
+	--color-surface-care: var(--surface-care);
+	--color-surface-delivery: var(--surface-delivery);
 	--color-highlight: var(--highlight);
 	--color-highlight-foreground: var(--highlight-foreground);
 	--color-surface-warm: var(--surface-warm);

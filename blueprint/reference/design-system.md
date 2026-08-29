@@ -162,9 +162,30 @@ own documented surface, in `text-xs` Badge copy. It took one further step to
 darkest sanctioned light surface and only `--muted-foreground` and
 `--text-tertiary` clear AA on it. `--surface-warm` `#F3ECDD` and `--highlight`
 `#F7EBCB` carry the top three roles but not `--text-faint` or
-`--destructive-text`. Neither `bg-surface-warm` nor `bg-surface-tint` is used in
-`src/` yet; features 3 to 6 introduce them, and this table is the check to run
-before pairing text with either. F-04 tracks that gap.
+`--destructive-text`. This table is the check to run before pairing text with any
+of them. F-04 tracked that gap; features 3b and 4a put the surfaces into `src/`.
+
+#### Bento category surfaces, added in feature 4a
+
+The reference colour-codes the five bento cards. Three of its grounds already
+existed, so only two tokens were added; the other three cards reuse
+`--surface-warm`, `--accent` and `--muted`, all within a few RGB steps of the
+artboard values. Naming follows the category a card carries, never the colour.
+
+| Role | Value | `--surface-care` `#F6DED2` | `--surface-delivery` `#DFE8EA` |
+| --- | --- | --- | --- |
+| `--foreground` | `#173824` | 10.01 | 10.36 |
+| `--muted-foreground` | `#405756` | 6.00 | 6.21 |
+| `--text-tertiary` | `#57655C` | 4.76 | 4.93 |
+| `--highlight-foreground` | `#906100` | **4.18** | **4.33** |
+| `--text-faint` | `#647168` | **3.97** | **4.11** |
+
+**Both new surfaces carry only the top three roles.** `--highlight-foreground`
+and `--text-faint` fail on them, which matters because the gold eyebrow is the
+default elsewhere on the page. The reference does not use it here either: its own
+bento eyebrow measures `#405756`, exactly `--muted-foreground`, and its card
+titles measure `#173824`, exactly `--foreground`. The safe pairing and the
+designed pairing agree, so the bento takes `--muted-foreground` eyebrows.
 
 **`--border` was not changed.** It stays at the reference `#E5E7E2` because a
 decorative hairline carries no contrast requirement. Only `--input`, which is the

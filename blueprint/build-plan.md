@@ -178,7 +178,12 @@ claims are not approved production content.
 
 - [ ] 4. **Landing page product story** - Progress projection, results and
   support, treatment bento, how it works, and the CTAs tying them together.
-  Split into `4a` and `4b` at spec time if it proves too large.
+  - [x] 4a. **Product story panels** - The treatment bento, the results and
+    support band, and the how-it-works steps: three tinted content panels built
+    from typed fixtures, with the CTAs that tie them to the questionnaire.
+  - [ ] 4b. **Progress projection** - The custom responsive SVG projection chart
+    on the adapted `Tabs`, its accessible non-visual alternative, and the
+    medical-framing panel and CTAs beside it.
 
 - [ ] 5. **Landing page social proof** - Testimonials, clinical team, and FAQ
   from typed, deduplicated content fixtures, the FAQ on the adapted `Accordion`.

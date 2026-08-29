@@ -15,7 +15,8 @@
 </script>
 
 <section class={CONTAINER} aria-label="Why Solean">
-	<ul class="grid gap-10 py-16 sm:grid-cols-2 lg:grid-cols-4 lg:py-20">
+	<!-- No vertical padding of its own: the landing page owns the rhythm between sections. -->
+	<ul class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
 		{#each TRUST_BENEFITS as benefit (benefit.title)}
 			{@const Icon = ICONS[benefit.icon]}
 			<li class="text-center">

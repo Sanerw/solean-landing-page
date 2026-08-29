@@ -1,4 +1,11 @@
 import { TREATMENTS } from '$lib/domain';
+import clinicalCarePanel from '$lib/assets/panels/clinical-care.jpg';
+import deliveryPanel from '$lib/assets/panels/delivery.jpg';
+import howItWorksPanel from '$lib/assets/panels/how-it-works.jpg';
+import planPanel from '$lib/assets/panels/plan.jpg';
+import resultsPanel from '$lib/assets/panels/results.jpg';
+import supportPanel from '$lib/assets/panels/support.jpg';
+import treatmentPanel from '$lib/assets/panels/treatment.jpg';
 
 /**
  * Every cross-feature destination in one place. Features 6 and 7 make these real by
@@ -183,4 +190,134 @@ export const FOOTER_BRAND = {
 		{ name: 'Instagram', label: 'Solean on Instagram', href: 'https://instagram.com' },
 		{ name: 'Facebook', label: 'Solean on Facebook', href: 'https://facebook.com' }
 	]
+} as const;
+
+export interface BentoCard {
+	/** Drives the ground token, so a card cannot be given a colour that is not sanctioned. */
+	category: 'treatment' | 'clinical-care' | 'plan' | 'support' | 'delivery';
+	eyebrow: string;
+	title: string;
+	body: string;
+	/** Set by the imagery step; a card without art still renders its copy. */
+	image?: string;
+}
+
+/**
+ * Grounds are resolved from the category rather than stored per card, so the five
+ * cards can only ever use surfaces recorded in design-system.md section 1b. Only
+ * `care` and `delivery` are new tokens; the rest reuse existing ones.
+ */
+export const BENTO_GROUNDS: Record<BentoCard['category'], string> = {
+	treatment: 'bg-surface-care',
+	'clinical-care': 'bg-surface-care',
+	plan: 'bg-surface-warm',
+	support: 'bg-accent',
+	delivery: 'bg-surface-delivery'
+};
+
+export const BENTO_CARDS: readonly BentoCard[] = [
+	{
+		category: 'treatment',
+		eyebrow: 'Treatment',
+		title: 'Treatment, chosen for you.',
+		body: 'Doctor-reviewed options tailored to your health and goals.',
+		image: treatmentPanel
+	},
+	{
+		category: 'clinical-care',
+		eyebrow: 'Clinical care',
+		title: 'Doctors who guide every decision.',
+		body: 'Personal guidance from consultation onward.',
+		image: clinicalCarePanel
+	},
+	{
+		category: 'plan',
+		eyebrow: 'Your plan',
+		title: 'Everything in one clear place.',
+		body: 'Track progress and stay on top of each step.',
+		image: planPanel
+	},
+	{
+		category: 'support',
+		eyebrow: 'Ongoing support',
+		title: 'Help throughout your journey.',
+		body: 'Questions, side effects and practical support.',
+		image: supportPanel
+	},
+	{
+		category: 'delivery',
+		eyebrow: 'Delivery',
+		title: 'Discreet delivery, direct to you.',
+		body: 'Secure treatment delivery to your door.',
+		image: deliveryPanel
+	}
+];
+
+export interface MiniBenefit {
+	icon: 'stethoscope' | 'clipboard-check' | 'message-circle';
+	title: string;
+	body: string;
+}
+
+export const RESULTS_BAND = {
+	benefits: [
+		{
+			icon: 'stethoscope',
+			title: 'Licensed doctors.',
+			body: 'Clinical assessment and prescribing from home.'
+		},
+		{
+			icon: 'clipboard-check',
+			title: 'A plan built around you.',
+			body: 'Treatment and guidance tailored to your health.'
+		},
+		{
+			icon: 'message-circle',
+			title: 'Support that stays with you.',
+			body: 'Ongoing clinical and coaching support.'
+		}
+	] satisfies MiniBenefit[],
+	title: 'Weight loss, with care built in.',
+	lead: 'Doctor-led treatment, tailored guidance and ongoing support to help you make progress that lasts.',
+	cta: 'Check your eligibility',
+	// The reference attributes its rating to a named review platform. Same decision as the
+	// hero badge: the figures are invented, so they do not carry a real company's name.
+	quote:
+		'For the first time, weight loss feels structured and manageable, not like another diet I have to do alone.',
+	author: 'Daniel M.',
+	authorRole: 'Verified Solean member',
+	image: resultsPanel
+} as const;
+
+export interface HowItWorksStep {
+	title: string;
+	body: string;
+	/** Only the first step links onward; the rest are descriptive. */
+	href?: string;
+	linkLabel?: string;
+}
+
+export const HOW_IT_WORKS = {
+	title: 'How it works.',
+	lead: 'Three simple steps, from a quick online consultation to treatment delivered discreetly to your door.',
+	image: howItWorksPanel,
+	captionEyebrow: 'Doctor-led care',
+	caption: 'From consultation to delivery, entirely online.',
+	// Numbering is the list index at render time, so a step cannot carry a stale numeral.
+	steps: [
+		{
+			title: 'Answer quick questions.',
+			body: 'Take the online quiz, no GP or pharmacy visits required.',
+			href: ROUTES.questionnaire,
+			linkLabel: 'Start questionnaire'
+		},
+		{
+			title: 'Get prescribed treatment.',
+			body: 'Our clinicians review your medical history and find the right treatment for you.'
+		},
+		{
+			title: 'Your treatment is delivered.',
+			body: 'Your treatment arrives in discreet packaging, direct to your door.'
+		}
+	] satisfies HowItWorksStep[]
 } as const;
