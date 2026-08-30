@@ -71,8 +71,9 @@ Delivered in features 1 to 8:
 
 - Design system foundation with semantic tokens, adapted shared primitives, and
   a browser-reviewable component showcase
-- Prototype architecture with feature-first modules, typed domain models, and
-  journey state
+- Prototype architecture with feature-first modules and typed domain models.
+  Its journey state and mock services are removed by feature 9c, which the
+  pivot made redundant
 - Marketing landing page with header, product dropdown, and footer
 - Learn article (`Mounjaro vs Wegovy`) with supporting navigation
 - The questionnaire UI: shell, progress, field renderers, interludes,
@@ -166,7 +167,6 @@ src/lib/features/             product logic, one module per feature
   learn/
   questionnaire/
 src/lib/domain/               shared business concepts and their fixtures
-src/lib/journey/              stage progression up to the external handoff
 src/lib/components/ui/        shadcn primitives
 src/lib/components/brand/     global brand visual components
 src/lib/config/               questionnaire uid, SKU, question names, public values
@@ -186,6 +186,11 @@ submission, and a server-only client for the checkout call.
 
 **`src/lib/domain/`** holds what more than one feature depends on: `Money`, and
 `Treatment` with its catalogue.
+
+There is no cross-feature journey module. The funnel is one flow now, from the
+landing page into the questionnaire and out to Shopify, and the questionnaire
+owns the only state it carries. A module sequencing stages between features
+would have nothing left to sequence.
 
 ### The RxScale boundary
 

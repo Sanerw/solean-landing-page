@@ -1,6 +1,6 @@
 # Solean - Project Overview
 
-<!-- blueprint:source-hash bc283e0da550cb4544206897d8f332c6ed0fc12b554239e3692bebb79f3aa4e1 -->
+<!-- blueprint:source-hash f6cabbc69ae583920a0d7802d97e1629062a4ea89884b75f5de75b5f0852bbf3 -->
 
 > The Solean front end: a marketing site and a doctor-led GLP-1 funnel that runs
 > on RxScale's Anamnesis API and hands the order to a Shopify checkout RxScale
@@ -43,7 +43,8 @@ live funnel, features 9 to 13.
    radii, brand foundations, thirteen adapted shadcn primitives on a showcase at
    `/dev/design-system`.
 2. **Prototype architecture** (done) - feature-first layout, domain types,
-   journey state, service contracts, a scenario page.
+   journey state, service contracts, a scenario page. Feature 9c removes the
+   journey and the mock services the pivot left without callers.
 3. **Design system completion and marketing shell** (done) - 3a the nine
    reference-proven primitives and the seven-variant Button contract, 3b the
    `(marketing)` shell, header, navigation, and hero.
@@ -55,10 +56,13 @@ live funnel, features 9 to 13.
    infrastructure, one working question, all against a local mock schema.
 8. **Questionnaire content and completion** (done) - the remaining field kinds,
    medical questions, interludes, treatment preference, completion.
-9. **Live questionnaire foundation** - config module, public anamnesis client,
-   headless `survey-core`, the `steps[]` builder, the question type registry.
-   Removes the mock schema, the questionnaire mock service, the treatment
-   preference question, and the orphaned checkout and order-status mocks.
+9. **Live questionnaire foundation**, split into three:
+   **9a** (done) the config module, the public anamnesis client, honest failure
+   states and the headless engine;
+   **9b** (done) `steps[]`, the question type registry, the model-driven route,
+   and the deletion of the local schema;
+   **9c** the removal of the checkout, order-status and journey modules with the
+   domain types and dev surface that served them.
 10. **Question type coverage** - every type the live model uses, mapped to
     adapted primitives, with server-side validation surfaced inline and file or
     signature answers in exact SurveyJS shape.
@@ -156,7 +160,6 @@ the checkout and order status Solean no longer builds.
 src/routes/                   routing, load, endpoints, screen composition
 src/lib/features/             marketing, learn, questionnaire
 src/lib/domain/               Money, Treatment and the catalogue
-src/lib/journey/              browsing -> questionnaire -> handoff
 src/lib/components/ui/        shadcn primitives
 src/lib/components/brand/     global brand visuals
 src/lib/config/               questionnaire uid, SKU, question names, public values
@@ -278,7 +281,7 @@ Development surfaces, not public routes:
 | Route | What's there |
 | --- | --- |
 | `/dev/design-system` | Features 1 and 3a showcase: tokens, type, every adapted primitive and its states |
-| `/dev/scenario` | Feature 2's journey scenario page, reduced to the stages that survive |
+| `/dev/questionnaire` | The fetched model: identifier, version, step plan, every question with its type and whether it has a renderer |
 
 ### Shared UI primitives
 
@@ -331,6 +334,13 @@ Resolve each before the feature named, then re-run `/overview` if a plan changes
 6. **Live-stock preflight.** Optional in feature 13. Decide whether an
    out-of-stock SKU blocks the order or lets it through.
 7. **Deployment target.** Now blocking, see Deployment.
+8. **The `os-date-picker` value format.** RxScale's widget declares no
+   properties, so the stored shape is the renderer's choice. An ISO date string
+   validates, but confirm what their review tooling expects before feature 12
+   submits.
+9. **Whether `/v4/anamnesis` will be routed.** The submission contract, including
+   its 400 and 502 semantics, is documented for v4, while the app talks to
+   `/api/v3-1`. Feature 12 must verify the contract it actually calls.
 8. **Displayed price versus SKU price.** See Monetization.
 
 ### Reference errors are not requirements

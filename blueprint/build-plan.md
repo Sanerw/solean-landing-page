@@ -262,7 +262,7 @@ claims are not approved production content.
     and `selectedTreatmentId`, unlocking checkout. Resume lands on the first
     unanswered question, and a guard blocks direct entry to an unreachable step.
 
-- [ ] 9. **Live questionnaire foundation** - Swap the mock questionnaire data
+- [x] 9. **Live questionnaire foundation** - Swap the mock questionnaire data
   layer for the RxScale model while keeping the UI features 7 and 8 delivered. A
   config module holding the questionnaire uid and the question names other
   features read, a public anamnesis client that fetches the model on entry to the
@@ -291,11 +291,13 @@ claims are not approved production content.
     continue gated on `survey.currentPage.validate(true, true)`. An unmapped type
     fails visibly in development and is logged in production. Removes `schema.ts`,
     `MockQuestionnaireService`, and the treatment preference question.
-  - [ ] 9c. **Removing the dropped funnel** - Delete the `checkout` and
-    `order-status` feature modules and the `AddOn`, `PatientProfile`,
+  - [x] 9c. **Removing the dropped funnel** - Delete the `checkout` and
+    `order-status` feature modules, the `AddOn`, `PatientProfile`,
     `ShippingAddress`, `Order`, `PricingBreakdown` and `OrderStatus` domain types,
-    reduce the journey stages to browsing, questionnaire and handoff, and update
-    the dev scenario page and the browser tests that assert the removed surfaces.
+    and the whole `journey` module. A reduced journey would have no caller: 9b
+    took the questionnaire off it, and the anamnesis uid belongs with the survey
+    session that shares its lifetime. The dev scenario surface, built to
+    demonstrate those services, goes with them.
 
 - [ ] 10. **Question type coverage** - Every question type the live model
   actually uses, mapped to adapted primitives: single choice, multiple choice
