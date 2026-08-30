@@ -1,5 +1,10 @@
 import type { Component } from 'svelte';
 import type { Question } from 'survey-core';
+import CommentField from './fields/CommentField.svelte';
+import CheckboxField from './fields/CheckboxField.svelte';
+import DateField from './fields/DateField.svelte';
+import MultipleTextField from './fields/MultipleTextField.svelte';
+import ExpressionField from './fields/ExpressionField.svelte';
 import RadiogroupField from './fields/RadiogroupField.svelte';
 import TextField from './fields/TextField.svelte';
 
@@ -15,28 +20,41 @@ export interface QuestionFieldProps {
 	describedBy: string | undefined;
 	value: unknown;
 	onchange: (next: unknown) => void;
+	/**
+	 * The model's free-text companion for an "other" choice. SurveyJS keeps it apart from the
+	 * answer, in `question.comment`, and sends it as `<name>-Comment`.
+	 */
+	comment: string;
+	oncomment: (next: string) => void;
 }
 
 type QuestionRenderer = Component<QuestionFieldProps>;
 
+/**
+ * How the screen frames the renderer: several controls answering one question need a
+ * fieldset and legend, one control needs a label, and a display-only element needs neither
+ * because there is nothing to name.
+ */
+export type QuestionPresentation = 'control' | 'group' | 'display';
+
 interface RegistryEntry {
 	renderer: QuestionRenderer;
-	/** Several controls answering one question need a fieldset and legend, one needs a label. */
-	group: boolean;
+	presentation: QuestionPresentation;
 }
 
 const BY_TYPE: Record<string, RegistryEntry> = {
-	radiogroup: { renderer: RadiogroupField, group: true },
-	text: { renderer: TextField, group: false }
+	radiogroup: { renderer: RadiogroupField, presentation: 'group' },
+	text: { renderer: TextField, presentation: 'control' },
+	expression: { renderer: ExpressionField, presentation: 'display' },
+	'os-date-picker': { renderer: DateField, presentation: 'control' },
+	comment: { renderer: CommentField, presentation: 'control' },
+	multipletext: { renderer: MultipleTextField, presentation: 'group' },
+	checkbox: { renderer: CheckboxField, presentation: 'group' }
 };
 
 export type RendererLookup =
-	| { renderer: QuestionRenderer; group: boolean; reason: null }
-	| { renderer: null; group: false; reason: string };
-
-function hasOtherChoice(question: Question): boolean {
-	return 'hasOther' in question && question.hasOther === true;
-}
+	| { renderer: QuestionRenderer; presentation: QuestionPresentation; reason: null }
+	| { renderer: null; presentation: 'display'; reason: string };
 
 /**
  * Keyed by the question, not only its type: a type we render in general can still carry a
@@ -47,16 +65,12 @@ export function rendererFor(question: Question): RendererLookup {
 	const entry = BY_TYPE[question.getType()];
 
 	if (!entry) {
-		return { renderer: null, group: false, reason: `no renderer for type "${question.getType()}"` };
-	}
-
-	if (hasOtherChoice(question)) {
 		return {
 			renderer: null,
-			group: false,
-			reason: 'the free-text "other" choice is not implemented yet'
+			presentation: 'display',
+			reason: `no renderer for type "${question.getType()}"`
 		};
 	}
 
-	return { renderer: entry.renderer, group: entry.group, reason: null };
+	return { renderer: entry.renderer, presentation: entry.presentation, reason: null };
 }

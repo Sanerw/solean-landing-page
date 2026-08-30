@@ -327,6 +327,82 @@
           {
             "choices": [
               {
+                "text": "Wegovy",
+                "value": "wegovy"
+              },
+              {
+                "text": "Mounjaro",
+                "value": "mounjaro"
+              },
+              {
+                "text": "Saxenda",
+                "value": "saxenda"
+              },
+              {
+                "text": "Nevolat (Liraglutid)",
+                "value": "nevolat (liraglutid)"
+              },
+              {
+                "text": "Ozempic",
+                "value": "ozempic"
+              },
+              {
+                "text": "Orilstat",
+                "value": "Orlistat"
+              },
+              {
+                "text": "Rybelsus",
+                "value": "rybelsus"
+              },
+              {
+                "text": "Victoza",
+                "value": "victoza"
+              },
+              {
+                "text": "Xenical",
+                "value": "xenical"
+              },
+              {
+                "text": "Byetta",
+                "value": "byetta"
+              },
+              {
+                "text": "Bydureon",
+                "value": "bydureon"
+              },
+              {
+                "text": "Trulicity",
+                "value": "trulicity"
+              },
+              {
+                "text": "Tanzeum",
+                "value": "tanzeum"
+              }
+            ],
+            "isRequired": true,
+            "name": "WeightlossMedication",
+            "otherErrorText": "Bitte gib Dein Medikament an.",
+            "otherPlaceholder": "Name  / Dosierung  (ie: 25mg) / Häufigkeit der Einnahme (z.B.: 1 Tablette pro Tag) / Dauer der Einnahme (z.B. 4 Wochen)",
+            "otherText": "Andere",
+            "requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+            "showOtherItem": true,
+            "title": "Bitte wähle die entsprechenden Medikamente:",
+            "type": "radiogroup",
+            "validators": [
+              {
+                "type": "expression"
+              }
+            ]
+          }
+        ],
+        "name": "page18",
+        "title": "WeightlossMedication"
+      },
+      {
+        "elements": [
+          {
+            "choices": [
+              {
                 "text": "Ja",
                 "value": "Yes"
               },

@@ -71,8 +71,9 @@
 
 		<h2 class="mt-10 font-display text-2xl font-medium">Renderers</h2>
 		<p class="mt-2 text-muted-foreground">
-			{mappedCount} of {rendererReasons.size} questions have a renderer. The rest show a visible
-			placeholder and block the step rather than being skipped. Feature 10 closes the gap.
+			{mappedCount} of {rendererReasons.size} questions have a renderer. A question without one
+			shows a visible placeholder and blocks its step rather than being skipped, which is what
+			a model gaining a type this build has never met would look like.
 		</p>
 
 		<h2 class="mt-10 font-display text-2xl font-medium">Question types</h2>

@@ -22,11 +22,6 @@
 
 	let { page, onvalid }: Props = $props();
 
-	// survey-core is not reactive to Svelte, so every read of engine state is tied to the
-	// session revision, which the survey bumps on each answer, and to a local bump after
-	// validation so freshly attached error messages are picked up.
-	let validationRevision = $state(0);
-
 	/**
 	 * Nothing here works without JavaScript: validation, branching and navigation all live in
 	 * the engine. Before hydration a click would submit the form natively, reloading the step
@@ -72,8 +67,30 @@
 		return `q-${question.name}`;
 	}
 
+	/**
+	 * Every read of engine state goes through the session revision, because survey-core is not
+	 * reactive to Svelte. Without it a renderer draws the answer it was born with: the engine
+	 * receives the change, so the step still advances, but nothing on screen moves, and an
+	 * answer the engine set itself, as an exclusive option does when it clears the others,
+	 * never appears at all.
+	 */
+	function valueOf(question: Question): unknown {
+		questionnaireSession.revision;
+		const value = question.value;
+
+		// A multiple-choice answer comes back as the very array the engine keeps and edits in
+		// place, so an exclusive option clearing the others changes nothing Svelte can compare.
+		// The copy is read-only here; the engine's own array is never handed to a renderer.
+		return Array.isArray(value) ? [...value] : value;
+	}
+
+	function commentOf(question: Question): string {
+		questionnaireSession.revision;
+		return question.comment ?? '';
+	}
+
 	function errorFor(question: Question): string | null {
-		validationRevision;
+		questionnaireSession.revision;
 		return question.errors.length > 0 ? question.errors[0].getText() : null;
 	}
 
@@ -84,12 +101,11 @@
 	function submit(event: SubmitEvent): void {
 		event.preventDefault();
 
-		if (page.validate(true, true)) {
-			onvalid();
-			return;
-		}
+		const valid = page.validate(true, true);
+		// Either way the engine now holds different error state than a moment ago.
+		questionnaireSession.touch();
 
-		validationRevision += 1;
+		if (valid) onvalid();
 	}
 </script>
 
@@ -107,26 +123,42 @@
 		{@const lookup = rendererFor(question)}
 		{@const id = controlId(question)}
 		{@const error = errorFor(question)}
+		{@const answer = valueOf(question)}
+		{@const comment = commentOf(question)}
 		{@const describedBy = error ? `${id}-error` : undefined}
 
 		<div class="mb-8">
 			{#if lookup.renderer === null}
 				<UnsupportedQuestion {question} reason={lookup.reason} blocking={collectsAnswer(question)} />
-			{:else if lookup.group}
+			{:else if lookup.presentation === 'display'}
+				<!-- Nothing to label: the element states something rather than asking it. -->
+				<lookup.renderer
+					{question}
+					controlId={id}
+					invalid={false}
+					describedBy={undefined}
+					value={answer}
+					onchange={() => {}}
+					comment=""
+					oncomment={() => {}}
+				/>
+			{:else if lookup.presentation === 'group'}
 				<FieldSet>
 					<FieldLegend class={question === headingQuestion ? 'sr-only' : undefined}>
 						{question.title}
 					</FieldLegend>
 					{#if question.description}
-						<FieldDescription>{question.description}</FieldDescription>
+						<FieldDescription class="whitespace-pre-line">{question.description}</FieldDescription>
 					{/if}
 					<lookup.renderer
 						{question}
 						controlId={id}
 						invalid={error !== null}
 						{describedBy}
-						value={question.value}
+						value={answer}
 						onchange={(next) => (question.value = next)}
+						{comment}
+						oncomment={(next) => (question.comment = next)}
 					/>
 					{#if error}
 						<FieldError id="{id}-error">{error}</FieldError>
@@ -138,15 +170,17 @@
 						{question.title}
 					</FieldLabel>
 					{#if question.description}
-						<FieldDescription>{question.description}</FieldDescription>
+						<FieldDescription class="whitespace-pre-line">{question.description}</FieldDescription>
 					{/if}
 					<lookup.renderer
 						{question}
 						controlId={id}
 						invalid={error !== null}
 						{describedBy}
-						value={question.value}
+						value={answer}
 						onchange={(next) => (question.value = next)}
+						{comment}
+						oncomment={(next) => (question.comment = next)}
 					/>
 					{#if error}
 						<FieldError id="{id}-error">{error}</FieldError>

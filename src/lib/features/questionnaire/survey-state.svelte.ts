@@ -15,8 +15,16 @@ class QuestionnaireSession {
 	#key = '';
 	#survey: Model | null = null;
 
-	/** Bumped on every answer, because survey-core is not reactive to Svelte. */
+	/**
+	 * Bumped whenever engine state the screens read has changed, because survey-core is not
+	 * reactive to Svelte. Answers bump it themselves; validation bumps it through `touch`,
+	 * since attaching error messages changes what a renderer has to show.
+	 */
 	revision = $state(0);
+
+	touch(): void {
+		this.revision += 1;
+	}
 
 	surveyFor(document: QuestionnaireDocument): Model {
 		const key = `${document.identifier}@${document.version}`;

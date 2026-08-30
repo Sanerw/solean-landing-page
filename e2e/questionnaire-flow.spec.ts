@@ -60,14 +60,6 @@ test('the other branch skips the question it does not apply to', async ({ page }
 	await expect(page).toHaveURL('/questionnaire/page2');
 });
 
-test('a question with no renderer blocks its step rather than being skipped', async ({ page }) => {
-	await page.goto('/questionnaire/page26');
-
-	await expect(page.getByText('This question cannot be shown yet')).toBeVisible();
-	await expect(page.getByText('os-date-picker')).toBeVisible();
-	await expect(page.getByRole('button', { name: 'Continue' })).toBeDisabled();
-});
-
 test('an interlude does not count as a question', async ({ page }) => {
 	await page.goto('/questionnaire/page2');
 	const before = await questionCount(page);

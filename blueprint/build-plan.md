@@ -299,7 +299,7 @@ claims are not approved production content.
     session that shares its lifetime. The dev scenario surface, built to
     demonstrate those services, goes with them.
 
-- [ ] 10. **Question type coverage** - Every question type the live model
+- [x] 10. **Question type coverage** - Every question type the live model
   actually uses, mapped to adapted primitives: single choice, multiple choice
   with the model's own exclusive-option behavior, dropdown, free text, and
   numeric with units, plus file and signature capture if the model contains them.

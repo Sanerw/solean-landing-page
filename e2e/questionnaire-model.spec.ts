@@ -10,15 +10,12 @@ test('the dev surface reports what the fetched model contains', async ({ page })
 
 	// One row per element in the document, not per question the engine parsed.
 	await expect(page.getByRole('row')).toHaveCount(FIXTURE_ELEMENTS + 1);
-	await expect(page.getByText('radiogroup × 3')).toBeVisible();
+	await expect(page.getByText('radiogroup × 4')).toBeVisible();
 
 	// RxScale's own widget type is registered, so the engine keeps it and its page instead of
-	// dropping both while parsing. It has no renderer yet, which the surface states separately.
+	// dropping both while parsing.
 	await expect(page.getByText(/survey-core dropped/)).toHaveCount(0);
 	await expect(page.getByRole('cell', { name: 'os-date-picker', exact: true })).toBeVisible();
-	await expect(
-		page.getByRole('cell', { name: 'no renderer for type "os-date-picker"' })
-	).toBeVisible();
 	await expect(page.getByText(/of \d+ questions have a renderer/)).toBeVisible();
 });
 
