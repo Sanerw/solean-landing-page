@@ -8,22 +8,9 @@
 	import { formatMoney } from '$lib/domain';
 	import { checkoutService } from '$lib/features/checkout/checkout-service';
 	import { orderService } from '$lib/features/order-status/order-service';
-	import { questionnaireService } from '$lib/features/questionnaire/questionnaire-service';
-	import {
-		getNextQuestionnaireStep,
-		getPreviousQuestionnaireStep,
-		getQuestionnaireProgress,
-		getQuestionnaireStep,
-		getQuestionnaireStepAccess,
-		QUESTIONNAIRE_SCHEMA,
-		QUESTIONNAIRE_START_STEP_ID,
-		validateQuestionnaireStep
-	} from '$lib/features/questionnaire/schema';
 	import { journey } from '$lib/journey/journey.svelte';
 	import { STAGES, canEnter } from '$lib/journey/stages';
 
-	const answers = $derived(questionnaireService.getAnswers());
-	const answerCount = $derived(Object.keys(answers.byQuestionId).length);
 	const selection = $derived(checkoutService.getSelection());
 	const orderId = $derived(journey.session.orderId);
 	const orderStatus = $derived(orderId === null ? null : orderService.getStatus(orderId));
@@ -35,42 +22,6 @@
 	const treatments = checkoutService.listTreatments();
 	const addOns = checkoutService.listAddOns();
 
-	const questionnaireStartStep = getQuestionnaireStep(
-		QUESTIONNAIRE_SCHEMA,
-		QUESTIONNAIRE_START_STEP_ID
-	);
-	if (!questionnaireStartStep || questionnaireStartStep.kind !== 'question') {
-		throw new Error('The questionnaire start step must be an answer-producing question.');
-	}
-	const questionnaireStartField = questionnaireStartStep.fields[0];
-	if (!questionnaireStartField || questionnaireStartField.kind !== 'single-select') {
-		throw new Error('The questionnaire start step must open with a single-select field.');
-	}
-	const questionnaireStartOption = questionnaireStartField.options[0];
-	if (!questionnaireStartOption) {
-		throw new Error('The questionnaire start field must have an option.');
-	}
-	const questionnaireProgress = getQuestionnaireProgress(
-		QUESTIONNAIRE_SCHEMA,
-		QUESTIONNAIRE_START_STEP_ID
-	);
-	const missingAnswerResult = validateQuestionnaireStep(questionnaireStartStep, undefined);
-	const validAnswerResult = validateQuestionnaireStep(questionnaireStartStep, {
-		[questionnaireStartField.id]: {
-			kind: 'single-select',
-			optionId: questionnaireStartOption.id
-		}
-	});
-	const missingFieldMessage = (() => {
-		const result = missingAnswerResult.byControlId[questionnaireStartField.id];
-		return result && !result.valid ? result.message : null;
-	})();
-	const unknownQuestionnaireStep = getQuestionnaireStep(QUESTIONNAIRE_SCHEMA, 'not-a-step');
-	const questionnaireStepAccess = getQuestionnaireStepAccess(
-		QUESTIONNAIRE_SCHEMA,
-		QUESTIONNAIRE_START_STEP_ID,
-		{ byQuestionId: {}, firstUnansweredIndex: 0 }
-	);
 </script>
 
 <svelte:head>
@@ -119,42 +70,6 @@
 				The furthest stage the session justifies. An empty session reads browsing.
 			</p>
 		</div>
-	</ShowcaseSection>
-
-	<ShowcaseSection
-		id="questionnaire-schema"
-		title="Questionnaire schema"
-		description="Runtime evidence for the foundation contract before its public route exists. Every value is resolved from the schema rather than restated by this surface."
-	>
-		<dl class="max-w-3xl">
-			{@render field('Start step id', questionnaireStartStep.id)}
-			{@render field('First field id', questionnaireStartField.id)}
-			{@render field(
-				'Progress',
-				questionnaireProgress
-					? `${questionnaireProgress.current} of ${questionnaireProgress.total}`
-					: 'missing'
-			)}
-			{@render field(
-				'Previous implemented step',
-				getPreviousQuestionnaireStep(QUESTIONNAIRE_SCHEMA, questionnaireStartStep.id)?.id ?? 'none'
-			)}
-			{@render field(
-				'Next implemented step',
-				getNextQuestionnaireStep(QUESTIONNAIRE_SCHEMA, questionnaireStartStep.id)?.id ?? 'none'
-			)}
-			{@render field('Unknown step lookup', unknownQuestionnaireStep === null ? 'null' : 'unexpected')}
-			{@render field(
-				'Missing answer',
-				missingFieldMessage === null ? 'unexpectedly valid' : `invalid: ${missingFieldMessage}`
-			)}
-			{@render field('Listed option answer', validAnswerResult.valid ? 'valid' : 'unexpectedly invalid')}
-			{@render field(
-				'Start step access',
-				questionnaireStepAccess.allowed ? 'allowed' : 'unexpectedly denied'
-			)}
-			{@render field('Resume step id', questionnaireService.getResumeStepId() ?? 'none')}
-		</dl>
 	</ShowcaseSection>
 
 	<ShowcaseSection
@@ -216,39 +131,6 @@
 			</fieldset>
 
 			<fieldset>
-				<legend class="font-display text-xl font-semibold">Questionnaire</legend>
-				<p class="mt-2 text-sm text-muted-foreground">
-					QuestionnaireService.saveAnswer and clear. The recorded answer is the real schema
-					fixture, resolved through the service. Completion is not settable: it is recomputed
-					from the answers on every write, so this surface can only report it.
-				</p>
-				<div class="mt-6">
-					{@render field(
-						'Complete',
-						journey.session.questionnaire.completed ? 'yes' : 'no'
-					)}
-				</div>
-				<div class="mt-4 flex flex-wrap gap-3">
-					<Button
-						variant="outline"
-						size="sm"
-						onclick={() =>
-							questionnaireService.saveAnswer(questionnaireStartStep.id, {
-								[questionnaireStartField.id]: {
-									kind: 'single-select',
-									optionId: questionnaireStartOption.id
-								}
-							})}
-					>
-						Answer question 1
-					</Button>
-					<Button variant="outline" size="sm" onclick={() => questionnaireService.clear()}>
-						Clear answers
-					</Button>
-				</div>
-			</fieldset>
-
-			<fieldset>
 				<legend class="font-display text-xl font-semibold">Session</legend>
 				<p class="mt-2 text-sm text-muted-foreground">
 					Reset clears both the in-memory session and the storage key.
@@ -270,8 +152,6 @@
 		<dl class="max-w-3xl">
 			{@render field('Version', String(journey.session.version))}
 			{@render field('Questionnaire completed', journey.session.questionnaire.completed ? 'yes' : 'no')}
-			{@render field('Answers recorded', String(answerCount))}
-			{@render field('First unanswered index', String(answers.firstUnansweredIndex))}
 			{@render field('Selected treatment id', journey.session.selectedTreatmentId ?? 'none')}
 			{@render field(
 				'Selected add-on ids',

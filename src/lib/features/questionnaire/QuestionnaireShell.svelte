@@ -8,7 +8,7 @@
 	import FlaskConicalIcon from '@lucide/svelte/icons/flask-conical';
 	import XIcon from '@lucide/svelte/icons/x';
 	import { QUESTIONNAIRE_HOME_HREF } from './routes';
-	import type { QuestionnaireProgress } from './types';
+	import type { QuestionnaireProgress } from './steps';
 
 	interface Props {
 		/** Absent on the resume and unknown-step screens, which have no place in the count. */

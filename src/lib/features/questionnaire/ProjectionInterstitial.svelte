@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
 	import ProjectionChart from '$lib/components/brand/ProjectionChart.svelte';
 	import {
 		buildWeightProjection,
@@ -11,26 +10,20 @@
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 	import SparklesIcon from '@lucide/svelte/icons/sparkles';
 	import { PROJECTION_INTERSTITIAL as COPY } from './interstitial-content';
-	import { questionnaireService } from './questionnaire-service';
-	import { QUESTIONNAIRE_START_STEP_ID } from './schema';
-	import { questionnaireStepHref } from './routes';
 
 	interface Props {
+		/** `undefined` while the browser has not resolved it; `null` when there is none. */
+		weightKg: number | null | undefined;
+		/** Where to send someone whose weight is missing, so this screen states no route. */
+		weightStepHref: string;
 		oncontinue: () => void;
 	}
 
-	let { oncontinue }: Props = $props();
+	let { weightKg, weightStepHref, oncontinue }: Props = $props();
 
 	const DEFAULT_HORIZON = 6;
 
-	// The weight is browser state the server cannot see, so it resolves after mount.
-	// `undefined` is "not looked yet"; `null` is "looked, and there is none".
-	let weightKg = $state<number | null | undefined>(undefined);
 	let horizon = $state(String(DEFAULT_HORIZON));
-
-	onMount(() => {
-		weightKg = questionnaireService.getPatientWeightKg();
-	});
 
 	const projection = $derived(weightKg ? buildWeightProjection(weightKg) : null);
 	const horizonMonth = $derived(Number(horizon));
@@ -60,7 +53,7 @@
 		{COPY.missingWeight.body}
 	</p>
 	<div class="mt-8 flex justify-center">
-		<Button href={questionnaireStepHref(QUESTIONNAIRE_START_STEP_ID)} variant="outline">
+		<Button href={weightStepHref} variant="outline">
 			{COPY.missingWeight.action}
 		</Button>
 	</div>

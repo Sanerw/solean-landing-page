@@ -9,11 +9,12 @@ const DEFAULT_API_BASE_URL = 'https://api.rxscale.com';
 
 /**
  * The documented `/v4/anamnesis` prefix is not routed on api.rxscale.com; requests to it
- * fall through to object storage. Solean's own storefront snippet calls `/api/v2/anamnesis`
- * against this questionnaire, and `/api/v3-1/anamnesis` returns the identical document, so
- * the working prefix is the default and the switch to v4 is an env change.
+ * fall through to object storage. Of the prefixes that do answer, `/api/v3-1/anamnesis` is
+ * the one RxScale's current snippet (v2.7) calls, while solean.com still runs the older
+ * v1.0 snippet against `/api/v2/anamnesis`. All three return the identical document, so the
+ * default follows their newest shipping client and moving to v4 is an env change.
  */
-const DEFAULT_ANAMNESIS_BASE_PATH = '/api/v2/anamnesis';
+const DEFAULT_ANAMNESIS_BASE_PATH = '/api/v3-1/anamnesis';
 
 /** An env var set to an empty string is not configuration, so it reads as absent. */
 function configured(value: string | undefined): string | null {

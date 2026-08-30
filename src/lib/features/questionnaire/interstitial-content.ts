@@ -54,20 +54,3 @@ export const MOTIVATION_INTERSTITIAL = {
 	footnote:
 		'Individual results vary. Sources: Wilding et al., NEJM 2021; Jastreboff et al., NEJM 2022.'
 } as const;
-
-export const COMPLETION_INTERSTITIAL = {
-	// The reference writes this with an em dash, which the writing rule excludes.
-	headline: 'Congratulations, you did it!',
-	body: [
-		'Your health profile is complete and a licensed doctor will review your answers.',
-		'Your treatment plan is ready to order.'
-	],
-	// Deliberately not the reference's "Eligibility checked", which reads as a verdict. The
-	// questionnaire judges nothing; a clinician decides after this.
-	pills: ['Health profile complete', 'Answers with a clinician', 'Plan ready to order'],
-	action: 'Place your order',
-	pendingAction: 'Ordering arrives with checkout',
-	pendingNote:
-		'Checkout is built in a later prototype feature. Your answers and treatment preference are saved and will carry through to it.',
-	footnote: 'Free delivery · Ongoing medical support · Pause or cancel anytime'
-} as const;

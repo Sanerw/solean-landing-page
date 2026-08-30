@@ -13,6 +13,13 @@
 
 	let { oncontinue }: Props = $props();
 
+	// Continuing is a client-side navigation, so before hydration this button would do nothing
+	// at all. Disabled until it works, like every other action in the questionnaire.
+	let hydrated = $state(false);
+	$effect(() => {
+		hydrated = true;
+	});
+
 	// The one testimonial with a portrait, which is the card the reference builds here.
 	const story = TESTIMONIALS.find((testimonial) => testimonial.photo) ?? TESTIMONIALS[0];
 </script>
@@ -73,7 +80,13 @@
 
 <p class="mt-6 text-center text-xs text-text-tertiary">{COPY.footnote}</p>
 
-<Button type="button" size="lg" class="relative mt-10 w-full" onclick={oncontinue}>
+<Button
+	type="button"
+	size="lg"
+	class="relative mt-10 w-full"
+	disabled={!hydrated}
+	onclick={oncontinue}
+>
 	Continue
 	<ArrowRightIcon aria-hidden="true" class="absolute right-8" />
 </Button>

@@ -2,36 +2,37 @@
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import QuestionnaireShell from '$lib/features/questionnaire/QuestionnaireShell.svelte';
-	import { questionnaireService } from '$lib/features/questionnaire/questionnaire-service';
+	import { questionnaireSession } from '$lib/features/questionnaire/survey-state.svelte';
+	import { COMPLETION_STEP_ID, buildStepPlan } from '$lib/features/questionnaire/steps';
 	import {
 		QUESTIONNAIRE_HOME_HREF,
 		questionnaireStepHref
 	} from '$lib/features/questionnaire/routes';
+	import type { PageProps } from './$types';
 
-	// The server cannot read sessionStorage, so it must not guess a destination. This entry
-	// renders an honest resuming state and hands off once the browser knows where to go.
-	// The handoff replaces history: leaving it behind would make Back loop through here.
+	let { data }: PageProps = $props();
+
+	// The first step comes from the model, which only the browser has resolved into a plan,
+	// so the server renders an honest waiting state and the browser does the handoff. It
+	// replaces history: leaving this entry behind would make Back loop through it.
 	onMount(() => {
-		const stepId = questionnaireService.getResumeStepId();
-		goto(stepId ? questionnaireStepHref(stepId) : QUESTIONNAIRE_HOME_HREF, { replaceState: true });
+		if (!data.questionnaire.ok) return;
+
+		const plan = buildStepPlan(questionnaireSession.surveyFor(data.questionnaire.document));
+		const first = plan.steps.at(0);
+
+		goto(questionnaireStepHref(first ? first.id : COMPLETION_STEP_ID), { replaceState: true });
 	});
 </script>
 
 <svelte:head>
 	<title>Questionnaire | Solean</title>
-	<meta name="description" content="Start or resume the Solean eligibility questionnaire." />
+	<meta name="description" content="Start the Solean medical questionnaire." />
 </svelte:head>
 
 <QuestionnaireShell backHref={QUESTIONNAIRE_HOME_HREF} showPrototypeNotice={false}>
-	<h1 class="font-display text-4xl font-medium sm:text-5xl">Resuming your questionnaire</h1>
+	<h1 class="font-display text-4xl font-medium sm:text-5xl">Opening your questionnaire</h1>
 	<p role="status" class="mt-3 text-base text-muted-foreground md:text-lg">
-		Taking you to your next question.
-	</p>
-	<p class="mt-6 text-sm text-text-faint">
-		If nothing happens, <a
-			href={questionnaireStepHref('about-you')}
-			class="underline underline-offset-4 outline-none hover:text-highlight-foreground focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
-			>open the first question</a
-		>.
+		Taking you to the first question.
 	</p>
 </QuestionnaireShell>

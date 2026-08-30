@@ -1,5 +1,28 @@
-import { Model } from 'survey-core';
+import { ElementFactory, Model, Question, Serializer } from 'survey-core';
 import type { SurveyModelJson } from './anamnesis-client';
+
+/**
+ * RxScale's questionnaires use their own `os-date-picker` widget, which stock survey-core
+ * does not know. An unregistered type is not merely unrendered: the engine drops the
+ * element while parsing, and when it is the only live element on its page the page leaves
+ * the flow silently. In the live model that page is the date of birth.
+ *
+ * Registered exactly as RxScale's own storefront snippet does, as a plain question with no
+ * extra properties, so the engine keeps the element and its `isRequired` rule. What draws
+ * it is our own renderer.
+ */
+const OS_DATE_PICKER = 'os-date-picker';
+
+class OsDatePickerQuestion extends Question {
+	getType(): string {
+		return OS_DATE_PICKER;
+	}
+}
+
+if (!Serializer.findClass(OS_DATE_PICKER)) {
+	ElementFactory.Instance.registerElement(OS_DATE_PICKER, (name) => new OsDatePickerQuestion(name));
+	Serializer.addClass(OS_DATE_PICKER, [], () => new OsDatePickerQuestion('OS Date Picker'), 'question');
+}
 
 export interface ModelQuestion {
 	pageName: string;

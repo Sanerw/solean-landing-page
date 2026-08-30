@@ -6,16 +6,20 @@ test('the dev surface reports what the fetched model contains', async ({ page })
 
 	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Questionnaire model');
 	await expect(page.getByText(FIXTURE_IDENTIFIER)).toBeVisible();
-	await expect(page.getByText(String(FIXTURE_PAGES), { exact: true })).toBeVisible();
-	await expect(page.getByText(String(FIXTURE_ELEMENTS), { exact: true })).toBeVisible();
+	await expect(page.getByText(new RegExp(`steps from ${FIXTURE_PAGES} pages`))).toBeVisible();
 
 	// One row per element in the document, not per question the engine parsed.
 	await expect(page.getByRole('row')).toHaveCount(FIXTURE_ELEMENTS + 1);
 	await expect(page.getByText('radiogroup × 3')).toBeVisible();
 
-	// The engine silently discards a type it does not know, so the surface has to say so.
-	await expect(page.getByText('survey-core dropped 1 element')).toBeVisible();
-	await expect(page.getByRole('cell', { name: 'os-date-picker' })).toBeVisible();
+	// RxScale's own widget type is registered, so the engine keeps it and its page instead of
+	// dropping both while parsing. It has no renderer yet, which the surface states separately.
+	await expect(page.getByText(/survey-core dropped/)).toHaveCount(0);
+	await expect(page.getByRole('cell', { name: 'os-date-picker', exact: true })).toBeVisible();
+	await expect(
+		page.getByRole('cell', { name: 'no renderer for type "os-date-picker"' })
+	).toBeVisible();
+	await expect(page.getByText(/of \d+ questions have a renderer/)).toBeVisible();
 });
 
 test('the model is fetched once per entry to the flow', async ({ page }) => {
@@ -26,14 +30,13 @@ test('the model is fetched once per entry to the flow', async ({ page }) => {
 
 	await page.goto('/');
 	await page.locator('a[href="/questionnaire"]').first().click();
-	await expect(page).toHaveURL('/questionnaire/about-you');
+
+	// The entry resolves the first step from the model, so the id comes from the document.
+	await expect(page).toHaveURL('/questionnaire/page30');
 
 	// A second step, so the assertion is about the layout load and not about a single page.
-	await page.getByRole('radio', { name: 'Male', exact: true }).click();
-	await page.getByLabel('Height').fill('178');
-	await page.getByLabel('Weight').fill('96');
 	await page.getByRole('button', { name: 'Continue' }).click();
-	await expect(page).toHaveURL('/questionnaire/your-details');
+	await expect(page).toHaveURL('/questionnaire/page27');
 
 	expect(modelRequests).toHaveLength(1);
 });

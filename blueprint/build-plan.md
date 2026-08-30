@@ -284,7 +284,7 @@ claims are not approved production content.
     `survey-core` instantiated headlessly with `showNavigationButtons` off, and a
     dev inspection surface listing identifier, version, pages, and every question
     with its type and required flag. Question rendering is untouched.
-  - [ ] 9b. **`steps[]` and the question type registry** - The builder that
+  - [x] 9b. **`steps[]` and the question type registry** - The builder that
     interleaves the model's survey pages with Solean's interludes and owns
     position and progress, the registry mapping a model question type onto the
     existing field renderers, and `/questionnaire/[step]` driven by the model with
@@ -310,8 +310,10 @@ claims are not approved production content.
 
 - [ ] 11. **Interludes, progress and flow integrity** - The projection interlude
   computed locally from `survey.data` through the configured height and weight
-  question names, with no extra API call, and the motivation interlude, both
-  positioned by `steps[]` in one place. Progress counts survey steps only.
+  question names, with no extra API call, positioned by `steps[]` alongside the
+  motivation interlude 9b already places. It waits for feature 10 because the
+  height and weight question is a `multipletext`. The final progress rule, since
+  9b's denominator moves as branching opens pages.
   Refresh, back, forward and deep links land where the answers justify;
   in-session persistence is keyed by questionnaire identifier and version so a
   model change discards stale answers instead of resuming against them. The

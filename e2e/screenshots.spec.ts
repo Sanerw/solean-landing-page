@@ -1,58 +1,27 @@
-import { test } from '@playwright/test';
+import { expect, test } from '@playwright/test';
 
 /**
- * Not an assertion suite: it walks the funnel and captures each screen so the artboards can
- * be compared by eye. The guard makes these steps unreachable by URL, which is why they
- * cannot simply be visited.
+ * Not an assertion suite: it captures the screens the model currently produces so they can be
+ * compared with the artboards by eye. It stops where feature 10 picks up, at the first
+ * question type that has no renderer.
  */
-test('capture every questionnaire screen', async ({ page }) => {
+test('capture the questionnaire screens', async ({ page }) => {
 	const shot = (name: string) => page.screenshot({ path: `screens/${name}.png`, fullPage: true });
 
-	await page.goto('/questionnaire/about-you');
-	await page.getByRole('radio', { name: 'Male', exact: true }).click();
-	await page.getByLabel('Height').fill('178');
-	await page.getByLabel('Weight').fill('96');
-	await shot('01-about-you');
-	await page.getByRole('button', { name: 'Continue' }).click();
+	await page.goto('/questionnaire/page30');
+	await shot('01-first-question');
 
-	await page.getByLabel('First name').fill('Jonas');
-	await page.getByLabel('Last name').fill('Weber');
-	await page.getByLabel('E-mail address').fill('jonas@example.com');
-	await shot('02-your-details');
-	await page.getByRole('button', { name: 'Continue' }).click();
+	await page.goto('/questionnaire/page3');
+	await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled();
+	await page.getByRole('radio', { name: 'Weiblich' }).click();
+	await shot('02-single-choice');
 
-	await page.getByRole('checkbox', { name: 'None of these' }).click();
-	await shot('03-pregnancy');
-	await page.getByRole('button', { name: 'Continue' }).click();
+	await page.goto('/questionnaire/page26');
+	await shot('03-unrenderable-question');
 
-	await shot('04-projection');
-	await page.getByRole('button', { name: 'Continue' }).click();
+	await page.goto('/questionnaire/motivation');
+	await shot('04-motivation');
 
-	await page.getByRole('checkbox', { name: 'None of the above' }).click();
-	await shot('05-medical-conditions');
-	await page.getByRole('button', { name: 'Continue' }).click();
-
-	await page.getByRole('checkbox', { name: 'None of the above' }).click();
-	await page.getByRole('radio', { name: 'No', exact: true }).click();
-	await shot('06-health-history');
-	await page.getByRole('button', { name: 'Continue' }).click();
-
-	await shot('07-motivation');
-	await page.getByRole('button', { name: 'Continue' }).click();
-
-	await page.getByRole('radio', { name: 'No', exact: true }).click();
-	await page.getByRole('checkbox', { name: 'None of the above' }).click();
-	await shot('08-eating-disorders');
-	await page.getByRole('button', { name: 'Continue' }).click();
-
-	await page.getByRole('checkbox', { name: 'None of the above' }).click();
-	await page.getByRole('radio', { name: 'No', exact: true }).click();
-	await shot('09-allergies-medications');
-	await page.getByRole('button', { name: 'Continue' }).click();
-
-	await page.getByRole('radio', { name: 'Mounjaro', exact: true }).click();
-	await shot('10-treatment-preference');
-	await page.getByRole('button', { name: 'Continue with Mounjaro' }).click();
-
-	await shot('11-complete');
+	await page.goto('/questionnaire/complete');
+	await shot('05-complete');
 });

@@ -1,24 +1,30 @@
 import { error } from '@sveltejs/kit';
-import {
-	QUESTIONNAIRE_SCHEMA,
-	getQuestionnaireProgress,
-	getQuestionnaireStep,
-	getPreviousQuestionnaireStep
-} from '$lib/features/questionnaire/schema';
+import { COMPLETION_STEP_ID, INTERLUDES, stepIdForPage } from '$lib/features/questionnaire/steps';
 import type { PageLoad } from './$types';
 
-// Schema lookup only. Answer state is browser-owned, so nothing here reads the journey and
-// the route stays server-renderable, which is what lets an unknown id be a real HTTP 404.
-export const load: PageLoad = ({ params }) => {
-	const step = getQuestionnaireStep(QUESTIONNAIRE_SCHEMA, params.step);
+/**
+ * The server knows the model but not the answers, so all it can decide is whether the
+ * document has a page with this id. Which steps are currently reachable depends on
+ * `survey.data`, which exists only in the browser, so the component owns position.
+ */
+export const load: PageLoad = async ({ params, parent }) => {
+	const { questionnaire } = await parent();
 
-	if (step === null) {
+	// The layout renders the failure state instead of this page, so there is nothing to check.
+	if (!questionnaire.ok) return { stepId: params.step };
+
+	const isKnownPage = questionnaire.document.model.pages.some((page) => {
+		if (typeof page !== 'object' || page === null) return false;
+		const name = (page as { name?: unknown }).name;
+
+		return typeof name === 'string' && stepIdForPage(name) === params.step;
+	});
+
+	const isInterlude = INTERLUDES.some((placement) => placement.variant === params.step);
+
+	if (!isKnownPage && !isInterlude && params.step !== COMPLETION_STEP_ID) {
 		error(404, 'That questionnaire step does not exist.');
 	}
 
-	return {
-		step,
-		progress: getQuestionnaireProgress(QUESTIONNAIRE_SCHEMA, step.id),
-		previousStep: getPreviousQuestionnaireStep(QUESTIONNAIRE_SCHEMA, step.id)
-	};
+	return { stepId: params.step };
 };
