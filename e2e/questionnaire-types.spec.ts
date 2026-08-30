@@ -174,5 +174,5 @@ test('the questionnaire can be answered from the first page to the last', async 
 	await page.getByRole('button', { name: 'Continue' }).click();
 
 	await expect(page).toHaveURL('/questionnaire/complete');
-	await expect(page.getByRole('heading', { level: 1 })).toHaveText('That is every question');
+	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Congratulations, you did it!');
 });

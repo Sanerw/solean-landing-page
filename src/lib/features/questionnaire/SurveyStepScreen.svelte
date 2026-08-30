@@ -8,19 +8,31 @@
 		FieldLegend,
 		FieldSet
 	} from '$lib/components/ui/field';
+	import * as Alert from '$lib/components/ui/alert';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
+	import TriangleAlertIcon from '@lucide/svelte/icons/triangle-alert';
 	import type { PageModel, Question } from 'survey-core';
+	import type { AnamnesisSubmission } from './anamnesis-client';
 	import { rendererFor } from './question-registry';
 	import { questionnaireSession } from './survey-state.svelte';
 	import UnsupportedQuestion from './fields/UnsupportedQuestion.svelte';
 
+	/**
+	 * The failure the submission itself reported, passed through rather than remapped: the
+	 * screen shows what the client was told, and a new reason cannot go unhandled.
+	 */
+	type SubmissionFailure = Extract<AnamnesisSubmission, { ok: false }>;
+
 	interface Props {
 		page: PageModel;
-		/** Called once the page validates against the model. */
-		onvalid: () => void;
+		/** Called once the page validates against the model. May submit, so may be async. */
+		onvalid: () => void | Promise<void>;
+		/** True while a submission is in flight: the action waits and nothing navigates. */
+		submitting?: boolean;
+		submission?: SubmissionFailure | null;
 	}
 
-	let { page, onvalid }: Props = $props();
+	let { page, onvalid, submitting = false, submission = null }: Props = $props();
 
 	/**
 	 * Nothing here works without JavaScript: validation, branching and navigation all live in
@@ -100,12 +112,14 @@
 	 */
 	function submit(event: SubmitEvent): void {
 		event.preventDefault();
+		if (submitting) return;
 
 		const valid = page.validate(true, true);
 		// Either way the engine now holds different error state than a moment ago.
 		questionnaireSession.touch();
 
-		if (valid) onvalid();
+		// The caller owns what happens next, including whether it takes a round trip.
+		if (valid) void onvalid();
 	}
 </script>
 
@@ -190,12 +204,56 @@
 		</div>
 	{/each}
 
+	{#if submission}
+		<!--
+			The submission failed as a whole, so this sits with the step rather than with a
+			question. `assertive`, unlike a question's error: the person pressed a button and
+			nothing visible moved.
+		-->
+		<Alert.Root variant="destructive" class="mb-8" role="alert" aria-live="assertive">
+			<TriangleAlertIcon aria-hidden="true" />
+			<Alert.Title>
+				{submission.reason === 'rejected'
+					? 'Your answers were not accepted'
+					: 'We could not send your answers'}
+			</Alert.Title>
+			<Alert.Description>
+				{#if submission.reason === 'rejected'}
+					<p>
+						The medical service checked your answers again and found something it cannot accept.
+						Nothing has been saved and no doctor has seen them.
+					</p>
+					{#if submission.messages.length > 0}
+						<!-- The service's own words. We do not translate them or guess which question
+						     each one meant, because our own validation already passed. -->
+						<ul class="mt-2 list-disc ps-5">
+							{#each submission.messages as message (message)}
+								<li>{message}</li>
+							{/each}
+						</ul>
+					{:else}
+						<p class="mt-2">It did not say what was wrong.</p>
+					{/if}
+				{:else}
+					<p>
+						The medical service did not answer, so nothing was saved and nothing was sent to a
+						doctor. Your answers are still here. Try again in a moment.
+					</p>
+				{/if}
+			</Alert.Description>
+		</Alert.Root>
+	{/if}
+
 	<!--
 		A step holding a question we cannot draw must not be walked past: continuing would
 		submit an anamnesis missing an answer the user was never shown.
 	-->
-	<Button type="submit" size="lg" disabled={!hydrated || unrenderable}>
-		Continue
-		<ArrowRightIcon aria-hidden="true" />
+	<Button type="submit" size="lg" disabled={!hydrated || unrenderable || submitting}>
+		{#if submitting}
+			Sending your answers
+		{:else}
+			{submission ? 'Try again' : 'Continue'}
+			<ArrowRightIcon aria-hidden="true" />
+		{/if}
 	</Button>
 </form>

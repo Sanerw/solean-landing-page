@@ -2,6 +2,7 @@ import { expect, test, type Page } from '@playwright/test';
 import {
 	answersKey,
 	EVERY_ANSWER,
+	seedAnamnesis,
 	seedAnswers,
 	THROUGH_ALLERGY,
 	THROUGH_DOB,
@@ -126,10 +127,12 @@ test('the progress denominator follows the branch the answers open', async ({ pa
 
 test('the completion screen reads the whole questionnaire as done', async ({ page }) => {
 	await seedAnswers(page, EVERY_ANSWER);
+	// The screen belongs to a submitted anamnesis, not merely to a finished walk.
+	await seedAnamnesis(page);
 
 	await page.goto('/questionnaire/complete');
 
-	await expect(page.getByRole('heading', { level: 1 })).toHaveText('That is every question');
+	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Congratulations, you did it!');
 	await expect
 		.poll(() => page.locator('[aria-label^="Question "]').first().getAttribute('aria-label'))
 		.toBe('Question 9 of 9');

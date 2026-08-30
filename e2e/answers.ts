@@ -11,6 +11,10 @@ export function answersKey(version: string = FIXTURE_VERSION): string {
 	return `solean:questionnaire:${FIXTURE_IDENTIFIER}@${version}`;
 }
 
+export function anamnesisKey(version: string = FIXTURE_VERSION): string {
+	return `solean:anamnesis:${FIXTURE_IDENTIFIER}@${version}`;
+}
+
 /**
  * A step can only be opened once the answers before it are in, so a spec that starts in the
  * middle says what it is starting from. These go in through the same `sessionStorage` key the
@@ -32,6 +36,38 @@ export const EVERY_ANSWER = {
 	WeightlossMedication: 'wegovy',
 	WegovySideEffects: 'No'
 };
+
+/** A session that has already submitted, without going through the submission again. */
+export async function seedAnamnesis(
+	page: Page,
+	uid: string = 'anam-seeded',
+	version: string = FIXTURE_VERSION
+): Promise<void> {
+	await page.addInitScript(
+		([key, value]) => {
+			window.sessionStorage.setItem(key, value);
+		},
+		[anamnesisKey(version), uid] as const
+	);
+}
+
+/**
+ * Writes the answers into the page that is already open, rather than into every navigation
+ * the way `seedAnswers` does. Use this when the test goes on to change an answer: an init
+ * script would put the seeded value back on the next load.
+ */
+export async function writeAnswers(
+	page: Page,
+	data: Record<string, unknown>,
+	version: string = FIXTURE_VERSION
+): Promise<void> {
+	await page.evaluate(
+		([key, json]) => {
+			window.sessionStorage.setItem(key, json);
+		},
+		[answersKey(version), JSON.stringify(data)] as const
+	);
+}
 
 export async function seedAnswers(
 	page: Page,

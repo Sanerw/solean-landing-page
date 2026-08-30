@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { EVERY_ANSWER, seedAnswers } from './answers';
 
 /**
  * Not an assertion suite: it walks the fixture questionnaire once and captures the screen
@@ -86,5 +87,26 @@ test('capture the questionnaire screens', async ({ page }) => {
 	await advance();
 
 	await expect(page).toHaveURL('/questionnaire/complete');
-	await shot('13-complete');
+	await expect(page.getByRole('button', { name: 'Place your order' })).toBeVisible();
+	await shot('13-recommendation');
+});
+
+/**
+ * The two ways a submission fails. Both are screens a person can actually land on, so they
+ * are captured beside the rest rather than only asserted.
+ */
+test('capture the submission failures', async ({ page }) => {
+	const shot = (name: string) => page.screenshot({ path: `screens/${name}.png`, fullPage: true });
+
+	for (const [marker, name] of [
+		['TRIGGER-400', '14-submission-rejected'],
+		['TRIGGER-502', '15-submission-unavailable']
+	] as const) {
+		await seedAnswers(page, { ...EVERY_ANSWER, EMail: marker });
+		await page.goto('/questionnaire/page22');
+		await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled();
+		await page.getByRole('button', { name: 'Continue' }).click();
+		await expect(page.getByRole('button', { name: 'Try again' })).toBeVisible();
+		await shot(name);
+	}
 });

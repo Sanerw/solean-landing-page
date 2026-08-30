@@ -21,7 +21,13 @@
 		const plan = buildStepPlan(questionnaireSession.surveyFor(data.questionnaire.document));
 		const first = plan.steps.at(0);
 
-		goto(questionnaireStepHref(first ? first.id : COMPLETION_STEP_ID), { replaceState: true });
+		// A session that already submitted has no questions left to answer.
+		const target =
+			questionnaireSession.anamnesisUid !== null
+				? COMPLETION_STEP_ID
+				: (first?.id ?? COMPLETION_STEP_ID);
+
+		goto(questionnaireStepHref(target), { replaceState: true });
 	});
 </script>
 

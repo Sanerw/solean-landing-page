@@ -32,3 +32,12 @@ export function questionnaireUrl(uid: string): string {
 
 	return `${baseUrl.replace(/\/+$/, '')}${basePath}/questionnaires/${encodeURIComponent(uid)}`;
 }
+
+/**
+ * The same prefix the model came from, because that is where the route is. `/v4/anamnesis`
+ * is documented but not routed on api.rxscale.com: a request to it falls through to object
+ * storage, while `/api/v2` and `/api/v3-1` answer 405 to anything but a POST here.
+ */
+export function submissionsUrl(uid: string): string {
+	return `${questionnaireUrl(uid)}/submissions`;
+}

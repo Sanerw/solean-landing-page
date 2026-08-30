@@ -1,12 +1,14 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
-	import * as Alert from '$lib/components/ui/alert';
 	import MotivationInterstitial from '$lib/features/questionnaire/MotivationInterstitial.svelte';
 	import ProjectionInterstitial from '$lib/features/questionnaire/ProjectionInterstitial.svelte';
+	import RecommendationScreen from '$lib/features/questionnaire/RecommendationScreen.svelte';
 	import QuestionnaireShell from '$lib/features/questionnaire/QuestionnaireShell.svelte';
 	import SurveyStepScreen from '$lib/features/questionnaire/SurveyStepScreen.svelte';
 	import { questionnaireSession } from '$lib/features/questionnaire/survey-state.svelte';
 	import { readWeightKg, weightStepId } from '$lib/features/questionnaire/answers';
+	import { submitAnamnesis, type AnamnesisSubmission } from '$lib/features/questionnaire/anamnesis-client';
+	import { questionnaireUid } from '$lib/config/rxscale';
 	import {
 		COMPLETION_STEP_ID,
 		buildStepPlan,
@@ -19,7 +21,6 @@
 		QUESTIONNAIRE_HOME_HREF,
 		questionnaireStepHref
 	} from '$lib/features/questionnaire/routes';
-	import FlaskConicalIcon from '@lucide/svelte/icons/flask-conical';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -66,7 +67,7 @@
 		questionnaireSession.revision;
 		if (!hydrated || !plan || !survey) return null;
 
-		return resolveStepEntry(plan, survey, data.stepId);
+		return resolveStepEntry(plan, survey, data.stepId, questionnaireSession.anamnesisUid !== null);
 	});
 
 	const redirecting = $derived(entry !== null && !entry.show);
@@ -99,7 +100,11 @@
 		return neighbour ? questionnaireStepHref(neighbour.id) : null;
 	}
 
-	const backHref = $derived(neighbourHref(-1) ?? QUESTIONNAIRE_HOME_HREF);
+	// Once the anamnesis is sent there is no question to go back to: every step now resolves
+	// forward to this screen, so Back would bounce off it. It leaves the questionnaire instead.
+	const backHref = $derived(
+		isCompletion ? QUESTIONNAIRE_HOME_HREF : (neighbourHref(-1) ?? QUESTIONNAIRE_HOME_HREF)
+	);
 	const title = $derived(page?.questions[0]?.title?.split('\n')[0] ?? 'Questionnaire');
 
 	// The engine's own page pointer follows the plan, so `page.validate` and `survey.data`
@@ -108,8 +113,50 @@
 		if (survey && page) survey.currentPage = page;
 	});
 
-	function advance(): void {
-		goto(neighbourHref(1) ?? questionnaireStepHref(COMPLETION_STEP_ID));
+	let submitting = $state(false);
+	let submission = $state<Extract<AnamnesisSubmission, { ok: false }> | null>(null);
+
+	/**
+	 * The end of the plan is where the answers leave the browser. Anywhere else, continuing is
+	 * a navigation and nothing more.
+	 */
+	async function advance(): Promise<void> {
+		const next = neighbourHref(1);
+
+		if (next) {
+			submission = null;
+			await goto(next);
+			return;
+		}
+
+		await send();
+	}
+
+	/**
+	 * One anamnesis per session. A uid already in hand means the record exists at RxScale, and
+	 * a second submission would create a second one for the same person, so the only thing
+	 * left to do is go to it.
+	 */
+	async function send(): Promise<void> {
+		if (!survey || submitting) return;
+		if (questionnaireSession.anamnesisUid !== null) {
+			await goto(questionnaireStepHref(COMPLETION_STEP_ID));
+			return;
+		}
+
+		submitting = true;
+		submission = null;
+
+		const result = await submitAnamnesis(fetch, questionnaireUid(), survey.data);
+		submitting = false;
+
+		if (!result.ok) {
+			submission = result;
+			return;
+		}
+
+		questionnaireSession.recordSubmission(result.uid);
+		await goto(questionnaireStepHref(COMPLETION_STEP_ID));
 	}
 </script>
 
@@ -118,25 +165,19 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<QuestionnaireShell progress={redirecting ? null : progress} {backHref}>
+<QuestionnaireShell
+	progress={redirecting ? null : progress}
+	{backHref}
+	backLabel={isCompletion ? 'Home' : 'Back'}
+	showPrototypeNotice={!isCompletion}
+>
 	{#if redirecting}
 		<h1 class="font-display text-4xl font-medium sm:text-5xl">Opening your questionnaire</h1>
 		<p role="status" class="mt-3 text-base text-muted-foreground md:text-lg">
 			Taking you to where you left off.
 		</p>
 	{:else if isCompletion}
-		<h1 class="font-display text-4xl font-medium sm:text-5xl">That is every question</h1>
-		<p class="mt-3 text-base text-muted-foreground md:text-lg">
-			Your answers are held in this browser tab and have not been sent anywhere.
-		</p>
-		<Alert.Root variant="highlighted" class="mt-8">
-			<FlaskConicalIcon aria-hidden="true" />
-			<Alert.Title>Not submitted yet</Alert.Title>
-			<Alert.Description>
-				Sending the anamnesis to RxScale and showing the recommended treatment arrives in a later
-				feature.
-			</Alert.Description>
-		</Alert.Root>
+		<RecommendationScreen questionTotal={plan?.questionTotal ?? 0} />
 	{:else if planStep?.kind === 'interlude'}
 		{#if planStep.variant === 'motivation'}
 			<MotivationInterstitial oncontinue={advance} />
@@ -145,7 +186,7 @@
 		{/if}
 	{:else if page}
 		{#key page.name}
-			<SurveyStepScreen {page} onvalid={advance} />
+			<SurveyStepScreen {page} onvalid={advance} {submitting} {submission} />
 		{/key}
 	{/if}
 </QuestionnaireShell>

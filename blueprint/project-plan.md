@@ -612,3 +612,10 @@ Explicitly excluded, and not to be added as implementation tasks now:
    out-of-stock SKU should block the order or let it through.
 6. **Deployment target.** Now blocking, see section 8.
 7. **Displayed price versus SKU price.** See section 6.
+8. **The `os-date-picker` value format. Resolved.** RxScale's widget declares no
+   properties, so the stored shape was the renderer's choice. Confirmed as
+   `YYYY-MM-DD` on 2026-08-30; feature 10 already stores it that way.
+9. **The submission prefix.** `/v4/anamnesis` is not routed on `api.rxscale.com`.
+   The submission goes to the prefix the model came from, `/api/v3-1/anamnesis`
+   by default, where the route exists but its error bodies are undocumented.
+   Feature 12 confirms them against the live service.

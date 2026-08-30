@@ -334,14 +334,15 @@ Resolve each before the feature named, then re-run `/overview` if a plan changes
 6. **Live-stock preflight.** Optional in feature 13. Decide whether an
    out-of-stock SKU blocks the order or lets it through.
 7. **Deployment target.** Now blocking, see Deployment.
-8. **The `os-date-picker` value format.** RxScale's widget declares no
-   properties, so the stored shape is the renderer's choice. An ISO date string
-   validates, but confirm what their review tooling expects before feature 12
-   submits.
-9. **Whether `/v4/anamnesis` will be routed.** The submission contract, including
-   its 400 and 502 semantics, is documented for v4, while the app talks to
-   `/api/v3-1`. Feature 12 must verify the contract it actually calls.
-8. **Displayed price versus SKU price.** See Monetization.
+8. ~~**The `os-date-picker` value format.**~~ Resolved: `YYYY-MM-DD`, confirmed
+   2026-08-30. That is what feature 10 stores and what the submission sends.
+9. **Whether `/v4/anamnesis` will be routed.** Answered in part: it is not.
+   `/v4/anamnesis/questionnaires/{uid}/submissions` falls through to object
+   storage, while the same path under `/api/v2` and `/api/v3-1` answers 405 to a
+   GET, so the route exists there and takes POST only. What remains is whether
+   that prefix returns the v4 documented 400 and 502 bodies, which feature 12
+   settles with one live submission.
+10. **Displayed price versus SKU price.** See Monetization.
 
 ### Reference errors are not requirements
 

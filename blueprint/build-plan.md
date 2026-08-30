@@ -321,7 +321,7 @@ claims are not approved production content.
   model change discards stale answers instead of resuming against them. The
   journey stage reduction moved to 9c, where the stages it removes are deleted.
 
-- [ ] 12. **Submission and the recommendation screen** - Post the answers to the
+- [x] 12. **Submission and the recommendation screen** - Post the answers to the
   anamnesis submissions endpoint, keep the returned uid for the checkout call,
   and handle failure honestly: 400 shows the validation errors and stays on the
   questionnaire, 502 offers a retry and states that nothing was saved, and no

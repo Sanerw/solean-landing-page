@@ -1,7 +1,15 @@
 import { browser } from '$app/environment';
 import type { Model } from 'survey-core';
 import type { QuestionnaireDocument } from './anamnesis-client';
-import { answerStorageKey, dropOtherAnswers, loadAnswers, saveAnswers } from './answer-storage';
+import {
+	anamnesisStorageKey,
+	answerStorageKey,
+	dropStaleKeys,
+	loadAnamnesisUid,
+	loadAnswers,
+	saveAnamnesisUid,
+	saveAnswers
+} from './answer-storage';
 import { createSurvey } from './survey-model';
 
 /**
@@ -23,7 +31,29 @@ class QuestionnaireSession {
 	 */
 	revision = $state(0);
 
+	#anamnesisUid: string | null = null;
+	#anamnesisKey = '';
+
+	/**
+	 * The submitted anamnesis. Its presence is what ends the questionnaire: the record exists
+	 * at RxScale, a doctor will read it, and nothing on this side can amend or replace it.
+	 *
+	 * Read through the revision rather than held in `$state`, because it is restored while the
+	 * survey is created, and that happens inside a derived where writing state is forbidden.
+	 */
+	get anamnesisUid(): string | null {
+		this.revision;
+
+		return this.#anamnesisUid;
+	}
+
 	touch(): void {
+		this.revision += 1;
+	}
+
+	recordSubmission(uid: string): void {
+		this.#anamnesisUid = uid;
+		if (this.#anamnesisKey) saveAnamnesisUid(this.#anamnesisKey, uid);
 		this.revision += 1;
 	}
 
@@ -36,15 +66,18 @@ class QuestionnaireSession {
 		// answers collected against the old model must not carry into it.
 		if (this.#survey === null || this.#key !== key) {
 			const storageKey = answerStorageKey(document.identifier, document.version);
+			const anamnesisKey = anamnesisStorageKey(document.identifier, document.version);
 			const survey = createSurvey(document.model);
 
 			this.#key = key;
 			this.#survey = survey;
+			this.#anamnesisKey = anamnesisKey;
 
 			// Restored before the listener is attached, so resuming is not written straight back.
-			dropOtherAnswers(storageKey);
+			dropStaleKeys([storageKey, anamnesisKey]);
 			const saved = loadAnswers(storageKey);
 			if (saved) survey.data = saved;
+			this.#anamnesisUid = loadAnamnesisUid(anamnesisKey);
 
 			survey.onValueChanged.add(() => {
 				this.revision += 1;

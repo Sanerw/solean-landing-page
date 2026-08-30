@@ -128,13 +128,36 @@ export type StepEntry = { show: true } | { show: false; redirectTo: string };
  * rule working: the submission is validated against the whole model, so a gap left behind
  * would come back as a 400.
  */
-export function resolveStepEntry(plan: StepPlan, survey: Model, stepId: string): StepEntry {
+export function resolveStepEntry(
+	plan: StepPlan,
+	survey: Model,
+	stepId: string,
+	/** True once the anamnesis exists at RxScale. */
+	submitted: boolean
+): StepEntry {
+	// The questionnaire is over: the record is with a doctor, and changing an answer here
+	// would put a different questionnaire on screen than the one that was sent.
+	if (submitted) {
+		return stepId === COMPLETION_STEP_ID
+			? { show: true }
+			: { show: false, redirectTo: COMPLETION_STEP_ID };
+	}
+
+	// Nothing to walk and nothing to submit: the only screen left is the end of it.
+	if (plan.steps.length === 0) return { show: true };
+
 	const limit = reachableLimit(plan, survey);
-	const furthest = plan.steps[limit];
+	// Past the last step means every answer is in, and the last step is where sending happens,
+	// so that is where an unsubmitted session belongs. Falling through to the completion step
+	// here would send it to a screen that immediately sends it back.
+	const furthest = plan.steps[limit] ?? plan.steps.at(-1);
 	const redirectTo = furthest ? furthest.id : COMPLETION_STEP_ID;
 
+	// Reaching the end is not the same as having sent it, and only sending it earns this
+	// screen. Without that, a refresh or a deep link would congratulate someone whose
+	// answers no doctor has.
 	if (stepId === COMPLETION_STEP_ID) {
-		return limit >= plan.steps.length ? { show: true } : { show: false, redirectTo };
+		return { show: false, redirectTo };
 	}
 
 	const index = plan.steps.findIndex((step) => step.id === stepId);
