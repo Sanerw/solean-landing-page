@@ -30,7 +30,7 @@
 				variant="ghost"
 				size="icon"
 				{surface}
-				class="lg:hidden"
+				class="min-[1200px]:hidden"
 				aria-label="Open menu"
 			>
 				<MenuIcon aria-hidden="true" />

@@ -1,7 +1,8 @@
 <script lang="ts">
 	import * as NavigationMenu from '$lib/components/ui/navigation-menu';
 	import { Button } from '$lib/components/ui/button';
-	import PenLineIcon from '@lucide/svelte/icons/pen-line';
+	import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
+	import CircleDotIcon from '@lucide/svelte/icons/circle-dot';
 	import SyringeIcon from '@lucide/svelte/icons/syringe';
 	import PillIcon from '@lucide/svelte/icons/pill';
 	import ShowcaseSection from './ShowcaseSection.svelte';
@@ -10,7 +11,7 @@
 	// Treatments entries belong to feature 3b; this only proves the primitive.
 	const TREATMENTS = [
 		{ label: 'Mounjaro Injection', description: 'Weekly prescription injection', icon: SyringeIcon },
-		{ label: 'Wegovy Injection', description: 'Weekly GLP-1 injection', icon: PenLineIcon },
+		{ label: 'Wegovy Injection', description: 'Weekly GLP-1 injection', icon: CircleDotIcon },
 		{ label: 'Wegovy Pill', description: 'Daily oral treatment', icon: PillIcon }
 	];
 </script>
@@ -37,14 +38,20 @@
 								{#each TREATMENTS as treatment (treatment.label)}
 									{@const Icon = treatment.icon}
 									<li>
-										<NavigationMenu.Link href="/treatments" class="items-start gap-3">
-											<Icon aria-hidden="true" class="mt-0.5 text-muted-foreground" />
-											<span>
-												<span class="block font-medium">{treatment.label}</span>
-												<span class="mt-0.5 block text-sm font-normal text-muted-foreground">
+										<NavigationMenu.Link href="/treatments" class="gap-[13px]">
+											<Icon aria-hidden="true" class="size-6 text-foreground" />
+											<span class="min-w-0 flex-1">
+												<span class="block text-sm font-semibold text-foreground">
+													{treatment.label}
+												</span>
+												<span class="mt-0.5 block text-[11px] font-normal text-muted-foreground">
 													{treatment.description}
 												</span>
 											</span>
+											<ArrowUpRightIcon
+												aria-hidden="true"
+												class="size-4 text-highlight-foreground"
+											/>
 										</NavigationMenu.Link>
 									</li>
 								{/each}
@@ -81,14 +88,20 @@
 									{#each TREATMENTS as treatment (treatment.label)}
 										{@const Icon = treatment.icon}
 										<li>
-											<NavigationMenu.Link href="/treatments" class="items-start gap-3">
-												<Icon aria-hidden="true" class="mt-0.5 text-muted-foreground" />
-												<span>
-													<span class="block font-medium">{treatment.label}</span>
-													<span class="mt-0.5 block text-sm font-normal text-muted-foreground">
+											<NavigationMenu.Link href="/treatments" class="gap-[13px]">
+												<Icon aria-hidden="true" class="size-6 text-foreground" />
+												<span class="min-w-0 flex-1">
+													<span class="block text-sm font-semibold text-foreground">
+														{treatment.label}
+													</span>
+													<span class="mt-0.5 block text-[11px] font-normal text-muted-foreground">
 														{treatment.description}
 													</span>
 												</span>
+												<ArrowUpRightIcon
+													aria-hidden="true"
+													class="size-4 text-highlight-foreground"
+												/>
 											</NavigationMenu.Link>
 										</li>
 									{/each}

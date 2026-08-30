@@ -2,6 +2,7 @@
 	import StarRating from '$lib/components/brand/StarRating.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
+	import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
 	import ClipboardCheckIcon from '@lucide/svelte/icons/clipboard-check';
 	import MessageCircleIcon from '@lucide/svelte/icons/message-circle';
 	import StethoscopeIcon from '@lucide/svelte/icons/stethoscope';
@@ -20,7 +21,7 @@
 <!-- The rounded panel needs its own breathing room: BLEED carries only the horizontal
      gutter, so without this the card butts straight into the section above and below. -->
 <section class={[BLEED, 'py-8']} aria-label="Care built in">
-	<div class="rounded-xl bg-highlight py-12 lg:py-16">
+	<div class="overflow-hidden rounded-xl bg-highlight py-12 lg:py-16">
 		<div class={CONTAINER}>
 			<ul class="grid gap-8 sm:grid-cols-3">
 				{#each RESULTS_BAND.benefits as benefit (benefit.title)}
@@ -35,8 +36,11 @@
 				{/each}
 			</ul>
 
-			<div class="mt-12 grid items-center gap-10 lg:grid-cols-3">
-				<div>
+			<!-- 3:4:3 is the reference's 520:660:520 column allocation on stock columns. The
+			     two text columns start level and the artwork runs past them, so the row is
+			     top-aligned rather than centred. -->
+			<div class="mt-12 grid gap-8 lg:grid-cols-10">
+				<div class="lg:col-span-3">
 					<h2 class="font-display text-3xl font-medium text-foreground md:text-4xl">
 						{RESULTS_BAND.title}
 					</h2>
@@ -51,33 +55,82 @@
 					</Button>
 				</div>
 
-				<img
-					src={RESULTS_BAND.image}
-					alt=""
-					aria-hidden="true"
-					class="w-full rounded-xl object-cover"
-					width="517"
-					height="476"
-				/>
+				<!-- The reference does not box this artwork. It multiplies into the yellow ground
+				     and dissolves on all four edges, so the negative margin lets it run into the
+				     panel's own padding instead of stopping on a card edge. -->
+				<div class="relative lg:col-span-4 lg:-mt-6 lg:-mb-16">
+					<img
+						src={RESULTS_BAND.image}
+						alt=""
+						aria-hidden="true"
+						width="1320"
+						height="1164"
+						class="w-full mix-blend-multiply"
+					/>
+					<div aria-hidden="true" class="absolute inset-0 bg-highlight/10"></div>
+					<div
+						aria-hidden="true"
+						class="absolute inset-y-0 left-0 w-1/3 bg-gradient-to-r from-highlight to-highlight/0"
+					></div>
+					<div
+						aria-hidden="true"
+						class="absolute inset-y-0 right-0 w-1/3 bg-gradient-to-l from-highlight to-highlight/0"
+					></div>
+					<div
+						aria-hidden="true"
+						class="absolute inset-x-0 top-0 h-1/5 bg-gradient-to-b from-highlight to-highlight/0"
+					></div>
+					<div
+						aria-hidden="true"
+						class="absolute inset-x-0 bottom-0 h-1/5 bg-gradient-to-t from-highlight to-highlight/0"
+					></div>
+				</div>
 
-				<div>
+				<div class="lg:col-span-3">
 					<div class="flex items-center gap-3">
 						<p class="font-display text-4xl font-medium text-foreground">{RATING.score}</p>
-						<StarRating rating={RATING.score} size="sm" />
+						<div>
+							<StarRating rating={RATING.score} treatment="outline" class="text-foreground" />
+							<!-- The reference credits a named review platform here. The figures are
+							     invented, so the line carries the volume without the company. -->
+							<p class="mt-1 text-xs font-semibold text-muted-foreground">
+								{RATING.reviewCount}
+							</p>
+						</div>
 					</div>
-					<p class="mt-1 text-sm text-muted-foreground">{RATING.label}</p>
+
+					<div aria-hidden="true" class="mt-5 h-0.5 w-12 bg-foreground"></div>
 
 					<!-- A real blockquote with its attribution in the accompanying figcaption, so the
 					     quote and the person are associated without relying on visual proximity. -->
-					<figure class="mt-6 border-t border-foreground/15 pt-6">
-						<blockquote class="text-base text-foreground">
+					<figure class="mt-5">
+						<blockquote class="text-base leading-relaxed text-foreground">
 							<p>&ldquo;{RESULTS_BAND.quote}&rdquo;</p>
 						</blockquote>
-						<figcaption class="mt-4 text-sm">
-							<span class="block font-semibold text-foreground">{RESULTS_BAND.author}</span>
-							<span class="block text-muted-foreground">{RESULTS_BAND.authorRole}</span>
+						<figcaption class="mt-5 flex items-center gap-3">
+							<img
+								src={RESULTS_BAND.authorAvatar}
+								alt=""
+								aria-hidden="true"
+								width="168"
+								height="168"
+								class="size-10 shrink-0 rounded-full object-cover"
+							/>
+							<span class="text-sm">
+								<span class="block font-semibold text-foreground">{RESULTS_BAND.author}</span>
+								<span class="block text-xs text-muted-foreground">{RESULTS_BAND.authorRole}</span>
+							</span>
 						</figcaption>
 					</figure>
+
+					<!-- Focusable so the affordance is discoverable, but inert: no review platform
+					     is wired up, so there is nowhere for it to go. -->
+					<div class="mt-5 flex justify-end">
+						<Button variant="link" size="sm" aria-disabled="true">
+							{RESULTS_BAND.reviewCta}
+							<ArrowUpRightIcon aria-hidden="true" class="size-4" />
+						</Button>
+					</div>
 				</div>
 			</div>
 		</div>

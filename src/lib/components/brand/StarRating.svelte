@@ -7,8 +7,9 @@
 		/**
 		 * `badge` is the platform-style green square from the hero trust badge.
 		 * `inline` is the bare star used in testimonial cards.
+		 * `outline` is the hollow star the results band sets beside its score numeral.
 		 */
-		treatment?: 'badge' | 'inline';
+		treatment?: 'badge' | 'inline' | 'outline';
 		/**
 		 * Only meaningful for `inline`. Stars are the sole carrier of the score there, so
 		 * they are a meaningful graphic needing 3:1: gold reads 1.82 on a light card and
@@ -36,6 +37,9 @@
 	const inlineFill = $derived(
 		surface === 'dark' ? 'fill-primary' : 'fill-highlight-foreground'
 	);
+
+	const STAR =
+		'M12 2.5l2.94 5.96 6.58.96-4.76 4.64 1.12 6.55L12 17.55l-5.88 3.09 1.12-6.55L2.48 9.42l6.58-.96L12 2.5z';
 </script>
 
 <span class={['inline-flex items-center gap-1', className]} role="img" aria-label={label}>
@@ -52,20 +56,28 @@
 				]}
 			>
 				<svg viewBox="0 0 24 24" class={[starSize, 'fill-white']} aria-hidden="true">
-					<path
-						d="M12 2.5l2.94 5.96 6.58.96-4.76 4.64 1.12 6.55L12 17.55l-5.88 3.09 1.12-6.55L2.48 9.42l6.58-.96L12 2.5z"
-					/>
+					<path d={STAR} />
 				</svg>
 			</span>
+		{:else if treatment === 'outline'}
+			<!-- The reference sets these beside the score numeral, which is what carries the
+			     rating, so every mark is drawn hollow rather than filled to the score. -->
+			<svg
+				viewBox="0 0 24 24"
+				class={[starSize, 'fill-none stroke-current']}
+				stroke-width="1.75"
+				stroke-linejoin="round"
+				aria-hidden="true"
+			>
+				<path d={STAR} />
+			</svg>
 		{:else}
 			<svg
 				viewBox="0 0 24 24"
 				class={[starSize, i < filled ? inlineFill : 'fill-border']}
 				aria-hidden="true"
 			>
-				<path
-					d="M12 2.5l2.94 5.96 6.58.96-4.76 4.64 1.12 6.55L12 17.55l-5.88 3.09 1.12-6.55L2.48 9.42l6.58-.96L12 2.5z"
-				/>
+				<path d={STAR} />
 			</svg>
 		{/if}
 	{/each}

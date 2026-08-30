@@ -79,9 +79,25 @@
 			<code class="mt-3 block font-sans text-xs text-background/70">--primary, 6.78:1</code>
 		</div>
 	</div>
+	<h3 class="mt-12 font-display text-xl font-semibold">Outline treatment</h3>
+	<p class="mt-2 max-w-3xl text-sm text-muted-foreground">
+		The results band sets hollow stars beside a large score numeral. The numeral carries the
+		rating, so every mark is drawn unfilled rather than filled to the score, and the stroke
+		inherits from the surface through currentColor.
+	</p>
+	<div class="mt-6 rounded-lg bg-highlight p-6">
+		<p class="text-xs font-semibold uppercase tracking-widest text-highlight-foreground">
+			On --highlight, as the results band uses it
+		</p>
+		<div class="mt-3 flex items-center gap-3 text-foreground">
+			<p class="font-display text-4xl font-medium">4.7</p>
+			<StarRating rating={4.7} treatment="outline" />
+		</div>
+	</div>
+
 	<p class="mt-4 text-sm text-muted-foreground">
 		Each instance exposes a text equivalent to assistive technology, for example
-		<code class="font-sans">4.7 out of 5 stars</code>. The squares themselves are hidden from the
+		<code class="font-sans">4.7 out of 5 stars</code>. The marks themselves are hidden from the
 		accessibility tree.
 	</p>
 </ShowcaseSection>

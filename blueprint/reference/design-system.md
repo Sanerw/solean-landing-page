@@ -232,16 +232,17 @@ declare the surface instead of passing focus, border or text class overrides.
 The dark contract uses a gold ring outside a deep-green offset, so the visible
 focus boundary measures 6.78:1 against the offset.
 
-### 1d. Star ratings have two treatments
+### 1d. Star ratings have three treatments
 
-The reference draws ratings two different ways, and the earlier line that
-`--rating` is "rating and star colour only" was written before the second one was
+The reference draws ratings three different ways, and the earlier line that
+`--rating` is "rating and star colour only" was written before the others were
 built:
 
 | Treatment | Where | Mark | Colour |
 | --- | --- | --- | --- |
 | `badge` | The hero trust badge | Filled square holding a white star | `--rating` `#00B67A` |
 | `inline` | Testimonial cards | Bare star glyph | The gold family, see below |
+| `outline` | The results band | Hollow stroked star | `currentColor`, `--foreground` on `--highlight` |
 
 `StarRating` selects between them with `treatment`, and `inline` additionally
 takes `surface`, because the testimonial cards come in light and photographic
@@ -257,6 +258,13 @@ their own, with no numeral beside them, so they are a meaningful graphic needing
 So `surface="default"` uses `--highlight-foreground` and `surface="dark"` uses
 `--primary`. Measured on the rendered page: 5.16 and 6.83 respectively. The
 `badge` treatment is untouched and the hero renders pixel-identical to before.
+
+`outline` takes neither `surface` nor a fill decision. It sits beside the results
+band's 4.7 numeral, which is what carries the rating, so every mark is drawn
+unfilled and the stars are decoration rather than the graphic that has to meet
+3:1. The stroke is `currentColor`, set by the consumer: on `--highlight` the band
+passes `--foreground`, measuring 10.88:1. The score still reaches assistive
+technology through the same `role="img"` label the other two treatments use.
 
 ### 1c. Button text on the dark surface
 

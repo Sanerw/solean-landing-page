@@ -6,13 +6,14 @@ import {
 	type ProjectionHorizon,
 	type ProjectionPoint
 } from '$lib/components/brand/projection';
+import careVisual from '$lib/assets/panels/care-visual.webp';
 import clinicalCarePanel from '$lib/assets/panels/clinical-care.jpg';
 import deliveryPanel from '$lib/assets/panels/delivery.jpg';
 import howItWorksPanel from '$lib/assets/panels/how-it-works.jpg';
 import planPanel from '$lib/assets/panels/plan.jpg';
-import resultsPanel from '$lib/assets/panels/results.jpg';
 import supportPanel from '$lib/assets/panels/support.jpg';
 import treatmentPanel from '$lib/assets/panels/treatment.jpg';
+import danielPortrait from '$lib/assets/people/daniel-m.jpg';
 import eliasVossPortrait from '$lib/assets/people/elias-voss.jpg';
 import gredelPortrait from '$lib/assets/people/gredel.jpg';
 import jurajGalanPortrait from '$lib/assets/people/juraj-galan.jpg';
@@ -77,7 +78,9 @@ export const LANGUAGES = [
 
 export const ANNOUNCEMENT = {
 	title: 'Welcome offer.',
-	body: 'Save \u20ac10 on your first online consultation'
+	prefix: 'Save',
+	amount: '\u20ac10',
+	suffix: 'on your first online consultation'
 } as const;
 
 export interface HeroContent {
@@ -108,6 +111,8 @@ export const HERO: HeroContent = {
 export const RATING = {
 	score: 4.7,
 	label: '4.7 - 1,200+ reviews',
+	/** The results band prints the score as a numeral, so its line carries the volume only. */
+	reviewCount: '1,200+ reviews',
 	caption: 'Mock prototype rating'
 } as const;
 
@@ -299,7 +304,10 @@ export const RESULTS_BAND = {
 		'For the first time, weight loss feels structured and manageable, not like another diet I have to do alone.',
 	author: 'Daniel M.',
 	authorRole: 'Verified Solean member',
-	image: resultsPanel
+	authorAvatar: danielPortrait,
+	/** No destination exists until a review platform is chosen, so this stays inert. */
+	reviewCta: 'Leave a review',
+	image: careVisual
 } as const;
 
 export interface HowItWorksStep {

@@ -1,10 +1,8 @@
 <script lang="ts" module>
 	import { tv } from "tailwind-variants";
 
-	// Compact nav controls take the documented pill radius (rounded-full), not the
-	// vendor's undocumented rounded-3xl. The dark-surface branch mirrors Button's own
-	// surface="dark" ghost treatment: an opaque white fill on hover/open/focus rather
-	// than a translucent wash, so every dark-ground control in the app behaves the same way.
+	// Compact navigation keeps the app's established 14 px rhythm. On photography,
+	// the active treatment uses a translucent wash so it remains connected to the hero.
 	export const navigationMenuTriggerStyle = tv({
 		base: [
 			"group/navigation-menu-trigger inline-flex h-9 w-max items-center justify-center",
@@ -13,9 +11,9 @@
 			"focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
 			"disabled:pointer-events-none disabled:opacity-50",
 			"group-data-[surface=dark]/navigation-menu:text-background",
-			"group-data-[surface=dark]/navigation-menu:hover:bg-background group-data-[surface=dark]/navigation-menu:hover:text-foreground",
-			"group-data-[surface=dark]/navigation-menu:focus:bg-background group-data-[surface=dark]/navigation-menu:focus:text-foreground",
-			"group-data-[surface=dark]/navigation-menu:data-open:bg-background group-data-[surface=dark]/navigation-menu:data-open:text-foreground",
+			"group-data-[surface=dark]/navigation-menu:hover:bg-background/10 group-data-[surface=dark]/navigation-menu:hover:text-background",
+			"group-data-[surface=dark]/navigation-menu:focus:bg-background/10 group-data-[surface=dark]/navigation-menu:focus:text-background",
+			"group-data-[surface=dark]/navigation-menu:data-open:bg-background/10 group-data-[surface=dark]/navigation-menu:data-open:text-background",
 			"group-data-[surface=dark]/navigation-menu:focus-visible:ring-primary group-data-[surface=dark]/navigation-menu:focus-visible:ring-offset-foreground",
 		],
 	});

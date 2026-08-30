@@ -6,6 +6,10 @@
 	import { HERO, NAV_ITEMS, ROUTES } from './content';
 	import LanguageSelect from './LanguageSelect.svelte';
 	import MobileNav from './MobileNav.svelte';
+	import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
+	import CircleDotIcon from '@lucide/svelte/icons/circle-dot';
+	import PillIcon from '@lucide/svelte/icons/pill';
+	import SyringeIcon from '@lucide/svelte/icons/syringe';
 
 	interface Props {
 		/** `overlay` sits inside the hero card on the scrim; `solid` is every other page. */
@@ -15,16 +19,27 @@
 	let { variant = 'solid' }: Props = $props();
 
 	const surface = $derived(variant === 'overlay' ? ('dark' as const) : ('default' as const));
+
+	function treatmentIcon(label: string) {
+		if (label.startsWith('Mounjaro')) return SyringeIcon;
+		if (label.endsWith('Pill')) return PillIcon;
+		return CircleDotIcon;
+	}
 </script>
 
 <header class={variant === 'solid' ? 'bg-card' : 'bg-transparent'}>
-	<div class={[CONTAINER, 'flex items-center justify-between gap-4 py-3']}>
+	<div
+		class={[
+			CONTAINER,
+			'grid grid-cols-[auto_minmax(0,1fr)] items-center gap-4 py-3 min-[1200px]:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]'
+		]}
+	>
 		<!-- Desktop nav. Every top-level item is a NavigationMenu link, not a bare anchor,
 		     so keyboard and focus behavior comes from the adapted primitive in both variants. -->
 		<NavigationMenu.Root
 			{surface}
 			viewport={false}
-			class="hidden max-w-none flex-1 justify-start lg:flex"
+			class="hidden min-w-0 max-w-none justify-start min-[1200px]:flex"
 		>
 			<NavigationMenu.List>
 				{#each NAV_ITEMS as item (item.label)}
@@ -34,20 +49,23 @@
 							<NavigationMenu.Content>
 								<ul class="grid w-72 gap-1">
 									{#each item.children as child (child.label)}
+										{@const Icon = treatmentIcon(child.label)}
 										<li>
 											<NavigationMenu.Link
 												href={child.inert ? undefined : child.href}
 												aria-disabled={child.inert ? 'true' : undefined}
-												class="items-start gap-3"
+												class="gap-[13px]"
 											>
-												<span>
-													<span class="block font-medium">{child.label}</span>
+												<Icon aria-hidden="true" class="size-6 text-foreground" />
+												<span class="min-w-0 flex-1">
+													<span class="block text-sm font-semibold text-foreground">{child.label}</span>
 													{#if child.description}
-														<span class="mt-0.5 block text-sm font-normal text-muted-foreground">
+														<span class="mt-0.5 block text-[11px] font-normal text-muted-foreground">
 															{child.description}
 														</span>
 													{/if}
 												</span>
+												<ArrowUpRightIcon aria-hidden="true" class="size-4 text-highlight-foreground" />
 											</NavigationMenu.Link>
 										</li>
 									{/each}
@@ -77,10 +95,10 @@
 					: 'text-foreground focus-visible:ring-ring focus-visible:ring-offset-background'
 			]}
 		>
-			<SoleanLogo size="sm" />
+			<SoleanLogo size="default" class="min-[1200px]:h-15" />
 		</a>
 
-		<div class="flex flex-1 items-center justify-end gap-2">
+		<div class="flex min-w-0 items-center justify-end gap-2">
 			<LanguageSelect {surface} class="hidden sm:inline-flex" />
 			<Button
 				href={ROUTES.questionnaire}

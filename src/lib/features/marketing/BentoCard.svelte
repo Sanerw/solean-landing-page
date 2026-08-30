@@ -19,16 +19,31 @@
 <article
 	class={[
 		'flex h-full flex-col overflow-hidden rounded-xl p-6',
+		size === 'compact' ? 'lg:p-5' : '',
 		BENTO_GROUNDS[card.category]
 	]}
 >
 	<p class="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
 		{card.eyebrow}
 	</p>
-	<h3 class="mt-3 font-display text-2xl font-medium text-foreground md:text-3xl">
+	<h3
+		class={[
+			'mt-2 font-display font-medium leading-tight tracking-tight text-foreground',
+			size === 'tall'
+				? 'text-2xl lg:text-3xl'
+				: 'text-lg'
+		]}
+	>
 		{card.title}
 	</h3>
-	<p class="mt-2 text-sm text-text-tertiary">{card.body}</p>
+	<p
+		class={[
+			'mt-2 font-medium leading-relaxed text-text-tertiary',
+			size === 'tall' ? 'text-sm' : 'text-xs'
+		]}
+	>
+		{card.body}
+	</p>
 
 	{#if card.image}
 		<!-- Decorative: the heading above already carries the card's meaning. -->
@@ -37,10 +52,10 @@
 			alt=""
 			aria-hidden="true"
 			class={[
-				'mt-4 w-full rounded-lg object-cover',
+				'w-full rounded-lg object-cover',
 				// The compact cards define the grid's row heights via a fixed ratio; the tall card
 				// then grows into whatever those two rows add up to, so the column bottoms align.
-				size === 'tall' ? 'min-h-64 flex-1' : 'aspect-2/1'
+				size === 'tall' ? 'mt-3 min-h-64 flex-1' : 'mt-2 aspect-2/1'
 			]}
 		/>
 	{/if}

@@ -14,8 +14,6 @@
 		class="relative isolate flex flex-col overflow-hidden rounded-xl lg:h-hero-frame"
 		aria-labelledby="hero-heading"
 	>
-		<!-- Generated placeholder art; see the spec's open decision. Decorative, so the section's
-		     own heading carries the meaning and the image is hidden from assistive tech. -->
 		<img
 			src={heroImage}
 			alt=""
@@ -23,22 +21,12 @@
 			class="absolute inset-0 -z-10 size-full object-cover"
 		/>
 
-		<!--
-			Dark at both ends, light through the middle. The two dark ends are where text sits on
-			the busiest part of the art: the header band at the top (which also has to read as
-			--foreground so surface="dark" focus rings do not show a mismatched offset) and the
-			rating badge and article teaser at the bottom. The middle is deliberately the lightest
-			point, at roughly half opacity, so the artwork is actually visible behind the headline
-			rather than being flattened into a solid panel.
-
-			The stops are not eyeballed. Every text role was measured at its real height against
-			the brightest pixel in that row of the shipped asset: the tightest pairing is the gold
-			text-xs eyebrow in the teaser, which clears its 4.5:1 floor with a 1.12x margin here.
-			Lightening the middle stop past ~0.55 starts to fail the lead paragraph.
-		-->
+		<!-- The export layers a light colour wash over a directional scrim. Keeping them
+		     separate preserves the photograph while the header and lower overlays stay legible. -->
+		<div aria-hidden="true" class="absolute inset-0 -z-10 bg-foreground/15"></div>
 		<div
 			aria-hidden="true"
-			class="absolute inset-0 -z-10 bg-gradient-to-b from-foreground/90 via-foreground/50 to-foreground/90"
+			class="absolute inset-0 -z-10 bg-gradient-to-b from-foreground/45 via-foreground/55 to-foreground/75"
 		></div>
 
 		<SiteHeader variant="overlay" />
