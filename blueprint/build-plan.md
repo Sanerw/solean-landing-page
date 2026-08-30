@@ -217,7 +217,7 @@ claims are not approved production content.
     health history, eating disorders, allergies and medications) as fixture
     content on 8a's contract, with no new renderers. The questionnaire collects
     only: no pass/fail logic, no BMI threshold, no contraindication branch.
-  - [ ] 8c. **Questionnaire interstitials** - The projection mid-step, reusing
+  - [x] 8c. **Questionnaire interstitials** - The projection mid-step, reusing
     `projection.ts` and the adapted `Tabs` against the patient's own height and
     weight, and the motivation mid-step. Interstitials never shift the canonical
     question count. Repairs finding F-07 so `Tabs` associates each panel with

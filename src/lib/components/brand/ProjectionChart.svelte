@@ -1,6 +1,5 @@
 <script lang="ts">
-	import type { ProjectionPoint } from './content';
-	import { buildProjection } from './projection';
+	import { buildProjection, type ProjectionPoint } from './projection';
 
 	interface Props {
 		series: readonly ProjectionPoint[];

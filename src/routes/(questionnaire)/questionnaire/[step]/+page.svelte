@@ -2,6 +2,8 @@
 	import { goto } from '$app/navigation';
 	import type { StepAnswers } from '$lib/features/questionnaire/types';
 	import QuestionnaireShell from '$lib/features/questionnaire/QuestionnaireShell.svelte';
+	import MotivationInterstitial from '$lib/features/questionnaire/MotivationInterstitial.svelte';
+	import ProjectionInterstitial from '$lib/features/questionnaire/ProjectionInterstitial.svelte';
 	import QuestionScreen from '$lib/features/questionnaire/QuestionScreen.svelte';
 	import { questionnaireService } from '$lib/features/questionnaire/questionnaire-service';
 	import {
@@ -28,6 +30,12 @@
 		}
 	});
 
+	/** An interstitial produces no answer, so it only moves. */
+	function advance(): void {
+		const next = questionnaireService.getNextStep(step.id);
+		if (next) goto(questionnaireStepHref(next.id));
+	}
+
 	function handleValid(answers: StepAnswers): void {
 		questionnaireService.saveAnswer(step.id, answers);
 
@@ -53,11 +61,10 @@
 	{#key step.id}
 		{#if step.kind === 'question'}
 			<QuestionScreen {step} progress={data.progress} onvalid={handleValid} />
+		{:else if step.variant === 'projection'}
+			<ProjectionInterstitial oncontinue={advance} />
 		{:else}
-			<h1 class="font-display text-4xl font-medium sm:text-5xl">{step.title}</h1>
-			<p class="mt-3 text-base text-muted-foreground md:text-lg">
-				Interstitial screens arrive in a later prototype feature.
-			</p>
+			<MotivationInterstitial oncontinue={advance} />
 		{/if}
 	{/key}
 

@@ -1,4 +1,11 @@
 import { TREATMENTS } from '$lib/domain';
+import {
+	buildWeightProjection,
+	PROJECTION_HORIZON_OPTIONS,
+	REFERENCE_WEIGHT_KG,
+	type ProjectionHorizon,
+	type ProjectionPoint
+} from '$lib/components/brand/projection';
 import clinicalCarePanel from '$lib/assets/panels/clinical-care.jpg';
 import deliveryPanel from '$lib/assets/panels/delivery.jpg';
 import howItWorksPanel from '$lib/assets/panels/how-it-works.jpg';
@@ -23,6 +30,8 @@ export const ROUTES = {
 } as const;
 
 export const FEATURED_ARTICLE_SLUG = 'mounjaro-vs-wegovy';
+
+export type { ProjectionHorizon, ProjectionPoint };
 
 export interface NavItem {
 	label: string;
@@ -326,42 +335,20 @@ export const HOW_IT_WORKS = {
 	] satisfies HowItWorksStep[]
 } as const;
 
-export interface ProjectionPoint {
-	/** Months from now. Spacing on the axis is ordinal, not proportional to this value. */
-	month: number;
-	label: string;
-	kg: number;
-}
-
-export interface ProjectionHorizon {
-	month: number;
-	label: string;
-}
-
 /**
- * Illustrative figures, not clinical ones. The artboard plots these four points evenly
- * spaced, so 0-to-3 months and 6-to-12 months occupy the same width; the axis is a
- * sequence of milestones rather than a time line, and the geometry follows that.
+ * Illustrative figures, not clinical ones. Derived from the shared model at the reference
+ * weight rather than restated, so the landing page and the questionnaire interstitial plot
+ * one curve. The artboard spaces these four points evenly, so 0-to-3 months and 6-to-12
+ * months occupy the same width; the axis is a sequence of milestones, not a time line.
  */
-export const PROJECTION_SERIES: readonly ProjectionPoint[] = [
-	{ month: 0, label: 'Now', kg: 96 },
-	{ month: 3, label: '3 months', kg: 88 },
-	{ month: 6, label: '6 months', kg: 82 },
-	{ month: 12, label: '12 months', kg: 78 }
-];
+const REFERENCE_PROJECTION = buildWeightProjection(REFERENCE_WEIGHT_KG);
 
-/** The "lifestyle alone" comparison, measured off the artboard at the same milestones. */
-export const PROJECTION_COMPARISON: readonly ProjectionPoint[] = [
-	{ month: 0, label: 'Now', kg: 96 },
-	{ month: 3, label: '3 months', kg: 94 },
-	{ month: 6, label: '6 months', kg: 92 },
-	{ month: 12, label: '12 months', kg: 90 }
-];
+export const PROJECTION_SERIES: readonly ProjectionPoint[] = REFERENCE_PROJECTION.series;
 
-/** Derived from the series so a horizon can never name a milestone with no data point. */
-export const PROJECTION_HORIZONS: readonly ProjectionHorizon[] = PROJECTION_SERIES.filter(
-	(p) => p.month > 0
-).map((p) => ({ month: p.month, label: p.label }));
+/** The "lifestyle alone" comparison, at the same milestones. */
+export const PROJECTION_COMPARISON: readonly ProjectionPoint[] = REFERENCE_PROJECTION.comparison;
+
+export const PROJECTION_HORIZONS: readonly ProjectionHorizon[] = PROJECTION_HORIZON_OPTIONS;
 
 export const DEFAULT_HORIZON_MONTH = 6;
 

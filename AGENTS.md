@@ -202,6 +202,7 @@ Package manager: **pnpm**.
 - Preview production build: `pnpm preview`
 - Typecheck: `pnpm check` (runs `svelte-kit sync` then `svelte-check`)
 - Typecheck (watch): `pnpm check:watch`
+- Browser tests: `pnpm test:browser` (Playwright, Chromium)
 
 No lint or format command is configured. No unit test runner is configured, so
 there is no test gate yet. No `Verify` command and no automatic GitHub checks
@@ -211,7 +212,13 @@ Testing is opt-in. If this project does not already have a unit test runner, run
 `/tests` or `$tests` to add one and update this section with the real test
 commands.
 
-Browser testing is also opt-in. Run `/browser-tests` or `$browser-tests` to add
-or normalize a browser harness and document its exact command as `Browser
-tests`. Check and Continuous Mode can then reuse it without installing tooling
-mid-feature.
+Browser tests run Playwright against the production preview build, which the
+runner starts on port 4173 and stops again, so no server needs to be running
+first. Specs live in `e2e/`. They are deliberately not part of any `Verify`
+command or GitHub workflow; adding that slower gate is a separate decision.
+
+What the harness proves is behavior: routing, hydration, client state,
+validation, and navigation. It does not prove visual fidelity against the
+design reference, and it runs Chromium only, so no cross-browser claim follows
+from a green run. Compare screens with the artboards in `blueprint/reference/`
+through `/check` or `/try` instead.

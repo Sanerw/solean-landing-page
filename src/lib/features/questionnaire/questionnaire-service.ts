@@ -4,6 +4,7 @@ import {
 	QUESTIONNAIRE_SCHEMA,
 	getFirstUnansweredIndex,
 	getNextQuestionnaireStep,
+	getPatientWeightKg,
 	getPreviousQuestionnaireStep,
 	getQuestionnaireProgress,
 	getQuestionnaireStep,
@@ -31,6 +32,7 @@ export interface QuestionnaireService {
 	getNextStep(stepId: string): QuestionnaireStep | null;
 	getStepAccess(stepId: string): QuestionnaireStepAccess;
 	getResumeStepId(): string | null;
+	getPatientWeightKg(): number | null;
 	getAnswers(): QuestionnaireAnswers;
 	getStepAnswers(stepId: string): StepAnswers | undefined;
 	validate(step: QuestionnaireStep, answers: StepAnswers | undefined): StepValidationResult;
@@ -62,6 +64,10 @@ class MockQuestionnaireService implements QuestionnaireService {
 
 	getResumeStepId(): string | null {
 		return getResumeQuestionnaireStep(QUESTIONNAIRE_SCHEMA, this.getAnswers())?.id ?? null;
+	}
+
+	getPatientWeightKg(): number | null {
+		return getPatientWeightKg(QUESTIONNAIRE_SCHEMA, this.getAnswers());
 	}
 
 	// Storage outlives a schema edit, so the persisted marker is recomputed on every read

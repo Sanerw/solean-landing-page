@@ -1,17 +1,24 @@
 <script lang="ts">
 	import { Tabs as TabsPrimitive } from "bits-ui";
 	import { cn } from "$lib/utils.js";
+	import { getTabsIdContext, tabsIds } from "./context.js";
 
 	let {
 		ref = $bindable(null),
 		class: className,
 		...restProps
 	}: TabsPrimitive.TriggerProps = $props();
+
+	const uid = getTabsIdContext();
+	const ids = $derived(tabsIds(uid, restProps.value));
 </script>
 
+<!-- id and aria-controls come first so a call site can still override them. -->
 <TabsPrimitive.Trigger
 	bind:ref
 	data-slot="tabs-trigger"
+	id={ids?.trigger}
+	aria-controls={ids?.panel}
 	class={cn(
 		"relative inline-flex h-[calc(100%-1px)] flex-1 items-center justify-center gap-2 rounded-full",
 		"border border-transparent! px-4 py-1.5 text-sm font-medium whitespace-nowrap text-muted-foreground transition-colors",

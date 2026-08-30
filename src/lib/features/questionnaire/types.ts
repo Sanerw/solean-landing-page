@@ -143,9 +143,14 @@ export interface QuestionStep {
 	notice?: StepNotice;
 }
 
+/** Which screen an interstitial renders. The route maps this to a component, so no
+ *  component ever branches on a step id. */
+export type InterstitialVariant = 'projection' | 'motivation';
+
 export interface InterstitialStep {
 	kind: 'interstitial';
 	id: string;
+	variant: InterstitialVariant;
 	title: string;
 	help?: string;
 }

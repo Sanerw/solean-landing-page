@@ -1,4 +1,14 @@
-import type { ProjectionPoint } from './content';
+export interface ProjectionPoint {
+	/** Months from now. Spacing on the axis is ordinal, not proportional to this value. */
+	month: number;
+	label: string;
+	kg: number;
+}
+
+export interface ProjectionHorizon {
+	month: number;
+	label: string;
+}
 
 /**
  * Chart geometry, kept free of Svelte and the DOM so it stays testable and so feature 8's
@@ -29,6 +39,51 @@ export interface ProjectionGeometry {
 	comparisonPath: string;
 	horizonIndex: number;
 }
+
+/**
+ * The reference plots a 96 kg patient at 88, 82 and 78 kg, and the lifestyle comparison at
+ * 94, 92 and 90. Those figures are the model: the ratios below reproduce them exactly at
+ * 96 kg and scale to any other starting weight, so the landing page and the questionnaire
+ * cannot disagree about the curve. Illustrative, not clinical.
+ */
+const MILESTONES = [
+	{ month: 3, label: '3 months', treated: 88 / 96, lifestyle: 94 / 96 },
+	{ month: 6, label: '6 months', treated: 82 / 96, lifestyle: 92 / 96 },
+	{ month: 12, label: '12 months', treated: 78 / 96, lifestyle: 90 / 96 }
+] as const;
+
+/** The weight the reference plots, and the point at which the ratios are exact. */
+export const REFERENCE_WEIGHT_KG = 96;
+
+export interface WeightProjection {
+	series: ProjectionPoint[];
+	comparison: ProjectionPoint[];
+}
+
+/**
+ * Applies the model to one starting weight. Whole kilograms, because the chart labels and
+ * the headline both read as a weight a person would say out loud, not a measurement.
+ */
+export function buildWeightProjection(currentKg: number): WeightProjection {
+	const now = Math.round(currentKg);
+	const at = (ratio: number) => Math.round(currentKg * ratio);
+
+	return {
+		series: [
+			{ month: 0, label: 'Now', kg: now },
+			...MILESTONES.map((m) => ({ month: m.month, label: m.label, kg: at(m.treated) }))
+		],
+		comparison: [
+			{ month: 0, label: 'Now', kg: now },
+			...MILESTONES.map((m) => ({ month: m.month, label: m.label, kg: at(m.lifestyle) }))
+		]
+	};
+}
+
+export const PROJECTION_HORIZON_OPTIONS: readonly ProjectionHorizon[] = MILESTONES.map((m) => ({
+	month: m.month,
+	label: m.label
+}));
 
 /** Head-room above and below the data so the extreme points are not flush with the edges. */
 const PADDING = 12;

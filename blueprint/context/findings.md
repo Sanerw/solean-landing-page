@@ -62,7 +62,7 @@ the deep green card, not after.
 dark-surface text and focus pairings, the showcase demonstrates the matrix
 without call-site class overrides, and the contrast record documents it.
 
-### F-07 [P2] open - The adapted Tabs primitive associates no panel with its tab
+### F-07 [P2] fixed - The adapted Tabs primitive associates no panel with its tab
 
 **File:** src/lib/components/ui/tabs/tabs-trigger.svelte:1
 **Found:** 2026-08-29 by /implement (feature 4b; recorded here rather than lost, since
@@ -82,4 +82,12 @@ every consumer gets the association without restating it. Feature 4b worked arou
 at the call site by passing an explicit `id` to `Tabs.Content` and a matching
 `aria-controls` to `Tabs.Trigger` through the primitive's public props; that repairs the
 one usage, not the primitive.
-**Resolution:**
+**Resolution:** Fixed in Feature 8c Step 2. `Tabs.Root` now publishes one
+`$props.id()` through context, and `Tabs.Trigger` and `Tabs.Content` derive
+`aria-controls`, `aria-labelledby` and their own `id` from it plus the item
+value, so every consumer gets the association without restating it. Feature 4b's
+call-site workaround in `ProjectionSection.svelte` is deleted, leaving one
+mechanism rather than two. Verified on the rendered landing page (three tabs and
+three panels, each pair cross-referencing) and on `/dev/design-system`, where two
+roots produce distinct id prefixes. Covered by `e2e/tabs-association.spec.ts` in
+`pnpm test:browser`.

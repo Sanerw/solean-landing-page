@@ -9,7 +9,7 @@
 		PROJECTION_SERIES
 	} from './content';
 	import MedicalFraming from './MedicalFraming.svelte';
-	import ProjectionChart from './ProjectionChart.svelte';
+	import ProjectionChart from '$lib/components/brand/ProjectionChart.svelte';
 
 	// The one piece of state in the section. Everything the chart draws is derived from it
 	// through the geometry module, so there is no second copy to fall out of step.
@@ -32,7 +32,7 @@
 			-->
 			<Tabs.Root bind:value={horizon} class="mt-8">
 				{#each PROJECTION_HORIZONS as option (option.month)}
-					<Tabs.Content value={String(option.month)} id="projection-panel-{option.month}">
+					<Tabs.Content value={String(option.month)}>
 						<ProjectionChart
 							series={PROJECTION_SERIES}
 							comparison={PROJECTION_COMPARISON}
@@ -46,13 +46,8 @@
 				{/each}
 
 				<Tabs.List aria-label={PROJECTION.tabsLabel} class="mt-8 flex w-full bg-surface-warm">
-					<!-- bits-ui emits no aria-controls on the tab and no aria-labelledby on the panel,
-					     so the pairing is wired explicitly here through the primitive's public props
-					     rather than by editing the primitive. Recorded as F-07. -->
 					{#each PROJECTION_HORIZONS as option (option.month)}
-						<Tabs.Trigger value={String(option.month)} aria-controls="projection-panel-{option.month}">
-							{option.label}
-						</Tabs.Trigger>
+						<Tabs.Trigger value={String(option.month)}>{option.label}</Tabs.Trigger>
 					{/each}
 				</Tabs.List>
 			</Tabs.Root>

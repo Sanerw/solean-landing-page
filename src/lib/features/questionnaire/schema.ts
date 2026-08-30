@@ -23,6 +23,9 @@ const INVALID_ANSWER_MESSAGE = 'Please choose one of the available options.';
 
 export const QUESTIONNAIRE_START_STEP_ID = 'about-you';
 
+const WEIGHT_STEP_ID = QUESTIONNAIRE_START_STEP_ID;
+const WEIGHT_FIELD_ID = 'weight';
+
 function isQuestionStep(step: QuestionnaireStep): step is QuestionStep {
 	return step.kind === 'question';
 }
@@ -244,6 +247,12 @@ export const QUESTIONNAIRE_SCHEMA = defineQuestionnaireSchema({
 			}
 		},
 		{
+			kind: 'interstitial',
+			id: 'your-projection',
+			variant: 'projection',
+			title: 'Your projection'
+		},
+		{
 			kind: 'question',
 			id: 'medical-conditions',
 			questionNumber: 4,
@@ -319,6 +328,12 @@ export const QUESTIONNAIRE_SCHEMA = defineQuestionnaireSchema({
 					validation: [{ type: 'required', message: 'Select Yes or No to continue.' }]
 				}
 			]
+		},
+		{
+			kind: 'interstitial',
+			id: 'almost-there',
+			variant: 'motivation',
+			title: "You're almost there"
 		},
 		{
 			kind: 'question',
@@ -718,6 +733,21 @@ export function normalizeQuestionnaireAnswers(
 	return firstUnansweredIndex === answers.firstUnansweredIndex
 		? answers
 		: { ...answers, firstUnansweredIndex };
+}
+
+/**
+ * The patient's own weight, for the projection interstitial. Returns null rather than a
+ * guess when it is absent, stored in another unit, or not a usable number: a direct link
+ * or a cleared session both produce that, and a chart of zeros would be a lie.
+ */
+export function getPatientWeightKg(
+	schema: QuestionnaireSchema,
+	answers: QuestionnaireAnswers
+): number | null {
+	const answer = answers.byQuestionId[WEIGHT_STEP_ID]?.[WEIGHT_FIELD_ID];
+	if (answer?.kind !== 'numeric' || answer.unit !== 'kg') return null;
+
+	return Number.isFinite(answer.value) && answer.value > 0 ? answer.value : null;
 }
 
 export function getResumeQuestionnaireStep(

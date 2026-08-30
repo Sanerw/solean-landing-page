@@ -1,4 +1,5 @@
 node_modules
+.pnpm-store
 
 # Output
 .output
@@ -26,6 +27,13 @@ vite.config.ts.timestamp-*
 *.log
 npm-debug.log*
 pnpm-debug.log*
+
+# Browser tests
+/test-results
+/playwright-report
+/blob-report
+/playwright/.cache
+/screens
 
 # Editors
 .idea/
