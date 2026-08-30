@@ -12,6 +12,33 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Metric-matched fallbacks. Fontsource ships font-display: swap, so the first paint uses a
+   system font and every line is re-measured when the real face arrives. On the hero that
+   re-wrapped the 96px headline and moved the page ~240px.
+
+   Each size-adjust is the real face's rendered advance width over Arial's, measured in the
+   browser on this page's own headline and lead at their real size and weight. Do not derive
+   these from the OS/2 tables: xAvgCharWidth is wrong for both variable fonts and putting it
+   through the usual formula makes the Inter Tight fallback 38% too wide, which is worse than
+   no override at all. Remeasure the same way if either font changes. */
+@font-face {
+	font-family: 'Inter Tight Fallback';
+	src: local('Arial'), local('Helvetica');
+	size-adjust: 99.44%;
+	ascent-override: 97.42%;
+	descent-override: 24.26%;
+	line-gap-override: 0%;
+}
+
+@font-face {
+	font-family: 'DM Sans Fallback';
+	src: local('Arial'), local('Helvetica');
+	size-adjust: 105.65%;
+	ascent-override: 93.89%;
+	descent-override: 29.34%;
+	line-gap-override: 0%;
+}
+
 /* Values are hex because blueprint/reference/design-system.md is authoritative
    in hex, and the done-when checks compare against those exact values. */
 :root {
@@ -127,8 +154,8 @@
 }
 
 @theme inline {
-	--font-sans: 'DM Sans Variable', ui-sans-serif, system-ui, sans-serif;
-	--font-display: 'Inter Tight Variable', ui-sans-serif, system-ui, sans-serif;
+	--font-sans: 'DM Sans Variable', 'DM Sans Fallback', ui-sans-serif, system-ui, sans-serif;
+	--font-display: 'Inter Tight Variable', 'Inter Tight Fallback', ui-sans-serif, system-ui, sans-serif;
 
 	--color-background: var(--background);
 	--color-foreground: var(--foreground);

@@ -11,12 +11,15 @@
 
 <article class="flex h-full flex-col overflow-hidden rounded-xl bg-surface-warm">
 	{#if clinician.portrait}
-		<!-- Decorative: the name immediately below carries the meaning. -->
+		<!-- Decorative: the name immediately below carries the meaning. The fixed ratio reserves
+		     the height before the file loads, and squares up the three portraits, which are
+		     exported at slightly different sizes and would otherwise size the carousel cards
+		     unequally. -->
 		<img
 			src={clinician.portrait}
 			alt=""
 			aria-hidden="true"
-			class="w-full object-cover"
+			class="aspect-3/2 w-full object-cover"
 		/>
 	{/if}
 	<div class="flex flex-1 flex-col p-6">

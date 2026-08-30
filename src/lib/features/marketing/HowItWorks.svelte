@@ -15,6 +15,8 @@
 						alt=""
 						aria-hidden="true"
 						class="w-full rounded-xl object-cover"
+						width="720"
+						height="430"
 					/>
 					<!-- Caption chip sits on the card ground, not on the artwork, so its contrast does
 					     not depend on whichever image ends up behind it. -->

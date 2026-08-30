@@ -50,6 +50,8 @@
 					alt=""
 					aria-hidden="true"
 					class="w-full rounded-xl object-cover"
+					width="517"
+					height="476"
 				/>
 
 				<div>
