@@ -63,11 +63,11 @@
 				onCheckedChange={(checked) => toggle(option, checked === true)}
 			/>
 			<FieldContent>
-				<FieldTitle class="font-sans text-base font-semibold normal-case tracking-normal">
+				<FieldTitle class="font-sans text-base font-semibold">
 					{option.label}
 				</FieldTitle>
 				{#if option.description}
-					<FieldDescription class="normal-case tracking-normal">
+					<FieldDescription>
 						{option.description}
 					</FieldDescription>
 				{/if}

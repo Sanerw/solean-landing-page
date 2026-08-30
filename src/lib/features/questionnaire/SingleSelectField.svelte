@@ -49,13 +49,11 @@
 					aria-invalid={invalid ? 'true' : undefined}
 				/>
 				<FieldContent>
-					<!-- FieldLabel carries the uppercase eyebrow treatment for bare field labels; an
-					     option card is a sentence-case choice, as the reference shows it. -->
-					<FieldTitle class="font-display text-base font-semibold normal-case tracking-normal">
+					<FieldTitle class="font-display text-base font-semibold">
 						{option.label}
 					</FieldTitle>
 					{#if option.description}
-						<FieldDescription class="normal-case tracking-normal">
+						<FieldDescription>
 							{option.description}
 						</FieldDescription>
 					{/if}

@@ -5,7 +5,10 @@
 		base: [
 			"group/badge inline-flex w-fit shrink-0 items-center justify-center gap-1 overflow-hidden whitespace-nowrap",
 			"h-5 rounded-sm border border-transparent px-2 py-0.5",
-			"font-sans text-xs font-medium transition-colors",
+			// Every badge label in the export is DM Sans bold at 10 to 10.5px with 0.7 to
+			// 0.8px tracking. The size snaps to text-xs; the weight and tracking are the
+			// visible half of that treatment and belong in the primitive.
+			"font-sans text-xs font-bold tracking-wider transition-colors",
 			"focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
 			"[&>svg]:pointer-events-none [&>svg]:size-3!",
 		],

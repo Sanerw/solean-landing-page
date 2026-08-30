@@ -52,7 +52,8 @@
 					<span id={nameId} class="font-display text-lg font-semibold text-foreground">
 						{treatment.name}
 					</span>
-					<Badge variant={treatment.form === 'tablet' ? 'highlight' : 'accent'}>
+					<!-- The catalogue stores the form lowercase; the reference chip reads INJECTION. -->
+					<Badge variant={treatment.form === 'tablet' ? 'highlight' : 'accent'} class="uppercase">
 						{treatment.form}
 					</Badge>
 				</span>

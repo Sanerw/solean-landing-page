@@ -362,6 +362,23 @@ heading by default.
 | Button | `font-semibold` |
 | Body | `font-normal` |
 
+### Two uppercase micro-types, measured
+
+The eyebrow is not the only small uppercase role, and the two are not the same
+size. Both are DM Sans; neither is `--foreground`.
+
+| Role | Export | Written as |
+| --- | --- | --- |
+| Field label above a control | 14px semibold, `#405756`, tracking 1px | `text-sm font-semibold uppercase tracking-widest text-muted-foreground` |
+| Status badge or chip label | 10 to 10.5px bold, tracking 0.7 to 0.8px | `text-xs font-bold uppercase tracking-wider` |
+
+The field label lives in `FieldLabel`, scoped with `not-has-[>[data-slot=field]]`.
+`text-transform` and `letter-spacing` inherit, so an unscoped eyebrow reaches the
+title and description of an option card nested inside the same label, and every
+artboard draws those choices in sentence case. The badge treatment lives in the
+`Badge` base. Case stays with the caller there, because the completion chips are
+the one badge family the reference does not set in capitals.
+
 ## 3. Radii
 
 Base `--radius: 1.25rem`. With the multiplier chain already in `@theme inline`,

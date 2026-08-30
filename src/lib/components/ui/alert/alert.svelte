@@ -6,7 +6,9 @@
 	// (the provisional destructive family, used here on a light wash rather than
 	// the saturated fill, since this is a surface, not a button).
 	export const alertVariants = tv({
-		base: "group/alert relative grid w-full gap-0.5 rounded-lg border px-4 py-3 text-left text-sm has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-2.5 *:[svg]:row-span-2 *:[svg]:translate-y-0.5 *:[svg]:text-current *:[svg:not([class*='size-'])]:size-4",
+		// content-start: an Alert stretched by a taller grid sibling would otherwise
+		// distribute the extra height into its own rows and open a gap under the title.
+		base: "group/alert relative grid w-full content-start gap-0.5 rounded-lg border px-4 py-3 text-left text-sm has-data-[slot=alert-action]:relative has-data-[slot=alert-action]:pr-18 has-[>svg]:grid-cols-[auto_1fr] has-[>svg]:gap-x-2.5 *:[svg]:row-span-2 *:[svg]:translate-y-0.5 *:[svg]:text-current *:[svg:not([class*='size-'])]:size-4",
 		variants: {
 			variant: {
 				default: "border-transparent bg-accent text-accent-foreground",
