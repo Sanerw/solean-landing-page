@@ -64,6 +64,12 @@ export interface QuestionOption {
 	description?: string;
 	/** Checking it clears every other choice, and any other choice clears it. Multi-select only. */
 	exclusive?: boolean;
+	/**
+	 * Renders below the `OR` separator. The reference puts "None of the above" and "Other"
+	 * there together, so being set apart is not the same thing as being exclusive. An
+	 * exclusive option is trailing whether or not this is set.
+	 */
+	trailing?: boolean;
 }
 
 interface QuestionFieldBase<K extends QuestionFieldKind> {
@@ -76,6 +82,11 @@ interface QuestionFieldBase<K extends QuestionFieldKind> {
 	width?: 'full' | 'half';
 	/** Kept for assistive technology but not drawn, where the reference shows no group label. */
 	labelHidden?: boolean;
+	/**
+	 * Presentation only. `eyebrow` is the reference's small uppercase field label; `question`
+	 * is the bold sentence-case sub-question it uses when a step asks more than one thing.
+	 */
+	labelStyle?: 'eyebrow' | 'question';
 	validation: readonly ValidationRule[];
 }
 

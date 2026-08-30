@@ -83,7 +83,11 @@ function defineQuestionnaireSchema(schema: QuestionnaireSchema): QuestionnaireSc
 }
 
 export const QUESTIONNAIRE_SCHEMA = defineQuestionnaireSchema({
-	questionCount: 9,
+	// 8, not the reference's 9. Eight artboards ask a question and the ninth congratulates,
+	// so "QUESTION n OF 9" was the defect and "ALL 8 STEPS COMPLETE" was right. Project plan
+	// section 9 rules that one count exists and the schema owns it; this is that count, and
+	// the completion screen is never numbered.
+	questionCount: 8,
 	steps: [
 		{
 			kind: 'question',
@@ -238,6 +242,167 @@ export const QUESTIONNAIRE_SCHEMA = defineQuestionnaireSchema({
 				variant: 'default',
 				text: 'The medication must be stopped at least 2 months before a planned pregnancy.'
 			}
+		},
+		{
+			kind: 'question',
+			id: 'medical-conditions',
+			questionNumber: 4,
+			title: 'Do you have any of the following conditions?',
+			help: 'Select all that apply',
+			fields: [
+				{
+					id: 'conditions',
+					kind: 'multi-select',
+					label: 'Medical conditions',
+					labelHidden: true,
+					optionColumns: 2,
+					// Column order in the reference reads down the left column, then the right.
+					options: [
+						{ id: 'thyroid-cancer', label: 'Thyroid cancer' },
+						{ id: 'pancreatitis', label: 'Pancreatitis or pancreatic disease' },
+						{ id: 'gallstones', label: 'Gallstones or gallbladder disease' },
+						{ id: 'liver-disease', label: 'Liver disease (except fatty liver)' },
+						{ id: 'kidney-disease', label: 'Kidney disease' },
+						{ id: 'diabetic-retinopathy', label: 'Diabetic retinopathy' },
+						{ id: 'tachycardia', label: 'Tachycardia or heart rhythm disorders' },
+						{ id: 'mental-health', label: 'Serious mental health conditions' },
+						{ id: 'insulin-sulfonylureas', label: 'Use of insulin or sulfonylureas' },
+						{ id: 'heart-failure', label: 'Heart failure' },
+						{ id: 'recent-weight-loss-surgery', label: 'Weight loss surgery in the last 3 months' },
+						{ id: 'type-1-diabetes', label: 'Type 1 diabetes' },
+						{ id: 'endocrine-disorders', label: 'Endocrine or thyroid disorders' },
+						{ id: 'porphyria', label: 'Porphyria' },
+						{ id: 'inflammatory-bowel-disease', label: 'Inflammatory bowel disease' },
+						{ id: 'severe-gi-disorders', label: 'Severe GI disorders (gastroparesis)' },
+						{ id: 'none', label: 'None of the above', exclusive: true },
+						// Trailing but not exclusive: the reference sets it beside "None of the
+						// above" while still allowing it alongside a listed condition.
+						{ id: 'other', label: 'Other', trailing: true }
+					],
+					validation: [
+						{ type: 'required', message: 'Choose an option, or select "None of the above".' },
+						{ type: 'min-selected', count: 1, message: 'Choose at least one option.' }
+					]
+				}
+			]
+		},
+		{
+			kind: 'question',
+			id: 'health-history',
+			questionNumber: 5,
+			title: 'A few questions about your health history',
+			fields: [
+				{
+					id: 'family-history',
+					kind: 'multi-select',
+					label: 'Have you or a family member ever had any of the following?',
+					labelStyle: 'question',
+					options: [
+						{ id: 'medullary-thyroid-carcinoma', label: 'Medullary thyroid carcinoma' },
+						{ id: 'multiple-endocrine-neoplasia', label: 'Multiple endocrine neoplasia' },
+						{ id: 'none', label: 'None of the above', exclusive: true }
+					],
+					validation: [
+						{ type: 'required', message: 'Choose an option, or select "None of the above".' },
+						{ type: 'min-selected', count: 1, message: 'Choose at least one option.' }
+					]
+				},
+				{
+					id: 'mental-health',
+					kind: 'single-select',
+					label: 'Have you been diagnosed with a mental health condition or had suicidal thoughts?',
+					labelStyle: 'question',
+					options: [
+						{ id: 'yes', label: 'Yes' },
+						{ id: 'no', label: 'No' }
+					],
+					validation: [{ type: 'required', message: 'Select Yes or No to continue.' }]
+				}
+			]
+		},
+		{
+			kind: 'question',
+			id: 'eating-disorders',
+			questionNumber: 6,
+			title: 'Do you currently have, or have you ever had, an eating disorder?',
+			// The reference joins these with an em dash, which the writing rule excludes.
+			help: 'Anorexia, bulimia, binge eating or similar. Please select Yes even if it was never medically confirmed.',
+			fields: [
+				{
+					id: 'eating-disorder',
+					kind: 'single-select',
+					// The h1 already asks this, so the group name exists only for assistive technology.
+					label: 'Eating disorder history',
+					labelHidden: true,
+					options: [
+						{ id: 'yes', label: 'Yes' },
+						{ id: 'no', label: 'No' }
+					],
+					validation: [{ type: 'required', message: 'Select Yes or No to continue.' }]
+				},
+				{
+					id: 'statements',
+					kind: 'multi-select',
+					label: 'Do any of these statements apply to you?',
+					labelStyle: 'question',
+					options: [
+						{ id: 'vomiting', label: 'I have made myself vomit after feeling uncomfortably full' },
+						{ id: 'losing-control', label: 'I worry about losing control over how much I eat' },
+						{ id: 'recent-loss', label: 'I have lost more than 6 kg in the past 3 months' },
+						{ id: 'body-image', label: 'I believe I am fat even when others say I am too thin' },
+						{ id: 'dominated-by-food', label: 'My life is dominated by food' },
+						{ id: 'none', label: 'None of the above', exclusive: true }
+					],
+					validation: [
+						{ type: 'required', message: 'Choose an option, or select "None of the above".' },
+						{ type: 'min-selected', count: 1, message: 'Choose at least one option.' }
+					]
+				}
+			]
+		},
+		{
+			kind: 'question',
+			id: 'allergies-medications',
+			questionNumber: 7,
+			title: 'Are you allergic to any substances, medications or foods?',
+			help: 'Select all that apply',
+			fields: [
+				{
+					id: 'allergies',
+					kind: 'multi-select',
+					label: 'Allergies',
+					labelHidden: true,
+					optionColumns: 2,
+					options: [
+						{ id: 'liraglutide', label: 'Liraglutide' },
+						{ id: 'semaglutide', label: 'Semaglutide' },
+						{ id: 'tirzepatide', label: 'Tirzepatide' },
+						{ id: 'benzyl-alcohol', label: 'Benzyl alcohol' },
+						{ id: 'disodium-phosphate-dihydrate', label: 'Disodium phosphate dihydrate' },
+						{ id: 'propylene-glycol', label: 'Propylene glycol' },
+						{ id: 'phenol', label: 'Phenol' },
+						{ id: 'hydrochloric-acid-sodium-hydroxide', label: 'Hydrochloric acid / sodium hydroxide' },
+						{ id: 'none', label: 'None of the above', exclusive: true },
+						{ id: 'other', label: 'Other', trailing: true }
+					],
+					validation: [
+						{ type: 'required', message: 'Choose an option, or select "None of the above".' },
+						{ type: 'min-selected', count: 1, message: 'Choose at least one option.' }
+					]
+				},
+				{
+					id: 'other-medication',
+					kind: 'single-select',
+					label: 'Do you take any other medication, including prescription and over-the-counter?',
+					labelStyle: 'question',
+					help: 'The medication delays gastric emptying and could affect the absorption of oral medication taken at the same time.',
+					options: [
+						{ id: 'yes', label: 'Yes' },
+						{ id: 'no', label: 'No' }
+					],
+					validation: [{ type: 'required', message: 'Select Yes or No to continue.' }]
+				}
+			]
 		}
 	]
 });

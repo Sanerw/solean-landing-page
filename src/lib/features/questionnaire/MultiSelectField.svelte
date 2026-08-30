@@ -21,8 +21,12 @@
 
 	let { field, stepId, value, invalid, describedBy, onchange }: Props = $props();
 
-	const regular = $derived(field.options.filter((option) => !option.exclusive));
+	const isTrailing = (option: QuestionOption) => option.trailing === true || option.exclusive === true;
+
+	const primary = $derived(field.options.filter((option) => !isTrailing(option)));
+	const trailing = $derived(field.options.filter(isTrailing));
 	const exclusive = $derived(field.options.find((option) => option.exclusive) ?? null);
+	const columns = $derived(field.optionColumns === 2 ? 'sm:grid-cols-2' : '');
 
 	function optionId(option: QuestionOption): string {
 		return `${stepId}-${field.id}-${option.id}`;
@@ -72,13 +76,13 @@
 	</FieldLabel>
 {/snippet}
 
-<div class="grid gap-3 {field.optionColumns === 2 ? 'sm:grid-cols-2' : ''}">
-	{#each regular as option (option.id)}
+<div class="grid gap-3 {columns}">
+	{#each primary as option (option.id)}
 		{@render card(option)}
 	{/each}
 </div>
 
-{#if exclusive}
+{#if trailing.length > 0}
 	<!-- Decorative: the exclusivity is already conveyed by the control behavior, so the
 	     separator is hidden rather than read out as a stray "or" between checkboxes. -->
 	<div aria-hidden="true" class="relative my-1 flex items-center gap-3">
@@ -89,7 +93,9 @@
 		<Separator class="flex-1" />
 	</div>
 
-	<div class="grid gap-3 {field.optionColumns === 2 ? 'sm:grid-cols-2' : ''}">
-		{@render card(exclusive)}
+	<div class="grid gap-3 {columns}">
+		{#each trailing as option (option.id)}
+			{@render card(option)}
+		{/each}
 	</div>
 {/if}

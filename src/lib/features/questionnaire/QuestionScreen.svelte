@@ -60,9 +60,27 @@
 		return field.kind !== 'numeric';
 	}
 
-	function describedBy(controlKey: string, hasHelp: boolean): string | undefined {
+	// Applied to a span inside the legend, not the legend itself: FieldLegend's own
+	// data-[variant] rules outrank a plain utility class, and a child element sidesteps
+	// that without reaching into the primitive.
+	function labelClass(field: QuestionField): string {
+		return field.labelStyle === 'question'
+			? 'font-sans text-base font-semibold text-foreground'
+			: 'font-sans text-xs font-semibold uppercase tracking-widest text-foreground';
+	}
+
+	function fieldHelpId(fieldId: string): string {
+		return `${domId(fieldId)}-help`;
+	}
+
+	/** The step's help, then the field's own, then its error: everything the group means. */
+	function describedBy(field: QuestionField, controlKey: string): string | undefined {
 		return (
-			[hasHelp ? helpId : null, errors[controlKey] ? errorId(controlKey) : null]
+			[
+				step.help ? helpId : null,
+				field.help ? fieldHelpId(field.id) : null,
+				errors[controlKey] ? errorId(controlKey) : null
+			]
 				.filter(Boolean)
 				.join(' ') || undefined
 		);
@@ -148,7 +166,7 @@
 	<div class="mt-10 grid gap-8 sm:grid-cols-2">
 		{#each step.fields as field (field.id)}
 			{@const invalid = Boolean(errors[field.id])}
-			{@const described = describedBy(field.id, Boolean(step.help))}
+			{@const described = describedBy(field, field.id)}
 			{@const span = field.width === 'half' ? '' : 'sm:col-span-2'}
 
 			{#snippet label()}
@@ -212,17 +230,11 @@
 
 			{#if isGroup(field)}
 				<FieldSet class={span}>
-					<FieldLegend
-						variant="label"
-						class={[
-							'mb-0 font-sans uppercase tracking-widest text-foreground',
-							field.labelHidden && 'sr-only'
-						]}
-					>
-						{@render label()}
+					<FieldLegend variant="label" class={['mb-0', field.labelHidden && 'sr-only']}>
+						<span class={labelClass(field)}>{@render label()}</span>
 					</FieldLegend>
 					{#if field.help}
-						<p class="text-sm text-muted-foreground">{field.help}</p>
+						<p id={fieldHelpId(field.id)} class="text-sm text-muted-foreground">{field.help}</p>
 					{/if}
 					{@render control()}
 				</FieldSet>
@@ -230,7 +242,7 @@
 				<Field class={span}>
 					<FieldLabel for={domId(field.id)}>{@render label()}</FieldLabel>
 					{#if field.help}
-						<p class="text-sm text-muted-foreground">{field.help}</p>
+						<p id={fieldHelpId(field.id)} class="text-sm text-muted-foreground">{field.help}</p>
 					{/if}
 					{@render control()}
 				</Field>

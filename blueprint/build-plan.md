@@ -213,7 +213,7 @@ claims are not approved production content.
     composing the adapted `checkbox`, `input-group`, `input`, `select` and
     `field`. Complete questions 1 to 3 on the new contract. Answer cards are
     questionnaire components, not new primitives.
-  - [ ] 8b. **The medical questions** - Questions 4 to 7 (medical conditions,
+  - [x] 8b. **The medical questions** - Questions 4 to 7 (medical conditions,
     health history, eating disorders, allergies and medications) as fixture
     content on 8a's contract, with no new renderers. The questionnaire collects
     only: no pass/fail logic, no BMI threshold, no contraindication branch.
