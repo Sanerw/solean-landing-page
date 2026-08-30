@@ -33,12 +33,12 @@
 	</ul>
 
 	<div class="mt-10 flex flex-col gap-4 sm:flex-row">
-		<Button href={ROUTES.questionnaire} size="lg">
+		<Button href={ROUTES.questionnaire} class="rounded-full">
 			{MEDICAL_FRAMING.primaryCta}
 			<ArrowRightIcon aria-hidden="true" class="size-5" />
 		</Button>
 		<!-- Inert, matching how the hero treats the same destination until it exists. -->
-		<Button href="/treatments" variant="outline" size="lg">
+		<Button href="/treatments" variant="outline" class="rounded-full">
 			{MEDICAL_FRAMING.secondaryCta}
 			<ArrowUpRightIcon aria-hidden="true" class="size-5" />
 		</Button>

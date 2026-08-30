@@ -17,7 +17,9 @@
 
 <!-- Ground is --highlight, which the reference uses here exactly. It carries the top three
      text roles but not --text-faint, so nothing on this band uses that role. -->
-<section class={BLEED} aria-label="Care built in">
+<!-- The rounded panel needs its own breathing room: BLEED carries only the horizontal
+     gutter, so without this the card butts straight into the section above and below. -->
+<section class={[BLEED, 'py-8']} aria-label="Care built in">
 	<div class="rounded-xl bg-highlight py-12 lg:py-16">
 		<div class={CONTAINER}>
 			<ul class="grid gap-8 sm:grid-cols-3">
@@ -39,7 +41,11 @@
 						{RESULTS_BAND.title}
 					</h2>
 					<p class="mt-4 text-base text-muted-foreground">{RESULTS_BAND.lead}</p>
-					<Button href={ROUTES.questionnaire} variant="inverse" size="lg" class="mt-6">
+					<Button
+						href={ROUTES.questionnaire}
+						variant="inverse"
+						class="mt-6 rounded-full"
+					>
 						{RESULTS_BAND.cta}
 						<ArrowRightIcon aria-hidden="true" class="size-5" />
 					</Button>

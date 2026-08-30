@@ -55,7 +55,7 @@
 
 				<h1
 					id="hero-heading"
-					class="mt-4 text-balance font-display text-4xl font-medium leading-tight text-background sm:text-5xl lg:text-6xl xl:text-7xl"
+					class="mt-4 max-w-5xl text-balance font-display text-4xl font-medium leading-none tracking-tight text-background sm:text-4xl lg:text-5xl xl:text-6xl"
 				>
 					{HERO.headlineLead}
 					<!-- A real <s>, so the "not this, but that" meaning survives without the styling. -->
@@ -72,16 +72,19 @@
 				</p>
 
 				<div class="mt-5 flex flex-col items-center justify-center gap-4 sm:flex-row">
-					<Button href={ROUTES.questionnaire} size="lg" surface="dark" class="w-full sm:w-auto">
+					<Button
+						href={ROUTES.questionnaire}
+						surface="dark"
+						class="w-full rounded-full sm:w-auto"
+					>
 						{HERO.primaryCta}
 						<ArrowRightIcon aria-hidden="true" class="size-5" />
 					</Button>
 					<Button
 						href="/treatments"
 						variant="outline"
-						size="lg"
 						surface="dark"
-						class="w-full sm:w-auto"
+						class="w-full rounded-full sm:w-auto"
 					>
 						{HERO.secondaryCta}
 					</Button>

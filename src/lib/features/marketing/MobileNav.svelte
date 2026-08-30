@@ -83,7 +83,11 @@
 
 		<Sheet.Footer>
 			<Separator class="mb-4" />
-			<Button href={ROUTES.questionnaire} size="lg" class="w-full" onclick={() => (open = false)}>
+			<Button
+				href={ROUTES.questionnaire}
+				class="w-full rounded-full"
+				onclick={() => (open = false)}
+			>
 				{HERO.primaryCta}
 			</Button>
 			<LanguageSelect display="full" showIcon class="mt-2 self-start" />

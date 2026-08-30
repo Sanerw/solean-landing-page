@@ -6,7 +6,8 @@
 	const [tall, ...rest] = BENTO_CARDS;
 </script>
 
-<section class={BLEED} aria-label="What Solean gives you">
+<!-- Bottom only: the trust row above already ends with its own padding. -->
+<section class={[BLEED, 'pb-8']} aria-label="What Solean gives you">
 	<div class={CONTAINER}>
 		<div class="grid gap-4 lg:grid-cols-5">
 			<div class="lg:col-span-2">

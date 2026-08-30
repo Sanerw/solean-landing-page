@@ -5,7 +5,7 @@
 	import TestimonialCard from './TestimonialCard.svelte';
 </script>
 
-<section class={BLEED} aria-label={TESTIMONIALS_SECTION.title}>
+<section class={[BLEED, 'py-8']} aria-label={TESTIMONIALS_SECTION.title}>
 	<div class="rounded-xl bg-accent py-14 lg:py-20">
 		<div class={CONTAINER}>
 			<Carousel.Root opts={{ align: 'start' }} class="w-full">

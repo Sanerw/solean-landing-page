@@ -5,7 +5,7 @@
 	import { HOW_IT_WORKS } from './content';
 </script>
 
-<section class={BLEED} aria-label="How it works">
+<section class={[BLEED, 'py-8']} aria-label="How it works">
 	<div class="rounded-xl bg-muted py-12 lg:py-16">
 		<div class={CONTAINER}>
 			<div class="grid gap-10 lg:grid-cols-2 lg:items-center">
