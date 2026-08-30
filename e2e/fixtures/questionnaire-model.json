@@ -1,0 +1,372 @@
+{
+  "identifier": "FIXTURE: trimmed MedQ recommender",
+  "model": {
+    "checkErrorsMode": "onValueChanged",
+    "completeText": "Abschließen",
+    "completedHtml": {
+      "de": "<h3>Wir erstellen deine Produktempfehlung</h3>",
+      "default": "<h3>Thank you for your answers</h3>"
+    },
+    "completedHtmlOnCondition": [
+      {
+        "html": "<h3>Wir erstellen deine Produktempfehlung</h3>"
+      }
+    ],
+    "pageNextText": "Weiter",
+    "pagePrevText": "Zurück",
+    "progressBarLocation": "aboveheader",
+    "showPageTitles": false,
+    "showProgressBar": "aboveHeader",
+    "startSurveyText": "Beginnen",
+    "pages": [
+      {
+        "elements": [
+          {
+            "description": "Deine Antworten werden vertraulich zwischen Dir und unserem Ärzteteam behandelt.",
+            "klaviyoIdentifierKey": "email",
+            "klaviyoTrackEventName": "003MedQ Multi started",
+            "klaviyoTrackKey": "E-Mail",
+            "name": "EMail",
+            "title": "Beginnen wir mit Deinen Kontaktdaten\nBitte gib Deine E-Mail ein:",
+            "type": "text"
+          },
+          {
+            "description": "Mit der Angabe Deiner E-Mail-Adresse bestätigst Du, dass SoLean Dir Informationen per E-Mail zusenden darf. Dies kannst Du jederzeit widerrufen.",
+            "name": "InfoEMail",
+            "title": "Info:",
+            "type": "expression"
+          }
+        ],
+        "name": "page30",
+        "title": "E-Mail"
+      },
+      {
+        "elements": [
+          {
+            "isRequired": true,
+            "items": [
+              {
+                "isRequired": true,
+                "name": "Name",
+                "requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+                "title": "Vorname"
+              },
+              {
+                "isRequired": true,
+                "name": "Surname",
+                "requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+                "title": "Nachname"
+              }
+            ],
+            "klaviyoIdentifierKey": "firstname",
+            "klaviyoTrackEventName": "003MedQ Multi started",
+            "klaviyoTrackKey": "Firstname",
+            "name": "Name",
+            "requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+            "title": "Bitte gib Deinen Vor- und Nachnamen an.",
+            "type": "multipletext",
+            "visible": false
+          },
+          {
+            "isRequired": true,
+            "klaviyoIdentifierKey": "first_name",
+            "klaviyoTrackEventName": "003MedQ Multi Firstname submit",
+            "klaviyoTrackKey": "Firstname",
+            "name": "FirstName",
+            "requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+            "title": "Bitte gib Deinen Vornamen an.",
+            "type": "text"
+          },
+          {
+            "isRequired": true,
+            "klaviyoIdentifierKey": "last_name",
+            "klaviyoTrackEventName": "003MedQ Multi Lastname submit",
+            "klaviyoTrackKey": "Lastname",
+            "name": "Surname",
+            "requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+            "title": "Bitte gib Deinen Nachnamen an.",
+            "type": "text"
+          }
+        ],
+        "name": "page27",
+        "title": "Name"
+      },
+      {
+        "elements": [
+          {
+            "isRequired": true,
+            "name": "dob",
+            "requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+            "title": "Bitte gib Dein Geburtsdatum an",
+            "type": "os-date-picker",
+            "validators": [
+              {
+                "expression": "age({dob}) < 80 && age({dob}) >= 18",
+                "text": "Leider können wir Dir unseren Service nicht anbieten. Wir empfehlen Dir Dein Arzt des Vertrauens zu konsultieren.",
+                "type": "expression"
+              }
+            ]
+          },
+          {
+            "isRequired": true,
+            "items": [
+              {
+                "inputType": "number",
+                "isRequired": true,
+                "maxValueExpression": "31",
+                "minValueExpression": "1",
+                "name": "Day",
+                "requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+                "title": "Tag"
+              },
+              {
+                "inputType": "number",
+                "isRequired": true,
+                "maxValueExpression": "12",
+                "minValueExpression": "1",
+                "name": "Month",
+                "requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+                "title": "Monat"
+              },
+              {
+                "inputType": "number",
+                "isRequired": true,
+                "maxValueExpression": "2007",
+                "minValueExpression": "1935",
+                "name": "Year",
+                "requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+                "title": "Jahr",
+                "validators": [
+                  {
+                    "type": "expression"
+                  }
+                ]
+              }
+            ],
+            "name": "dob2",
+            "requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+            "title": "Bitte gib Dein Geburtsdatum an",
+            "type": "multipletext",
+            "visible": false
+          }
+        ],
+        "name": "page26",
+        "title": "dob"
+      },
+      {
+        "elements": [
+          {
+            "choices": [
+              {
+                "text": "Weiblich",
+                "value": "female"
+              },
+              {
+                "text": "Männlich",
+                "value": "male"
+              }
+            ],
+            "isRequired": true,
+            "name": "Gender",
+            "requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+            "title": "Welches biologische Geschlecht hast Du?",
+            "type": "radiogroup"
+          }
+        ],
+        "name": "page3",
+        "title": "Gender"
+      },
+      {
+        "elements": [
+          {
+            "choices": [
+              {
+                "text": "Ja",
+                "value": "yes"
+              },
+              {
+                "text": "Nein",
+                "value": "no"
+              }
+            ],
+            "isRequired": true,
+            "name": "isPregnantorBreastfeeding",
+            "requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+            "title": "Bist Du aktuell schwanger oder stillst Du?",
+            "type": "radiogroup",
+            "validators": [
+              {
+                "expression": "{isPregnantorBreastfeeding} = 'no'",
+                "text": "Es tut uns sehr leid, aber wir können Dir das Medikament nicht verschreiben. Bitte kontaktiere Deinen Arzt des Vertrauens.",
+                "type": "expression"
+              }
+            ],
+            "visibleIf": "{Gender} = 'female'"
+          }
+        ],
+        "name": "page4",
+        "title": "isPregnantorBreastfeeding"
+      },
+      {
+        "elements": [
+          {
+            "isRequired": true,
+            "items": [
+              {
+                "inputType": "number",
+                "isRequired": true,
+                "name": "size",
+                "requiredErrorText": "Erforderlich",
+                "title": "Größe (cm)",
+                "validators": [
+                  {
+                    "expression": "{WeightSize.size} > 120 and {WeightSize.size} < 250",
+                    "text": "Bitte überprüfe Deine Angaben.",
+                    "type": "expression"
+                  }
+                ]
+              },
+              {
+                "inputType": "number",
+                "isRequired": true,
+                "name": "weight",
+                "requiredErrorText": "Erforderlich",
+                "title": "Gewicht (kg)",
+                "validators": [
+                  {
+                    "expression": "{WeightSize.weight} > 40 and {WeightSize.weight} < 300",
+                    "text": "Bitte überprüfe Deine Angaben.",
+                    "type": "expression"
+                  }
+                ]
+              }
+            ],
+            "name": "WeightSize",
+            "requiredErrorText": "Diese Angaben werden benötigt, um Deinen BMI zu errechnen.",
+            "title": "Bitte gib Deine Größe und Dein Gewicht an.",
+            "type": "multipletext",
+            "validators": [
+              {
+                "expression": "({WeightSize.weight} empty) || ({WeightSize.size} empty)  || ((({WeightSize.weight})/({WeightSize.size}/100  * {WeightSize.size}/100)) >= 27)",
+                "text": "Dieses Medikament kann nur verschrieben werden, wenn Dein BMI über 27 liegt oder zwischen 27 und 30, und Du eine gewichtsbedingte Begleiterkrankung hast.",
+                "type": "expression"
+              }
+            ]
+          }
+        ],
+        "name": "page2",
+        "title": "WeightSize"
+      },
+      {
+        "elements": [
+          {
+            "choices": [
+              {
+                "text": "Hoher Cholesterinspiegel oder hohe Triglyceride",
+                "value": "High cholesterol or high triglycerides"
+              },
+              {
+                "text": "Herzkrankheit oder periphere Gefäßerkrankung, einschließlich Angina pectoris, frühere Herzinfarkte, früherer Schlaganfall",
+                "value": "Heart disease or peripheral vascular disease, including angina, previous heart attacks, previous stroke"
+              },
+              {
+                "text": "Knie- oder Hüftarthrose",
+                "value": "Knee or hip osteoarthritis"
+              },
+              {
+                "text": "Rückenschmerzen im Zusammenhang mit Übergewicht",
+                "value": "Pain in back related to weight"
+              },
+              {
+                "text": "Polyzystisches Ovarialsyndrom (PCOS)",
+                "value": "Polycystic ovary syndrome (PCOS)"
+              },
+              {
+                "text": "Fettleber",
+                "value": "Fatty liver"
+              },
+              {
+                "text": "Hoher Blutdruck",
+                "value": "High blood pressure"
+              },
+              {
+                "text": "Diabetes Typ 2",
+                "value": "Type 2 Diabetes"
+              },
+              {
+                "text": "Prädiabetes",
+                "value": "Pre-diabetes"
+              }
+            ],
+            "isRequired": true,
+            "name": "WeightRelatedConditions",
+            "noneText": "Keine der Genannten",
+            "otherErrorText": "Bitte gib Informationen zu weiteren Erkrankungen an.",
+            "otherPlaceholder": "Bitte gib Informationen zu weiteren Erkrankungen an.",
+            "otherText": "Andere",
+            "requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+            "showNoneItem": true,
+            "showOtherItem": true,
+            "title": "Wurde bei Dir eine der folgenden Erkrankungen festgestellt?",
+            "type": "checkbox",
+            "validators": [
+              {
+                "expression": "{WeightRelatedConditions} anyof ['Pre-diabetes', 'Type 2 Diabetes', 'High blood pressure', 'Fatty liver', 'Polycystic ovary syndrome (PCOS)', 'Pain in back related to weight', 'Knee or hip osteoarthritis', 'Heart disease or peripheral vascular disease, including angina, previous heart attacks, previous stroke', 'High cholesterol or high triglycerides', 'other']",
+                "text": "Es tut uns leid. Das Medikament kann bei einem BMI zwischen 27 und 30 nur verschrieben werden, wenn gewichtsbedingten gesundheitlichen Problemen vorliegen.",
+                "type": "expression"
+              }
+            ],
+            "visibleIf": "{WeightSize.size} notempty and {WeightSize.weight} notempty and (({WeightSize.weight})/({WeightSize.size}/100  * {WeightSize.size}/100)) >= 27 and (({WeightSize.weight})/({WeightSize.size}/100  * {WeightSize.size}/100)) <= 30"
+          }
+        ],
+        "name": "page1",
+        "title": "WeightRelatedConditions"
+      },
+      {
+        "elements": [
+          {
+            "choices": [
+              {
+                "text": "Ja",
+                "value": "Yes"
+              },
+              {
+                "text": "Nein",
+                "value": "No"
+              }
+            ],
+            "isRequired": true,
+            "name": "WegovySideEffects",
+            "requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+            "title": "Hast Du Nebenwirkungen bei der Anwendung Deines derzeitigen Medikamentes?",
+            "type": "radiogroup",
+            "validators": [
+              {
+                "type": "expression"
+              }
+            ]
+          }
+        ],
+        "name": "page22",
+        "title": "SideEffects"
+      },
+      {
+        "elements": [
+          {
+            "isRequired": true,
+            "name": "SideEffectsDescription",
+            "requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+            "title": "Bitte gib an, welche Nebenwirkungen Du hast sowie den Schweregrad dieser Nebenwirkungen.",
+            "type": "comment",
+            "visibleIf": "{WegovySideEffects} = 'Yes'"
+          }
+        ],
+        "name": "page23",
+        "title": "SideEffectsDescription"
+      }
+    ]
+  },
+  "theme": {},
+  "type": "PRODUCT_RECOMMENDER",
+  "version": "1"
+}

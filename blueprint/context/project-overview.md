@@ -1,10 +1,10 @@
 # Solean - Project Overview
 
-<!-- blueprint:source-hash a85e75d2041f31c78c364d726229bdfaec5b8c7ab27ef7d0ec8dd87843f4997d -->
+<!-- blueprint:source-hash bc283e0da550cb4544206897d8f332c6ed0fc12b554239e3692bebb79f3aa4e1 -->
 
-> A complete, clickable, responsive UI prototype of a doctor-led GLP-1
-> weight-loss funnel, built on mocked data so the design and UX can be judged
-> before any integration work is committed.
+> The Solean front end: a marketing site and a doctor-led GLP-1 funnel that runs
+> on RxScale's Anamnesis API and hands the order to a Shopify checkout RxScale
+> generates. Solean runs no checkout of its own.
 
 ## Problem
 
@@ -13,300 +13,253 @@ market: a person completes an online medical questionnaire, a clinician reviews
 it, treatment is prescribed when appropriate, and medication is dispensed by a
 partner pharmacy and delivered discreetly.
 
-**This repository is not that service.** It builds the prototype that proves the
-funnel works: visual translation of the design reference, responsiveness, the
-end-to-end UX, the component inventory, forms and validation, price calculation,
-and the success, error, and waiting states. The architecture must let mock
-services be swapped for real adapters later without rewriting components.
+Features 1 to 8 built that funnel as a UI prototype on mocked data, and the
+marketing and editorial surfaces stay fixture-driven. **From feature 9 the funnel
+is a real integration.** The questionnaire is fetched from and validated by the
+RxScale Anamnesis API, the submission creates a real anamnesis record a doctor
+will read, and the order is placed through an RxScale-generated Shopify checkout
+URL that this app only redirects to.
+
+The questionnaire UI is ours; the questionnaire content is not. Text, options,
+order, and branching come from the RxScale model at runtime, so a change in their
+Admin Tool changes the funnel without a deploy here.
 
 ## Users
 
 | User | Needs |
 | --- | --- |
-| **Modelled end user** | EU adults, this variant addressed to men, seeking medically supervised weight loss. Price-aware, privacy-sensitive, comparing against competitor telehealth brands. Expect a consumer purchase experience, not a clinical portal. |
-| **Actual user of this repo** | The product and design team reviewing whether the funnel works. Every feature must be independently runnable and reviewable in a browser. |
+| **End user** | EU adults, this variant addressed to men, seeking medically supervised weight loss. Price-aware, privacy-sensitive, comparing against competitor telehealth brands. Expects a consumer purchase experience, not a clinical portal. |
+| **Product and design team** | Reviews whether the funnel works. Every feature must be independently runnable and reviewable in a browser. |
 
-No access tiers exist. There is no authentication, and no clinician-facing
-surface is in scope.
+No access tiers, no authentication, no clinician-facing surface. Doctor review
+happens inside RxScale, not on a Solean screen.
 
 ## Features
 
-Twelve top-level features in build-plan order. Feature 3 is split into a design
-system completion pass and the marketing shell. The headline is the funnel
-itself, delivered across 7 through 11.
+Fourteen in build-plan order. Features 1 to 8 are complete. The headline is the
+live funnel, features 9 to 13.
 
-1. **Design system and core UI components** - semantic tokens, two fonts,
-   radii, brand foundations, and the initial thirteen shared shadcn primitives
-   installed *and adapted*, proven on a showcase at `/dev/design-system`.
-2. **Prototype architecture** - feature-first layout, domain types, journey
-   state, service contracts, proven by a small scenario page.
-3a. **Design system completion** - nine reference-proven primitives, the
-   seven-variant Button contract, and outstanding showcase and contrast repairs.
-3b. **Marketing shell and hero** - the first page a visitor can land on and
-   navigate.
-4. **Landing page product story** - projection, results, bento, how it works.
-5. **Landing page social proof** - testimonials, clinical team, FAQ.
-6. **Learn article** - the Mounjaro vs Wegovy comparison page.
-7. **Questionnaire foundation** - schema, service, shell, state, one working
-   question as the vertical slice.
-8. **Questionnaire content and completion** - every remaining question through
-   to treatment preference and completion.
-9. **Checkout foundation** - account, shipping, order summary, pricing engine.
-10. **Checkout customization and mock payment** - switching, add-ons, mock pay.
-11. **Doctor review and order status** - six states, each directly reachable.
-12. **End-to-end prototype hardening** - continuity, states, sweeps, verification.
+1. **Design system and core UI components** (done) - semantic tokens, two fonts,
+   radii, brand foundations, thirteen adapted shadcn primitives on a showcase at
+   `/dev/design-system`.
+2. **Prototype architecture** (done) - feature-first layout, domain types,
+   journey state, service contracts, a scenario page.
+3. **Design system completion and marketing shell** (done) - 3a the nine
+   reference-proven primitives and the seven-variant Button contract, 3b the
+   `(marketing)` shell, header, navigation, and hero.
+4. **Landing page product story** (done) - 4a the bento, results and how-it-works
+   panels, 4b the responsive SVG progress projection.
+5. **Landing page social proof** (done) - testimonials, clinical team, FAQ.
+6. **Learn article** (done) - the Mounjaro vs Wegovy comparison page.
+7. **Questionnaire foundation** (done) - shell, progress, state, validation
+   infrastructure, one working question, all against a local mock schema.
+8. **Questionnaire content and completion** (done) - the remaining field kinds,
+   medical questions, interludes, treatment preference, completion.
+9. **Live questionnaire foundation** - config module, public anamnesis client,
+   headless `survey-core`, the `steps[]` builder, the question type registry.
+   Removes the mock schema, the questionnaire mock service, the treatment
+   preference question, and the orphaned checkout and order-status mocks.
+10. **Question type coverage** - every type the live model uses, mapped to
+    adapted primitives, with server-side validation surfaced inline and file or
+    signature answers in exact SurveyJS shape.
+11. **Interludes, progress and flow integrity** - projection computed from
+    `survey.data`, motivation screen, progress counting survey steps only,
+    refresh, back, deep links, and version-keyed in-session persistence.
+12. **Submission and the recommendation screen** - the anamnesis submission, its
+    400 and 502 paths, and the congratulations screen for one configured SKU.
+13. **Checkout handoff** - `POST /api/checkout` in `+server.ts`, the treatment
+    checkout call, and the redirect to the returned URL.
+14. **End-to-end hardening** - the whole path, states, sweeps, browser tests,
+    verification.
 
-Deferred and explicitly out of scope: Shopify, RxScale, real payment,
-server-side sessions, authentication, member account, German routing, undesigned
-routes, dark mode, clinician tooling.
+Dropped to the deferred backlog with this plan change: Solean's own checkout
+(account, shipping, payment), the pricing engine, add-on selection, and the
+doctor review and order status screens.
 
 ## Data model
 
-Nothing real is stored. Every value is a fictional fixture, persisted only to
-`sessionStorage`, SSR-safe.
+**Solean stores nothing server-side.** No database, no session store, no logging
+of answers. In-progress answers live in the browser (`sessionStorage`, SSR-safe)
+and are discarded once the submission succeeds.
 
-**Ownership boundary.** `src/lib/domain/` owns the canonical treatment and
-add-on catalogue including shared fixture prices, because marketing,
-questionnaire, and checkout all read it.
-`src/lib/features/checkout/pricing.ts` owns the pure calculation that consumes
-the catalogue and produces subtotal, discount, shipping, and total.
+**Real data now leaves the browser.** The questionnaire carries genuine personal
+and medical answers to RxScale, who own storage, retention, and clinical review.
 
-### Money
+- Answers, the anamnesis uid, and the checkout URL never reach console output,
+  analytics, or an error report in production.
+- Nothing about the answers is persisted or forwarded anywhere except the
+  anamnesis submission and, for the e-mail alone, the checkout call.
 
-- `amount` (integer, minor units) - cents, to keep the pricing engine free of
-  float error
+### Ownership
+
+| Data | Owner | Notes |
+| --- | --- | --- |
+| Questionnaire model and theme | RxScale | SurveyJS JSON, versioned, fetched on entry to the flow, never hardcoded, never cached past the visit |
+| Answers in progress | Browser session | `survey.data` in SSR-safe `sessionStorage`, keyed by questionnaire identifier and version so a model change cannot resume against stale answers |
+| `steps[]` | Solean | Survey pages interleaved with Solean interludes. The single source of truth for position, progress, and routing |
+| Anamnesis uid | Browser session | Returned by the submission, required by the checkout call |
+| Questionnaire uid, shop identifier, SKU uid, question names | Config | One module per concern, public values separate from private ones |
+| Order, payment, prescription, delivery | RxScale and Shopify | Not modelled here |
+
+### steps[] (Solean)
+
+- `id` (string) - the URL segment for `/questionnaire/[step]`
+- `kind` (`'survey' | 'interlude' | 'recommendation'`)
+- `pageName` (string, survey steps only) - the model page it synchronises to
+- Progress counts `survey` steps only. Interludes never inflate the question
+  count.
+- Survey state is synchronised to `steps[]`, never the reverse.
+
+### Money (domain, unchanged)
+
+- `amount` (integer, minor units) - cents
 - `currency` (`'EUR'`)
 
-This representation is locked in the project plan. Euro values are never stored
-as floating-point amounts for calculations.
+Display only. Shopify owns the amount charged.
 
-### Treatment (domain, canonical)
+### Treatment (domain, unchanged)
 
-- `id` (string)
-- `name` (string) - "Mounjaro", "Wegovy", "Wegovy Pill"
-- `form` (`'injection' | 'tablet'`)
-- `dose` (string) - e.g. "1.5 mg"
-- `claim` (string) - e.g. "Lose up to 23% body weight"
-- `price` (Money) - first month supply
-- Referenced by: questionnaire treatment preference, checkout line items, learn
-  comparison table
+- `id`, `name`, `form` (`'injection' | 'tablet'`), `dose`, `claim`, `price`
+  (Money)
+- Read by the landing page bento and the learn comparison table. No longer
+  selected by the user: the recommendation is one configured SKU.
 
-### AddOn (domain, canonical)
+### Content fixtures (static)
 
-- `id` (string)
-- `name` (string) - consultation, coaching, body smart scale
-- `description` (string)
-- `price` (Money)
-- `unit` (`'one-off' | 'per-session'`)
+`Clinician`, `Testimonial`, `FaqItem`, `Article` - typed, imported directly by
+marketing and editorial components.
 
-> Lock `unit` before feature 10. The reference prices coaching inconsistently
-> (29 in one panel, 39 in a modal); one canonical value wins.
+### Removed in feature 9
 
-### QuestionnaireSchema
-
-- `steps` (QuestionStep[]) - ordered, the single definition of step order
-- One canonical question count. Interstitials must not shift question numbering.
-
-### QuestionStep
-
-- `id` (string)
-- `kind` (`'single-select' | 'multi-select' | 'numeric' | 'contact' | 'interstitial'`)
-- `title`, `help` (string)
-- `options` (Option[], for select kinds) - an option may be flagged exclusive to
-  implement "none of the above"
-- `validation` (rule set)
-
-### QuestionnaireAnswers
-
-- `byQuestionId` (Record<string, Answer>)
-- `firstUnansweredIndex` (number) - drives resume
-- Relationship: validated against QuestionnaireSchema
-
-### PatientProfile (domain)
-
-- `firstName`, `lastName`, `email` (string)
-- `phone` (string, optional)
-- `dateOfBirth` (date) - collected at checkout, not in the questionnaire
-- `answers` (QuestionnaireAnswers)
-- `selectedTreatmentId` (Treatment id) - **must carry through to checkout**
-
-### ShippingAddress
-
-- `street`, `postcode`, `city`, `country` (string)
-- `deliveryEstimate` (string) - always presented as conditional on clinical
-  approval
-
-### PricingBreakdown
-
-- `subtotal`, `discount`, `shipping`, `total` (Money)
-- Produced only by `pricing.ts`. No component computes or hardcodes a total.
-
-### Order (domain)
-
-- `id` (string) - reference in the style `#SL-24819`
-- `lineItems` (treatment + add-ons)
-- `pricing` (PricingBreakdown)
-- `status` (OrderStatus)
-- Relationship: one PatientProfile, one Treatment, many AddOns
-
-### OrderStatus
-
-`'review-in-progress' | 'approved' | 'declined' | 'more-information-required' | 'prescription-issued' | 'dispatched'`
-
-Six presented states: one initial plus five outcomes. Each must be reachable
-directly through seeded mock IDs or a dev-only selector (`mock-review`,
-`mock-approved`, `mock-declined`, `mock-info-required`,
-`mock-prescription-issued`, `mock-dispatched`), without walking the funnel.
-
-### Content fixtures (static, no service interface)
-
-`Clinician`, `Testimonial`, `FaqItem`, `Article` - typed, deduplicated, imported
-directly by marketing and editorial components.
+`AddOn`, `PatientProfile`, `ShippingAddress`, `Order`, `PricingBreakdown`,
+`OrderStatus`, the local `QuestionnaireSchema` and its answer types,
+`MockQuestionnaireService`, `CheckoutService`, and `OrderService`. They modelled
+the checkout and order status Solean no longer builds.
 
 ## Tech stack
 
 | Tech | Role |
 | --- | --- |
-| **SvelteKit 2** | Routing, load functions, thin route components |
+| **SvelteKit 2** | Routing, load functions, the `/api/checkout` endpoint, thin route components |
 | **Svelte 5, runes** | All components; runes forced in `vite.config.ts` |
-| **TypeScript strict** | Domain types and service contracts |
+| **TypeScript strict** | Domain types and the RxScale boundary |
 | **Tailwind CSS v4** | Styling, CSS-first config, semantic tokens only |
-| **shadcn-svelte** (`luma`) | Behavior and accessibility layer; the initial thirteen primitives are adapted in Feature 1 and the nine reference-proven gaps in Feature 3a |
+| **shadcn-svelte** (`luma`) | Behavior and accessibility layer, all primitives adapted |
+| **survey-core** | Headless questionnaire engine: branching, validation, the `data` shape. No SurveyJS renderer, no SurveyJS theme |
+| **RxScale API** | Anamnesis v4 and Public API v2. Docs at `https://docs.rxscale.com`, also an MCP server |
 | **Lucide** | Icons |
 | **pnpm** | Package manager |
 
 ### Architecture
 
-Pragmatic feature-first with a thin routing layer. Not Feature-Sliced Design,
-not Atomic Design.
-
 ```
-src/routes/                   routing, load, form actions, screen composition
-src/lib/features/             marketing, learn, questionnaire, checkout, order-status
-src/lib/domain/               Treatment, AddOn, Money, PatientProfile, Order + canonical catalogue
-src/lib/journey/              stage progression and guards across the funnel
+src/routes/                   routing, load, endpoints, screen composition
+src/lib/features/             marketing, learn, questionnaire
+src/lib/domain/               Money, Treatment and the catalogue
+src/lib/journey/              browsing -> questionnaire -> handoff
 src/lib/components/ui/        shadcn primitives
 src/lib/components/brand/     global brand visuals
-src/lib/server/integrations/  future adapters, empty for now
+src/lib/config/               questionnaire uid, SKU, question names, public values
+src/lib/server/rxscale/       the private-key client, server-only
 ```
 
-**Service contracts.** Stateful and integration-facing features own typed
-service interfaces and mock adapters. Static marketing and editorial features
-consume typed content fixtures directly.
+Static marketing and editorial features consume typed content fixtures directly.
+The questionnaire owns one typed boundary to RxScale rather than a service
+interface per screen. No abstraction is built before something calls it.
 
-| Interface | Mock | Later |
+### The RxScale boundary
+
+| Call | Endpoint | Auth |
 | --- | --- | --- |
-| `QuestionnaireService` | `MockQuestionnaireService` | `RxScaleService` |
-| `CheckoutService` | `MockCheckoutService` | `ShopifyService` |
-| `OrderService` | `MockOrderService` | `RxScaleService` |
+| Fetch the questionnaire | `GET https://api.rxscale.com/v4/anamnesis/questionnaires/{uid}` | public |
+| Submit answers | `POST https://api.rxscale.com/v4/anamnesis/questionnaires/{uid}/submissions` | public |
+| Create the checkout | `POST https://api.rxscale.com/v2/public-api/treatments/{shop_identifier}` | `X-API-Key`, permission `create_treatment_checkout` |
+| Live stock, optional | `POST https://api.rxscale.com/v2/public-api/products/{shop_identifier}/live-stock` | `X-API-Key`, permission `product:read`, 409 means out of stock |
+
+The submission returns `{ "uid": "anam-..." }`; the checkout returns
+`{ "status": "success", "checkout_url": "..." }`. Submission errors: 400
+validation (nothing saved, stay on the questionnaire), 404 unknown
+questionnaire, 502 validator unavailable (retry, nothing saved).
+
+Rules that bind every feature from 9 onward:
+
+- `RXSCALE_API_KEY` and `RXSCALE_SHOP_IDENTIFIER` are private: read through
+  `$env/static/private`, used only in `+server.ts`. Never a `PUBLIC_` prefix,
+  never imported by a component.
+- The model is the only source of question content. Nothing hardcoded, nothing
+  hidden by a condition in our code. The submission is validated server-side
+  against the current model, so hiding a required question guarantees a 400.
+- `survey-core` runs headless with `showNavigationButtons` off. Continue is gated
+  on `survey.currentPage.validate(true, true)`.
+- An unmapped question type fails visibly in development and is logged in
+  production. A question is never skipped silently.
+- `anamnesis_id` is mandatory on the checkout line. The API marks it optional;
+  Solean does not, because a Shopify order without an anamnesis gives the doctor
+  nothing to review. A missing uid blocks the redirect and shows an error.
+- The checkout URL is generated on click, never on screen entry, and the returned
+  `checkout_url` is opaque: no appended parameters, no trimming, no domain
+  substitution.
+- One configured SKU. The catalogue is not queried and no recommendation is
+  computed from the answers.
+- The `buyerIdentity` e-mail is read from the answers by a configured question
+  name. The phone question is rendered whenever the model contains it, but the
+  phone is not sent in this iteration.
+
+### Testing
+
+Decided: run `/tests` before feature 9, so Vitest and the test gate exist before
+the integration logic does. In scope for unit tests: the model to `steps[]`
+mapping, the question type registry including its unmapped-type failure, and the
+checkout payload builder (missing uid, missing or empty e-mail answer, a
+configured question name absent from the model). Component rendering and the
+RxScale calls themselves stay with the browser harness (`pnpm test:browser`), a
+walkthrough, and the build.
 
 ## Monetization
 
-Modelled, never transacted. A treatment plan billed monthly on a six-month
-commitment with "pause anytime", a one-off initial treatment fee, and optional
-paid add-ons.
+Revenue happens in Shopify, through the checkout URL RxScale generates. Solean
+takes no payment, calculates no total, and applies no discount.
 
-| Line item | Price |
+Money on Solean pages is marketing copy: the reference prices the landing page,
+the learn comparison, and the recommendation screen display.
+
+| Line item | Displayed price |
 | --- | --- |
 | Treatment plan, first month supply | 144.00 EUR |
 | Initial treatment fee | 9.90 EUR |
-| Doctor consultation add-on | 49.00 EUR |
-| Coaching add-on | 29.00 EUR |
-| Body smart scale add-on | 39.00 EUR |
 | First-order discount | -75.00 EUR |
 | Shipping | Free |
-| Welcome offer | 10.00 EUR off first consultation |
 
-> TODO: recurring billing rules are undefined. "Pause anytime" is mock copy.
+> Keeping the displayed price in step with the Shopify price of the configured
+> SKU is a manual editorial task. This app never reads the catalogue, so nothing
+> detects a divergence.
 
 ## UI/UX
 
 Visual reference: `design/prio_one_landing_page_men_new.html`, a Pencil canvas
-export of 21 artboards. **A reference, not code to port.** Its absolute
-positioning, canvas dimensions, and arbitrary classes are not part of the app.
-Full token mapping in `blueprint/reference/design-system.md`.
+export of 21 artboards. **A reference, not code to port.** Full token mapping in
+`blueprint/reference/design-system.md`.
 
 **Two fonts only:** Inter Tight (`--font-display`) for headings, product names,
-prices, stats. DM Sans (`--font-sans`) for everything else. No Poppins, no
-plain Inter, no `--font-ui`.
+prices, stats. DM Sans (`--font-sans`) for everything else.
 
 **Semantic tokens only.** Gold `--primary` `#E2B64F`, deep green `--foreground`
-`#173824`, warm sand `--background` `#FBFAF7`. Names describe role, never
-appearance. `--rating` `#00B67A` is for stars only, never success, validation,
-or destructive. Base `--radius: 1.25rem`, stock radius classes, pills use
-`rounded-full`.
+`#173824`, warm sand `--background` `#FBFAF7`. `--rating` `#00B67A` is for stars
+only. Base `--radius: 1.25rem`, stock radius classes, pills use `rounded-full`.
 
-**Focus:** `--ring` is deep green `#173824`, not gold, because gold was
-indistinct against the gold primary button. Default
+**Focus:** `--ring` is deep green `#173824`. Default
 `focus-visible:ring-2 ring-ring ring-offset-2 ring-offset-background`; gold ring
-only on dark surfaces where deep green measures 1.00:1.
+only on dark surfaces.
 
-**Destructive is provisional.** The reference has no red. `--destructive`
-`#C34E45` with white foreground (4.66:1) is approved **for the prototype only
-and needs final brand review**. A darker `--destructive-text` `#BC483F` exists
-because the fill tone fails AA as normal text on the warm ground. Used for
-invalid borders, validation messages, destructive actions, and contraindication
-warnings.
+**Destructive is provisional.** `--destructive` `#C34E45` with white foreground
+is approved for this build and still needs final brand review, with a darker
+`--destructive-text` `#BC483F` for text on the warm ground. It now also carries
+the RxScale validation errors.
 
-**Interaction states:** Tailwind variants control *when*, semantic tokens control
-*what*. Hover and active reuse `accent` and `muted`; only `--primary-hover`
-`#D9971C` and the destructive family are dedicated state tokens. Static Cards get
-no hover.
+**Stock Tailwind scales only.** No arbitrary visual values. SVG geometry,
+`viewBox`, path data, and data-driven values are exempt.
 
-**Stock Tailwind scales only.** No `text-[17px]`, `rounded-[34px]`,
-`w-[1920px]`, or canvas coordinates. The restriction covers visual design
-decisions; SVG geometry, `viewBox`, path data, and data-driven values such as
-calculated progress positions are exempt.
-
-**Dark mode is out of scope.** No toggle, not approved design, not QA'd.
-
-### Shared UI primitives
-
-Feature 1 delivered the initial primitive foundation. Feature 3a completes the
-known set proven by the 21 reference artboards before page implementation.
-Later features may add one only when a genuinely unforeseen interaction
-requires it, and must adapt it in the same feature.
-
-Feature 1 set: `button`, `input`, `textarea`, `label`, `select`, `checkbox`,
-`radio-group`, `card`, `badge`, `separator`, `dialog`, `sheet`, `accordion`.
-
-Feature 3a set: `field`, `input-group`, `progress`, `navigation-menu`, `tabs`,
-`carousel`, `alert`, `breadcrumb`, `collapsible`.
-
-Button: seven variants (default, inverse, secondary, outline, ghost, link,
-destructive),
-four sizes (`sm` `h-10`, `default` `h-12`, `lg` `h-17` `rounded-full`, `icon`
-`size-10`). `h-17` is verified to compile to exactly 68px in this project's
-Tailwind v4, matching the reference pill. Textarea and Select derive from Input.
-
-Still deferred: `popover`, `tooltip`, `sonner`, `skeleton`, `chart`.
-
-Desktop site navigation uses `NavigationMenu`; mobile navigation uses `Sheet`.
-The projection horizon uses `Tabs`; mock payment methods remain a `RadioGroup`.
-The bespoke `CheckoutStep` composes `Collapsible` for disclosure behavior.
-The language control uses `Select`, with English selected and Deutsch disabled
-until translations and routing exist. `Alert` covers delivery, medical review
-and status notices; `Breadcrumb` covers the learn article hierarchy.
-
-**Installing a primitive is not completion.** Each is adapted to the design
-reference with semantic tokens and stock scales, preserving accessible behavior
-and a stable public API, and demonstrates default, hover, active, focus-visible,
-disabled, invalid and checked or selected states, its sizes and variants,
-keyboard behavior, and responsive behavior. Variants live in the primitive via
-the shadcn-svelte variant approach; no wrappers like `SoleanButton` for styling
-alone.
-
-| Location | Holds |
-| --- | --- |
-| `src/lib/components/ui/` | Adapted shadcn primitives |
-| `src/lib/components/brand/` | `SoleanLogo`, `StarRating` |
-| `src/lib/features/<feature>/` | Product components: `TreatmentOption`, `AddOnCard`, `OrderSummary`, `CheckoutStep`, `ReviewTimeline`, questionnaire answer cards |
-
-Product components are built by the feature owning their domain semantics and
-compose the already adapted primitives. Not every visual panel is a `Card`.
-
-**Accessibility and responsiveness are done criteria on every feature**, not a
-final task. Feature 12 catches cross-feature regressions only.
+**Dark mode is out of scope.**
 
 ### Routes
 
@@ -314,56 +267,79 @@ final task. Feature 12 catches cross-feature regressions only.
 | --- | --- |
 | `/` | Landing page: hero, product story, social proof, FAQ, footer |
 | `/learn/blog/[slug]` | Learn article with ToC, comparison, related content |
-| `/questionnaire/[step]` | One dynamic route for all steps and interstitials |
-| `/checkout/account` | Patient details, DOB, consent |
-| `/checkout/shipping` | Address, conditional delivery estimate |
-| `/checkout/payment` | Mock payment, labelled as prototype |
-| `/order/[id]/review` | Doctor review timeline and the six order states |
+| `/questionnaire/[step]` | Every survey page, interlude, and the recommendation screen |
+| `POST /api/checkout` | Server endpoint: creates the RxScale checkout and returns the URL to redirect to |
 
-Route groups: `(marketing)`, `(questionnaire)`, `(checkout)`.
+Route groups: `(marketing)`, `(questionnaire)`. The `(checkout)` group is not
+built.
 
 Development surfaces, not public routes:
 
 | Route | What's there |
 | --- | --- |
 | `/dev/design-system` | Features 1 and 3a showcase: tokens, type, every adapted primitive and its states |
+| `/dev/scenario` | Feature 2's journey scenario page, reduced to the stages that survive |
 
-> TODO: feature 2's prototype scenario page has no named route yet. Decide at
-> spec time; `/dev/scenario` would sit alongside the showcase.
+### Shared UI primitives
+
+Twenty-two adapted primitives from features 1 and 3a: `button`, `input`,
+`textarea`, `label`, `select`, `checkbox`, `radio-group`, `card`, `badge`,
+`separator`, `dialog`, `sheet`, `accordion`, `field`, `input-group`, `progress`,
+`navigation-menu`, `tabs`, `carousel`, `alert`, `breadcrumb`, `collapsible`.
+Still deferred: `popover`, `tooltip`, `sonner`, `skeleton`, `chart`.
+
+Question types map to primitives through a registry keyed by the model's type:
+single choice to `RadioGroup`, multiple choice to `Checkbox`, dropdown to
+`Select`, free text and numeric to `Input` and `InputGroup`, all wrapped in
+`Field`. Not a chain of conditionals in a screen component.
+
+**Accessibility and responsiveness are done criteria on every feature.** Feature
+14 catches cross-feature regressions only.
 
 ## Deployment
 
-Not decided. Currently `@sveltejs/adapter-auto`, which cannot detect a target
-and warns at build time. While state is client-side only, the prototype can ship
-as a static build to any host; server-side session handling would require a
-Node-capable adapter.
+**A static build is no longer possible.** `POST /api/checkout` runs server-side
+because it holds the private API key, so the host must execute server code: Node,
+or a serverless platform with a matching SvelteKit adapter.
+`@sveltejs/adapter-auto` still cannot detect a target and warns at build time.
 
-> TODO: choose a host and swap the adapter. Handle through `/release`.
+| Variable | Visibility | Purpose |
+| --- | --- | --- |
+| `RXSCALE_API_KEY` | private, server only | `X-API-Key` for the checkout call |
+| `RXSCALE_SHOP_IDENTIFIER` | private, server only | shop path segment |
+| `PUBLIC_RXSCALE_QUESTIONNAIRE_UID` | public | the questionnaire to fetch |
+
+> TODO: choose a host, swap `adapter-auto` for the matching adapter, and set the
+> three variables in the provider. Handle it through `/release`.
 
 ## Open questions
 
-Resolve each before the feature named below, then
-re-run `/overview` if a plan changes.
+Resolve each before the feature named, then re-run `/overview` if a plan changes.
 
-1. ~~**Eligibility rule.**~~ Resolved: the questionnaire never judges. It
-   collects answers and every path reaches completion; approval, decline, and
-   more-information stay feature 11 order states reachable by seeded mock IDs.
-   No contraindication branch, BMI threshold, or medical judgement lives in the
-   questionnaire. Feature 8 is unblocked.
-2. **Testing decision, required before feature 9.** There is no test runner and
-   no `test` command. Either run `/tests` first so the pricing engine ships with
-   unit tests, or accept that it is verified by browser walkthrough, typecheck,
-   and build with no claim of unit tests. Do not install a runner silently.
-3. **Canonical add-on units.** Assign each add-on as `one-off` or `per-session`
-   before feature 10.
-4. **Recurring billing rules.** Undefined; see Monetization.
-5. **Deployment target.** Undecided; see Deployment.
+1. ~~**Eligibility rule.**~~ Resolved, and now external. The questionnaire never
+   judges: branching is whatever the model expresses through `visibleIf`, and
+   approval or decline happens in RxScale's doctor review.
+2. ~~**Testing decision.**~~ Resolved: run `/tests` before feature 9.
+3. **Credentials and ids, required before feature 9 can run against the real
+   model.** The questionnaire uid, shop identifier, API key, and SKU uid are
+   supplied by the user. Until they arrive the config module holds placeholders
+   and the flow cannot be verified end to end.
+4. **Question names for e-mail, height, and weight.** Configured by name and
+   confirmed against the real model, needed by features 11 and 13.
+5. **Market and country code.** `DE` is assumed for `buyerIdentity.countryCode`.
+   Confirm before feature 13, and decide whether it stays fixed or is derived.
+6. **Live-stock preflight.** Optional in feature 13. Decide whether an
+   out-of-stock SKU blocks the order or lets it through.
+7. **Deployment target.** Now blocking, see Deployment.
+8. **Displayed price versus SKU price.** See Monetization.
 
 ### Reference errors are not requirements
 
 Known defects in the export must never be transcribed: "All 8 steps complete"
-against "Question 9 of 9"; Mounjaro chosen but Wegovy in checkout; a 69.00 EUR
-button against a 78.90 EUR total; conflicting Wegovy Pill and injection copy; a
-delivery estimate ignoring clinical approval; no declined or refund path; copy
-naming Juniper or Voy; duplicated testimonials. Resolutions in `project-plan.md`
-section 9. Mock medical copy is not approved production content.
+against "Question 9 of 9"; conflicting Wegovy Pill and injection copy; missing
+recurring billing terms; a delivery estimate ignoring clinical approval; copy
+naming Juniper or Voy; duplicated testimonials. Resolutions in
+`project-plan.md` section 9. The checkout and order-status inconsistencies no
+longer apply: both surfaces belong to RxScale and Shopify. Marketing medical copy
+is mock content and not approved production content; the questionnaire's medical
+content is RxScale's, not ours.

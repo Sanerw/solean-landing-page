@@ -47,6 +47,9 @@ importers:
       shadcn-svelte:
         specifier: ^1.5.1
         version: 1.5.1(svelte@5.57.0)
+      survey-core:
+        specifier: ^3.0.2
+        version: 3.0.2
       svelte:
         specifier: ^5.56.1
         version: 5.57.0
@@ -725,6 +728,9 @@ packages:
   style-to-object@1.0.14:
     resolution: {integrity: sha512-LIN7rULI0jBscWQYaSswptyderlarFkjQ+t79nzty8tcIAceVomEVlLzH5VP4Cmsv6MtKhs7qaAiwlcp+Mgaxw==}
 
+  survey-core@3.0.2:
+    resolution: {integrity: sha512-koM/Y8tV5YBaRxoET4kzHcnHWH0x//xSUtyahCS7WkBM9KaNrerh7reAXss7qVdInLZ4pkRTE76GiOWTuSaD5Q==}
+
   svelte-check@4.7.6:
     resolution: {integrity: sha512-t2scM//ZuVbSY/T2w6FSBw1v9s2NEmh/g+sy1lqtosW5ylBV5AF4wFb1Ts9Kf3MbfPDUDJDZ9L436YT0SPTdvw==}
     engines: {node: '>= 18.0.0'}
@@ -1334,6 +1340,8 @@ snapshots:
   style-to-object@1.0.14:
     dependencies:
       inline-style-parser: 0.2.7
+
+  survey-core@3.0.2: {}
 
   svelte-check@4.7.6(picomatch@4.0.7)(svelte@5.57.0)(typescript@6.0.3):
     dependencies:

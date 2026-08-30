@@ -203,6 +203,7 @@ Package manager: **pnpm**.
 - Typecheck: `pnpm check` (runs `svelte-kit sync` then `svelte-check`)
 - Typecheck (watch): `pnpm check:watch`
 - Browser tests: `pnpm test:browser` (Playwright, Chromium)
+- Questionnaire fixture API: `pnpm fixture:questionnaire` (port 4319)
 
 No lint or format command is configured. No unit test runner is configured, so
 there is no test gate yet. No `Verify` command and no automatic GitHub checks
@@ -216,6 +217,13 @@ Browser tests run Playwright against the production preview build, which the
 runner starts on port 4173 and stops again, so no server needs to be running
 first. Specs live in `e2e/`. They are deliberately not part of any `Verify`
 command or GitHub workflow; adding that slower gate is a separate decision.
+
+`pnpm fixture:questionnaire` serves `e2e/fixtures/questionnaire-model.json` as
+the RxScale anamnesis API on port 4319, under `/api/v2/anamnesis`,
+`/api/v3-1/anamnesis` and the documented `/v4/anamnesis` prefix.
+It exists so the questionnaire can be developed and tested without calling the
+live API. The fixture is a trimmed snapshot of the real questionnaire keeping one
+page of each question type.
 
 What the harness proves is behavior: routing, hydration, client state,
 validation, and navigation. It does not prove visual fidelity against the

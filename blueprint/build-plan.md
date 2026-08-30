@@ -1,17 +1,25 @@
 # Build Plan
 
-Twelve feature-sized outcomes for the Solean UI prototype, in build order. Each
-one delivers something visible you can open in a browser and judge. Technical
-detail belongs in the `/feature` spec, not here.
+Fourteen feature-sized outcomes for Solean, in build order. Each one delivers
+something visible you can open in a browser and judge. Technical detail belongs
+in the `/feature` spec, not here.
+
+Features 1 to 8 built the UI prototype on mocked data. From feature 9 the funnel
+is a real RxScale integration: the questionnaire comes from their Anamnesis API,
+the submission creates a real anamnesis record, and the order is placed through
+an RxScale-generated Shopify checkout URL. Solean builds no checkout of its own,
+and features 9 to 12 of the original plan (checkout, mock payment, doctor review
+and order status) are dropped to the deferred backlog.
 
 Run `/feature` with no argument to spec the next unchecked item, or
-`/feature 5` / `/feature "FAQ"` to pick a specific one. `/complete` checks items
-off. Do not renumber completed features; archived specs refer back to those
-numbers. A feature that proves too large splits at spec time into `4a`, `4b`,
-and so on. Do not pre-split it here.
+`/feature 10` / `/feature "handoff"` to pick a specific one. `/complete` checks
+items off. Do not renumber completed features; archived specs refer back to those
+numbers. A feature that proves too large splits at spec time into `9a`, `9b`, and
+so on. Do not pre-split it here.
 
 Full context: `blueprint/project-plan.md`. Token mapping:
-`blueprint/reference/design-system.md`.
+`blueprint/reference/design-system.md`. API reference: `https://docs.rxscale.com`,
+also available as an MCP server.
 
 ## Rules that apply to every feature
 
@@ -21,22 +29,44 @@ Completion criteria, not separate tasks.
 
 - Feature-first. Product logic lives in `src/lib/features/<feature>/`. Route
   components stay thin; no business logic in `+page.svelte`.
-- **Stateful and integration-facing features depend on typed service
-  interfaces. Static marketing and editorial features may consume typed content
-  fixtures directly.**
-- Service interfaces are required for questionnaire, checkout, order status, and
-  any future integration. They are not required for static marketing content or
-  articles.
-- Do not build an abstraction before something calls it.
+- **Static marketing and editorial features consume typed content fixtures
+  directly. The questionnaire owns one typed boundary to RxScale**, not a service
+  interface per screen.
+- Do not build an abstraction before something calls it. A mock service whose
+  caller was dropped is deleted, not kept.
 
-### Data consistency
+### Integration rules
 
-- One source of truth for the treatment catalogue.
-- One source of truth for the price list.
-- One function computes subtotal, discount, shipping, and total.
-- The treatment selected in the questionnaire carries through to checkout.
-- No component holds its own independent total value.
-- Treatment and add-on names come from typed fixtures.
+Apply to every feature from 9 onward.
+
+- `RXSCALE_API_KEY` and `RXSCALE_SHOP_IDENTIFIER` are private: read through
+  `$env/static/private`, used only in `+server.ts`. Never a `PUBLIC_` prefix,
+  never imported by a component.
+- Question text, options, order, required flags, and branching come from the
+  fetched model only. Nothing hardcoded, nothing hidden by a condition in our
+  code. The submission is validated server-side against the current model, so a
+  divergence returns 400.
+- `survey-core` is a headless state engine. No SurveyJS renderer, no SurveyJS
+  theme, `showNavigationButtons` off.
+- `steps[]` is the single source of truth for position. Survey state is
+  synchronised to it, never the reverse.
+- An unmapped question type fails visibly in development and is logged in
+  production. A question is never skipped silently.
+- `anamnesis_id` is mandatory on the checkout line, whatever the API allows.
+- `checkout_url` is opaque: no appended parameters, no trimming, no domain
+  substitution.
+- One configured SKU. The catalogue is not queried and no recommendation is
+  computed from the answers.
+- Answers, the anamnesis uid, and the checkout URL never reach console output or
+  analytics in production.
+
+### Content consistency
+
+- One source of truth for the treatment catalogue the marketing pages and the
+  learn comparison read.
+- Prices on Solean pages are display copy. Shopify owns the amount charged and
+  nothing in this app computes a total.
+- Treatment names come from typed fixtures.
 
 ### Design and delivery
 
@@ -54,7 +84,10 @@ Completion criteria, not separate tasks.
   groups, keyboard operation, visible focus, adequate contrast, inline
   validation, `aria-live` for async status, reduced motion, accessible dialogs,
   no hover-only interactions.
-- **Mocked.** No real integrations, no real medical data, fictional fixtures.
+- **Honest about data.** Marketing and editorial content stays fictional
+  fixture copy. From feature 9 the questionnaire carries real answers to
+  RxScale, so no answer is logged, echoed into analytics, or persisted anywhere
+  else.
 - **Verifiable alone.** Runnable and reviewable in a browser on its own.
 
 ### shadcn-svelte
@@ -81,9 +114,10 @@ Feature 3a adds and adapts `field`, `input-group`, `progress`,
 Still deferred until a feature proves it genuinely needs one: `popover`,
 `tooltip`, `sonner`, `skeleton`, `chart`.
 
-Checkout steps are a bespoke sequential component, not an Accordion. "Learn
-more" is a link or a dialog, not a tooltip by default. Not every visual panel
-needs to be a shadcn `Card`.
+"Learn more" is a link or a dialog, not a tooltip by default. Not every visual
+panel needs to be a shadcn `Card`. Question types map to primitives through a
+registry keyed by the model's type, not a chain of conditionals in a screen
+component.
 
 ### Component boundaries
 
@@ -94,20 +128,20 @@ needs to be a shadcn `Card`.
 | `src/lib/features/<feature>/` | Feature-specific product components |
 
 Features 1 and 3a deliver shared primitives and brand foundations. They do not
-build product components. `TreatmentOption`, `AddOnCard`, `OrderSummary`,
-`CheckoutStep`, `ReviewTimeline`, questionnaire answer cards and the rest belong
-to the feature that owns their domain semantics, and they compose the already
-adapted primitives.
+build product components. Questionnaire field renderers, answer cards, the
+interlude screens, the recommendation card and the rest belong to the feature
+that owns their domain semantics, and they compose the already adapted
+primitives.
 
 ### Reference inconsistencies are not requirements
 
 The export contains known errors. Do not transcribe them:
 
-"All 8 steps complete" against "Question 9 of 9"; Mounjaro chosen in the
-questionnaire but Wegovy shown in checkout; a 69.00 EUR button against a 78.90
-EUR total; conflicting "Wegovy Pill" and injection copy; missing recurring
-billing terms; a delivery estimate that ignores clinical approval; no declined
-or refund path; copy naming Juniper or other brands; inconsistent testimonials.
+"All 8 steps complete" against "Question 9 of 9"; conflicting "Wegovy Pill" and
+injection copy; missing recurring billing terms; a delivery estimate that ignores
+clinical approval; copy naming Juniper or other brands; inconsistent
+testimonials. The checkout and order-status inconsistencies no longer apply: both
+surfaces belong to RxScale and Shopify now.
 
 Resolutions are in `blueprint/project-plan.md` section 9. Mock medical copy and
 claims are not approved production content.
@@ -228,67 +262,120 @@ claims are not approved production content.
     and `selectedTreatmentId`, unlocking checkout. Resume lands on the first
     unanswered question, and a guard blocks direct entry to an unreachable step.
 
-- [ ] 9. **Checkout foundation** - `(checkout)` route group, `CheckoutService`
-  and `MockCheckoutService`, a bespoke sequential `CheckoutStep`, account and
-  shipping steps with inline validation using the adapted `Field` and
-  `InputGroup`, order summary, and the central pricing
-  engine at `src/lib/features/checkout/pricing.ts`. The pricing engine consumes
-  the canonical catalogue and fixture price list from `src/lib/domain/`; the
-  calculation itself remains owned by checkout. `CheckoutStep` composes the
-  adapted `Collapsible` for disclosure behavior. Delivery estimate is presented
-  as conditional on clinical approval.
+- [ ] 9. **Live questionnaire foundation** - Swap the mock questionnaire data
+  layer for the RxScale model while keeping the UI features 7 and 8 delivered. A
+  config module holding the questionnaire uid and the question names other
+  features read, a public anamnesis client that fetches the model on entry to the
+  flow and does not cache it past the visit, `survey-core` wired headlessly with
+  `showNavigationButtons` off, a `steps[]` builder that interleaves the model's
+  survey pages with Solean's interludes and owns the position, and a question
+  type registry that maps a model type to an adapted primitive and fails loudly
+  on an unmapped one. Continue is gated on
+  `survey.currentPage.validate(true, true)`. The local `schema.ts`,
+  `MockQuestionnaireService`, the treatment preference question, and the unused
+  `checkout` and `order-status` mock services with their domain types go with it.
+  Carried end to end by the real model's first page rendering through the
+  existing renderers, so the feature finishes on a working screen.
 
-- [ ] 10. **Checkout customization and mock payment** - Treatment switching and
-  the consultation offer on the adapted `dialog`, add-ons with adding and
-  removing, per-session versus one-off pricing, everything recalculated only
-  through the pricing engine. Mock
-  payment method selection with success and failure paths, clearly labelled as
-  prototype. No real payment provider.
+  - [x] 9a. **Questionnaire model boundary** - The config module and public env
+    for the questionnaire uid, a typed anamnesis client that fetches the model
+    once per entry to the flow and does not cache it past the visit, honest
+    not-configured and unavailable states with a retry and no local fallback,
+    `survey-core` instantiated headlessly with `showNavigationButtons` off, and a
+    dev inspection surface listing identifier, version, pages, and every question
+    with its type and required flag. Question rendering is untouched.
+  - [ ] 9b. **`steps[]` and the question type registry** - The builder that
+    interleaves the model's survey pages with Solean's interludes and owns
+    position and progress, the registry mapping a model question type onto the
+    existing field renderers, and `/questionnaire/[step]` driven by the model with
+    continue gated on `survey.currentPage.validate(true, true)`. An unmapped type
+    fails visibly in development and is logged in production. Removes `schema.ts`,
+    `MockQuestionnaireService`, and the treatment preference question.
+  - [ ] 9c. **Removing the dropped funnel** - Delete the `checkout` and
+    `order-status` feature modules and the `AddOn`, `PatientProfile`,
+    `ShippingAddress`, `Order`, `PricingBreakdown` and `OrderStatus` domain types,
+    reduce the journey stages to browsing, questionnaire and handoff, and update
+    the dev scenario page and the browser tests that assert the removed surfaces.
 
-- [ ] 11. **Doctor review and order status** - `OrderService` and
-  `MockOrderService`, review timeline, order reference, and six presented
-  states: review in progress, plus five outcomes: approved, declined, more
-  information required, prescription issued, and dispatched. Tracking
-  presentation and `aria-live` on status change. Every state must be reachable
-  directly, without walking the whole funnel, through seeded mock order IDs or a
-  dev-only scenario selector (`mock-review`, `mock-approved`, `mock-declined`,
-  `mock-info-required`, `mock-prescription-issued`, `mock-dispatched`).
+- [ ] 10. **Question type coverage** - Every question type the live model
+  actually uses, mapped to adapted primitives: single choice, multiple choice
+  with the model's own exclusive-option behavior, dropdown, free text, and
+  numeric with units, plus file and signature capture if the model contains them.
+  Server-side validation messages surfaced inline on the field that failed. File
+  and signature answers submitted in exact SurveyJS shape,
+  `[{ name, type, content: "data:image/png;base64,..." }]`. An unsupported type
+  is a visible failure in development and a logged one in production, never a
+  skipped question. The definitive type list comes from the real model, so it is
+  confirmed at spec time, not guessed here.
 
-- [ ] 12. **End-to-end prototype hardening** - Transitions between route groups,
-  deep links, refresh behavior, back-button correctness, empty, loading and
-  error states, mobile/tablet/desktop review, a cross-feature accessibility
-  sweep, typecheck, build, a full-funnel walkthrough, and a manual try guide.
-  This catches cross-feature regressions only; accessibility and responsiveness
-  are already done criteria on every earlier feature.
+- [ ] 11. **Interludes, progress and flow integrity** - The projection interlude
+  computed locally from `survey.data` through the configured height and weight
+  question names, with no extra API call, and the motivation interlude, both
+  positioned by `steps[]` in one place. Progress counts survey steps only.
+  Refresh, back, forward and deep links land where the answers justify;
+  in-session persistence is keyed by questionnaire identifier and version so a
+  model change discards stale answers instead of resuming against them. The
+  journey stage reduction moved to 9c, where the stages it removes are deleted.
+
+- [ ] 12. **Submission and the recommendation screen** - Post the answers to the
+  anamnesis submissions endpoint, keep the returned uid for the checkout call,
+  and handle failure honestly: 400 shows the validation errors and stays on the
+  questionnaire, 502 offers a retry and states that nothing was saved, and no
+  error path advances to the end screen. On success the congratulations screen
+  presents the configured SKU, read from its own module so it can later be
+  replaced by catalogue data, with the "Place your order" action present but not
+  yet wired.
+
+- [ ] 13. **Checkout handoff** - `POST /api/checkout` in `+server.ts`, the only
+  place the private API key is read, calling RxScale's treatment checkout with
+  the configured SKU, quantity 1, the mandatory `anamnesis_id`, and a
+  `buyerIdentity` built from the e-mail answer and the configured country code.
+  The URL is generated on click, never on screen entry, and the returned
+  `checkout_url` is redirected to exactly as received. A missing anamnesis uid
+  blocks the call and shows an error rather than placing an order no doctor can
+  review. Optional live-stock preflight, where a 409 shows an out-of-stock
+  message instead of a redirect.
+
+- [ ] 14. **End-to-end hardening** - The whole path from landing page to the
+  external redirect: transitions between route groups, deep links, refresh and
+  back-button behavior, empty, loading and integration-error states, a
+  mobile/tablet/desktop pass, a cross-feature accessibility sweep, browser tests
+  updated to the live flow, typecheck, build, and a manual try guide. This
+  catches cross-feature regressions only; accessibility and responsiveness are
+  already done criteria on every earlier feature.
 
 ## Testing
 
-This project has **no unit test runner and no `test` command** in `AGENTS.md`,
-so there is no test gate today. Do not install a runner silently inside another
-feature.
+**Decided, then deferred at 9a.** The plan was to run `/tests` before feature 9;
+the user chose to skip it and start building, so this project still has no test
+command and no test gate. That is recorded here rather than quietly dropped: the
+logic below is unverified by any runner until the decision is revisited, and
+feature 13's payload builder is the point where it should be. The pricing engine that originally raised the
+question is gone; what replaces it is logic with clear inputs, outputs, and real
+edge cases:
 
-The pricing engine in feature 9 is the one piece of logic that genuinely
-warrants unit tests. Decide before feature 9 starts:
+- model to `steps[]` mapping: interlude placement, step ids, and the survey-step
+  count the progress bar uses
+- the question type registry, including the unmapped-type failure
+- the checkout payload builder: missing anamnesis uid, missing or empty e-mail
+  answer, a configured question name absent from the model
 
-1. **Run `/tests` first** to add the runner and turn the test gate on. Feature 9
-   then ships pricing tests in the same reviewable diff. Recommended.
-2. **Leave testing unconfigured.** Feature 9 is verified with the evidence
-   already available (browser walkthrough of the order summary and totals,
-   typecheck, build), and no claim is made that it has unit tests.
-
-Either way the choice is explicit, never assumed.
+Component rendering and the RxScale calls themselves stay out of unit tests.
+They are proven by the browser harness (`pnpm test:browser`), a walkthrough, and
+the build. Once `test` is declared in `AGENTS.md`, a step that adds in-scope
+logic ships a passing test in the same diff.
 
 ## Deferred backlog
 
-Not in scope. Do not spec these until the UI prototype is accepted. Listed
-without checkboxes so `/feature` never selects them.
+Not in scope. Listed without checkboxes so `/feature` never selects them.
 
-- Shopify integration
-- RxScale integration
-- Real payment provider
-- Server-side sessions
-- Authentication
-- Member account area
+- Solean-side checkout: account, shipping, pricing engine, add-ons, payment
+- Doctor review and order status screens inside Solean
+- Shopify Storefront API, `cartCreate`, cart attributes, discount codes
+- Saved progress and resume by e-mail link
+- Phone in `buyerIdentity`
+- Product catalogue querying and an answer-driven recommendation
+- Authentication and a member account area
 - German language and `/de` routing
 - Undesigned routes: treatments index, product pages, about, contact, legal,
   clinician profile pages

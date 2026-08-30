@@ -1,4 +1,5 @@
 import { defineConfig, devices } from '@playwright/test';
+import { FIXTURE_PORT, FIXTURE_UID } from './e2e/fixture';
 
 const PORT = 4173;
 
@@ -15,12 +16,26 @@ export default defineConfig({
 	// Chromium alone. The prototype makes no cross-browser claim, and two more engines would
 	// triple the download and the run for coverage nothing currently depends on.
 	projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
-	webServer: {
-		// The production build, not `vite dev`. Journey state is client-owned and hydration
-		// sensitive, so the preview output is the surface worth asserting against.
-		command: `pnpm build && pnpm preview --port ${PORT} --strictPort`,
-		url: `http://localhost:${PORT}`,
-		reuseExistingServer: !process.env.CI,
-		timeout: 120_000
-	}
+	webServer: [
+		// The questionnaire model comes from the fixture, never the live RxScale API: the run
+		// must be deterministic and must not put traffic on someone else's production service.
+		{
+			command: 'node e2e/fixture-server.mjs',
+			url: `http://localhost:${FIXTURE_PORT}/api/v2/anamnesis/questionnaires/${FIXTURE_UID}`,
+			reuseExistingServer: !process.env.CI,
+			env: { FIXTURE_PORT: String(FIXTURE_PORT), FIXTURE_QUESTIONNAIRE_UID: FIXTURE_UID }
+		},
+		{
+			// The production build, not `vite dev`. Journey state is client-owned and hydration
+			// sensitive, so the preview output is the surface worth asserting against.
+			command: `pnpm build && pnpm preview --port ${PORT} --strictPort`,
+			url: `http://localhost:${PORT}`,
+			reuseExistingServer: !process.env.CI,
+			timeout: 120_000,
+			env: {
+				PUBLIC_RXSCALE_API_BASE_URL: `http://localhost:${FIXTURE_PORT}`,
+				PUBLIC_RXSCALE_QUESTIONNAIRE_UID: FIXTURE_UID
+			}
+		}
+	]
 });
