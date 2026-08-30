@@ -156,6 +156,7 @@
 @theme inline {
 	--font-sans: 'DM Sans Variable', 'DM Sans Fallback', ui-sans-serif, system-ui, sans-serif;
 	--font-display: 'Inter Tight Variable', 'Inter Tight Fallback', ui-sans-serif, system-ui, sans-serif;
+	--spacing-hero-frame: calc(100svh - 5rem);
 
 	--color-background: var(--background);
 	--color-foreground: var(--foreground);

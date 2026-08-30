@@ -18,7 +18,7 @@
 -->
 <article
 	class={[
-		'flex h-full flex-col overflow-hidden rounded-xl p-6 sm:p-8',
+		'flex h-full flex-col overflow-hidden rounded-xl p-6',
 		BENTO_GROUNDS[card.category]
 	]}
 >
@@ -37,10 +37,10 @@
 			alt=""
 			aria-hidden="true"
 			class={[
-				'mt-6 w-full rounded-lg object-cover',
+				'mt-4 w-full rounded-lg object-cover',
 				// The compact cards define the grid's row heights via a fixed ratio; the tall card
 				// then grows into whatever those two rows add up to, so the column bottoms align.
-				size === 'tall' ? 'min-h-64 flex-1' : 'aspect-video'
+				size === 'tall' ? 'min-h-64 flex-1' : 'aspect-2/1'
 			]}
 		/>
 	{/if}

@@ -18,18 +18,14 @@
 	/>
 </svelte:head>
 
-<!--
-	One vertical rhythm owned here rather than baked into each section, so the page reads as a
-	single document and features 4b and 5 can slot their sections into the same spacing.
--->
-<div class="space-y-16 pb-16 lg:space-y-24 lg:pb-24">
+<div class="pb-3">
 	<HeroSection />
 	<TrustBenefits />
 	<BentoGrid />
 	<ResultsBand />
-	<HowItWorks />
 	<ProjectionSection />
 	<TestimonialsSection />
 	<ClinicalTeamSection />
+	<HowItWorks />
 	<FaqSection />
 </div>

@@ -14,8 +14,7 @@
 	} satisfies Record<TrustBenefit['icon'], unknown>;
 </script>
 
-<section class={CONTAINER} aria-label="Why Solean">
-	<!-- No vertical padding of its own: the landing page owns the rhythm between sections. -->
+<section class={[CONTAINER, 'py-16 lg:py-20']} aria-label="Why Solean">
 	<ul class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
 		{#each TRUST_BENEFITS as benefit (benefit.title)}
 			{@const Icon = ICONS[benefit.icon]}

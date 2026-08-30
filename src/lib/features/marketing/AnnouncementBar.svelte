@@ -4,11 +4,11 @@
 	import CountdownTimer from './CountdownTimer.svelte';
 </script>
 
-<div class="bg-foreground text-background">
+<aside class="bg-foreground text-background" aria-label="Welcome offer">
 	<div
 		class={[
 			CONTAINER,
-			'flex flex-col items-center justify-center gap-3 py-3 text-center sm:flex-row sm:gap-8'
+			'flex flex-col items-center justify-center gap-3 py-3 text-center sm:h-14 sm:flex-row sm:gap-8 sm:py-0'
 		]}
 	>
 		<!-- Two stacked lines, as drawn: the offer name reads as a label above the detail. -->
@@ -18,4 +18,4 @@
 		</p>
 		<CountdownTimer />
 	</div>
-</div>
+</aside>

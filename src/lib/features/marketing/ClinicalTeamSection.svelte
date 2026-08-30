@@ -5,7 +5,7 @@
 	import { CLINICAL_TEAM, CLINICIANS } from './content';
 </script>
 
-<section class={CONTAINER} aria-label={CLINICAL_TEAM.title}>
+<section class={[CONTAINER, 'py-14 lg:py-16']} aria-label={CLINICAL_TEAM.title}>
 	<Carousel.Root opts={{ align: 'start' }} class="w-full">
 		<div class="flex flex-wrap items-end justify-between gap-6">
 			<div>

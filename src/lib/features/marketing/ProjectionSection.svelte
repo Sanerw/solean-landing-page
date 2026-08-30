@@ -16,7 +16,7 @@
 	let horizon = $state(String(DEFAULT_HORIZON_MONTH));
 </script>
 
-<section class={CONTAINER} aria-label={PROJECTION.title}>
+<section class={[CONTAINER, 'py-16 lg:py-20']} aria-label={PROJECTION.title}>
 	<div class="grid gap-14 lg:grid-cols-2 lg:items-center lg:gap-16">
 		<div>
 			<h2 class="font-display text-2xl font-medium text-foreground md:text-3xl">

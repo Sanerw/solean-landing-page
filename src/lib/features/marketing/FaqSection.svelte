@@ -4,7 +4,7 @@
 	import { FAQ } from './content';
 </script>
 
-<section class={CONTAINER} aria-label={FAQ.title}>
+<section class={[CONTAINER, 'py-16 lg:py-20']} aria-label={FAQ.title}>
 	<h2 class="font-display text-3xl font-medium text-foreground md:text-4xl lg:text-5xl">
 		{FAQ.title}
 	</h2>

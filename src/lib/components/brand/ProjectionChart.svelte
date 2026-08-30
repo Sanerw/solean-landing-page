@@ -156,31 +156,35 @@
 
 	<!-- The real alternative to the picture. Reflects the selected horizon so it can never
 	     describe a chart the user is not looking at. -->
-	<table class="sr-only">
-		<caption>{caption}</caption>
-		<thead>
-			<tr>
-				<th scope="col">Milestone</th>
-				<th scope="col">{seriesLabel}</th>
-				<th scope="col">{comparisonLabel}</th>
-				<th scope="col">Projection</th>
-			</tr>
-		</thead>
-		<tbody>
-			{#each geo.points as point, index (point.month)}
+	<!-- Keep the table inside a clipped visually-hidden wrapper. Applying sr-only directly to
+	     a table lets its intrinsic column width expand the document on narrow screens. -->
+	<div class="sr-only">
+		<table>
+			<caption>{caption}</caption>
+			<thead>
 				<tr>
-					<th scope="row">{point.label}</th>
-					<td>{point.kg} kg</td>
-					<td>{geo.comparison[index]?.kg} kg</td>
-					<td>
-						{index < geo.horizonIndex
-							? 'Within the selected horizon'
-							: index === geo.horizonIndex
-								? 'Selected horizon'
-								: 'Beyond the selected horizon'}
-					</td>
+					<th scope="col">Milestone</th>
+					<th scope="col">{seriesLabel}</th>
+					<th scope="col">{comparisonLabel}</th>
+					<th scope="col">Projection</th>
 				</tr>
-			{/each}
-		</tbody>
-	</table>
+			</thead>
+			<tbody>
+				{#each geo.points as point, index (point.month)}
+					<tr>
+						<th scope="row">{point.label}</th>
+						<td>{point.kg} kg</td>
+						<td>{geo.comparison[index]?.kg} kg</td>
+						<td>
+							{index < geo.horizonIndex
+								? 'Within the selected horizon'
+								: index === geo.horizonIndex
+									? 'Selected horizon'
+									: 'Beyond the selected horizon'}
+						</td>
+					</tr>
+				{/each}
+			</tbody>
+		</table>
+	</div>
 </figure>

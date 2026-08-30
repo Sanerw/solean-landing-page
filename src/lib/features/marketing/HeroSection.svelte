@@ -2,18 +2,18 @@
 	import heroImage from '$lib/assets/hero.jpg';
 	import { Button } from '$lib/components/ui/button';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
-	import { BLEED, CONTAINER } from './container';
+	import { CONTAINER } from './container';
 	import { HERO, ROUTES } from './content';
 	import HeroArticleTeaser from './HeroArticleTeaser.svelte';
 	import HeroRatingBadge from './HeroRatingBadge.svelte';
 	import SiteHeader from './SiteHeader.svelte';
 </script>
 
-<!-- Near full-bleed card: page gutter only, no max-width, matching the reference where the
-     hero sits just inside the viewport edge. Its contents still use CONTAINER, so the
-     headline lines up with the trust row and the footer below. -->
-<div class={BLEED}>
-	<section class="relative isolate overflow-hidden rounded-xl">
+<div class="px-3 py-3">
+	<section
+		class="relative isolate flex flex-col overflow-hidden rounded-xl lg:h-hero-frame"
+		aria-labelledby="hero-heading"
+	>
 		<!-- Generated placeholder art; see the spec's open decision. Decorative, so the section's
 		     own heading carries the meaning and the image is hidden from assistive tech. -->
 		<img
@@ -43,8 +43,10 @@
 
 		<SiteHeader variant="overlay" />
 
-		<div class={[CONTAINER, 'pb-10']}>
-			<div class="mx-auto max-w-6xl pt-10 pb-12 text-center sm:pt-14 lg:pt-16">
+		<div class={[CONTAINER, 'flex min-h-0 flex-1 flex-col pb-6 lg:pb-8']}>
+			<div
+				class="mx-auto flex max-w-6xl flex-1 flex-col items-center justify-center py-6 text-center lg:py-4"
+			>
 				<p
 					class="inline-block rounded-full border border-background/30 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-background"
 				>
@@ -52,7 +54,8 @@
 				</p>
 
 				<h1
-					class="mt-6 text-balance font-display text-4xl font-medium leading-tight text-background sm:text-5xl lg:text-7xl xl:text-8xl"
+					id="hero-heading"
+					class="mt-4 text-balance font-display text-4xl font-medium leading-tight text-background sm:text-5xl lg:text-6xl xl:text-7xl"
 				>
 					{HERO.headlineLead}
 					<!-- A real <s>, so the "not this, but that" meaning survives without the styling. -->
@@ -64,11 +67,11 @@
 					{HERO.headlineTail}
 				</h1>
 
-				<p class="mx-auto mt-5 max-w-2xl text-base text-background/85 md:text-lg">
+				<p class="mx-auto mt-4 max-w-2xl text-base text-background/85 md:text-lg">
 					{HERO.lead}
 				</p>
 
-				<div class="mt-7 flex flex-col items-center justify-center gap-4 sm:flex-row">
+				<div class="mt-5 flex flex-col items-center justify-center gap-4 sm:flex-row">
 					<Button href={ROUTES.questionnaire} size="lg" surface="dark" class="w-full sm:w-auto">
 						{HERO.primaryCta}
 						<ArrowRightIcon aria-hidden="true" class="size-5" />
@@ -85,9 +88,7 @@
 				</div>
 			</div>
 
-			<!-- Stacked on small screens, opposite corners from md up, so neither overlay ever
-			     sits on top of the headline. -->
-			<div class="flex flex-col items-start gap-8 pt-4 md:flex-row md:items-end md:justify-between">
+			<div class="flex flex-col items-start gap-6 pt-2 md:flex-row md:items-end md:justify-between">
 				<HeroRatingBadge />
 				<HeroArticleTeaser />
 			</div>

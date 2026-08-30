@@ -18,7 +18,7 @@
 </script>
 
 <header class={variant === 'solid' ? 'bg-card' : 'bg-transparent'}>
-	<div class={[CONTAINER, 'flex items-center justify-between gap-4 py-4']}>
+	<div class={[CONTAINER, 'flex items-center justify-between gap-4 py-3']}>
 		<!-- Desktop nav. Every top-level item is a NavigationMenu link, not a bare anchor,
 		     so keyboard and focus behavior comes from the adapted primitive in both variants. -->
 		<NavigationMenu.Root
