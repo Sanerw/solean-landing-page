@@ -1,6 +1,7 @@
 import { browser } from '$app/environment';
 import type { Model } from 'survey-core';
 import type { QuestionnaireDocument } from './anamnesis-client';
+import { answerStorageKey, dropOtherAnswers, loadAnswers, saveAnswers } from './answer-storage';
 import { createSurvey } from './survey-model';
 
 /**
@@ -34,10 +35,20 @@ class QuestionnaireSession {
 		// A different questionnaire, or a new version of the same one, is a different survey:
 		// answers collected against the old model must not carry into it.
 		if (this.#survey === null || this.#key !== key) {
+			const storageKey = answerStorageKey(document.identifier, document.version);
+			const survey = createSurvey(document.model);
+
 			this.#key = key;
-			this.#survey = createSurvey(document.model);
-			this.#survey.onValueChanged.add(() => {
+			this.#survey = survey;
+
+			// Restored before the listener is attached, so resuming is not written straight back.
+			dropOtherAnswers(storageKey);
+			const saved = loadAnswers(storageKey);
+			if (saved) survey.data = saved;
+
+			survey.onValueChanged.add(() => {
 				this.revision += 1;
+				saveAnswers(storageKey, survey.data);
 			});
 		}
 

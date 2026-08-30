@@ -2,15 +2,20 @@
 	import { goto } from '$app/navigation';
 	import * as Alert from '$lib/components/ui/alert';
 	import MotivationInterstitial from '$lib/features/questionnaire/MotivationInterstitial.svelte';
+	import ProjectionInterstitial from '$lib/features/questionnaire/ProjectionInterstitial.svelte';
 	import QuestionnaireShell from '$lib/features/questionnaire/QuestionnaireShell.svelte';
 	import SurveyStepScreen from '$lib/features/questionnaire/SurveyStepScreen.svelte';
 	import { questionnaireSession } from '$lib/features/questionnaire/survey-state.svelte';
+	import { readWeightKg, weightStepId } from '$lib/features/questionnaire/answers';
 	import {
 		COMPLETION_STEP_ID,
 		buildStepPlan,
+		progressFor,
+		resolveStepEntry,
 		stepIdForPage
 	} from '$lib/features/questionnaire/steps';
 	import {
+		QUESTIONNAIRE_ENTRY_HREF,
 		QUESTIONNAIRE_HOME_HREF,
 		questionnaireStepHref
 	} from '$lib/features/questionnaire/routes';
@@ -29,6 +34,51 @@
 		return survey ? buildStepPlan(survey) : null;
 	});
 
+	/**
+	 * The answers live in the browser, so the server can only render the screen's frame. The
+	 * projection says so for itself while this is false, rather than showing a number or
+	 * claiming the weight is missing.
+	 */
+	let hydrated = $state(false);
+	$effect(() => {
+		hydrated = true;
+	});
+
+	const weightKg = $derived.by(() => {
+		questionnaireSession.revision;
+		if (!hydrated || !survey) return undefined;
+
+		return readWeightKg(survey.data);
+	});
+
+	const weightHref = $derived.by(() => {
+		const stepId = survey ? weightStepId(survey) : null;
+
+		return stepId ? questionnaireStepHref(stepId) : QUESTIONNAIRE_ENTRY_HREF;
+	});
+
+	/**
+	 * Which step the answers justify opening. Null until hydration, because the server has no
+	 * answers and must not decide this; the step renders as the model describes it until the
+	 * browser can say otherwise.
+	 */
+	const entry = $derived.by(() => {
+		questionnaireSession.revision;
+		if (!hydrated || !plan || !survey) return null;
+
+		return resolveStepEntry(plan, survey, data.stepId);
+	});
+
+	const redirecting = $derived(entry !== null && !entry.show);
+
+	$effect(() => {
+		if (entry && !entry.show) {
+			// Replaced, not pushed: an address the answers do not justify should not become a
+			// place Back can return to.
+			goto(questionnaireStepHref(entry.redirectTo), { replaceState: true });
+		}
+	});
+
 	const isCompletion = $derived(data.stepId === COMPLETION_STEP_ID);
 	const page = $derived(
 		survey?.pages.find((candidate) => stepIdForPage(candidate.name) === data.stepId) ?? null
@@ -37,44 +87,14 @@
 	const planStep = $derived(plan?.steps.find((step) => step.id === data.stepId) ?? null);
 	const planIndex = $derived(plan && planStep ? plan.steps.indexOf(planStep) : -1);
 
-	// An interlude keeps the count of the question before it: the bar must not jump backwards
-	// or disappear on a screen that sits inside the flow but asks nothing.
-	const progress = $derived.by(() => {
+	// The rule itself lives with the plan, so the screen states no position of its own.
+	const progress = $derived(plan ? progressFor(plan, data.stepId) : null);
+
+	/** Position comes from the plan alone: a step outside it is never shown. */
+	function neighbourHref(direction: 1 | -1): string | null {
 		if (!plan || planIndex < 0) return null;
 
-		for (let index = planIndex; index >= 0; index -= 1) {
-			const step = plan.steps[index];
-			if (step.kind === 'survey') {
-				return { current: step.questionNumber, total: plan.questionTotal };
-			}
-		}
-
-		return null;
-	});
-
-	/**
-	 * A page can be opened by deep link while the answers do not currently place it in the
-	 * plan. It still renders; where Continue goes is then decided by document order rather
-	 * than by a position the plan does not have. Guarding that entry is feature 11.
-	 */
-	function neighbourHref(direction: 1 | -1): string | null {
-		if (!plan || !survey) return null;
-
-		if (planIndex >= 0) {
-			const neighbour = plan.steps[planIndex + direction];
-
-			return neighbour ? questionnaireStepHref(neighbour.id) : null;
-		}
-
-		if (!page) return null;
-		const position = survey.pages.indexOf(page);
-		const candidates = plan.steps.filter((step) => step.kind === 'survey');
-		const following = candidates.filter((step) => {
-			const index = survey.pages.findIndex((candidate) => candidate.name === step.pageName);
-
-			return direction === 1 ? index > position : index < position;
-		});
-		const neighbour = direction === 1 ? following.at(0) : following.at(-1);
+		const neighbour = plan.steps[planIndex + direction];
 
 		return neighbour ? questionnaireStepHref(neighbour.id) : null;
 	}
@@ -98,8 +118,13 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<QuestionnaireShell {progress} {backHref}>
-	{#if isCompletion}
+<QuestionnaireShell progress={redirecting ? null : progress} {backHref}>
+	{#if redirecting}
+		<h1 class="font-display text-4xl font-medium sm:text-5xl">Opening your questionnaire</h1>
+		<p role="status" class="mt-3 text-base text-muted-foreground md:text-lg">
+			Taking you to where you left off.
+		</p>
+	{:else if isCompletion}
 		<h1 class="font-display text-4xl font-medium sm:text-5xl">That is every question</h1>
 		<p class="mt-3 text-base text-muted-foreground md:text-lg">
 			Your answers are held in this browser tab and have not been sent anywhere.
@@ -115,6 +140,8 @@
 	{:else if planStep?.kind === 'interlude'}
 		{#if planStep.variant === 'motivation'}
 			<MotivationInterstitial oncontinue={advance} />
+		{:else if planStep.variant === 'projection'}
+			<ProjectionInterstitial {weightKg} weightStepHref={weightHref} oncontinue={advance} />
 		{/if}
 	{:else if page}
 		{#key page.name}

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { seedAnswers, THROUGH_ALLERGY, THROUGH_DOB } from './answers';
 
 /**
  * The flow the model drives. Everything asserted here comes from the fixture questionnaire,
@@ -27,6 +28,7 @@ async function questionCount(page: Page): Promise<{ current: number; total: numb
 test('a required question refuses to advance, with the message from the model', async ({
 	page
 }) => {
+	await seedAnswers(page, THROUGH_DOB);
 	await page.goto('/questionnaire/page3');
 	await expect(page.getByRole('heading', { level: 1 })).toHaveText(
 		'Welches biologische Geschlecht hast Du?'
@@ -41,6 +43,7 @@ test('a required question refuses to advance, with the message from the model', 
 });
 
 test('branching follows the visibleIf in the model', async ({ page }) => {
+	await seedAnswers(page, THROUGH_DOB);
 	await page.goto('/questionnaire/page3');
 	await stepIsInteractive(page);
 	await page.getByRole('radio', { name: 'Weiblich' }).click();
@@ -52,6 +55,7 @@ test('branching follows the visibleIf in the model', async ({ page }) => {
 });
 
 test('the other branch skips the question it does not apply to', async ({ page }) => {
+	await seedAnswers(page, THROUGH_DOB);
 	await page.goto('/questionnaire/page3');
 	await stepIsInteractive(page);
 	await page.getByRole('radio', { name: 'Männlich' }).click();
@@ -61,11 +65,17 @@ test('the other branch skips the question it does not apply to', async ({ page }
 });
 
 test('an interlude does not count as a question', async ({ page }) => {
-	await page.goto('/questionnaire/page2');
+	// The motivation screen follows the allergy question, so that is the count it holds.
+	await seedAnswers(page, THROUGH_ALLERGY);
+	await page.goto('/questionnaire/page16');
+	// The count has to be read after hydration: the server renders the plan of an unanswered
+	// questionnaire, because the answers reach the browser and nowhere else.
+	await stepIsInteractive(page);
 	const before = await questionCount(page);
 
 	await page.goto('/questionnaire/motivation');
 	await expect(page.getByRole('heading', { level: 1 })).toContainText('Halfway done');
+	await stepIsInteractive(page);
 	expect(await questionCount(page)).toEqual(before);
 
 	await page.getByRole('button', { name: 'Continue' }).click();

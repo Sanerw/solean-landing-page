@@ -51,8 +51,9 @@ test('capture the questionnaire screens', async ({ page }) => {
 	await shot('06-composite-input');
 	await advance();
 
-	await expect(page).toHaveURL('/questionnaire/motivation');
-	await shot('07-motivation');
+	// Solean's own screens, both drawn from what has been answered by the time they appear.
+	await expect(page).toHaveURL('/questionnaire/projection');
+	await shot('07-projection');
 	await advance();
 
 	await ready('page1');
@@ -60,10 +61,19 @@ test('capture the questionnaire screens', async ({ page }) => {
 	await shot('08-multiple-choice');
 	await advance();
 
+	await ready('page16');
+	await page.getByRole('checkbox', { name: 'Keine der Genannten' }).click();
+	await shot('09-allergies');
+	await advance();
+
+	await expect(page).toHaveURL('/questionnaire/motivation');
+	await shot('10-motivation');
+	await advance();
+
 	await ready('page18');
 	await page.getByRole('radio', { name: 'Andere' }).click();
 	await page.getByRole('textbox').fill('Metformin 500mg');
-	await shot('09-other-free-text');
+	await shot('11-other-free-text');
 	await advance();
 
 	await ready('page22');
@@ -72,9 +82,9 @@ test('capture the questionnaire screens', async ({ page }) => {
 
 	await ready('page23');
 	await page.getByRole('textbox').fill('Leichte Übelkeit in der ersten Woche.');
-	await shot('10-long-free-text');
+	await shot('12-long-free-text');
 	await advance();
 
 	await expect(page).toHaveURL('/questionnaire/complete');
-	await shot('11-complete');
+	await shot('13-complete');
 });

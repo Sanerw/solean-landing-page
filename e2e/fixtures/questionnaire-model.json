@@ -327,6 +327,60 @@
           {
             "choices": [
               {
+                "text": "Liraglutid",
+                "value": "Liraglutide"
+              },
+              {
+                "text": "Semaglutid",
+                "value": "Semaglutide"
+              },
+              "Tirzepatid",
+              "Benzylalkohol",
+              {
+                "text": "Dinatriumphosphat-Dihydrat",
+                "value": "Disodium phosphate dihydrate"
+              },
+              {
+                "text": "Propylenglykol",
+                "value": "Propylene glycol"
+              },
+              {
+                "text": "Phenol",
+                "value": "phenol"
+              },
+              {
+                "text": "Salzsäure/Natriumhydroxid",
+                "value": "Hydrochloric Acid/Sodium Hydroxide"
+              }
+            ],
+            "isRequired": true,
+            "name": "allergy",
+            "noneText": "Keine der Genannten",
+            "otherErrorText": "Bitte gib Informationen zu Deinen Allergien an.",
+            "otherPlaceholder": "Bitte gib Informationen zu Deinen Allergien an.",
+            "otherText": "Andere",
+            "requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+            "showNoneItem": true,
+            "showOtherItem": true,
+            "title": "Bist Du gegen Substanzen, Medikamente oder Lebensmittel allergisch?",
+            "type": "checkbox",
+            "validators": [
+              {
+                "expression": "{allergy} = ['none'] or {allergy} allof ['other']",
+                "text": "Leider können wir Dir das Medikament auf Grund Deiner Allergien nicht verschreiben.",
+                "type": "expression"
+              }
+            ]
+          }
+        ],
+        "name": "page16",
+        "title": "allergy"
+      },
+      {
+        "elements": [
+          {
+            "choices": [
+              {
                 "text": "Wegovy",
                 "value": "wegovy"
               },

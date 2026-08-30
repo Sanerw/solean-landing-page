@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { seedAnswers, THROUGH_ALLERGY, THROUGH_GENDER, THROUGH_NAME } from './answers';
 
 /**
  * One spec per question type the live model uses, and one walk through all of them. Every
@@ -12,6 +13,7 @@ async function ready(page: Page): Promise<void> {
 }
 
 test('the date of birth is required by the model, not by the renderer', async ({ page }) => {
+	await seedAnswers(page, THROUGH_NAME);
 	await page.goto('/questionnaire/page26');
 	await ready(page);
 
@@ -28,6 +30,7 @@ test('the date of birth is required by the model, not by the renderer', async ({
 });
 
 test('a composite question reports its failure on the control that failed', async ({ page }) => {
+	await seedAnswers(page, THROUGH_GENDER);
 	await page.goto('/questionnaire/page2');
 	await ready(page);
 
@@ -45,6 +48,7 @@ test('a composite question reports its failure on the control that failed', asyn
 });
 
 test('the exclusive option is the engine\'s, not ours', async ({ page }) => {
+	await seedAnswers(page, THROUGH_GENDER);
 	await page.goto('/questionnaire/page2');
 	await ready(page);
 	// The model shows the conditions question only for a BMI between 27 and 30, so the walk
@@ -53,8 +57,8 @@ test('the exclusive option is the engine\'s, not ours', async ({ page }) => {
 	await page.getByLabel('Gewicht (kg)').fill('90');
 	await page.getByRole('button', { name: 'Continue' }).click();
 
-	// Solean's own screen sits between these two model pages.
-	await expect(page).toHaveURL('/questionnaire/motivation');
+	// Solean's own projection sits between these two model pages.
+	await expect(page).toHaveURL('/questionnaire/projection');
 	await page.getByRole('button', { name: 'Continue' }).click();
 
 	await expect(page).toHaveURL('/questionnaire/page1');
@@ -75,6 +79,7 @@ test('the exclusive option is the engine\'s, not ours', async ({ page }) => {
 });
 
 test('an "other" choice reveals the free text the model describes', async ({ page }) => {
+	await seedAnswers(page, THROUGH_ALLERGY);
 	await page.goto('/questionnaire/page18');
 	await ready(page);
 
@@ -134,13 +139,22 @@ test('the questionnaire can be answered from the first page to the last', async 
 	await page.getByLabel('Gewicht (kg)').fill('90');
 	await page.getByRole('button', { name: 'Continue' }).click();
 
-	await expect(page).toHaveURL('/questionnaire/motivation');
+	await expect(page).toHaveURL('/questionnaire/projection');
 	await page.getByRole('button', { name: 'Continue' }).click();
 
 	// The conditions question is behind the BMI answered above.
 	await expect(page).toHaveURL('/questionnaire/page1');
 	await ready(page);
 	await page.getByRole('checkbox', { name: 'Knie- oder Hüftarthrose' }).click();
+	await page.getByRole('button', { name: 'Continue' }).click();
+
+	// The model accepts no allergies at all, or one typed into "Andere", and nothing else.
+	await expect(page).toHaveURL('/questionnaire/page16');
+	await ready(page);
+	await page.getByRole('checkbox', { name: 'Keine der Genannten' }).click();
+	await page.getByRole('button', { name: 'Continue' }).click();
+
+	await expect(page).toHaveURL('/questionnaire/motivation');
 	await page.getByRole('button', { name: 'Continue' }).click();
 
 	await expect(page).toHaveURL('/questionnaire/page18');

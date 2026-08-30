@@ -310,7 +310,7 @@ claims are not approved production content.
   skipped question. The definitive type list comes from the real model, so it is
   confirmed at spec time, not guessed here.
 
-- [ ] 11. **Interludes, progress and flow integrity** - The projection interlude
+- [x] 11. **Interludes, progress and flow integrity** - The projection interlude
   computed locally from `survey.data` through the configured height and weight
   question names, with no extra API call, positioned by `steps[]` alongside the
   motivation interlude 9b already places. It waits for feature 10 because the
