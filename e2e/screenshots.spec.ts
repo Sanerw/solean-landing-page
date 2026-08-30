@@ -48,4 +48,11 @@ test('capture every questionnaire screen', async ({ page }) => {
 	await page.getByRole('checkbox', { name: 'None of the above' }).click();
 	await page.getByRole('radio', { name: 'No', exact: true }).click();
 	await shot('09-allergies-medications');
+	await page.getByRole('button', { name: 'Continue' }).click();
+
+	await page.getByRole('radio', { name: 'Mounjaro', exact: true }).click();
+	await shot('10-treatment-preference');
+	await page.getByRole('button', { name: 'Continue with Mounjaro' }).click();
+
+	await shot('11-complete');
 });

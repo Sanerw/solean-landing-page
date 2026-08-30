@@ -203,7 +203,7 @@ claims are not approved production content.
   feature finishes on a working screen without implementing the questionnaire
   content.
 
-- [ ] 8. **Questionnaire content and completion**
+- [x] 8. **Questionnaire content and completion**
   - [x] 8a. **Multi-field steps and the remaining field kinds** - Revise the
     feature 7 schema so a step owns an ordered list of fields rather than one
     kind, because the reference puts a single-select and two numerics on
@@ -222,7 +222,7 @@ claims are not approved production content.
     weight, and the motivation mid-step. Interstitials never shift the canonical
     question count. Repairs finding F-07 so `Tabs` associates each panel with
     its tab in the primitive rather than at the call site.
-  - [ ] 8d. **Treatment preference and completion** - Question 8's bespoke
+  - [x] 8d. **Treatment preference and completion** - Question 8's bespoke
     treatment cards over the canonical domain catalogue with a preference-aware
     continue action, and the completion state. Sets `questionnaire.completed`
     and `selectedTreatmentId`, unlocking checkout. Resume lands on the first

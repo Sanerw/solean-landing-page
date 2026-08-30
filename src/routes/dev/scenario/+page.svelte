@@ -218,18 +218,15 @@
 			<fieldset>
 				<legend class="font-display text-xl font-semibold">Questionnaire</legend>
 				<p class="mt-2 text-sm text-muted-foreground">
-					QuestionnaireService.setCompleted, saveAnswer and clear. The recorded answer is the real
-					schema fixture, resolved through the service rather than restated here.
+					QuestionnaireService.saveAnswer and clear. The recorded answer is the real schema
+					fixture, resolved through the service. Completion is not settable: it is recomputed
+					from the answers on every write, so this surface can only report it.
 				</p>
-				<div class="mt-6 flex items-center gap-3">
-					<Checkbox
-						id="questionnaire-completed"
-						bind:checked={
-							() => journey.session.questionnaire.completed,
-							(checked) => questionnaireService.setCompleted(checked)
-						}
-					/>
-					<Label for="questionnaire-completed">Completed</Label>
+				<div class="mt-6">
+					{@render field(
+						'Complete',
+						journey.session.questionnaire.completed ? 'yes' : 'no'
+					)}
 				</div>
 				<div class="mt-4 flex flex-wrap gap-3">
 					<Button

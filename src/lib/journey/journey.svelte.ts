@@ -26,21 +26,20 @@ export const journey = {
 	},
 
 	/**
-	 * One mutation for the whole answer map and its progress marker. Splitting them into two
-	 * setters is what would let a resume point drift away from the answers it describes, so
-	 * the questionnaire service hands both over together and this never recomputes either.
+	 * One mutation for everything an answer implies: the map, the resume marker, whether the
+	 * questionnaire is complete, and which treatment was chosen. Splitting these into
+	 * separate setters is what would let them drift apart, so the questionnaire service
+	 * computes all four together and this never recomputes any of them.
 	 */
-	saveQuestionnaireAnswer(answers: QuestionnaireAnswers): void {
+	saveQuestionnaireProgress(progress: {
+		answers: QuestionnaireAnswers;
+		completed: boolean;
+		selectedTreatmentId: string | null;
+	}): void {
 		update((current) => ({
 			...current,
-			questionnaire: { ...current.questionnaire, answers }
-		}));
-	},
-
-	setQuestionnaireCompleted(completed: boolean): void {
-		update((current) => ({
-			...current,
-			questionnaire: { ...current.questionnaire, completed }
+			questionnaire: { answers: progress.answers, completed: progress.completed },
+			selectedTreatmentId: progress.selectedTreatmentId
 		}));
 	},
 

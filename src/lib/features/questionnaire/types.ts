@@ -92,6 +92,12 @@ interface QuestionFieldBase<K extends QuestionFieldKind> {
 
 export interface SingleSelectField extends QuestionFieldBase<'single-select'> {
 	options: readonly QuestionOption[];
+	/**
+	 * `treatment` renders each option as the reference's product row, resolved from the
+	 * canonical catalogue. Schema-described, like optionColumns and labelStyle, so no
+	 * renderer branches on a step id.
+	 */
+	optionPresentation?: 'card' | 'treatment';
 }
 
 export interface MultiSelectField extends QuestionFieldBase<'multi-select'> {
@@ -141,11 +147,16 @@ export interface QuestionStep {
 	help?: string;
 	fields: readonly QuestionField[];
 	notice?: StepNotice;
+	/**
+	 * Names the chosen option in the primary action, as question 8 does with
+	 * "Continue with Mounjaro". Points at the field whose selection to echo.
+	 */
+	actionNamesFieldId?: string;
 }
 
 /** Which screen an interstitial renders. The route maps this to a component, so no
  *  component ever branches on a step id. */
-export type InterstitialVariant = 'projection' | 'motivation';
+export type InterstitialVariant = 'projection' | 'motivation' | 'completion';
 
 export interface InterstitialStep {
 	kind: 'interstitial';

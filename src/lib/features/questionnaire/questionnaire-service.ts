@@ -5,6 +5,8 @@ import {
 	getFirstUnansweredIndex,
 	getNextQuestionnaireStep,
 	getPatientWeightKg,
+	getSelectedTreatmentId,
+	isQuestionnaireComplete,
 	getPreviousQuestionnaireStep,
 	getQuestionnaireProgress,
 	getQuestionnaireStep,
@@ -37,7 +39,9 @@ export interface QuestionnaireService {
 	getStepAnswers(stepId: string): StepAnswers | undefined;
 	validate(step: QuestionnaireStep, answers: StepAnswers | undefined): StepValidationResult;
 	saveAnswer(stepId: string, answers: StepAnswers): void;
-	setCompleted(completed: boolean): void;
+	isComplete(): boolean;
+	getQuestionCount(): number;
+	getSelectedTreatmentId(): string | null;
 	clear(): void;
 }
 
@@ -93,18 +97,34 @@ class MockQuestionnaireService implements QuestionnaireService {
 	 */
 	saveAnswer(stepId: string, answers: StepAnswers): void {
 		const byQuestionId = { ...this.getAnswers().byQuestionId, [stepId]: answers };
-
-		journey.saveQuestionnaireAnswer({
+		const next = {
 			byQuestionId,
 			firstUnansweredIndex: getFirstUnansweredIndex(QUESTIONNAIRE_SCHEMA, {
 				byQuestionId,
 				firstUnansweredIndex: 0
 			})
+		};
+
+		// Everything an answer implies, computed here and written once. There is deliberately
+		// no way to set completion or the treatment on their own.
+		journey.saveQuestionnaireProgress({
+			answers: next,
+			completed: isQuestionnaireComplete(QUESTIONNAIRE_SCHEMA, next),
+			selectedTreatmentId: getSelectedTreatmentId(QUESTIONNAIRE_SCHEMA, next)
 		});
 	}
 
-	setCompleted(completed: boolean): void {
-		journey.setQuestionnaireCompleted(completed);
+	isComplete(): boolean {
+		return isQuestionnaireComplete(QUESTIONNAIRE_SCHEMA, this.getAnswers());
+	}
+
+	/** The schema's own total, so no screen states a second number. */
+	getQuestionCount(): number {
+		return QUESTIONNAIRE_SCHEMA.questionCount;
+	}
+
+	getSelectedTreatmentId(): string | null {
+		return getSelectedTreatmentId(QUESTIONNAIRE_SCHEMA, this.getAnswers());
 	}
 
 	clear(): void {

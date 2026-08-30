@@ -42,6 +42,21 @@
 		return values[field.id] ?? emptyFieldValue(field);
 	}
 
+	/**
+	 * The label comes from the schema's own option list, so renaming a treatment in the
+	 * catalogue renames the button with it.
+	 */
+	const actionLabel = $derived.by(() => {
+		if (!step.actionNamesFieldId) return 'Continue';
+
+		const field = step.fields.find((candidate) => candidate.id === step.actionNamesFieldId);
+		if (field?.kind !== 'single-select') return 'Continue';
+
+		const selected = valueOf(field);
+		const option = field.options.find((candidate) => candidate.id === selected);
+		return option ? `Continue with ${option.label}` : 'Continue';
+	});
+
 	/** DOM ids are dot-free, so a control key doubles as a stable element id suffix. */
 	function domId(controlKey: string): string {
 		return `${step.id}-${controlKey.replace('.', '-')}`;
@@ -258,7 +273,7 @@
 	{/if}
 
 	<Button type="submit" size="lg" class="relative mt-10 w-full">
-		Continue
+		{actionLabel}
 		<ArrowRightIcon aria-hidden="true" class="absolute right-8" />
 	</Button>
 </form>

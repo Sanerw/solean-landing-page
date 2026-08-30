@@ -1,3 +1,4 @@
+import { TREATMENTS } from '$lib/domain';
 import type { Answer, QuestionnaireAnswers } from '$lib/domain';
 import type {
 	ContactField,
@@ -25,6 +26,9 @@ export const QUESTIONNAIRE_START_STEP_ID = 'about-you';
 
 const WEIGHT_STEP_ID = QUESTIONNAIRE_START_STEP_ID;
 const WEIGHT_FIELD_ID = 'weight';
+
+export const TREATMENT_STEP_ID = 'treatment-preference';
+const TREATMENT_FIELD_ID = 'treatment';
 
 function isQuestionStep(step: QuestionnaireStep): step is QuestionStep {
 	return step.kind === 'question';
@@ -418,6 +422,38 @@ export const QUESTIONNAIRE_SCHEMA = defineQuestionnaireSchema({
 					validation: [{ type: 'required', message: 'Select Yes or No to continue.' }]
 				}
 			]
+		},
+		{
+			kind: 'question',
+			id: TREATMENT_STEP_ID,
+			questionNumber: 8,
+			title: 'Which treatment would you prefer?',
+			help: "Choose the option you'd like to explore. Your clinician will confirm which treatment is safe and suitable for you.",
+			fields: [
+				{
+					id: TREATMENT_FIELD_ID,
+					kind: 'single-select',
+					label: 'Treatment preference',
+					labelHidden: true,
+					optionPresentation: 'treatment',
+					// The catalogue is the option list. A treatment removed from it disappears from
+					// the question rather than leaving a dangling id, and no name or claim is
+					// restated here.
+					options: TREATMENTS.map((treatment) => ({ id: treatment.id, label: treatment.name })),
+					validation: [{ type: 'required', message: 'Choose a treatment to continue.' }]
+				}
+			],
+			actionNamesFieldId: TREATMENT_FIELD_ID,
+			notice: {
+				variant: 'default',
+				text: 'Treatment is prescribed only after clinical review and may differ from your preference.'
+			}
+		},
+		{
+			kind: 'interstitial',
+			id: 'complete',
+			variant: 'completion',
+			title: 'Your health profile is complete'
 		}
 	]
 });
@@ -748,6 +784,32 @@ export function getPatientWeightKg(
 	if (answer?.kind !== 'numeric' || answer.unit !== 'kg') return null;
 
 	return Number.isFinite(answer.value) && answer.value > 0 ? answer.value : null;
+}
+
+/**
+ * Complete means every answer-producing step validates, computed here rather than stored as
+ * a flag someone can set. A stored flag is exactly what lets a funnel report completion
+ * while an answer is missing, which is the inconsistency the reference itself shows.
+ */
+export function isQuestionnaireComplete(
+	schema: QuestionnaireSchema,
+	answers: QuestionnaireAnswers
+): boolean {
+	const questionSteps = getQuestionSteps(schema);
+	return questionSteps.length > 0 && getFirstUnansweredIndex(schema, answers) === questionSteps.length;
+}
+
+/**
+ * The treatment the patient chose at question 8, or null. Derived from the answer so the
+ * session and the questionnaire cannot disagree; checkout may later write the same field
+ * itself, which is a deliberate hand-off, not a second source of truth for this answer.
+ */
+export function getSelectedTreatmentId(
+	schema: QuestionnaireSchema,
+	answers: QuestionnaireAnswers
+): string | null {
+	const answer = answers.byQuestionId[TREATMENT_STEP_ID]?.[TREATMENT_FIELD_ID];
+	return answer?.kind === 'single-select' ? answer.optionId : null;
 }
 
 export function getResumeQuestionnaireStep(

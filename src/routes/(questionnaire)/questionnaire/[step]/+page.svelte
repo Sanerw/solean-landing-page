@@ -2,6 +2,7 @@
 	import { goto } from '$app/navigation';
 	import type { StepAnswers } from '$lib/features/questionnaire/types';
 	import QuestionnaireShell from '$lib/features/questionnaire/QuestionnaireShell.svelte';
+	import CompletionInterstitial from '$lib/features/questionnaire/CompletionInterstitial.svelte';
 	import MotivationInterstitial from '$lib/features/questionnaire/MotivationInterstitial.svelte';
 	import ProjectionInterstitial from '$lib/features/questionnaire/ProjectionInterstitial.svelte';
 	import QuestionScreen from '$lib/features/questionnaire/QuestionScreen.svelte';
@@ -63,6 +64,8 @@
 			<QuestionScreen {step} progress={data.progress} onvalid={handleValid} />
 		{:else if step.variant === 'projection'}
 			<ProjectionInterstitial oncontinue={advance} />
+		{:else if step.variant === 'completion'}
+			<CompletionInterstitial />
 		{:else}
 			<MotivationInterstitial oncontinue={advance} />
 		{/if}

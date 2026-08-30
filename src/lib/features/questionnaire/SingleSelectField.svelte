@@ -7,6 +7,7 @@
 		FieldTitle
 	} from '$lib/components/ui/field';
 	import * as RadioGroup from '$lib/components/ui/radio-group';
+	import TreatmentOption from './TreatmentOption.svelte';
 	import type { SingleSelectField } from './types';
 
 	interface Props {
@@ -25,8 +26,20 @@
 	bind:value={() => value, (next) => onchange(next)}
 	aria-invalid={invalid ? 'true' : undefined}
 	aria-describedby={describedBy}
-	class="grid gap-3 sm:grid-cols-2"
+	class={field.optionPresentation === 'treatment' ? 'grid gap-4' : 'grid gap-3 sm:grid-cols-2'}
 >
+	{#if field.optionPresentation === 'treatment'}
+		{#each field.options as option (option.id)}
+			<div>
+				<TreatmentOption
+					treatmentId={option.id}
+					controlId="{stepId}-{field.id}-{option.id}"
+					{invalid}
+					{describedBy}
+				/>
+			</div>
+		{/each}
+	{:else}
 	{#each field.options as option (option.id)}
 		<FieldLabel for="{stepId}-{field.id}-{option.id}">
 			<Field orientation="horizontal">
@@ -50,4 +63,5 @@
 			</Field>
 		</FieldLabel>
 	{/each}
+	{/if}
 </RadioGroup.Root>
