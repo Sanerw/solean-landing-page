@@ -36,15 +36,15 @@
 	single static sentence carries the meaning instead. A live region here would interrupt
 	a screen reader once per second for a mock promotion.
 -->
-<div class={['flex items-center gap-2', className]}>
+<div class={['flex items-center gap-2.5', className]}>
 	<span class="sr-only">Offer ends in about {remaining.hours} hours.</span>
 	{#each units as unit, index (unit.label)}
 		{#if index > 0}
-			<span aria-hidden="true" class="pb-3 text-xs text-background/50">:</span>
+			<span aria-hidden="true" class="text-sm font-bold leading-normal">:</span>
 		{/if}
-		<span aria-hidden="true" class="flex w-9 flex-col items-center leading-none">
-			<span class="font-display text-lg font-semibold text-background">{pad(unit.value)}</span>
-			<span class="mt-1 text-xs uppercase tracking-widest text-background/60">{unit.label}</span>
+		<span aria-hidden="true" class="flex flex-col items-center leading-normal">
+			<span class="text-sm font-bold">{pad(unit.value)}</span>
+			<span class="text-xs uppercase tracking-wide">{unit.label}</span>
 		</span>
 	{/each}
 </div>

@@ -83,10 +83,10 @@ export const LANGUAGES = [
 ] as const;
 
 export const ANNOUNCEMENT = {
-	title: 'Welcome offer.',
-	prefix: 'Save',
-	amount: '\u20ac10',
-	suffix: 'on your first online consultation'
+	title: 'WEGOVY PILL NOW AVAILABLE',
+	prefix: 'Order today and get a free',
+	amount: '\u20ac50 gift',
+	suffix: '.'
 } as const;
 
 export interface HeroContent {

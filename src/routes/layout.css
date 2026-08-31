@@ -51,6 +51,8 @@
 	--primary: #E2B64F;
 	--primary-foreground: #172019;
 	--primary-hover: #D9971C;
+	--announcement: #0C2517;
+	--announcement-foreground: #FFFFFF;
 	--secondary: #F7F8F5;
 	--secondary-foreground: #173824;
 	--muted: #F4F3EC;
@@ -167,6 +169,8 @@
 	--color-primary: var(--primary);
 	--color-primary-foreground: var(--primary-foreground);
 	--color-primary-hover: var(--primary-hover);
+	--color-announcement: var(--announcement);
+	--color-announcement-foreground: var(--announcement-foreground);
 	--color-secondary: var(--secondary);
 	--color-secondary-foreground: var(--secondary-foreground);
 	--color-muted: var(--muted);
