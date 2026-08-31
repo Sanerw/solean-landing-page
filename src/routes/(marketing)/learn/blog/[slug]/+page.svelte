@@ -6,7 +6,7 @@
 	import ArticleToc from '$lib/features/learn/ArticleToc.svelte';
 	import RelatedGuides from '$lib/features/learn/RelatedGuides.svelte';
 	import SiteHeader from '$lib/features/marketing/SiteHeader.svelte';
-	import { CONTAINER } from '$lib/features/marketing/container';
+	import { BLEED, CONTAINER } from '$lib/features/marketing/container';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
@@ -17,7 +17,9 @@
 	<meta name="description" content={data.article.summary} />
 </svelte:head>
 
-<SiteHeader />
+<div class={[BLEED, 'py-3']}>
+	<SiteHeader />
+</div>
 
 <article>
 	<ArticleHero article={data.article} />
