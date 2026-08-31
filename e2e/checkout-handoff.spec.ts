@@ -11,9 +11,9 @@ import {
 } from './answers';
 
 /**
- * The handoff itself. The fixture stands in for RxScale's public API and for the Shopify
- * page a checkout link leads to, so the redirect under test is a real navigation to a real
- * URL the app was handed, rather than a stubbed route.
+ * The handoff itself. The fixture stands in for the Shopify Storefront API and for the page a
+ * checkout URL leads to, so the redirect under test is a real navigation to a real URL the app
+ * was handed, rather than a stubbed route.
  */
 
 const LAST_STEP = '/questionnaire/page22';
@@ -36,7 +36,7 @@ async function atRecommendation(page: Page, answers: Record<string, unknown>): P
 	await expect(page).toHaveURL('/questionnaire/complete');
 }
 
-test('the order is created by the press, and lands exactly where RxScale said', async ({
+test('the order is created by the press, and lands exactly where Shopify said', async ({
 	page
 }) => {
 	const calls = checkoutCalls(page);
@@ -69,7 +69,7 @@ test('the order is created by the press, and lands exactly where RxScale said', 
 
 	await expect(page.getByRole('heading', { name: 'Fixture checkout' })).toBeVisible();
 
-	// Byte for byte: the URL is RxScale's, and nothing here appends to it or trims it.
+	// Byte for byte: the URL is Shopify's, and nothing here appends to it or trims it.
 	expect(issued).not.toBeNull();
 	expect(page.url()).toBe(issued);
 	expect(calls).toHaveLength(1);
@@ -105,20 +105,18 @@ test('a service that does not answer offers the retry, and stays where it is', a
 	await expect(page).toHaveURL('/questionnaire/complete');
 });
 
-test('an order with no e-mail address never reaches the service', async ({ page }) => {
+test('an answer set with no e-mail still reaches the checkout', async ({ page }) => {
 	const calls = checkoutCalls(page);
 
 	// `EVERY_ANSWER` completes the questionnaire without an e-mail: the model does not ask for
-	// one, so this is a walk anybody can take.
+	// one, so this is a walk anybody can take. Shopify collects the address at checkout, so it
+	// is an order to be completed there and not a dead end here.
 	await atRecommendation(page, EVERY_ANSWER);
 
 	await page.getByRole('button', { name: 'Place your order' }).click();
 
-	await expect(page.getByText('Your order needs an e-mail address')).toBeVisible();
-	await expect(page).toHaveURL('/questionnaire/complete');
-
-	// Refused in the browser, so an order nobody could be told about costs no request at all.
-	expect(calls).toHaveLength(0);
+	await expect(page.getByRole('heading', { name: 'Fixture checkout' })).toBeVisible();
+	expect(calls).toHaveLength(1);
 });
 
 test('leaving takes the answers with it, and keeps what a return needs', async ({ page }) => {

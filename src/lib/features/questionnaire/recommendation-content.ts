@@ -40,10 +40,6 @@ export const CHECKOUT_FAILURES: Record<CheckoutFailure, { title: string; body: s
 		title: 'Your health profile is not attached',
 		body: 'An order without it would reach the pharmacy with nothing for a doctor to review, so it was not placed. Nothing has been charged.'
 	},
-	'missing-email': {
-		title: 'Your order needs an e-mail address',
-		body: 'Your answers did not include one, and a checkout with no address is an order nobody could tell you about. Nothing has been charged, and your answers are already with a doctor.'
-	},
 	'not-configured': {
 		title: 'Ordering is not available here',
 		body: 'This installation of Solean cannot place orders. Nothing has been charged, and your answers are already with a doctor.'

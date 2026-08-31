@@ -6,10 +6,8 @@ export const FIXTURE_PAGES = 11;
 export const FIXTURE_ELEMENTS = 15;
 
 /**
- * The private checkout configuration the preview server runs with. Not secrets: the fixture
- * only checks that the app sends the key it was configured with, and pointing the base URL at
- * the fixture is what keeps the harness from creating a real Shopify cart.
+ * The checkout configuration the preview server runs with. Pointing the store domain at the
+ * fixture is what keeps the harness from creating a cart in the real shop.
  */
-export const FIXTURE_API_KEY = 'fixture-api-key';
-export const FIXTURE_SHOP = 'fixture-shop';
-export const FIXTURE_SKU = 'fixture-sku';
+export const FIXTURE_STORE_DOMAIN = `http://localhost:${FIXTURE_PORT}`;
+export const FIXTURE_VARIANT_ID = '49703544684877';

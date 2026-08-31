@@ -13,8 +13,6 @@ import { fileURLToPath } from 'node:url';
 const PORT = Number(process.env.FIXTURE_PORT ?? 4319);
 const FIXTURE_UID = process.env.FIXTURE_QUESTIONNAIRE_UID ?? 'fixture-questionnaire';
 const FIXTURE_PATH = join(dirname(fileURLToPath(import.meta.url)), 'fixtures/questionnaire-model.json');
-/** Not a secret: the fixture only checks that the app sends the key it was configured with. */
-const FIXTURE_API_KEY = process.env.FIXTURE_API_KEY ?? 'fixture-api-key';
 
 const PREFIXES = ['/api/v2/anamnesis', '/api/v3-1/anamnesis', '/v4/anamnesis'];
 
@@ -56,15 +54,44 @@ function markerIn(data) {
 }
 
 let submissionCount = 0;
-let checkoutCount = 0;
+let cartCount = 0;
 
 /**
- * Stands in for the RxScale public API as well, so the checkout endpoint can be exercised
- * without creating a Shopify cart. The failure it should return is asked for through the
- * buyer's e-mail, the way the submission markers work, because the shop identifier is server
- * configuration a browser test cannot vary.
+ * Stands in for the Shopify Storefront API, so the handoff can be exercised without creating
+ * a cart in the real shop. It asserts the promises this app makes about the cart it builds,
+ * because a violation would otherwise only surface as an order nobody can review. The failure
+ * it should return is asked for through the buyer's e-mail, the way the submission markers
+ * work, because the store domain is server configuration a browser test cannot vary.
  */
-const TREATMENTS = /^\/v2\/public-api\/treatments\/([^/]+)$/;
+const STOREFRONT = /^\/api\/[^/]+\/graphql\.json$/;
+const ANAMNESIS_ATTRIBUTE = '_anamnesis_uid';
+
+function userErrors(...messages) {
+	const errors = messages.map((message) => ({ field: null, message }));
+
+	return { data: { cartCreate: { cart: null, userErrors: errors } } };
+}
+
+/** The order-level attribute rule, checked where breaking it would otherwise go unnoticed. */
+function cartComplaint(input) {
+	const lines = input?.lines ?? [];
+	if (lines.length !== 1 || lines[0].quantity !== 1 || !lines[0].merchandiseId) {
+		return 'A cart needs exactly one merchandise line with quantity 1';
+	}
+
+	const attributes = input?.attributes ?? [];
+	const anamnesis = attributes.filter((attribute) => attribute.key === ANAMNESIS_ATTRIBUTE);
+	if (anamnesis.length !== 1 || !anamnesis[0].value) {
+		return `A cart needs one non-empty ${ANAMNESIS_ATTRIBUTE} order attribute`;
+	}
+
+	// Decision 2: the order level alone, because the bundle's components are not ours to set.
+	const onLine = lines.some((line) =>
+		(line.attributes ?? []).some((attribute) => attribute.key === ANAMNESIS_ATTRIBUTE)
+	);
+
+	return onLine ? `${ANAMNESIS_ATTRIBUTE} belongs on the order, not on a line` : null;
+}
 
 function send(response, status, body) {
 	const payload = JSON.stringify(body);
@@ -105,47 +132,40 @@ const server = createServer(async (request, response) => {
 		return;
 	}
 
-	if (request.method === 'POST' && TREATMENTS.test(pathname)) {
-		if (request.headers['x-api-key'] !== FIXTURE_API_KEY) {
-			send(response, 401, { error: 'Invalid API key' });
-			return;
-		}
-
+	if (request.method === 'POST' && STOREFRONT.test(pathname)) {
 		let body;
 		try {
 			body = await readBody(request);
 		} catch {
-			send(response, 400, { error: 'Malformed body' });
+			send(response, 400, { errors: [{ message: 'Malformed body' }] });
 			return;
 		}
 
-		const email = body?.buyerIdentity?.email ?? '';
-		const line = body?.lines?.[0] ?? {};
-
-		// The rules this app promises to keep, asserted where a violation would otherwise
-		// only show up as a Shopify order nobody can review.
-		if (!line.anamnesis_id || !line.sku_uid || line.quantity !== 1) {
-			send(response, 422, { error: 'A line needs one sku_uid, quantity 1 and an anamnesis_id' });
-			return;
-		}
-		if (body.checkout_type !== 'checkout_link') {
-			send(response, 422, { error: 'This fixture only issues checkout links' });
+		const input = body?.variables?.input ?? null;
+		const complaint = cartComplaint(input);
+		if (complaint) {
+			send(response, 200, userErrors(complaint));
 			return;
 		}
 
+		const email = input.buyerIdentity?.email ?? '';
 		if (email.startsWith('refused@')) {
-			send(response, 422, { error: 'SKU not available for this shop' });
+			send(response, 200, userErrors('The merchandise line is not available'));
 			return;
 		}
 		if (email.startsWith('unreachable@')) {
-			send(response, 502, { error: 'Upstream unavailable' });
+			send(response, 502, { errors: [{ message: 'Upstream unavailable' }] });
 			return;
 		}
 
-		checkoutCount += 1;
+		cartCount += 1;
 		send(response, 200, {
-			status: 'success',
-			checkout_url: `http://localhost:${PORT}/checkout/fixture-${checkoutCount}`
+			data: {
+				cartCreate: {
+					cart: { checkoutUrl: `http://localhost:${PORT}/checkout/fixture-${cartCount}` },
+					userErrors: []
+				}
+			}
 		});
 		return;
 	}

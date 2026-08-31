@@ -38,15 +38,14 @@ export const EVERY_ANSWER = {
 };
 
 /**
- * The same walk with the e-mail the order needs. Separate from `EVERY_ANSWER` because the
- * model does not require it, and the questionnaire completes without one.
+ * The same walk with an e-mail to prefill the checkout with. Separate from `EVERY_ANSWER`
+ * because the model does not require one, and the order goes through either way.
  */
 export const WITH_EMAIL = { ...EVERY_ANSWER, EMail: 'jonas@example.com' };
 
 /**
  * The two checkout failures, asked for through the buyer's e-mail the way the submission
- * markers work, because the shop and the key are server configuration a browser cannot vary.
- * `EVERY_ANSWER` carries no e-mail at all, which is the third one.
+ * markers work, because the store domain is server configuration a browser cannot vary.
  */
 export const REFUSED_CHECKOUT = { ...EVERY_ANSWER, EMail: 'refused@example.com' };
 export const UNREACHABLE_CHECKOUT = { ...EVERY_ANSWER, EMail: 'unreachable@example.com' };

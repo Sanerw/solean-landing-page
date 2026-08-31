@@ -39,9 +39,9 @@ Completion criteria, not separate tasks.
 
 Apply to every feature from 9 onward.
 
-- `RXSCALE_API_KEY` and `RXSCALE_SHOP_IDENTIFIER` are private: read through
-  `$env/static/private`, used only in `+server.ts`. Never a `PUBLIC_` prefix,
-  never imported by a component.
+- No secret is on the checkout path. The Shopify variables are read through
+  `$env/dynamic/private` and used only in `+server.ts`, so the variant stays out
+  of the client bundle and validation has one home, not because they are private.
 - Question text, options, order, required flags, and branching come from the
   fetched model only. Nothing hardcoded, nothing hidden by a condition in our
   code. The submission is validated server-side against the current model, so a
@@ -52,11 +52,14 @@ Apply to every feature from 9 onward.
   synchronised to it, never the reverse.
 - An unmapped question type fails visibly in development and is logged in
   production. A question is never skipped silently.
-- `anamnesis_id` is mandatory on the checkout line, whatever the API allows.
-- `checkout_url` is opaque: no appended parameters, no trimming, no domain
+- `_anamnesis_uid` is mandatory, exact, and set on the cart's order attributes
+  alone. RxScale compares the key character for character and ignores a mismatch
+  silently, so it is one constant and is never assembled from parts.
+- `checkoutUrl` is opaque: no appended parameters, no trimming, no domain
   substitution.
-- One configured SKU. The catalogue is not queried and no recommendation is
-  computed from the answers.
+- One configured variant. The catalogue is not queried and no recommendation is
+  computed from the answers. The variant is a bundle Shopify expands itself, so
+  no fee line is ever built here.
 - Answers, the anamnesis uid, and the checkout URL never reach console output or
   analytics in production.
 
@@ -341,8 +344,13 @@ claims are not approved production content.
   message instead of a redirect.
   Completed 2026-08-31 with the live contract **unconfirmed**: the API key lacked
   the `create_treatment_checkout` permission, so no checkout was ever created
-  against the real service. Feature 14 owns that confirmation. See
+  against the real service. See
   `blueprint/history/features/13-checkout-handoff.md`.
+  **Superseded the same day.** The permission is not selectable in the Admin Tool
+  and RxScale recommended the cart instead, so the mechanism was replaced by a
+  Shopify Storefront `cartCreate` carrying `_anamnesis_uid` as an order
+  attribute. The visitor's journey is unchanged. One live cart confirmed the shop
+  accepts it. See the fix in `blueprint/history/fixes/`.
 
 - [ ] 14. **End-to-end hardening** - The whole path from landing page to the
   external redirect: transitions between route groups, deep links, refresh and

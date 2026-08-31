@@ -3,8 +3,8 @@
 <!-- blueprint:source-hash f6cabbc69ae583920a0d7802d97e1629062a4ea89884b75f5de75b5f0852bbf3 -->
 
 > The Solean front end: a marketing site and a doctor-led GLP-1 funnel that runs
-> on RxScale's Anamnesis API and hands the order to a Shopify checkout RxScale
-> generates. Solean runs no checkout of its own.
+> on RxScale's Anamnesis API and hands the order to Shopify by creating a cart
+> that carries the anamnesis reference. Solean runs no checkout of its own.
 
 ## Problem
 
@@ -17,8 +17,9 @@ Features 1 to 8 built that funnel as a UI prototype on mocked data, and the
 marketing and editorial surfaces stay fixture-driven. **From feature 9 the funnel
 is a real integration.** The questionnaire is fetched from and validated by the
 RxScale Anamnesis API, the submission creates a real anamnesis record a doctor
-will read, and the order is placed through an RxScale-generated Shopify checkout
-URL that this app only redirects to.
+will read, and the order is placed by creating a Shopify cart that carries the
+anamnesis as an order attribute, then redirecting to the checkout URL Shopify
+returns.
 
 The questionnaire UI is ours; the questionnaire content is not. Text, options,
 order, and branching come from the RxScale model at runtime, so a change in their
@@ -71,8 +72,10 @@ live funnel, features 9 to 13.
     refresh, back, deep links, and version-keyed in-session persistence.
 12. **Submission and the recommendation screen** - the anamnesis submission, its
     400 and 502 paths, and the congratulations screen for one configured SKU.
-13. **Checkout handoff** - `POST /api/checkout` in `+server.ts`, the treatment
-    checkout call, and the redirect to the returned URL.
+13. **Checkout handoff** - `POST /api/checkout` in `+server.ts`, the Shopify
+    `cartCreate` call, and the redirect to the returned URL. Built first against
+    RxScale's treatment checkout, then rebuilt on the cart when that endpoint
+    proved unusable.
 14. **End-to-end hardening** - the whole path, states, sweeps, browser tests,
     verification.
 
@@ -101,9 +104,9 @@ and medical answers to RxScale, who own storage, retention, and clinical review.
 | Questionnaire model and theme | RxScale | SurveyJS JSON, versioned, fetched on entry to the flow, never hardcoded, never cached past the visit |
 | Answers in progress | Browser session | `survey.data` in SSR-safe `sessionStorage`, keyed by questionnaire identifier and version so a model change cannot resume against stale answers |
 | `steps[]` | Solean | Survey pages interleaved with Solean interludes. The single source of truth for position, progress, and routing |
-| Anamnesis uid | Browser session | Returned by the submission, required by the checkout call |
-| Questionnaire uid, shop identifier, SKU uid, question names | Config | One module per concern, public values separate from private ones |
-| Order, payment, prescription, delivery | RxScale and Shopify | Not modelled here |
+| Anamnesis uid | Browser session | Returned by the submission, and the cart's order attribute |
+| Questionnaire uid, store domain, variant id, question names | Config | One module per concern. Nothing on the checkout path is a secret |
+| Order, payment, prescription, delivery | Shopify, then RxScale by webhook | Not modelled here. RxScale is never told about the order by us |
 
 ### steps[] (Solean)
 
@@ -162,33 +165,40 @@ src/lib/features/             marketing, learn, questionnaire
 src/lib/domain/               Money, Treatment and the catalogue
 src/lib/components/ui/        shadcn primitives
 src/lib/components/brand/     global brand visuals
-src/lib/config/               questionnaire uid, SKU, question names, public values
-src/lib/server/rxscale/       the private-key client, server-only
+src/lib/config/               questionnaire uid, the anamnesis attribute key, question names
+src/lib/server/shopify/       the Storefront cart client, server-only
 ```
 
 Static marketing and editorial features consume typed content fixtures directly.
-The questionnaire owns one typed boundary to RxScale rather than a service
-interface per screen. No abstraction is built before something calls it.
+The questionnaire owns one typed boundary per external service rather than a
+service interface per screen. No abstraction is built before something calls it.
 
-### The RxScale boundary
+### The external boundaries
 
 | Call | Endpoint | Auth |
 | --- | --- | --- |
 | Fetch the questionnaire | `GET https://api.rxscale.com/v4/anamnesis/questionnaires/{uid}` | public |
 | Submit answers | `POST https://api.rxscale.com/v4/anamnesis/questionnaires/{uid}/submissions` | public |
-| Create the checkout | `POST https://api.rxscale.com/v2/public-api/treatments/{shop_identifier}` | `X-API-Key`, permission `create_treatment_checkout` |
-| Live stock, optional | `POST https://api.rxscale.com/v2/public-api/products/{shop_identifier}/live-stock` | `X-API-Key`, permission `product:read`, 409 means out of stock |
+| Create the cart | `POST https://{store}/api/{version}/graphql.json`, `cartCreate` | Storefront token when configured |
 
-The submission returns `{ "uid": "anam-..." }`; the checkout returns
-`{ "status": "success", "checkout_url": "..." }`. Submission errors: 400
-validation (nothing saved, stay on the questionnaire), 404 unknown
-questionnaire, 502 validator unavailable (retry, nothing saved).
+**RxScale is not called to place the order.** They import it from Shopify by
+webhook and read the anamnesis off the cart attribute. Their treatment checkout
+endpoint was tried first and refused: the key lacks `create_treatment_checkout`,
+a permission the Admin Tool does not offer, and RxScale recommended the cart
+instead on 2026-08-31.
+
+The submission returns `{ "uid": "anam-..." }`; `cartCreate` returns
+`cart { checkoutUrl }` plus `userErrors`, which arrive with a 200 and are the
+refusal channel. Submission errors: 400 validation (nothing saved, stay on the
+questionnaire), 404 unknown questionnaire, 502 validator unavailable (retry,
+nothing saved).
 
 Rules that bind every feature from 9 onward:
 
-- `RXSCALE_API_KEY` and `RXSCALE_SHOP_IDENTIFIER` are private: read through
-  `$env/static/private`, used only in `+server.ts`. Never a `PUBLIC_` prefix,
-  never imported by a component.
+- No secret is on the checkout path. `SHOPIFY_STORE_DOMAIN` and
+  `SHOPIFY_VARIANT_ID` are read through `$env/dynamic/private` and used only in
+  `+server.ts`, so the variant stays out of the client bundle and validation has
+  one home, not because they are private.
 - The model is the only source of question content. Nothing hardcoded, nothing
   hidden by a condition in our code. The submission is validated server-side
   against the current model, so hiding a required question guarantees a 400.
@@ -196,25 +206,31 @@ Rules that bind every feature from 9 onward:
   on `survey.currentPage.validate(true, true)`.
 - An unmapped question type fails visibly in development and is logged in
   production. A question is never skipped silently.
-- `anamnesis_id` is mandatory on the checkout line. The API marks it optional;
-  Solean does not, because a Shopify order without an anamnesis gives the doctor
-  nothing to review. A missing uid blocks the redirect and shows an error.
-- The checkout URL is generated on click, never on screen entry, and the returned
-  `checkout_url` is opaque: no appended parameters, no trimming, no domain
+- `_anamnesis_uid` is mandatory, exact, and set on the cart's order attributes
+  alone. RxScale compares the key character for character and ignores a mismatch
+  silently, so it is one constant, never assembled from parts. Order level
+  because their resolution falls back from the line to its group to the order,
+  which is what reaches the components a bundle expands into. A missing uid
+  blocks the redirect and shows an error.
+- The cart is created on click, never on screen entry, and the returned
+  `checkoutUrl` is opaque: no appended parameters, no trimming, no domain
   substitution.
-- One configured SKU. The catalogue is not queried and no recommendation is
-  computed from the answers.
+- One configured variant. The catalogue is not queried and no recommendation is
+  computed from the answers. The variant is a bundle Shopify expands into
+  medication, treatment fee, and needles, so no fee line is ever built here.
 - The `buyerIdentity` e-mail is read from the answers by a configured question
-  name. The phone question is rendered whenever the model contains it, but the
-  phone is not sent in this iteration.
+  name. It is a prefill, not a condition: Shopify collects the address at
+  checkout, so an order without one is complete rather than unreachable. The
+  phone question is rendered whenever the model contains it, but the phone is
+  not sent in this iteration.
 
 ### Testing
 
 Decided: run `/tests` before feature 9, so Vitest and the test gate exist before
 the integration logic does. In scope for unit tests: the model to `steps[]`
 mapping, the question type registry including its unmapped-type failure, and the
-checkout payload builder (missing uid, missing or empty e-mail answer, a
-configured question name absent from the model). Component rendering and the
+cart input builder (missing uid, an unconfigured variant, an absent e-mail
+answer, and the order-level placement of `_anamnesis_uid`). Component rendering and the
 RxScale calls themselves stay with the browser harness (`pnpm test:browser`), a
 walkthrough, and the build.
 
@@ -302,18 +318,21 @@ single choice to `RadioGroup`, multiple choice to `Checkbox`, dropdown to
 ## Deployment
 
 **A static build is no longer possible.** `POST /api/checkout` runs server-side
-because it holds the private API key, so the host must execute server code: Node,
-or a serverless platform with a matching SvelteKit adapter.
+so the cart's rules are enforced in one place and the variant stays out of the
+client bundle, so the host must execute server code: Node, or a serverless
+platform with a matching SvelteKit adapter.
 `@sveltejs/adapter-auto` still cannot detect a target and warns at build time.
 
 | Variable | Visibility | Purpose |
 | --- | --- | --- |
-| `RXSCALE_API_KEY` | private, server only | `X-API-Key` for the checkout call |
-| `RXSCALE_SHOP_IDENTIFIER` | private, server only | shop path segment |
+| `SHOPIFY_STORE_DOMAIN` | server only | the shop the cart is created in |
+| `SHOPIFY_VARIANT_ID` | server only | the variant the recommendation presents |
+| `SHOPIFY_STOREFRONT_TOKEN` | server only, optional | sent when configured |
+| `SHOPIFY_STOREFRONT_API_VERSION` | server only, optional | defaults to `2025-01` |
 | `PUBLIC_RXSCALE_QUESTIONNAIRE_UID` | public | the questionnaire to fetch |
 
 > TODO: choose a host, swap `adapter-auto` for the matching adapter, and set the
-> three variables in the provider. Handle it through `/release`.
+> variables in the provider. Handle it through `/release`.
 
 ## Open questions
 
@@ -323,16 +342,21 @@ Resolve each before the feature named, then re-run `/overview` if a plan changes
    judges: branching is whatever the model expresses through `visibleIf`, and
    approval or decline happens in RxScale's doctor review.
 2. ~~**Testing decision.**~~ Resolved: run `/tests` before feature 9.
-3. **Credentials and ids, required before feature 9 can run against the real
-   model.** The questionnaire uid, shop identifier, API key, and SKU uid are
-   supplied by the user. Until they arrive the config module holds placeholders
-   and the flow cannot be verified end to end.
+3. ~~**Credentials and ids.**~~ Resolved 2026-08-31. The questionnaire runs
+   against the real model, and the handoff runs on `mygina.myshopify.com` with
+   variant `49703544684877`, `Mounjaro 5 mg Behandlung`, the bundle. One live
+   cart confirmed the shop accepts the app's payload. The RxScale API key and
+   shop identifier are no longer read by anything.
 4. **Question names for e-mail, height, and weight.** Configured by name and
-   confirmed against the real model, needed by features 11 and 13.
+   confirmed against the real model, needed by feature 11. The e-mail is now a
+   prefill rather than a requirement, so a wrong name there costs a convenience,
+   not an order.
 5. **Market and country code.** `DE` is assumed for `buyerIdentity.countryCode`.
-   Confirm before feature 13, and decide whether it stays fixed or is derived.
-6. **Live-stock preflight.** Optional in feature 13. Decide whether an
-   out-of-stock SKU blocks the order or lets it through.
+   Accepted by the live shop, but still a choice rather than a confirmation:
+   decide whether it stays fixed or is derived.
+6. ~~**Live-stock preflight.**~~ Dropped. It was an RxScale public-API call on a
+   path that no longer exists here, and it needed the same key that was refused.
+   Shopify's own inventory rules apply at checkout instead.
 7. **Deployment target.** Now blocking, see Deployment.
 8. ~~**The `os-date-picker` value format.**~~ Resolved: `YYYY-MM-DD`, confirmed
    2026-08-30. That is what feature 10 stores and what the submission sends.
@@ -342,7 +366,17 @@ Resolve each before the feature named, then re-run `/overview` if a plan changes
    GET, so the route exists there and takes POST only. What remains is whether
    that prefix returns the v4 documented 400 and 502 bodies, which feature 12
    settles with one live submission.
-10. **Displayed price versus SKU price.** See Monetization.
+10. **Displayed price versus SKU price.** See Monetization. The live cart totals
+    399.00 EUR against the 78.90 the recommendation screen shows, so these are
+    already far apart.
+11. **The Storefront access token.** The shop answered `cartCreate` with no token
+    on 2026-08-31, twice. Undocumented behaviour is not a foundation, so the
+    token is sent when configured and its absence is not an error. Adopting a
+    proper one is one header and no code change.
+12. **Whether one order attribute reaches every component of the bundle.**
+    RxScale confirmed it on 2026-08-31, and their line, group, order fallback is
+    why. Not observed here: the live cart proves the attribute is attached and
+    reads back, and only a paid order would prove the import.
 
 ### Reference errors are not requirements
 

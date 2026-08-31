@@ -1,22 +1,16 @@
 /**
- * The browser half of the handoff. It asks Solean's own endpoint for a checkout, never
- * RxScale: the API key is private and a component may not hold it.
+ * The browser half of the handoff. It asks Solean's own endpoint for a checkout, never the
+ * shop directly: the rules that make an order reviewable are enforced there.
  *
- * The e-mail travels because only the browser has the answers. It is sent for the one
- * upstream call and kept nowhere.
+ * The e-mail travels because only the browser has the answers. It is a prefill, sent when the
+ * questionnaire collected one, used for the one upstream call and kept nowhere.
  */
 
 /**
  * The reasons our endpoint can give. Listed at runtime as well as in the type, because a
  * response body is still untrusted input even when we wrote the server that sent it.
  */
-const FAILURES = [
-	'missing-anamnesis',
-	'missing-email',
-	'not-configured',
-	'refused',
-	'unavailable'
-] as const;
+const FAILURES = ['missing-anamnesis', 'not-configured', 'refused', 'unavailable'] as const;
 
 export type CheckoutFailure = (typeof FAILURES)[number];
 
@@ -48,14 +42,13 @@ export async function requestCheckout(
 	// Checked here as well as at the endpoint, so an order that cannot be reviewed costs no
 	// request at all.
 	if (!anamnesisUid) return { ok: false, reason: 'missing-anamnesis' };
-	if (!email) return { ok: false, reason: 'missing-email' };
 
 	let response: Response;
 	try {
 		response = await fetch('/api/checkout', {
 			method: 'POST',
 			headers: { 'content-type': 'application/json', accept: 'application/json' },
-			body: JSON.stringify({ anamnesisUid, email })
+			body: JSON.stringify(email ? { anamnesisUid, email } : { anamnesisUid })
 		});
 	} catch {
 		return { ok: false, reason: 'unavailable' };
