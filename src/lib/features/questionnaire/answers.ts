@@ -1,5 +1,6 @@
 import type { Model } from 'survey-core';
 import { WEIGHT_QUESTION } from '$lib/config/answers';
+import { EMAIL_QUESTION_NAME } from '$lib/config/checkout';
 import { stepIdForPage } from './steps';
 
 /** `survey.data`: question name to answer, the shape the submission sends. */
@@ -30,4 +31,18 @@ export function weightStepId(survey: Model): string | null {
 	const page = survey.getQuestionByName(WEIGHT_QUESTION.name)?.page;
 
 	return page ? stepIdForPage(page.name) : null;
+}
+
+/**
+ * The buyer's e-mail, or null when the question was skipped. The model does not require it,
+ * so an order with nowhere to send a confirmation is a state this app has to handle rather
+ * than one it can assume away.
+ */
+export function readEmail(data: AnswerData): string | null {
+	const answer = data[EMAIL_QUESTION_NAME];
+	if (typeof answer !== 'string') return null;
+
+	const trimmed = answer.trim();
+
+	return trimmed ? trimmed : null;
 }

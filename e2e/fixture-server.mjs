@@ -13,6 +13,8 @@ import { fileURLToPath } from 'node:url';
 const PORT = Number(process.env.FIXTURE_PORT ?? 4319);
 const FIXTURE_UID = process.env.FIXTURE_QUESTIONNAIRE_UID ?? 'fixture-questionnaire';
 const FIXTURE_PATH = join(dirname(fileURLToPath(import.meta.url)), 'fixtures/questionnaire-model.json');
+/** Not a secret: the fixture only checks that the app sends the key it was configured with. */
+const FIXTURE_API_KEY = process.env.FIXTURE_API_KEY ?? 'fixture-api-key';
 
 const PREFIXES = ['/api/v2/anamnesis', '/api/v3-1/anamnesis', '/v4/anamnesis'];
 
@@ -54,6 +56,15 @@ function markerIn(data) {
 }
 
 let submissionCount = 0;
+let checkoutCount = 0;
+
+/**
+ * Stands in for the RxScale public API as well, so the checkout endpoint can be exercised
+ * without creating a Shopify cart. The failure it should return is asked for through the
+ * buyer's e-mail, the way the submission markers work, because the shop identifier is server
+ * configuration a browser test cannot vary.
+ */
+const TREATMENTS = /^\/v2\/public-api\/treatments\/([^/]+)$/;
 
 function send(response, status, body) {
 	const payload = JSON.stringify(body);
@@ -80,6 +91,62 @@ const server = createServer(async (request, response) => {
 			'access-control-allow-headers': 'content-type'
 		});
 		response.end();
+		return;
+	}
+
+	// The page a checkout link leads to. Real enough to navigate to and assert on.
+	if (request.method === 'GET' && pathname.startsWith('/checkout/')) {
+		const page = '<!doctype html><meta charset="utf-8"><title>Fixture checkout</title><h1>Fixture checkout</h1>';
+		response.writeHead(200, {
+			'content-type': 'text/html; charset=utf-8',
+			'content-length': Buffer.byteLength(page)
+		});
+		response.end(page);
+		return;
+	}
+
+	if (request.method === 'POST' && TREATMENTS.test(pathname)) {
+		if (request.headers['x-api-key'] !== FIXTURE_API_KEY) {
+			send(response, 401, { error: 'Invalid API key' });
+			return;
+		}
+
+		let body;
+		try {
+			body = await readBody(request);
+		} catch {
+			send(response, 400, { error: 'Malformed body' });
+			return;
+		}
+
+		const email = body?.buyerIdentity?.email ?? '';
+		const line = body?.lines?.[0] ?? {};
+
+		// The rules this app promises to keep, asserted where a violation would otherwise
+		// only show up as a Shopify order nobody can review.
+		if (!line.anamnesis_id || !line.sku_uid || line.quantity !== 1) {
+			send(response, 422, { error: 'A line needs one sku_uid, quantity 1 and an anamnesis_id' });
+			return;
+		}
+		if (body.checkout_type !== 'checkout_link') {
+			send(response, 422, { error: 'This fixture only issues checkout links' });
+			return;
+		}
+
+		if (email.startsWith('refused@')) {
+			send(response, 422, { error: 'SKU not available for this shop' });
+			return;
+		}
+		if (email.startsWith('unreachable@')) {
+			send(response, 502, { error: 'Upstream unavailable' });
+			return;
+		}
+
+		checkoutCount += 1;
+		send(response, 200, {
+			status: 'success',
+			checkout_url: `http://localhost:${PORT}/checkout/fixture-${checkoutCount}`
+		});
 		return;
 	}
 

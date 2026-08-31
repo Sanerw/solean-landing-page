@@ -4,6 +4,7 @@ import type { QuestionnaireDocument } from './anamnesis-client';
 import {
 	anamnesisStorageKey,
 	answerStorageKey,
+	clearAnswers,
 	dropStaleKeys,
 	loadAnamnesisUid,
 	loadAnswers,
@@ -33,6 +34,7 @@ class QuestionnaireSession {
 
 	#anamnesisUid: string | null = null;
 	#anamnesisKey = '';
+	#storageKey = '';
 
 	/**
 	 * The submitted anamnesis. Its presence is what ends the questionnaire: the record exists
@@ -49,6 +51,18 @@ class QuestionnaireSession {
 
 	touch(): void {
 		this.revision += 1;
+	}
+
+	/**
+	 * The handoff is where this app stops needing the answers: the anamnesis is at RxScale and
+	 * the payment is Shopify's. The uid stays behind, so a return finds a session that makes
+	 * sense rather than a questionnaire nobody sent.
+	 *
+	 * Only the stored copy goes. Writing an empty `survey.data` would fire the change listener
+	 * and save `{}` back over the key this is trying to remove.
+	 */
+	forgetAnswers(): void {
+		if (this.#storageKey) clearAnswers(this.#storageKey);
 	}
 
 	recordSubmission(uid: string): void {
@@ -72,6 +86,7 @@ class QuestionnaireSession {
 			this.#key = key;
 			this.#survey = survey;
 			this.#anamnesisKey = anamnesisKey;
+			this.#storageKey = storageKey;
 
 			// Restored before the listener is attached, so resuming is not written straight back.
 			dropStaleKeys([storageKey, anamnesisKey]);

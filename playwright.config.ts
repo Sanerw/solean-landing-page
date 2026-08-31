@@ -1,5 +1,11 @@
 import { defineConfig, devices } from '@playwright/test';
-import { FIXTURE_PORT, FIXTURE_UID } from './e2e/fixture';
+import {
+	FIXTURE_API_KEY,
+	FIXTURE_PORT,
+	FIXTURE_SHOP,
+	FIXTURE_SKU,
+	FIXTURE_UID
+} from './e2e/fixture';
 
 const PORT = 4173;
 
@@ -34,7 +40,13 @@ export default defineConfig({
 			timeout: 120_000,
 			env: {
 				PUBLIC_RXSCALE_API_BASE_URL: `http://localhost:${FIXTURE_PORT}`,
-				PUBLIC_RXSCALE_QUESTIONNAIRE_UID: FIXTURE_UID
+				PUBLIC_RXSCALE_QUESTIONNAIRE_UID: FIXTURE_UID,
+				// The checkout handoff, pointed at the same fixture. Without this the endpoint
+				// would either refuse for want of configuration or, worse, order from Shopify.
+				RXSCALE_PUBLIC_API_BASE_URL: `http://localhost:${FIXTURE_PORT}`,
+				RXSCALE_API_KEY: FIXTURE_API_KEY,
+				RXSCALE_SHOP_IDENTIFIER: FIXTURE_SHOP,
+				RXSCALE_SKU_UID: FIXTURE_SKU
 			}
 		}
 	]

@@ -37,6 +37,20 @@ export const EVERY_ANSWER = {
 	WegovySideEffects: 'No'
 };
 
+/**
+ * The same walk with the e-mail the order needs. Separate from `EVERY_ANSWER` because the
+ * model does not require it, and the questionnaire completes without one.
+ */
+export const WITH_EMAIL = { ...EVERY_ANSWER, EMail: 'jonas@example.com' };
+
+/**
+ * The two checkout failures, asked for through the buyer's e-mail the way the submission
+ * markers work, because the shop and the key are server configuration a browser cannot vary.
+ * `EVERY_ANSWER` carries no e-mail at all, which is the third one.
+ */
+export const REFUSED_CHECKOUT = { ...EVERY_ANSWER, EMail: 'refused@example.com' };
+export const UNREACHABLE_CHECKOUT = { ...EVERY_ANSWER, EMail: 'unreachable@example.com' };
+
 /** A session that has already submitted, without going through the submission again. */
 export async function seedAnamnesis(
 	page: Page,

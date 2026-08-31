@@ -6,7 +6,7 @@
 	import QuestionnaireShell from '$lib/features/questionnaire/QuestionnaireShell.svelte';
 	import SurveyStepScreen from '$lib/features/questionnaire/SurveyStepScreen.svelte';
 	import { questionnaireSession } from '$lib/features/questionnaire/survey-state.svelte';
-	import { readWeightKg, weightStepId } from '$lib/features/questionnaire/answers';
+	import { readEmail, readWeightKg, weightStepId } from '$lib/features/questionnaire/answers';
 	import { submitAnamnesis, type AnamnesisSubmission } from '$lib/features/questionnaire/anamnesis-client';
 	import { questionnaireUid } from '$lib/config/rxscale';
 	import {
@@ -56,6 +56,27 @@
 		const stepId = survey ? weightStepId(survey) : null;
 
 		return stepId ? questionnaireStepHref(stepId) : QUESTIONNAIRE_ENTRY_HREF;
+	});
+
+	/** Null until hydration for the weight's reason: the server holds none of the answers. */
+	const email = $derived.by(() => {
+		questionnaireSession.revision;
+		if (!hydrated || !survey) return null;
+
+		return readEmail(survey.data);
+	});
+
+	/**
+	 * Whether this browser still holds the walk it is about to congratulate. False after the
+	 * handoff cleared it, which is the one case where the count and the order action would both
+	 * be describing something that is gone. Before hydration the server has nothing to look at,
+	 * and guessing "gone" there would flash a wrong screen at everyone.
+	 */
+	const answersHeld = $derived.by(() => {
+		questionnaireSession.revision;
+		if (!hydrated || !survey) return true;
+
+		return Object.keys(survey.data).length > 0;
 	});
 
 	/**
@@ -177,7 +198,13 @@
 			Taking you to where you left off.
 		</p>
 	{:else if isCompletion}
-		<RecommendationScreen questionTotal={plan?.questionTotal ?? 0} />
+		<RecommendationScreen
+			questionTotal={plan?.questionTotal ?? 0}
+			anamnesisUid={questionnaireSession.anamnesisUid}
+			{email}
+			{answersHeld}
+			onhandoff={() => questionnaireSession.forgetAnswers()}
+		/>
 	{:else if planStep?.kind === 'interlude'}
 		{#if planStep.variant === 'motivation'}
 			<MotivationInterstitial oncontinue={advance} />

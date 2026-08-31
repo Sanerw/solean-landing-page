@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { anamnesisKey, EVERY_ANSWER, seedAnswers, writeAnswers } from './answers';
+import { anamnesisKey, EVERY_ANSWER, seedAnswers, WITH_EMAIL, writeAnswers } from './answers';
 
 /**
  * The submission itself. The fixture server answers the three documented outcomes, and asks
@@ -122,7 +122,7 @@ test('reaching the end is not the same as having sent it', async ({ page }) => {
 test('the recommendation presents the configured treatment and the reference prices', async ({
 	page
 }) => {
-	await atLastStep(page, EVERY_ANSWER);
+	await atLastStep(page, WITH_EMAIL);
 	await page.getByRole('button', { name: 'Continue' }).click();
 	await expect(page).toHaveURL('/questionnaire/complete');
 
@@ -134,6 +134,6 @@ test('the recommendation presents the configured treatment and the reference pri
 	await expect(page.getByText('-75.00 EUR')).toBeVisible();
 	await expect(page.getByText('78.90 EUR')).toBeVisible();
 
-	// Present, and honest about not being wired yet.
-	await expect(page.getByRole('button', { name: 'Place your order' })).toBeDisabled();
+	// The order action is the handoff's, and covered by its own spec.
+	await expect(page.getByRole('button', { name: 'Place your order' })).toBeEnabled();
 });

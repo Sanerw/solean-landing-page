@@ -330,7 +330,7 @@ claims are not approved production content.
   replaced by catalogue data, with the "Place your order" action present but not
   yet wired.
 
-- [ ] 13. **Checkout handoff** - `POST /api/checkout` in `+server.ts`, the only
+- [x] 13. **Checkout handoff** - `POST /api/checkout` in `+server.ts`, the only
   place the private API key is read, calling RxScale's treatment checkout with
   the configured SKU, quantity 1, the mandatory `anamnesis_id`, and a
   `buyerIdentity` built from the e-mail answer and the configured country code.
@@ -339,6 +339,10 @@ claims are not approved production content.
   blocks the call and shows an error rather than placing an order no doctor can
   review. Optional live-stock preflight, where a 409 shows an out-of-stock
   message instead of a redirect.
+  Completed 2026-08-31 with the live contract **unconfirmed**: the API key lacked
+  the `create_treatment_checkout` permission, so no checkout was ever created
+  against the real service. Feature 14 owns that confirmation. See
+  `blueprint/history/features/13-checkout-handoff.md`.
 
 - [ ] 14. **End-to-end hardening** - The whole path from landing page to the
   external redirect: transitions between route groups, deep links, refresh and
