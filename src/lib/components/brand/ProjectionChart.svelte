@@ -10,10 +10,20 @@
 		caption: string;
 		/** Names the chart region for assistive tech; the table below carries the data. */
 		title: string;
+		/** Uses the shorter questionnaire plot while the marketing section keeps its aspect. */
+		compact?: boolean;
 	}
 
-	let { series, comparison, horizonMonth, seriesLabel, comparisonLabel, caption, title }: Props =
-		$props();
+	let {
+		series,
+		comparison,
+		horizonMonth,
+		seriesLabel,
+		comparisonLabel,
+		caption,
+		title,
+		compact = false
+	}: Props = $props();
 
 	const geo = $derived(buildProjection(series, comparison, horizonMonth));
 
@@ -24,7 +34,7 @@
 <figure class="m-0">
 	<figcaption class="sr-only">{title}</figcaption>
 
-	<div class="relative aspect-video w-full">
+	<div class={compact ? 'relative h-44 w-full sm:h-52' : 'relative aspect-video w-full'}>
 		<!--
 			Stretched to the container rather than letterboxed, so the HTML markers and pills
 			below can be positioned by the same percentages the geometry emits and land exactly
@@ -123,7 +133,7 @@
 		{/each}
 	</div>
 
-	<ul class="mt-4 flex list-none gap-6 p-0" aria-hidden="true">
+	<ul class={compact ? 'mt-2 flex list-none gap-4 p-0' : 'mt-4 flex list-none gap-6 p-0'} aria-hidden="true">
 		<li class="flex items-center gap-2 text-sm text-muted-foreground">
 			<span class="block h-0.5 w-6 rounded-full bg-foreground"></span>
 			{seriesLabel}
@@ -136,7 +146,7 @@
 
 	<!-- Positioned from the same percentages as the markers rather than spaced with
 	     justify-between, which distributes label boxes evenly and leaves them off their points. -->
-	<div class="relative mt-2 h-5 text-sm text-muted-foreground" aria-hidden="true">
+	<div class="relative mt-1 h-5 text-xs text-muted-foreground" aria-hidden="true">
 		{#each geo.points as point, index (point.month)}
 			<span
 				class={[

@@ -16,7 +16,7 @@
 	id={controlId}
 	type="date"
 	value={date}
-	class="max-w-xs"
+	class="h-12 max-w-xs px-3 py-2 text-sm"
 	aria-invalid={invalid ? 'true' : undefined}
 	aria-describedby={describedBy}
 	oninput={(event) => onchange(event.currentTarget.value)}

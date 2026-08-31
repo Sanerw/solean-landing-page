@@ -30,7 +30,7 @@
 	bind:value={() => selected, (next) => onchange(next)}
 	aria-invalid={invalid ? 'true' : undefined}
 	aria-describedby={describedBy}
-	class="grid gap-3 sm:grid-cols-2"
+	class="grid gap-2 sm:grid-cols-2"
 >
 	<!--
 		Control ids are positional, not built from the choice value: the model's values are
@@ -41,7 +41,10 @@
 		{@const choiceValue = String(choice.value)}
 		{@const choiceId = `${controlId}-${index}`}
 		<div class={choiceValue === otherValue ? 'sm:col-span-2' : undefined}>
-			<FieldLabel for={choiceId}>
+			<FieldLabel
+				for={choiceId}
+				class="*:data-[slot=field]:min-h-12 *:data-[slot=field]:p-3"
+			>
 				<Field orientation="horizontal">
 					<RadioGroup.Item
 						id={choiceId}
@@ -49,7 +52,7 @@
 						aria-invalid={invalid ? 'true' : undefined}
 					/>
 					<FieldContent>
-						<FieldTitle class="font-display text-base font-semibold">{choice.text}</FieldTitle>
+						<FieldTitle class="font-display text-sm font-semibold">{choice.text}</FieldTitle>
 					</FieldContent>
 				</Field>
 			</FieldLabel>

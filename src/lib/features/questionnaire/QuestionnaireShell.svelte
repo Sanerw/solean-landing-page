@@ -40,7 +40,7 @@
 	-->
 	<nav
 		aria-label="Questionnaire"
-		class="grid grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 py-4 sm:px-6 lg:px-8"
+		class="grid grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 py-3 sm:px-6 lg:px-8"
 	>
 		<Button href={backHref} variant="secondary" size="sm" class="justify-self-start rounded-full">
 			<ArrowLeftIcon aria-hidden="true" />
@@ -66,7 +66,7 @@
 		</Button>
 	</nav>
 
-	<main class="flex-1 px-4 pb-20 sm:px-6 lg:px-8">
+	<main class="flex-1 px-4 pb-8 sm:px-6 lg:px-8">
 		<div class="mx-auto w-full max-w-2xl">
 			{#if progress}
 				<Progress
@@ -76,17 +76,17 @@
 			{/if}
 
 			{#if showPrototypeNotice}
-				<Alert.Root variant="highlighted" class="mt-6">
+				<Alert.Root variant="highlighted" class="mt-4 py-2">
 					<FlaskConicalIcon aria-hidden="true" />
-					<Alert.Title>Prototype only</Alert.Title>
-					<Alert.Description>
+					<Alert.Title class="text-xs">Prototype only</Alert.Title>
+					<Alert.Description class="text-xs">
 						Do not enter real health information. Answers are fictional sample data kept in this
 						browser tab.
 					</Alert.Description>
 				</Alert.Root>
 			{/if}
 
-			<div class="mt-10">
+			<div class="mt-6">
 				{@render children()}
 			</div>
 		</div>

@@ -7,13 +7,13 @@
 	const description = $derived(question.description ?? '');
 </script>
 
-<div class="rounded-lg border border-border bg-surface-subtle p-4">
+<div class="rounded-lg border border-border bg-surface-subtle p-3">
 	{#if question.title}
-		<p class="font-display text-base font-semibold">{question.title}</p>
+		<p class="font-display text-sm font-semibold">{question.title}</p>
 	{/if}
 	{#if description}
 		<!-- The model's own line breaks carry meaning here: consent wording, a support
 		     address, a bulleted note. Collapsing them would run them into one sentence. -->
-		<p class="mt-1 text-sm whitespace-pre-line text-muted-foreground">{description}</p>
+		<p class="mt-1 text-xs whitespace-pre-line text-muted-foreground">{description}</p>
 	{/if}
 </div>

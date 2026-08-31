@@ -23,13 +23,14 @@
 	);
 </script>
 
-<div class="mt-3">
+<div class="mt-2">
 	<!-- `-other-text`, not `-other`: that id already belongs to the choice this input follows,
 	     and a duplicate would point its label at the wrong element. -->
 	<FieldLabel for="{controlId}-other-text" class="sr-only">{label}</FieldLabel>
 	<Input
 		id="{controlId}-other-text"
 		type="text"
+		class="h-12 px-3 py-2 text-sm"
 		{placeholder}
 		value={comment}
 		oninput={(event) => oncomment(event.currentTarget.value)}

@@ -82,33 +82,33 @@
 	carries no label of its own.
 -->
 <div aria-hidden="true" class="flex justify-center">
-	<span class="flex size-28 items-center justify-center rounded-full bg-highlight">
-		<span class="flex size-20 items-center justify-center rounded-full bg-primary">
-			<CheckIcon class="size-9 text-primary-foreground" />
+	<span class="flex size-20 items-center justify-center rounded-full bg-highlight">
+		<span class="flex size-14 items-center justify-center rounded-full bg-primary">
+			<CheckIcon class="size-7 text-primary-foreground" />
 		</span>
 	</span>
 </div>
 
 {#if answersHeld}
 	<p
-		class="mt-6 text-center font-sans text-xs font-semibold tracking-widest text-highlight-foreground uppercase"
+		class="mt-3 text-center font-sans text-xs font-semibold tracking-widest text-highlight-foreground uppercase"
 	>
 		All {questionTotal} steps complete
 	</p>
 {/if}
 
-<h1 class="mt-3 text-center font-display text-4xl font-medium sm:text-5xl">{COPY.headline}</h1>
+<h1 class="mt-2 text-center font-display text-3xl font-medium sm:text-4xl">{COPY.headline}</h1>
 
-<div class="mx-auto mt-4 max-w-xl text-center text-base text-muted-foreground md:text-lg">
+<div class="mx-auto mt-2 max-w-xl text-center text-sm text-muted-foreground sm:text-base">
 	{#each COPY.body as line (line)}
 		<p>{line}</p>
 	{/each}
 </div>
 
-<ul class="mt-6 flex flex-wrap justify-center gap-2">
+<ul class="mt-3 flex flex-wrap justify-center gap-2">
 	{#each COPY.assurances as assurance (assurance)}
 		<li>
-			<Badge variant="secondary" class="gap-2 py-2">
+			<Badge variant="secondary" class="gap-2 py-1">
 				<CircleCheckIcon aria-hidden="true" class="size-4" />
 				{assurance}
 			</Badge>
@@ -117,13 +117,13 @@
 </ul>
 
 {#if treatment}
-	<section aria-labelledby="plan-heading" class="mt-8 rounded-lg bg-surface-warm p-6">
+	<section aria-labelledby="plan-heading" class="mt-4 rounded-lg bg-surface-warm p-4">
 		<div class="flex flex-wrap items-baseline justify-between gap-2">
-			<h2 id="plan-heading" class="font-display text-2xl font-medium">{treatment.name}</h2>
+			<h2 id="plan-heading" class="font-display text-xl font-medium">{treatment.name}</h2>
 			<p class="text-sm text-muted-foreground">{treatment.dose} · {treatment.form}</p>
 		</div>
 
-		<dl class="mt-4 space-y-2 text-sm">
+		<dl class="mt-3 space-y-1 text-sm">
 			{#each COPY.priceLines as line (line.label)}
 				<div class="flex items-baseline justify-between gap-4">
 					<dt class="text-muted-foreground">{line.label}</dt>
@@ -135,7 +135,7 @@
 				<dd class="font-display font-semibold">{COPY.shippingValue}</dd>
 			</div>
 
-			<Separator class="my-3" />
+			<Separator class="my-2" />
 
 			<div class="flex items-baseline justify-between gap-4">
 				<dt class="font-medium text-foreground">{COPY.totalLabel}</dt>
@@ -143,7 +143,7 @@
 			</div>
 		</dl>
 
-		<p class="mt-3 text-xs text-text-tertiary">{COPY.totalNote}</p>
+		<p class="mt-2 text-xs text-text-tertiary">{COPY.totalNote}</p>
 	</section>
 {/if}
 
@@ -153,7 +153,7 @@
 			The press was supposed to open a payment page and nothing visible moved, so this is
 			`assertive`: the reason is the only thing that explains what just happened.
 		-->
-		<Alert.Root variant="destructive" class="mt-8" role="alert" aria-live="assertive">
+		<Alert.Root variant="destructive" class="mt-4" role="alert" aria-live="assertive">
 			<TriangleAlertIcon aria-hidden="true" />
 			<Alert.Title>{CHECKOUT_FAILURES[failure].title}</Alert.Title>
 			<Alert.Description>{CHECKOUT_FAILURES[failure].body}</Alert.Description>
@@ -163,7 +163,7 @@
 	<Button
 		type="button"
 		size="lg"
-		class="relative mt-8 w-full"
+		class="relative mt-4 w-full"
 		disabled={!hydrated || ordering}
 		onclick={order}
 	>
@@ -179,10 +179,10 @@
 		Nothing here can build a second order: the answers a checkout is made from went with the
 		handoff. Saying so beats an action that would fail for a reason that is not true.
 	-->
-	<p class="mt-8 text-center text-sm text-muted-foreground">
+	<p class="mt-4 text-center text-sm text-muted-foreground">
 		Your checkout has already been opened, and this session's answers went with it. Ordering
 		again starts from the questionnaire.
 	</p>
 {/if}
 
-<p class="mt-6 text-center text-xs text-text-tertiary">{COPY.trust.join(' · ')}</p>
+<p class="mt-3 text-center text-xs text-text-tertiary">{COPY.trust.join(' · ')}</p>

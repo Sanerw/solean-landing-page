@@ -33,13 +33,13 @@
 	}
 </script>
 
-<div class="grid gap-3 sm:grid-cols-2">
+<div class="grid gap-2 sm:grid-cols-2">
 	<!-- Positional ids: the model's choice values are sentences, which are not valid ids. -->
 	{#each choices as choice, index (choice.value)}
 		{@const choiceValue = String(choice.value)}
 		{@const id = `${controlId}-${index}`}
 		<div class={choiceValue === otherValue ? 'sm:col-span-2' : undefined}>
-			<FieldLabel for={id}>
+			<FieldLabel for={id} class="*:data-[slot=field]:min-h-12 *:data-[slot=field]:p-3">
 				<Field orientation="horizontal">
 					<Checkbox
 						{id}
@@ -49,7 +49,7 @@
 						onCheckedChange={(checked) => toggle(choiceValue, checked === true)}
 					/>
 					<FieldContent>
-						<FieldTitle class="font-display text-base font-semibold">{choice.text}</FieldTitle>
+						<FieldTitle class="font-display text-sm font-semibold">{choice.text}</FieldTitle>
 					</FieldContent>
 				</Field>
 			</FieldLabel>

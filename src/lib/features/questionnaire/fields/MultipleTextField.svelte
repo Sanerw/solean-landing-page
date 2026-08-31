@@ -32,15 +32,16 @@
 	}
 </script>
 
-<div class="grid gap-4 sm:grid-cols-2">
+<div class="grid gap-3 sm:grid-cols-2">
 	{#each items as item (item.name)}
 		{@const id = `${controlId}-${item.name}`}
 		{@const error = errorFor(item)}
-		<Field>
+		<Field class="gap-2">
 			<FieldLabel for={id}>{item.title}</FieldLabel>
 			<Input
 				{id}
 				type={item.inputType === 'number' ? 'text' : 'text'}
+				class="h-12 px-3 py-2 text-sm"
 				inputmode={item.inputType === 'number' ? 'numeric' : undefined}
 				value={typeof values[item.name] === 'string' || typeof values[item.name] === 'number'
 					? String(values[item.name])

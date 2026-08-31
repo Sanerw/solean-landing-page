@@ -28,9 +28,9 @@
 	{COPY.eyebrow}
 </p>
 
-<h1 class="mt-3 text-center font-display text-4xl font-medium sm:text-5xl">{COPY.headline}</h1>
+<h1 class="mt-2 text-center font-display text-3xl font-medium sm:text-4xl">{COPY.headline}</h1>
 
-<div class="mx-auto mt-4 max-w-xl text-center text-base text-muted-foreground md:text-lg">
+<div class="mx-auto mt-2 max-w-xl text-center text-sm text-muted-foreground sm:text-base">
 	{#each COPY.body as line (line)}
 		<p>{line}</p>
 	{/each}
@@ -40,7 +40,7 @@
 	A static story, not a player. The reference shows a play control and a duration, but no
 	video asset exists and video is out of scope, so no affordance promises playback.
 -->
-<article class="mt-8 flex flex-col gap-4 rounded-lg bg-surface-warm p-6 sm:flex-row sm:items-center">
+<article class="mt-4 flex flex-col gap-3 rounded-lg bg-surface-warm p-4 sm:flex-row sm:items-center">
 	{#if story.photo}
 		<img
 			src={story.photo}
@@ -48,7 +48,7 @@
 			aria-hidden="true"
 			width="96"
 			height="96"
-			class="size-24 shrink-0 rounded-lg object-cover"
+			class="size-20 shrink-0 rounded-lg object-cover"
 		/>
 	{/if}
 	<div class="flex-1">
@@ -58,32 +58,32 @@
 			</p>
 			<StarRating rating={story.rating} />
 		</div>
-		<blockquote class="mt-2 text-base text-foreground">
+		<blockquote class="mt-1 text-sm text-foreground">
 			<p>“{story.quote}”</p>
 		</blockquote>
-		<p class="mt-3 text-sm text-muted-foreground">
+		<p class="mt-2 text-xs text-muted-foreground">
 			<span class="font-medium text-foreground">{story.name}</span>
 			· {story.memberLabel}
 		</p>
 	</div>
 </article>
 
-<div class="mt-4 grid gap-4 sm:grid-cols-2">
+<div class="mt-3 grid gap-3 sm:grid-cols-2">
 	{#each COPY.stats as stat (stat.figure)}
-		<div class="rounded-lg bg-highlight p-6">
-			<p class="font-display text-4xl font-medium text-foreground">{stat.figure}</p>
-			<p class="mt-2 text-sm text-foreground">{stat.label}</p>
-			<p class="mt-2 text-xs text-text-tertiary">{stat.source}</p>
+		<div class="rounded-lg bg-highlight p-4">
+			<p class="font-display text-3xl font-medium text-foreground">{stat.figure}</p>
+			<p class="mt-1 text-sm text-foreground">{stat.label}</p>
+			<p class="mt-1 text-xs text-text-tertiary">{stat.source}</p>
 		</div>
 	{/each}
 </div>
 
-<p class="mt-6 text-center text-xs text-text-tertiary">{COPY.footnote}</p>
+<p class="mt-3 text-center text-xs text-text-tertiary">{COPY.footnote}</p>
 
 <Button
 	type="button"
 	size="lg"
-	class="relative mt-10 w-full"
+	class="relative mt-5 w-full"
 	disabled={!hydrated}
 	onclick={oncontinue}
 >

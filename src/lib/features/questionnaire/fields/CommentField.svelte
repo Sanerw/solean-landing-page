@@ -9,7 +9,8 @@
 
 <Textarea
 	id={controlId}
-	rows={5}
+	rows={4}
+	class="min-h-24 px-3 py-2 text-sm"
 	value={text}
 	aria-invalid={invalid ? 'true' : undefined}
 	aria-describedby={describedBy}

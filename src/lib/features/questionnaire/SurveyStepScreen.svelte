@@ -124,15 +124,15 @@
 </script>
 
 {#if headingQuestion}
-	<h1 class="font-display text-4xl font-medium sm:text-5xl">{headingLines[0]}</h1>
+	<h1 class="font-display text-3xl font-medium sm:text-4xl">{headingLines[0]}</h1>
 	{#if headingLines.length > 1}
-		<p class="mt-3 text-base text-muted-foreground md:text-lg">
+		<p class="mt-2 text-sm text-muted-foreground sm:text-base">
 			{headingLines.slice(1).join(' ')}
 		</p>
 	{/if}
 {/if}
 
-<form novalidate onsubmit={submit} class="mt-8">
+<form novalidate onsubmit={submit} class="mt-6">
 	{#each questions as question (question.name)}
 		{@const lookup = rendererFor(question)}
 		{@const id = controlId(question)}
@@ -141,7 +141,7 @@
 		{@const comment = commentOf(question)}
 		{@const describedBy = error ? `${id}-error` : undefined}
 
-		<div class="mb-8">
+		<div class="mb-5">
 			{#if lookup.renderer === null}
 				<UnsupportedQuestion {question} reason={lookup.reason} blocking={collectsAnswer(question)} />
 			{:else if lookup.presentation === 'display'}
@@ -157,12 +157,14 @@
 					oncomment={() => {}}
 				/>
 			{:else if lookup.presentation === 'group'}
-				<FieldSet>
-					<FieldLegend class={question === headingQuestion ? 'sr-only' : undefined}>
+				<FieldSet class="gap-3">
+					<FieldLegend class={question === headingQuestion ? 'sr-only' : 'mb-2 text-lg'}>
 						{question.title}
 					</FieldLegend>
 					{#if question.description}
-						<FieldDescription class="whitespace-pre-line">{question.description}</FieldDescription>
+						<FieldDescription class="leading-snug whitespace-pre-line">
+							{question.description}
+						</FieldDescription>
 					{/if}
 					<lookup.renderer
 						{question}
@@ -179,12 +181,14 @@
 					{/if}
 				</FieldSet>
 			{:else}
-				<Field>
+				<Field class="gap-2">
 					<FieldLabel for={id} class={question === headingQuestion ? 'sr-only' : undefined}>
 						{question.title}
 					</FieldLabel>
 					{#if question.description}
-						<FieldDescription class="whitespace-pre-line">{question.description}</FieldDescription>
+						<FieldDescription class="leading-snug whitespace-pre-line">
+							{question.description}
+						</FieldDescription>
 					{/if}
 					<lookup.renderer
 						{question}
@@ -210,7 +214,7 @@
 			question. `assertive`, unlike a question's error: the person pressed a button and
 			nothing visible moved.
 		-->
-		<Alert.Root variant="destructive" class="mb-8" role="alert" aria-live="assertive">
+		<Alert.Root variant="destructive" class="mb-5" role="alert" aria-live="assertive">
 			<TriangleAlertIcon aria-hidden="true" />
 			<Alert.Title>
 				{submission.reason === 'rejected'
@@ -248,7 +252,12 @@
 		A step holding a question we cannot draw must not be walked past: continuing would
 		submit an anamnesis missing an answer the user was never shown.
 	-->
-	<Button type="submit" size="lg" disabled={!hydrated || unrenderable || submitting}>
+	<Button
+		type="submit"
+		size="default"
+		class="w-full"
+		disabled={!hydrated || unrenderable || submitting}
+	>
 		{#if submitting}
 			Sending your answers
 		{:else}

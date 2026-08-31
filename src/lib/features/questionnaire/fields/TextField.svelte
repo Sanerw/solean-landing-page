@@ -16,6 +16,7 @@
 <Input
 	id={controlId}
 	type={numeric ? 'text' : inputType === 'email' ? 'email' : 'text'}
+	class="h-12 px-3 py-2 text-sm"
 	inputmode={numeric ? 'numeric' : inputType === 'email' ? 'email' : undefined}
 	autocomplete={inputType === 'email' ? 'email' : 'off'}
 	value={text}
