@@ -6,9 +6,18 @@ test('the announcement and reference hero asset render without narrow-screen ove
 	await page.setViewportSize({ width: 375, height: 812 });
 	await page.goto('/');
 
-	await expect(page.getByLabel('Welcome offer')).toContainText(
-		'Welcome offer. Save €10 on your first online consultation'
-	);
+	const announcement = page.getByRole('complementary', { name: 'Wegovy Pill offer' });
+	await expect(announcement).toHaveCSS('height', '64px');
+	await expect(announcement.getByText('WEGOVY PILL — NOW AVAILABLE', { exact: true })).toBeVisible();
+	const detail = announcement.getByText('Order today + get a free \u20ac50 gift', { exact: true });
+	await expect(detail).toBeVisible();
+	// The narrow bar sets the offer as one plain line: no gold amount, no bold lead-in.
+	await expect(detail).toHaveCSS('font-weight', '400');
+	for (const unit of ['D', 'H', 'M']) {
+		await expect(announcement.getByText(unit, { exact: true })).toBeVisible();
+	}
+	await expect(announcement.getByText('secs', { exact: true })).toBeHidden();
+	await expect(announcement.getByText(':', { exact: true }).first()).toBeHidden();
 
 	const heroImage = page.locator('section[aria-labelledby="hero-heading"] img').first();
 	await expect(heroImage).toBeVisible();
@@ -28,6 +37,74 @@ test('the announcement and reference hero asset render without narrow-screen ove
 		scroll: document.documentElement.scrollWidth
 	}));
 	expect(widths.scroll).toBe(widths.client);
+
+	const hero = page.locator('section[aria-labelledby="hero-heading"]');
+	// Full bleed on the narrow frame: no card gutter, no radius, and at least a
+	// full viewport tall so the fold lands below the hero rather than inside it.
+	const heroBox = await hero.boundingBox();
+	expect(heroBox?.x).toBe(0);
+	expect(heroBox?.width).toBe(375);
+	await expect(hero).toHaveCSS('border-top-left-radius', '0px');
+
+	// Read the viewport rather than repeating the literal set above, so the claim stays
+	// "at least one screen tall" if the test's own viewport ever changes.
+	const viewportHeight = await page.evaluate(() => window.innerHeight);
+	expect(heroBox?.height).toBeGreaterThanOrEqual(viewportHeight);
+
+	// One heading, and only the visible branch reaches the accessibility tree: the
+	// unused copy is display:none, which removes it rather than merely hiding it.
+	const heading = page.getByRole('heading', { level: 1 });
+	await expect(heading).toHaveCount(1);
+	await expect(heading).toHaveText('Feel healthier. Live more confidently.', {
+		useInnerText: true
+	});
+	expect(
+		await heading.evaluate(
+			(h) => h.getAttribute('aria-label') ?? (h as HTMLElement).innerText.trim()
+		)
+	).toBe('Feel healthier. Live more confidently.');
+	await expect(hero.getByText('Doctor-led weight loss', { exact: true })).toBeVisible();
+
+	// One route into the funnel, full width, with no second CTA.
+	const primary = hero.getByRole('link', { name: 'Check your eligibility' });
+	await expect(primary).toBeVisible();
+	await expect(primary).toHaveAttribute('href', '/questionnaire');
+	expect((await primary.boundingBox())?.width).toBeGreaterThan(300);
+	await expect(hero.getByRole('link', { name: 'Explore treatments' })).toBeHidden();
+
+	// The rating keeps its existing destination and accessible wording, and is reachable.
+	// It sits at its own width rather than stretching across the frame.
+	await expect(reviewsLink).toBeVisible();
+	expect((await reviewsLink.boundingBox())?.width).toBeLessThan(300);
+	await reviewsLink.focus();
+	await expect(reviewsLink).toBeFocused();
+
+	// The menu opens from the overlay trigger, closes on Escape, and restores focus.
+	const menuTrigger = page.getByRole('button', { name: 'Open menu' });
+	await expect(menuTrigger).toBeVisible();
+	await menuTrigger.click();
+	await expect(page.getByRole('dialog')).toBeVisible();
+	await page.keyboard.press('Escape');
+	await expect(page.getByRole('dialog')).toBeHidden();
+	await expect(menuTrigger).toBeFocused();
+
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await expect(announcement).toHaveCSS('height', '44px');
+
+	// Desktop regression: the card frame, the struck headline, and both CTAs are intact.
+	expect((await hero.boundingBox())?.x).toBe(12);
+	await expect(hero).toHaveCSS('border-top-left-radius', '28px');
+	await expect(page.getByRole('heading', { level: 1 })).toHaveText(
+		'Your pathway to lasting perfect shape happiness.',
+		{ useInnerText: true }
+	);
+	await expect(hero.locator('h1 s')).toHaveText('perfect shape');
+	await expect(hero.getByRole('link', { name: 'Explore treatments' })).toBeVisible();
+	await expect(page.getByTestId('hero-article-teaser')).toBeVisible();
+	await expect(hero.locator('img').first()).toHaveCSS('object-position', '50% 50%');
+	await expect(announcement.getByText('WEGOVY PILL NOW AVAILABLE', { exact: true })).toBeVisible();
+	await expect(announcement.getByText('Order today and get a free €50 gift.', { exact: true })).toBeVisible();
+	await expect(announcement.getByText('secs', { exact: true })).toBeVisible();
 });
 
 test('keeps the Learn teaser compact and uses the reference divider', async ({ page }) => {
@@ -46,10 +123,9 @@ test('keeps the Learn teaser compact and uses the reference divider', async ({ p
 	const desktopBox = await teaser.boundingBox();
 	expect(desktopBox?.width).toBeLessThanOrEqual(320);
 
+	// The narrow reference carries no teaser: the hero ends at the rating badge.
 	await page.setViewportSize({ width: 375, height: 812 });
-	const mobileBox = await teaser.boundingBox();
-	expect(mobileBox).not.toBeNull();
-	expect((mobileBox?.x ?? 0) + (mobileBox?.width ?? 0)).toBeLessThanOrEqual(375);
+	await expect(teaser).toBeHidden();
 });
 
 test('matches the desktop Treatments menu geometry and keyboard behaviour', async ({ page }) => {
@@ -200,9 +276,16 @@ test('dissolves the care artwork into the band and restores the review column', 
 	await expect(divider).toHaveCSS('width', '48px');
 	await expect(divider).toHaveCSS('height', '2px');
 
-	// Focusable so it is discoverable, but wired to nothing until a platform exists.
-	const review = band.getByRole('button', { name: 'Leave a review' });
-	await expect(review).toHaveAttribute('aria-disabled', 'true');
+	// Same destination as the hero badge, so the page never offers two review platforms.
+	const review = band.getByRole('link', {
+		name: 'Leave a review on Reviews.io (opens in a new tab)'
+	});
+	await expect(review).toHaveAttribute(
+		'href',
+		'https://www.reviews.io/company-reviews/store/www.solean.com'
+	);
+	await expect(review).toHaveAttribute('target', '_blank');
+	await expect(review).toHaveAttribute('rel', /noopener/);
 	await band.getByRole('link', { name: 'Check your eligibility' }).focus();
 	await page.keyboard.press('Tab');
 	await expect(review).toBeFocused();

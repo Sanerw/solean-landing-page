@@ -12,11 +12,13 @@
 	// is a stable starting frame that the first client tick immediately replaces.
 	let remaining = $state<Remaining>(remainingUntil(OFFER_WINDOW_MS, 0));
 
+	// The narrow bar has room for three units under one-letter labels, so seconds and the
+	// colons drop out below `sm` rather than being rebuilt as a second component.
 	const units = $derived([
-		{ value: remaining.days, label: 'days' },
-		{ value: remaining.hours, label: 'hrs' },
-		{ value: remaining.minutes, label: 'mins' },
-		{ value: remaining.seconds, label: 'secs' }
+		{ value: remaining.days, label: 'days', short: 'D' },
+		{ value: remaining.hours, label: 'hrs', short: 'H' },
+		{ value: remaining.minutes, label: 'mins', short: 'M' },
+		{ value: remaining.seconds, label: 'secs', short: 'S' }
 	]);
 
 	$effect(() => {
@@ -36,15 +38,22 @@
 	single static sentence carries the meaning instead. A live region here would interrupt
 	a screen reader once per second for a mock promotion.
 -->
-<div class={['flex items-center gap-2.5', className]}>
+<div class={['flex items-center gap-1.5 sm:gap-2.5', className]}>
 	<span class="sr-only">Offer ends in about {remaining.hours} hours.</span>
 	{#each units as unit, index (unit.label)}
 		{#if index > 0}
-			<span aria-hidden="true" class="text-sm font-bold leading-normal">:</span>
+			<span aria-hidden="true" class="hidden text-sm font-bold leading-normal sm:inline">:</span>
 		{/if}
-		<span aria-hidden="true" class="flex flex-col items-center leading-normal">
+		<span
+			aria-hidden="true"
+			class={[
+				'flex-col items-center leading-normal',
+				unit.label === 'secs' ? 'hidden sm:flex' : 'flex'
+			]}
+		>
 			<span class="text-sm font-bold">{pad(unit.value)}</span>
-			<span class="text-xs uppercase tracking-wide">{unit.label}</span>
+			<span class="text-xs font-semibold uppercase sm:hidden">{unit.short}</span>
+			<span class="hidden text-xs uppercase tracking-wide sm:inline">{unit.label}</span>
 		</span>
 	{/each}
 </div>

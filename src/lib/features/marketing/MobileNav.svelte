@@ -30,10 +30,15 @@
 				variant="ghost"
 				size="icon"
 				{surface}
-				class="min-[1200px]:hidden"
+				class={[
+					'min-[1200px]:hidden',
+					// On the narrow hero the trigger is a translucent disc on the photograph,
+					// which the solid headers have no scrim to sit on.
+					surface === 'dark' && 'max-sm:size-11 max-sm:bg-background/10'
+				]}
 				aria-label="Open menu"
 			>
-				<MenuIcon aria-hidden="true" />
+				<MenuIcon aria-hidden="true" class={surface === 'dark' ? 'size-4 max-sm:size-5' : undefined} />
 			</Button>
 		{/snippet}
 	</Sheet.Trigger>

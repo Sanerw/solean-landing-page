@@ -1,6 +1,6 @@
 # Solean - Project Overview
 
-<!-- blueprint:source-hash 4902512fc9f99572804a0d3357a76e59636f66229f71717f6c7bfec67c06a28b -->
+<!-- blueprint:source-hash 407529267d49df1d4ab4087a54b3ca0503ced3583816d752884f3d8a9e61fa4e -->
 
 > The Solean front end: a marketing site and a doctor-led GLP-1 funnel that runs
 > on RxScale's Anamnesis API and hands the order to Shopify by creating a cart
@@ -37,8 +37,8 @@ happens inside RxScale, not on a Solean screen.
 
 ## Features
 
-Fourteen in build-plan order. Features 1 to 8 are complete. The headline is the
-live funnel, features 9 to 13.
+Fifteen in build-plan order. Features 1 to 14 are complete. Feature 15 is the
+current post-MVP mobile landing-page refinement.
 
 1. **Design system and core UI components** (done) - semantic tokens, two fonts,
    radii, brand foundations, thirteen adapted shadcn primitives on a showcase at
@@ -62,23 +62,26 @@ live funnel, features 9 to 13.
    states and the headless engine;
    **9b** (done) `steps[]`, the question type registry, the model-driven route,
    and the deletion of the local schema;
-   **9c** the removal of the checkout, order-status and journey modules with the
+   **9c** (done) the removal of the checkout, order-status and journey modules with the
    domain types and dev surface that served them.
-10. **Question type coverage** - every type the live model uses, mapped to
+10. **Question type coverage** (done) - every type the live model uses, mapped to
     adapted primitives, with server-side validation surfaced inline and file or
     signature answers in exact SurveyJS shape.
-11. **Interludes, progress and flow integrity** - projection computed from
+11. **Interludes, progress and flow integrity** (done) - projection computed from
     `survey.data`, motivation screen, progress counting survey steps only,
     refresh, back, and deep links. In-session persistence was later removed: nothing
     is stored, so a refresh starts the questionnaire over.
-12. **Submission and the recommendation screen** - the anamnesis submission, its
+12. **Submission and the recommendation screen** (done) - the anamnesis submission, its
     400 and 502 paths, and the congratulations screen for one configured SKU.
-13. **Checkout handoff** - `POST /api/checkout` in `+server.ts`, the Shopify
+13. **Checkout handoff** (done) - `POST /api/checkout` in `+server.ts`, the Shopify
     `cartCreate` call, and the redirect to the returned URL. Built first against
     RxScale's treatment checkout, then rebuilt on the cart when that endpoint
     proved unusable.
-14. **End-to-end hardening** - the whole path, states, sweeps, browser tests,
+14. **End-to-end hardening** (done) - the whole path, states, sweeps, browser tests,
     verification.
+15. **Mobile announcement bar and hero** - match the supplied mobile HTML
+    reference for the landing page's announcement bar, hero imagery, navigation
+    treatment, copy layout, CTA, and trust indicators without regressing desktop.
 
 Dropped to the deferred backlog with this plan change: Solean's own checkout
 (account, shipping, payment), the pricing engine, add-on selection, and the
@@ -278,9 +281,10 @@ breakdown:
 
 ## UI/UX
 
-Visual reference: `design/prio_one_landing_page_men_new.html`, a Pencil canvas
-export of 21 artboards. **A reference, not code to port.** Full token mapping in
-`blueprint/reference/design-system.md`.
+Desktop visual reference: `design/prio_one_landing_page_men_new.html`, a Pencil
+canvas export of 21 artboards. Feature 15's mobile reference is
+`design/mobile/prio_one_landing_page_men_mobile.html`. **References, not code to
+port.** Full token mapping in `blueprint/reference/design-system.md`.
 
 **Two fonts only:** Inter Tight (`--font-display`) for headings, product names,
 prices, stats. DM Sans (`--font-sans`) for everything else.

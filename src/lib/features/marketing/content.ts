@@ -82,12 +82,31 @@ export const LANGUAGES = [
 	{ value: 'de', label: 'Deutsch', short: 'DE', available: false }
 ] as const;
 
-export const ANNOUNCEMENT = {
+export interface AnnouncementContent {
+	title: string;
+	prefix: string;
+	amount: string;
+	suffix: string;
+	/** The narrow bar sets the offer as two plain lines, so it needs no emphasis split. */
+	mobile: { title: string; detail: string };
+}
+
+export const ANNOUNCEMENT: AnnouncementContent = {
 	title: 'WEGOVY PILL NOW AVAILABLE',
 	prefix: 'Order today and get a free',
 	amount: '\u20ac50 gift',
-	suffix: '.'
-} as const;
+	suffix: '.',
+	mobile: {
+		title: 'WEGOVY PILL — NOW AVAILABLE',
+		detail: 'Order today + get a free \u20ac50 gift'
+	}
+};
+
+export interface MobileHeroContent {
+	eyebrow: string;
+	headline: string;
+	lead: string;
+}
 
 export interface HeroContent {
 	eyebrow: string;
@@ -97,6 +116,7 @@ export interface HeroContent {
 	lead: string;
 	primaryCta: string;
 	secondaryCta: string;
+	mobile: MobileHeroContent;
 }
 
 export const HERO: HeroContent = {
@@ -106,7 +126,12 @@ export const HERO: HeroContent = {
 	headlineTail: 'happiness.',
 	lead: 'Personalised, doctor-led weight-loss care designed to help men feel healthier, more confident and supported for the long term.',
 	primaryCta: 'Check your eligibility',
-	secondaryCta: 'Explore treatments'
+	secondaryCta: 'Explore treatments',
+	mobile: {
+		eyebrow: 'Doctor-led weight loss',
+		headline: 'Feel healthier. Live more confidently.',
+		lead: 'Personalised, doctor-led weight-loss care designed to support lasting progress.'
+	}
 };
 
 /**

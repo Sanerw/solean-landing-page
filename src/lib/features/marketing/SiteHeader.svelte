@@ -31,7 +31,9 @@
 	<div
 		class={[
 			CONTAINER,
-			'grid grid-cols-[auto_minmax(0,1fr)] items-center gap-4 py-3 min-[1200px]:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]'
+			'grid grid-cols-[auto_minmax(0,1fr)] items-center gap-4 py-3 min-[1200px]:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]',
+			// The taller overlay mark needs the reference's deeper top inset to sit right.
+			variant === 'overlay' && 'max-sm:py-4'
 		]}
 	>
 		<!-- Desktop nav. Every top-level item is a NavigationMenu link, not a bare anchor,
@@ -95,7 +97,12 @@
 					: 'text-foreground focus-visible:ring-ring focus-visible:ring-offset-background'
 			]}
 		>
-			<SoleanLogo size="default" class="min-[1200px]:h-15" />
+			<!-- The overlay's narrow frame carries the mark at reference scale; every other
+			     header keeps the established size. -->
+			<SoleanLogo
+				size="default"
+				class={variant === 'overlay' ? 'max-sm:h-12 min-[1200px]:h-15' : 'min-[1200px]:h-15'}
+			/>
 		</a>
 
 		<div class="flex min-w-0 items-center justify-end gap-2">

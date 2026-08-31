@@ -361,6 +361,14 @@ claims are not approved production content.
   catches cross-feature regressions only; accessibility and responsiveness are
   already done criteria on every earlier feature.
 
+## Post-MVP
+
+- [x] 15. **Mobile announcement bar and hero** - Refine the landing page's
+  mobile announcement bar, hero imagery, navigation treatment, copy layout,
+  CTA, and trust indicators to match
+  `design/mobile/prio_one_landing_page_men_mobile.html`, while preserving the
+  existing desktop experience.
+
 ## Testing
 
 **Decided, then deferred at 9a.** The plan was to run `/tests` before feature 9;
