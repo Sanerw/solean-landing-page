@@ -20,8 +20,9 @@
 <DatePicker
 	id={controlId}
 	value={date}
-	placeholder="TT.MM.JJJJ"
-	calendarLabel="Geburtsdatum"
+	placeholder="DD/MM/YYYY"
+	calendarLabel="Date of birth"
+	openLabel="Open the calendar"
 	{minValue}
 	{maxValue}
 	{initialValue}

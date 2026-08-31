@@ -28,11 +28,25 @@
 		/** Called once the page validates against the model. May submit, so may be async. */
 		onvalid: () => void | Promise<void>;
 		/** True while a submission is in flight: the action waits and nothing navigates. */
+		/**
+		 * What the press is doing. The two are separate because the recommendation read takes
+		 * seconds against the live service, and a button that still says "Sending your answers"
+		 * while it waits for something else reads as a page that has hung.
+		 */
 		submitting?: boolean;
+		preparing?: boolean;
 		submission?: SubmissionFailure | null;
 	}
 
-	let { page, onvalid, submitting = false, submission = null }: Props = $props();
+	let {
+		page,
+		onvalid,
+		submitting = false,
+		preparing = false,
+		submission = null
+	}: Props = $props();
+
+	const busy = $derived(submitting || preparing);
 
 	/**
 	 * Nothing here works without JavaScript: validation, branching and navigation all live in
@@ -123,7 +137,7 @@
 	 */
 	function submit(event: SubmitEvent): void {
 		event.preventDefault();
-		if (submitting) return;
+		if (busy) return;
 
 		const valid = page.validate(true, true);
 		// Either way the engine now holds different error state than a moment ago.
@@ -284,9 +298,11 @@
 		type="submit"
 		size="default"
 		class="w-full"
-		disabled={!hydrated || unrenderable || submitting}
+		disabled={!hydrated || unrenderable || busy}
 	>
-		{#if submitting}
+		{#if preparing}
+			Preparing your plan
+		{:else if submitting}
 			Sending your answers
 		{:else}
 			{submission ? 'Try again' : 'Continue'}

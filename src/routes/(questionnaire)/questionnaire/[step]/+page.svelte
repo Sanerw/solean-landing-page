@@ -3,7 +3,6 @@
 	import MotivationInterstitial from '$lib/features/questionnaire/MotivationInterstitial.svelte';
 	import ProjectionInterstitial from '$lib/features/questionnaire/ProjectionInterstitial.svelte';
 	import RecommendationScreen from '$lib/features/questionnaire/RecommendationScreen.svelte';
-	import RecommendationSelectionScreen from '$lib/features/questionnaire/RecommendationSelectionScreen.svelte';
 	import QuestionnaireShell from '$lib/features/questionnaire/QuestionnaireShell.svelte';
 	import SurveyStepScreen from '$lib/features/questionnaire/SurveyStepScreen.svelte';
 	import { questionnaireSession } from '$lib/features/questionnaire/survey-state.svelte';
@@ -72,19 +71,6 @@
 	});
 
 	/**
-	 * Whether this browser still holds the walk it is about to congratulate. False after the
-	 * handoff cleared it, which is the one case where the count and the order action would both
-	 * be describing something that is gone. Before hydration the server has nothing to look at,
-	 * and guessing "gone" there would flash a wrong screen at everyone.
-	 */
-	const answersHeld = $derived.by(() => {
-		questionnaireSession.revision;
-		if (!hydrated || !survey) return true;
-
-		return Object.keys(survey.data).length > 0;
-	});
-
-	/**
 	 * Which step the answers justify opening. Null until hydration, because the server has no
 	 * answers and must not decide this; the step renders as the model describes it until the
 	 * browser can say otherwise.
@@ -93,7 +79,13 @@
 		questionnaireSession.revision;
 		if (!hydrated || !plan || !survey) return null;
 
-		return resolveStepEntry(plan, survey, data.stepId, questionnaireSession.anamnesisUid !== null);
+		return resolveStepEntry(
+			plan,
+			survey,
+			data.stepId,
+			questionnaireSession.anamnesisUid !== null,
+			questionnaireSession.started
+		);
 	});
 
 	const redirecting = $derived(entry !== null && !entry.show);
@@ -140,31 +132,31 @@
 	});
 
 	let submitting = $state(false);
+	/**
+	 * The recommendation read that follows a successful submission. Its own state, because it
+	 * takes seconds against the live service and the button has to say which of the two it is
+	 * waiting on rather than leaving the press looking stuck.
+	 */
+	let preparing = $state(false);
 	let submission = $state<Extract<AnamnesisSubmission, { ok: false }> | null>(null);
 
 	/**
-	 * The read the completion screen needs, started as the submission returns rather than when
-	 * that screen mounts. It is handed over unresolved, so the navigation waits for nothing and
-	 * the screen still makes one request instead of two.
+	 * The read the completion screen needs, done before the navigation rather than on arrival.
+	 * The press already says it is working, so the wait belongs there: landing on the choice
+	 * screen and only then showing "Preparing your plan." spends the same seconds twice as
+	 * visibly.
 	 */
-	let recommendation = $state<Promise<RecommendationFetch> | null>(null);
-
-	/**
-	 * Which of the two completion screens is due. Null until hydration for the same reason as
-	 * the answers: the server holds no session and must not decide that a plan was chosen.
-	 */
-	const recommendationChoice = $derived.by(() => {
-		questionnaireSession.revision;
-		if (!hydrated) return null;
-
-		return questionnaireSession.recommendationChoice;
-	});
+	let recommendation = $state<RecommendationFetch | null>(null);
 
 	/**
 	 * The end of the plan is where the answers leave the browser. Anywhere else, continuing is
 	 * a navigation and nothing more.
 	 */
 	async function advance(): Promise<void> {
+		// Moving off a step is what makes this session a started one, and an optional first
+		// question skipped by pressing Continue has to count.
+		questionnaireSession.markStarted();
+
 		const next = neighbourHref(1);
 
 		if (next) {
@@ -182,7 +174,7 @@
 	 * left to do is go to it.
 	 */
 	async function send(): Promise<void> {
-		if (!survey || submitting) return;
+		if (!survey || submitting || preparing) return;
 		if (questionnaireSession.anamnesisUid !== null) {
 			await goto(questionnaireStepHref(COMPLETION_STEP_ID));
 			return;
@@ -192,16 +184,24 @@
 		submission = null;
 
 		const result = await submitAnamnesis(fetch, questionnaireUid(), survey.data);
-		submitting = false;
 
 		if (!result.ok) {
+			submitting = false;
 			submission = result;
 			return;
 		}
 
+		// Read before the session is told about the anamnesis, and that order is the whole of
+		// it: recording the uid makes every step resolve forward to the completion screen, so
+		// the route's own effect navigates there immediately and the read this was meant to
+		// wait for finishes on the next screen instead. The uid comes off the result either way.
+		submitting = false;
+		preparing = true;
+		recommendation = await fetchRecommendation(fetch, result.uid);
+
 		questionnaireSession.recordSubmission(result.uid);
-		recommendation = fetchRecommendation(fetch, result.uid);
 		await goto(questionnaireStepHref(COMPLETION_STEP_ID));
+		preparing = false;
 	}
 </script>
 
@@ -222,27 +222,14 @@
 		</p>
 	{:else if isCompletion}
 		<!--
-			One step, two screens: the plan is chosen first and ordered second, and the choice is
-			what separates them. It is held in the session rather than the URL so a refresh does
-			not send someone back to a decision they already made.
+			One screen, not two: the plan is chosen and ordered in the same press. A separate
+			confirmation step only asked the visitor to agree with themselves.
 		-->
-		{#if answersHeld && recommendationChoice === null}
-			<RecommendationSelectionScreen
-				anamnesisUid={questionnaireSession.anamnesisUid}
-				prefetched={recommendation}
-				onconfirm={(variantId) => questionnaireSession.recordRecommendationChoice(variantId)}
-			/>
-		{:else}
-			<RecommendationScreen
-				questionTotal={plan?.questionTotal ?? 0}
-				anamnesisUid={questionnaireSession.anamnesisUid}
-				{email}
-				{answersHeld}
-				selectedVariant={recommendationChoice?.variantId ?? null}
-				onchangeplan={() => questionnaireSession.forgetRecommendationChoice()}
-				onhandoff={() => questionnaireSession.forgetAnswers()}
-			/>
-		{/if}
+		<RecommendationScreen
+			anamnesisUid={questionnaireSession.anamnesisUid}
+			{email}
+			prefetched={recommendation}
+		/>
 	{:else if planStep?.kind === 'interlude'}
 		{#if planStep.variant === 'motivation'}
 			<MotivationInterstitial oncontinue={advance} />
@@ -251,7 +238,7 @@
 		{/if}
 	{:else if page}
 		{#key page.name}
-			<SurveyStepScreen {page} onvalid={advance} {submitting} {submission} />
+			<SurveyStepScreen {page} onvalid={advance} {submitting} {preparing} {submission} />
 		{/key}
 	{/if}
 </QuestionnaireShell>

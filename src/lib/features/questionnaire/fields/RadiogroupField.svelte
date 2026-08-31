@@ -41,7 +41,12 @@
 		{@const choiceValue = String(choice.value)}
 		{@const choiceId = `${controlId}-${index}`}
 		{@const isOther = choiceValue === otherValue}
-		<div class={isOther ? 'sm:col-span-2' : 'h-full'}>
+		<!--
+			`min-w-0`, because a grid item is `min-width: auto` by default, which is the width of
+			the longest word inside it. `break-words` does not lower that, so one long compound
+			widened the whole grid past the viewport instead of wrapping in its own card.
+		-->
+		<div class={isOther ? 'min-w-0 sm:col-span-2' : 'h-full min-w-0'}>
 			<FieldLabel
 				for={choiceId}
 				class={isOther
@@ -68,7 +73,15 @@
 						aria-invalid={invalid ? 'true' : undefined}
 					/>
 					<FieldContent class="min-w-0">
-						<FieldTitle class="w-full min-w-0 break-words font-display text-sm font-semibold">
+						<!--
+							`block`, because the title is a flex container by default and the choice text
+							is then an anonymous flex item whose `min-width: auto` is the width of its
+							longest word. `break-words` does not shrink that, so a compound like
+							"Gewichtsverlustoperation/Gewichtsreduktionschirurgie" pushed the line out of
+							the card instead of wrapping inside it. The model's choices are sentences of
+							any length, so this cannot be handled by shortening the copy.
+						-->
+						<FieldTitle class="block w-full min-w-0 break-words font-display text-sm font-semibold">
 							{choice.text}
 						</FieldTitle>
 					</FieldContent>

@@ -1,6 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
 import { stepIsInteractive, walkAndSubmit, walkTo } from './answers';
-import { confirmPlan } from './recommendation';
 
 /**
  * What holds the walk together around the questions: answers that live for exactly as long
@@ -37,27 +36,27 @@ test('a refresh starts the questionnaire over', async ({ page }) => {
 
 	await page.reload();
 
-	// Back to the first question the model requires, with the answers gone. `page30` asks for
-	// an e-mail and requires nothing, so an empty session reaches past it to the name.
-	await expect(page).toHaveURL('/questionnaire/page27');
+	// Back to the beginning with the answers gone. The first question asks for an e-mail and
+	// requires nothing, and a fresh load still starts there: skipping it would look like the
+	// questionnaire had dropped a question.
+	await expect(page).toHaveURL('/questionnaire/page30');
 	await stepIsInteractive(page);
-	await expect(firstName(page)).toHaveValue('');
+	// The walk answered this one on the way through, and the answer is not here any more.
+	await expect(page.getByRole('textbox')).toHaveValue('');
 });
 
 test('a step the answers do not reach sends you to the one they do', async ({ page }) => {
 	await page.goto('/questionnaire/page23');
 
-	// The name question is the first thing this fixture requires, so that is as far as an
-	// empty session reaches.
-	await expect(page).toHaveURL('/questionnaire/page27');
+	// An empty session reaches exactly one step: the first.
+	await expect(page).toHaveURL('/questionnaire/page30');
 	await stepIsInteractive(page);
-	await expect(firstName(page)).toBeVisible();
 });
 
 test('the completion screen is not a place you can jump to', async ({ page }) => {
 	await page.goto('/questionnaire/complete');
 
-	await expect(page).toHaveURL('/questionnaire/page27');
+	await expect(page).toHaveURL('/questionnaire/page30');
 });
 
 test('a step already answered can be reopened and changed', async ({ page }) => {
@@ -95,9 +94,8 @@ test('the progress denominator follows the branch the answers open', async ({ pa
 
 test('the completion screen reads the whole questionnaire as done', async ({ page }) => {
 	await walkAndSubmit(page);
-	await confirmPlan(page);
 
-	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Congratulations, you did it!');
+	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Choose your treatment');
 	// Ten, because the walk answers "Andere" to the medication question, and that opens the
 	// side-effects pages behind it. The denominator is the branch actually walked, not a fixed
 	// length the model does not have.

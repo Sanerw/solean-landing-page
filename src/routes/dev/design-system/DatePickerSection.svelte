@@ -16,7 +16,7 @@
 <ShowcaseSection
 	id="date-picker"
 	title="Date Picker"
-	description="A compact calendar field for dates of birth. It displays German DD.MM.YYYY, exposes month and year dropdowns, and returns locale-independent YYYY-MM-DD values."
+	description="A compact date-of-birth field. It takes DD/MM/YYYY typed straight in, putting the separators in itself, opens a calendar with month and year dropdowns, and returns locale-independent YYYY-MM-DD values."
 >
 	<div class="grid gap-8 md:grid-cols-2">
 		<Field>
@@ -24,8 +24,7 @@
 			<DatePicker
 				id="date-picker-empty"
 				value={emptyDate}
-				placeholder="TT.MM.JJJJ"
-				calendarLabel="Geburtsdatum"
+				calendarLabel="Date of birth"
 				{minValue}
 				{maxValue}
 				{initialValue}
@@ -39,14 +38,14 @@
 			<DatePicker
 				id="date-picker-selected"
 				value={selectedDate}
-				calendarLabel="Geburtsdatum"
+				calendarLabel="Date of birth"
 				{minValue}
 				{maxValue}
 				{initialValue}
 				onchange={(value) => (selectedDate = value)}
 			/>
 			<FieldDescription>
-				Displayed as 14.05.1990; component value: <code class="font-sans">{selectedDate}</code>.
+				Displayed as 14/05/1990; component value: <code class="font-sans">{selectedDate}</code>.
 			</FieldDescription>
 		</Field>
 	</div>

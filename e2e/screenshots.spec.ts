@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { REJECTED_SUBMISSION, UNAVAILABLE_SUBMISSION, walkTo } from './answers';
-import { selectDateOfBirth } from './date-picker';
-import { confirmPlan } from './recommendation';
+import { openCalendar, selectDateOfBirth } from './date-picker';
+import { checkoutButton } from './recommendation';
 
 /**
  * Not an assertion suite: it walks the fixture questionnaire once and captures the screen
@@ -32,7 +32,7 @@ test('capture the questionnaire screens', async ({ page }) => {
 	await advance();
 
 	await ready('page26');
-	await page.getByLabel('Bitte gib Dein Geburtsdatum an').click();
+	await openCalendar(page);
 	await expect(page.locator('[data-slot="popover-content"]')).toHaveCSS('opacity', '1');
 	await shot('03-date-picker-open');
 	await page.keyboard.press('Escape');
@@ -93,7 +93,7 @@ test('capture the questionnaire screens', async ({ page }) => {
 	await advance();
 
 	await expect(page).toHaveURL('/questionnaire/complete');
-	await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled();
+	await expect(checkoutButton(page)).toBeEnabled();
 	await shot('13-recommendation-choice');
 
 	// The other purchase, which is a panel of its own and never on screen beside the prices
@@ -102,9 +102,6 @@ test('capture the questionnaire screens', async ({ page }) => {
 	await shot('13b-recommendation-prescriptions');
 	await page.getByRole('tab', { name: 'Treatment' }).click();
 
-	await confirmPlan(page);
-	await expect(page.getByRole('button', { name: 'Go to checkout' })).toBeVisible();
-	await shot('14-recommendation');
 });
 
 /**

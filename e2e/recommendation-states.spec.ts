@@ -1,7 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { NO_PLANS, NO_RECOMMENDATION, walkAndSubmit } from './answers';
 import { FIXTURE_VARIANT_ID } from './fixture';
-import { confirmPlan } from './recommendation';
+import { orderPlan } from './recommendation';
 
 /**
  * The two answers RxScale can give that are not a list of plans. Both are reachable in the
@@ -38,9 +38,8 @@ test('an anamnesis nothing was matched to still reaches a checkout', async ({ pa
 	// No plan means no price: a screen that showed one would be quoting an offer nobody made.
 	await expect(page.getByText('EUR')).toHaveCount(0);
 
-	// Nothing to choose is still a screen that continues: the choice is the fallback plan.
-	await confirmPlan(page);
-	await page.getByRole('button', { name: 'Go to checkout' }).click();
+	// Nothing to choose is still a screen that orders: the choice is the fallback plan.
+	await orderPlan(page);
 	await expect(page.getByRole('heading', { name: 'Fixture checkout' })).toBeVisible();
 
 	// The browser names no variant, so the server falls back to the configured one.
@@ -55,16 +54,14 @@ test('a recommendation that cannot be reached is not a dead end', async ({ page 
 	await expect(page.getByText('A doctor is reviewing your answers')).toBeVisible();
 	await expect(page.getByText('EUR')).toHaveCount(0);
 
-	await confirmPlan(page);
-	await page.getByRole('button', { name: 'Go to checkout' }).click();
+	await orderPlan(page);
 	await expect(page.getByRole('heading', { name: 'Fixture checkout' })).toBeVisible();
 });
 
 test('the configured fallback is what a plan-less order actually buys', async ({ page }) => {
 	await atRecommendation(page, NO_PLANS);
 
-	await confirmPlan(page);
-	await page.getByRole('button', { name: 'Go to checkout' }).click();
+	await orderPlan(page);
 	await expect(page.getByRole('heading', { name: 'Fixture checkout' })).toBeVisible();
 
 	// Read off the cart the fixture actually built. The browser names no variant on this path,

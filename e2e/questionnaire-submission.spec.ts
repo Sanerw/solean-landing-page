@@ -6,7 +6,7 @@ import {
 	walkAndSubmit,
 	walkTo
 } from './answers';
-import { confirmPlan } from './recommendation';
+import { checkoutButton, choosePlan } from './recommendation';
 
 /**
  * The submission itself. The fixture server answers the three documented outcomes, and asks
@@ -117,7 +117,7 @@ test('a reload after the submission starts the questionnaire over', async ({ pag
 	// The consequence of storing nothing, stated rather than discovered: the anamnesis is at
 	// RxScale and a doctor will read it, but this browser no longer knows about it, so the
 	// order screen is out of reach and walking again would file a second one.
-	await expect(page).toHaveURL('/questionnaire/page27');
+	await expect(page).toHaveURL('/questionnaire/page30');
 	await stepIsInteractive(page);
 	expect(posts).toHaveLength(1);
 });
@@ -137,7 +137,7 @@ test('the recommendation presents what RxScale offers, prices included', async (
 	// The other purchase's price is not on screen beside it, which is the whole point of the
 	// split, and the button names back what confirming would buy.
 	await expect(page.getByText('49.90 EUR')).toBeHidden();
-	await expect(page.getByRole('button', { name: 'Continue with Fixture Treatment' })).toBeEnabled();
+	await expect(page.getByRole('button', { name: 'Checkout with Fixture Treatment' })).toBeEnabled();
 
 	// RxScale names its own default, and it is the one that arrives selected.
 	// The name is the plan, the dose and the price: a `<button role="radio">` is not named by
@@ -158,12 +158,7 @@ test('the recommendation presents what RxScale offers, prices included', async (
 
 	await page.getByRole('tab', { name: 'Treatment' }).click();
 
-	// Confirming the choice is what opens the order screen, and the handoff itself is covered
-	// by its own spec.
-	await confirmPlan(page);
-
-	// The count comes from the plan, not from the artboard, which says eight whatever the
-	// model asks.
-	await expect(page.getByText('All 10 steps complete')).toBeVisible();
-	await expect(page.getByRole('button', { name: 'Go to checkout' })).toBeEnabled();
+	// The same press that takes the choice is the one that orders it, and the handoff itself
+	// is covered by its own spec.
+	await expect(checkoutButton(page)).toBeEnabled();
 });

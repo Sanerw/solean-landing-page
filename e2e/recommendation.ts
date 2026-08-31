@@ -17,19 +17,25 @@ const TAB_LABEL: Record<PlanMode, string> = {
 	prescription: 'Prescription only'
 };
 
+/** The one action that ends the questionnaire, whatever it is currently named. */
+export function checkoutButton(page: Page) {
+	return page.getByRole('button', { name: /Checkout with|Go to checkout|Try again/ });
+}
+
 /**
- * The completion step is two screens: the plan is chosen on the first and ordered on the
- * second. Every spec that is about the order has to pass the choice, so it is one helper
- * rather than the same four lines repeated.
+ * Picks a plan on the completion screen, without ordering it. The order is a separate press
+ * so a spec can watch what happens in between.
  */
-export async function confirmPlan(page: Page, choice: PlanChoice = {}): Promise<void> {
+export async function choosePlan(page: Page, choice: PlanChoice = {}): Promise<void> {
 	// Enabled only once the recommendation has been read, so this is also the wait for it.
-	const confirm = page.getByRole('button', { name: 'Continue' });
-	await expect(confirm).toBeEnabled();
+	await expect(checkoutButton(page)).toBeEnabled();
 
 	if (choice.mode) await page.getByRole('tab', { name: TAB_LABEL[choice.mode] }).click();
 	if (choice.plan) await page.getByRole('radio', { name: choice.plan }).click();
+}
 
-	await confirm.click();
-	await expect(page.getByRole('heading', { name: 'Congratulations, you did it!' })).toBeVisible();
+/** Picks a plan and orders it, which is the whole of the completion step now. */
+export async function orderPlan(page: Page, choice: PlanChoice = {}): Promise<void> {
+	await choosePlan(page, choice);
+	await checkoutButton(page).click();
 }

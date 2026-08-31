@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { walkTo } from './answers';
-import { selectDateOfBirth } from './date-picker';
+import { dateOfBirthField, selectDateOfBirth, typeDateOfBirth } from './date-picker';
 
 /**
  * One spec per question type the live model uses, and one walk through all of them. Every
@@ -25,9 +25,52 @@ test('the date of birth is required by the model, not by the renderer', async ({
 	await expect(page).toHaveURL('/questionnaire/page26');
 
 	await selectDateOfBirth(page);
-	await expect(page.getByLabel('Bitte gib Dein Geburtsdatum an')).toHaveText('14.05.1990');
+	await expect(dateOfBirthField(page)).toHaveValue('14/05/1990');
 	await page.getByRole('button', { name: 'Continue' }).click();
 	await expect(page).toHaveURL('/questionnaire/page3');
+});
+
+test('the date of birth can be typed as well as picked', async ({ page }) => {
+	await walkTo(page, 'page26');
+
+	// Digits alone. The field puts the separators in, so nobody has to guess whether it wants
+	// dots or slashes.
+	await typeDateOfBirth(page, '14051990');
+	await expect(dateOfBirthField(page)).toHaveValue('14/05/1990');
+
+	// Typed is answered: the model accepts it and the walk goes on.
+	await page.getByRole('button', { name: 'Continue' }).click();
+	await expect(page).toHaveURL('/questionnaire/page3');
+});
+
+test('the date field takes digits and nothing else', async ({ page }) => {
+	await walkTo(page, 'page26');
+
+	const field = dateOfBirthField(page);
+	await field.click();
+
+	// Refused at the keystroke, so nothing appears at all. Stripping them afterwards would
+	// leave letters on screen whenever the masked value did not change.
+	await page.keyboard.type('abc');
+	await expect(field).toHaveValue('');
+
+	await page.keyboard.type('14ab05cd1990');
+	await expect(field).toHaveValue('14/05/1990');
+});
+
+test('a typed date that does not exist is not an answer', async ({ page }) => {
+	await walkTo(page, 'page26');
+
+	// 31 February. Rolling it into 3 March would record a birth date nobody typed, so it
+	// counts as nothing answered and the model says so.
+	await typeDateOfBirth(page, '31021991');
+	await expect(dateOfBirthField(page)).toHaveValue('31/02/1991');
+
+	await page.getByRole('button', { name: 'Continue' }).click();
+	await expect(
+		page.getByText('Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.')
+	).toBeVisible();
+	await expect(page).toHaveURL('/questionnaire/page26');
 });
 
 test('a composite question reports its failure on the control that failed', async ({ page }) => {

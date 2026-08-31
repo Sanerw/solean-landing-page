@@ -23,9 +23,8 @@
 		children
 	}: Props = $props();
 
-	const percent = $derived(
-		progress && progress.total > 0 ? (progress.current / progress.total) * 100 : 0
-	);
+	// The plan states how full the bar is, because the last question is not the last screen.
+	const percent = $derived(progress?.percent ?? 0);
 </script>
 
 <div class="flex min-h-svh flex-col bg-card">

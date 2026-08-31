@@ -21,6 +21,12 @@ export interface InterludePlacement {
 export interface QuestionnaireProgress {
 	current: number;
 	total: number;
+	/**
+	 * How full the bar is. Not `current / total`: the plan choice comes after the last
+	 * question, so a full bar on the last question would promise an end that is one screen
+	 * early. The count stays a count of questions, because that is what it is called.
+	 */
+	percent: number;
 }
 
 /**
@@ -133,7 +139,12 @@ export function resolveStepEntry(
 	survey: Model,
 	stepId: string,
 	/** True once the anamnesis exists at RxScale. */
-	submitted: boolean
+	submitted: boolean,
+	/**
+	 * True once the visitor has moved off a step themselves. False on every fresh load, since
+	 * the session lives in memory and nothing is stored.
+	 */
+	started: boolean
 ): StepEntry {
 	// The questionnaire is over: the record is with a doctor, and changing an answer here
 	// would put a different questionnaire on screen than the one that was sent.
@@ -145,6 +156,20 @@ export function resolveStepEntry(
 
 	// Nothing to walk and nothing to submit: the only screen left is the end of it.
 	if (plan.steps.length === 0) return { show: true };
+
+	// A fresh load starts the walk at its first step, whatever the address asked for. The
+	// reachable limit alone would step past an optional first question, because an unanswered
+	// optional page validates, and arriving on the second question reads as the questionnaire
+	// having skipped one.
+	//
+	// Keyed on having started rather than on the answers being empty: skipping that optional
+	// question is a thing a visitor may do, and reading empty answers as "not started" would
+	// bounce them back to it the moment they pressed Continue.
+	if (!started) {
+		const first = plan.steps[0];
+
+		return stepId === first.id ? { show: true } : { show: false, redirectTo: first.id };
+	}
 
 	const limit = reachableLimit(plan, survey);
 	// Past the last step means every answer is in, and the last step is where sending happens,
@@ -174,11 +199,19 @@ export function resolveStepEntry(
  * the truth: those questions are now theirs to answer, and pretending otherwise would mean
  * showing a total nobody is walking towards.
  */
+/**
+ * Screens the visitor still walks after the last question: choosing the plan. The order
+ * screen is not one of them, because the choice is the last thing the bar can promise.
+ */
+const SCREENS_AFTER_THE_QUESTIONS = 1;
+
 export function progressFor(plan: StepPlan, stepId: string): QuestionnaireProgress | null {
 	if (plan.questionTotal === 0) return null;
 
+	const barTotal = plan.questionTotal + SCREENS_AFTER_THE_QUESTIONS;
+
 	if (stepId === COMPLETION_STEP_ID) {
-		return { current: plan.questionTotal, total: plan.questionTotal };
+		return { current: plan.questionTotal, total: plan.questionTotal, percent: 100 };
 	}
 
 	const index = plan.steps.findIndex((step) => step.id === stepId);
@@ -187,7 +220,11 @@ export function progressFor(plan: StepPlan, stepId: string): QuestionnaireProgre
 	for (let cursor = index; cursor >= 0; cursor -= 1) {
 		const step = plan.steps[cursor];
 		if (step.kind === 'survey') {
-			return { current: step.questionNumber, total: plan.questionTotal };
+			return {
+				current: step.questionNumber,
+				total: plan.questionTotal,
+				percent: (step.questionNumber / barTotal) * 100
+			};
 		}
 	}
 

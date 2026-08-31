@@ -7,18 +7,8 @@ import type { CheckoutFailure } from './checkout-client';
  * is nothing left to keep in step by hand.
  */
 export const RECOMMENDATION = {
-	headline: 'Congratulations, you did it!',
-	body: [
-		'Your health profile is complete and a licensed doctor will review your answers.',
-		'Your treatment choice is saved. Continue to checkout when you are ready.'
-	],
 	choiceHeadline: 'Choose your treatment',
 	choiceBody: 'Select the treatment or prescription you want to continue with.',
-	/**
-	 * The reference's third pill reads "Eligibility checked", which this product must not
-	 * claim: nothing here judges eligibility, and the doctor's review has not happened yet.
-	 */
-	assurances: ['Health profile complete', 'Sent for doctor review', 'Plan ready'],
 	loading: 'Preparing your plan.',
 	choiceLabel: 'Your plan',
 	/**
@@ -33,9 +23,9 @@ export const RECOMMENDATION = {
 		title: 'A doctor is reviewing your answers',
 		body: 'No plan has been matched to your profile yet. You can still place your order, and the doctor decides what is prescribed after reviewing what you told us.'
 	},
-	choiceAction: 'Continue',
+	action: 'Go to checkout',
 	/** Names the choice back, so the button is not the one place the decision goes unsaid. */
-	choiceActionFor: (plan: string) => `Continue with ${plan}`,
+	actionFor: (plan: string) => `Checkout with ${plan}`,
 	/**
 	 * The reference's footnote, and the truth this screen must not let a choice imply: what
 	 * is picked here is a preference, and the doctor reviewing the answers decides.
@@ -43,10 +33,7 @@ export const RECOMMENDATION = {
 	reviewNote: 'Treatment is prescribed only after clinical review and may differ from your choice.',
 	/** Only ever shown for a treatment: a prescription delivers no days of anything. */
 	durationFor: (days: number) => `${days}-day treatment`,
-	action: 'Go to checkout',
-	changeAction: 'Choose a different plan',
-	ordering: 'Opening your checkout',
-	trust: ['Ongoing medical support', 'Pause or cancel anytime']
+	ordering: 'Opening your checkout'
 } as const;
 
 /**

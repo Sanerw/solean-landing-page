@@ -1,6 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { selectDateOfBirth } from './date-picker';
-import { confirmPlan } from './recommendation';
+import { orderPlan } from './recommendation';
 
 /**
  * One walk, the way a person takes it: the landing page, the questionnaire, and out to the
@@ -83,10 +83,8 @@ test('a visitor walks from the landing page to the shop', async ({ page }) => {
 	await expect(page.getByRole('tab', { name: 'Treatment' })).toBeVisible();
 
 	// The plan RxScale pre-selected is taken as offered: what this walk is about is that the
-	// two screens connect, not which of them was picked.
-	await confirmPlan(page);
-
-	await page.getByRole('button', { name: 'Go to checkout' }).click();
+	// questionnaire reaches the shop, not which plan was picked.
+	await orderPlan(page);
 
 	// The last seam, and the only one that leaves the app.
 	await expect(page.getByRole('heading', { name: 'Fixture checkout' })).toBeVisible();

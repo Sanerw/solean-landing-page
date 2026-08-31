@@ -7,7 +7,7 @@ import {
 	walkAndSubmit
 } from './answers';
 import { FIXTURE_PRESCRIPTION_VARIANT_ID } from './fixture';
-import { confirmPlan, type PlanChoice } from './recommendation';
+import { checkoutButton, choosePlan, type PlanChoice } from './recommendation';
 
 /**
  * The handoff itself. The fixture stands in for the Shopify Storefront API and for the page a
@@ -37,7 +37,7 @@ async function atRecommendation(
 ): Promise<void> {
 	await walkAndSubmit(page, email ? { email } : {});
 	await expect(page).toHaveURL('/questionnaire/complete');
-	await confirmPlan(page, choice);
+	await choosePlan(page, choice);
 }
 
 test('the order is created by the press, and lands exactly where Shopify said', async ({
@@ -46,8 +46,7 @@ test('the order is created by the press, and lands exactly where Shopify said', 
 	const calls = checkoutCalls(page);
 	await atRecommendation(page);
 
-	const order = page.getByRole('button', { name: 'Go to checkout' });
-	await expect(order).toBeEnabled();
+	await expect(checkoutButton(page)).toBeEnabled();
 
 	// Arriving orders nothing. Every checkout is a cart at Shopify, so reaching the screen must
 	// not create one.
@@ -66,7 +65,7 @@ test('the order is created by the press, and lands exactly where Shopify said', 
 		await route.fulfill({ response });
 	});
 
-	await page.getByRole('button', { name: 'Go to checkout' }).click();
+	await checkoutButton(page).click();
 
 	await expect(page.getByRole('heading', { name: 'Fixture checkout' })).toBeVisible();
 
@@ -84,7 +83,7 @@ test('a service that refuses the line says so, and stays where it is', async ({ 
 	const calls = checkoutCalls(page);
 	await atRecommendation(page, REFUSED_CHECKOUT);
 
-	await page.getByRole('button', { name: 'Go to checkout' }).click();
+	await checkoutButton(page).click();
 
 	await expect(page.getByText('Your order was not accepted')).toBeVisible();
 	await expect(page).toHaveURL('/questionnaire/complete');
@@ -98,7 +97,7 @@ test('a service that does not answer offers the retry, and stays where it is', a
 	const calls = checkoutCalls(page);
 	await atRecommendation(page, UNREACHABLE_CHECKOUT);
 
-	await page.getByRole('button', { name: 'Go to checkout' }).click();
+	await checkoutButton(page).click();
 
 	await expect(page.getByText('We could not reach the checkout')).toBeVisible();
 	await expect(page).toHaveURL('/questionnaire/complete');
@@ -116,7 +115,7 @@ test('an e-mail the shop refuses is dropped rather than allowed to end the order
 	const calls = checkoutCalls(page);
 	await atRecommendation(page, MALFORMED_EMAIL);
 
-	await page.getByRole('button', { name: 'Go to checkout' }).click();
+	await checkoutButton(page).click();
 
 	await expect(page.getByRole('heading', { name: 'Fixture checkout' })).toBeVisible();
 
@@ -136,7 +135,7 @@ test('an answer set with no e-mail still reaches the checkout', async ({ page })
 	// end here.
 	await atRecommendation(page, '');
 
-	await page.getByRole('button', { name: 'Go to checkout' }).click();
+	await checkoutButton(page).click();
 
 	await expect(page.getByRole('heading', { name: 'Fixture checkout' })).toBeVisible();
 	expect(calls).toHaveLength(1);
@@ -145,7 +144,7 @@ test('an answer set with no e-mail still reaches the checkout', async ({ page })
 test('leaving takes everything with it', async ({ page }) => {
 	await atRecommendation(page);
 
-	await page.getByRole('button', { name: 'Go to checkout' }).click();
+	await checkoutButton(page).click();
 	await expect(page.getByRole('heading', { name: 'Fixture checkout' })).toBeVisible();
 
 	// Back the way anyone would come back. The checkout is another origin, so this is a fresh
@@ -178,7 +177,7 @@ test('the plan the visitor picks is the plan the cart is built from', async ({ p
 		plan: /Digital-Rezept 49\.90 EUR/
 	});
 
-	await page.getByRole('button', { name: 'Go to checkout' }).click();
+	await checkoutButton(page).click();
 
 	await expect(page.getByRole('heading', { name: 'Fixture checkout' })).toBeVisible();
 	expect(ordered).toBe(FIXTURE_PRESCRIPTION_VARIANT_ID);
@@ -194,7 +193,7 @@ test('a variant nobody recommended is refused, and no cart is made', async ({ pa
 		await route.continue({ postData: JSON.stringify({ ...body, variantId: '49703591706957' }) });
 	});
 
-	await page.getByRole('button', { name: 'Go to checkout' }).click();
+	await checkoutButton(page).click();
 
 	await expect(page.getByText('That treatment is not available to you')).toBeVisible();
 	await expect(page).toHaveURL('/questionnaire/complete');

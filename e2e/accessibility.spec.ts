@@ -1,7 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { walkAndSubmit, walkTo } from './answers';
-import { confirmPlan } from './recommendation';
 
 /**
  * One automated pass over every surface a visitor sees. Axe proves a subset of accessibility
@@ -55,7 +54,7 @@ for (const step of QUESTION_STEPS) {
 	});
 }
 
-test('both recommendation screens have no serious accessibility violations', async ({ page }) => {
+test('the recommendation screen has no serious accessibility violations', async ({ page }) => {
 	await walkAndSubmit(page);
 	await expect(page.getByRole('tab', { name: 'Treatment' })).toBeVisible();
 
@@ -65,7 +64,4 @@ test('both recommendation screens have no serious accessibility violations', asy
 	await page.getByRole('tab', { name: 'Prescription only' }).click();
 	expect(await violations(page)).toEqual([]);
 
-	// The order screen is the other half of this step and is never reached without the choice.
-	await confirmPlan(page);
-	expect(await violations(page)).toEqual([]);
 });
