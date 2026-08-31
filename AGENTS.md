@@ -202,16 +202,21 @@ Package manager: **pnpm**.
 - Preview production build: `pnpm preview`
 - Typecheck: `pnpm check` (runs `svelte-kit sync` then `svelte-check`)
 - Typecheck (watch): `pnpm check:watch`
+- Unit tests: `pnpm test` (Vitest, `src/**/*.test.ts`)
+- Unit tests (watch): `pnpm test:watch`
 - Browser tests: `pnpm test:browser` (Playwright, Chromium)
 - Questionnaire fixture API: `pnpm fixture:questionnaire` (port 4319)
 
-No lint or format command is configured. No unit test runner is configured, so
-there is no test gate yet. No `Verify` command and no automatic GitHub checks
-exist yet.
+No lint or format command is configured. No `Verify` command and no automatic
+GitHub checks exist yet.
 
-Testing is opt-in. If this project does not already have a unit test runner, run
-`/tests` or `$tests` to add one and update this section with the real test
-commands.
+**The test gate is on.** `pnpm test` is declared above, so a step that adds
+logic where a wrong answer is possible ships a passing test in the same
+reviewable diff. Unit tests live beside the source they cover
+(`feature.test.ts`) and Vitest collects `src/**/*.test.ts` only: `e2e/` belongs
+to Playwright and is not part of this command. UI components and integration
+surfaces stay out of unit tests and ride on the browser harness and the build,
+per the Testing section of `blueprint/context/coding-standards.md`.
 
 Browser tests run Playwright against the production preview build, which the
 runner starts on port 4173 and stops again, so no server needs to be running

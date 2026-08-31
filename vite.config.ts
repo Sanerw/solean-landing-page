@@ -1,7 +1,8 @@
 import tailwindcss from '@tailwindcss/vite';
 import adapter from '@sveltejs/adapter-vercel';
 import { sveltekit } from '@sveltejs/kit/vite';
-import { defineConfig } from 'vite';
+// From vitest, not vite: the same config, plus the `test` key below.
+import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
 	plugins: [
@@ -17,5 +18,11 @@ export default defineConfig({
 			// option: `/api/checkout` has to execute server-side.
 			adapter: adapter()
 		})
-	]
+	],
+	test: {
+		// Unit tests only, beside the source they cover. `e2e/` is Playwright's and would be
+		// collected by the default glob, then fail on an import Vitest cannot provide.
+		include: ['src/**/*.test.ts'],
+		environment: 'node'
+	}
 });

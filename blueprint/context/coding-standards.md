@@ -150,8 +150,9 @@ of the switch; the skills and `ai-interaction.md` only point back here.
   hardcoded tool name.
 
 Stack binding for this project: Vitest, `vi.mock()` for external dependencies,
-and `vi.useFakeTimers()` for time-dependent logic. Nothing is installed yet; run
-`/tests` when you want the runner and the gate.
+and `vi.useFakeTimers()` for time-dependent logic. **Installed, and the gate is
+on**: `pnpm test` runs `src/**/*.test.ts`. `e2e/` is Playwright's and is outside
+that glob deliberately, so the two runners never collect each other's files.
 
 ## Browser Verification
 
