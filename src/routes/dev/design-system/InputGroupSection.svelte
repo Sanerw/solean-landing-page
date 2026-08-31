@@ -12,7 +12,7 @@
 <ShowcaseSection
 	id="input-group"
 	title="InputGroup"
-	description="Inherits Input's own box (h-14, rounded-md, border-input, bg-card) rather than the vendor's translucent pill, so an icon, a unit or an action can sit inside the control without a second competing border. Focus and invalid state key off the contained input and render on the shared boundary."
+	description="Inherits Input's own box (h-12, rounded-md, border-border, bg-card) rather than the vendor's translucent pill, so an icon, a unit or an action can sit inside the control without a second competing border. Focus and invalid state key off the contained input and render only on the shared boundary."
 >
 	<div class="grid gap-8 md:grid-cols-2">
 		<div class="space-y-2">

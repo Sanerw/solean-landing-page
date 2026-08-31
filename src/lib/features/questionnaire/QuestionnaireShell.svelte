@@ -1,11 +1,9 @@
 <script lang="ts">
 	import type { Snippet } from 'svelte';
 	import SoleanLogo from '$lib/components/brand/SoleanLogo.svelte';
-	import * as Alert from '$lib/components/ui/alert';
 	import { Button } from '$lib/components/ui/button';
 	import { Progress } from '$lib/components/ui/progress';
 	import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
-	import FlaskConicalIcon from '@lucide/svelte/icons/flask-conical';
 	import XIcon from '@lucide/svelte/icons/x';
 	import { QUESTIONNAIRE_HOME_HREF } from './routes';
 	import type { QuestionnaireProgress } from './steps';
@@ -15,8 +13,6 @@
 		progress?: QuestionnaireProgress | null;
 		backHref: string;
 		backLabel?: string;
-		/** Off on screens that collect nothing, so the warning stays where data is entered. */
-		showPrototypeNotice?: boolean;
 		children: Snippet;
 	}
 
@@ -24,7 +20,6 @@
 		progress = null,
 		backHref,
 		backLabel = 'Back',
-		showPrototypeNotice = true,
 		children
 	}: Props = $props();
 
@@ -33,7 +28,7 @@
 	);
 </script>
 
-<div class="flex min-h-svh flex-col bg-background">
+<div class="flex min-h-svh flex-col bg-card">
 	<!--
 		A three-column grid, not justify-between: the reference centres the mark on the
 		viewport, and unequal Back and Close widths would push it off centre.
@@ -52,7 +47,7 @@
 			aria-label="Solean, home"
 			class="rounded-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 		>
-			<SoleanLogo size="sm" />
+			<SoleanLogo size="default" />
 		</a>
 
 		<Button
@@ -73,17 +68,6 @@
 					value={percent}
 					aria-label="Question {progress.current} of {progress.total}"
 				/>
-			{/if}
-
-			{#if showPrototypeNotice}
-				<Alert.Root variant="highlighted" class="mt-4 py-2">
-					<FlaskConicalIcon aria-hidden="true" />
-					<Alert.Title class="text-xs">Prototype only</Alert.Title>
-					<Alert.Description class="text-xs">
-						Do not enter real health information. Answers are fictional sample data kept in this
-						browser tab.
-					</Alert.Description>
-				</Alert.Root>
 			{/if}
 
 			<div class="mt-6">

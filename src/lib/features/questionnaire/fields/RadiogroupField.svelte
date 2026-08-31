@@ -40,24 +40,34 @@
 	{#each choices as choice, index (choice.value)}
 		{@const choiceValue = String(choice.value)}
 		{@const choiceId = `${controlId}-${index}`}
-		<div class={choiceValue === otherValue ? 'sm:col-span-2' : undefined}>
+		{@const isOther = choiceValue === otherValue}
+		<div class={isOther ? 'sm:col-span-2' : 'h-full'}>
 			<FieldLabel
 				for={choiceId}
-				class="*:data-[slot=field]:min-h-12 *:data-[slot=field]:p-3"
+				class={isOther
+					? '*:data-[slot=field]:min-h-12 *:data-[slot=field]:p-3'
+					: 'h-full *:data-[slot=field]:min-h-12 *:data-[slot=field]:p-3'}
 			>
-				<Field orientation="horizontal">
+				<Field
+					orientation="horizontal"
+					class={isOther
+						? 'has-[>[data-slot=field-content]]:items-center'
+						: 'h-full has-[>[data-slot=field-content]]:items-center'}
+				>
 					<RadioGroup.Item
 						id={choiceId}
 						value={choiceValue}
 						aria-invalid={invalid ? 'true' : undefined}
 					/>
-					<FieldContent>
-						<FieldTitle class="font-display text-sm font-semibold">{choice.text}</FieldTitle>
+					<FieldContent class="min-w-0">
+						<FieldTitle class="w-full min-w-0 break-words font-display text-sm font-semibold">
+							{choice.text}
+						</FieldTitle>
 					</FieldContent>
 				</Field>
 			</FieldLabel>
 
-			{#if otherValue !== null && choiceValue === otherValue && selected === otherValue}
+			{#if otherValue !== null && isOther && selected === otherValue}
 				<OtherChoiceInput {question} {controlId} {comment} {oncomment} />
 			{/if}
 		</div>

@@ -28,7 +28,7 @@
 	{COPY.eyebrow}
 </p>
 
-<h1 class="mt-2 text-center font-display text-3xl font-medium sm:text-4xl">{COPY.headline}</h1>
+<h1 class="mt-2 text-center font-display text-2xl font-medium sm:text-3xl">{COPY.headline}</h1>
 
 <div class="mx-auto mt-2 max-w-xl text-center text-sm text-muted-foreground sm:text-base">
 	{#each COPY.body as line (line)}
@@ -56,7 +56,7 @@
 			<p class="font-sans text-xs font-semibold uppercase tracking-widest text-muted-foreground">
 				{COPY.storyLabel}
 			</p>
-			<StarRating rating={story.rating} />
+			<StarRating rating={story.rating} treatment="inline" />
 		</div>
 		<blockquote class="mt-1 text-sm text-foreground">
 			<p>“{story.quote}”</p>
@@ -82,7 +82,7 @@
 
 <Button
 	type="button"
-	size="lg"
+	size="default"
 	class="relative mt-5 w-full"
 	disabled={!hydrated}
 	onclick={oncontinue}

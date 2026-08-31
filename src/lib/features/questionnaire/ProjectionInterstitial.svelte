@@ -118,7 +118,7 @@
 	<p class="mt-3 text-center text-xs text-text-tertiary">{COPY.footnote}</p>
 {/if}
 
-<Button type="button" size="lg" class="relative mt-5 w-full" onclick={oncontinue}>
+<Button type="button" size="default" class="relative mt-5 w-full" onclick={oncontinue}>
 	Continue
 	<ArrowRightIcon aria-hidden="true" class="absolute right-8" />
 </Button>

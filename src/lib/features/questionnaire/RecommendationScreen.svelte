@@ -162,7 +162,7 @@
 
 	<Button
 		type="button"
-		size="lg"
+		size="default"
 		class="relative mt-4 w-full"
 		disabled={!hydrated || ordering}
 		onclick={order}

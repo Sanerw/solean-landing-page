@@ -36,7 +36,7 @@
 	<meta name="description" content="Start the Solean medical questionnaire." />
 </svelte:head>
 
-<QuestionnaireShell backHref={QUESTIONNAIRE_HOME_HREF} showPrototypeNotice={false}>
+<QuestionnaireShell backHref={QUESTIONNAIRE_HOME_HREF}>
 	<h1 class="font-display text-4xl font-medium sm:text-5xl">Opening your questionnaire</h1>
 	<p role="status" class="mt-3 text-base text-muted-foreground md:text-lg">
 		Taking you to the first question.

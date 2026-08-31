@@ -13,7 +13,7 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<QuestionnaireShell backHref={QUESTIONNAIRE_HOME_HREF} showPrototypeNotice={false}>
+<QuestionnaireShell backHref={QUESTIONNAIRE_HOME_HREF}>
 	<p class="font-sans text-xs font-semibold uppercase tracking-widest text-muted-foreground">
 		Error {page.status}
 	</p>

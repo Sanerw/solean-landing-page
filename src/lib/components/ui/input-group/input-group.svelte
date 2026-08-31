@@ -12,7 +12,7 @@
 
 <!--
 	The vendor default is a translucent 36px pill, a different control language than
-	Input. This inherits Input's own box instead: h-14, rounded-md, border-input,
+	Input. This inherits Input's own box instead: h-12, rounded-md, border-border,
 	bg-card. Focus and invalid state key off the nested control via data-slot and
 	aria-invalid, so the ring wraps the whole group rather than competing with a
 	child border.
@@ -22,7 +22,7 @@
 	data-slot="input-group"
 	role="group"
 	class={cn(
-		"group/input-group relative flex h-14 w-full min-w-0 items-center rounded-md border border-input bg-card outline-none transition-[color,box-shadow,border-color]",
+		"group/input-group relative flex h-12 w-full min-w-0 items-center rounded-md border border-border bg-card outline-none transition-[color,box-shadow,border-color]",
 		"has-[>textarea]:h-auto has-[>textarea]:items-start",
 		"has-[[data-slot=input-group-control]:focus-visible]:border-ring has-[[data-slot=input-group-control]:focus-visible]:ring-2 has-[[data-slot=input-group-control]:focus-visible]:ring-ring has-[[data-slot=input-group-control]:focus-visible]:ring-offset-2 has-[[data-slot=input-group-control]:focus-visible]:ring-offset-background",
 		"has-[[data-slot=input-group-control][aria-invalid=true]]:border-destructive has-[[data-slot=input-group-control][aria-invalid=true]:focus-visible]:ring-destructive",

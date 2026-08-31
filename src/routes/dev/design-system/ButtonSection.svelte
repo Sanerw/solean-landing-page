@@ -14,8 +14,8 @@
 	];
 
 	const SIZES: { value: ButtonSize; spec: string }[] = [
-		{ value: 'sm', spec: 'h-10 px-4 text-sm' },
-		{ value: 'default', spec: 'h-12 px-6 text-base' },
+		{ value: 'sm', spec: 'h-10 px-4 text-sm rounded-full' },
+		{ value: 'default', spec: 'h-12 px-6 text-base rounded-full' },
 		{ value: 'lg', spec: 'h-17 px-8 text-lg rounded-full' },
 		{ value: 'icon', spec: 'size-10' }
 	];
@@ -70,12 +70,12 @@
 			<tbody class="text-muted-foreground">
 				<tr class="border-b border-border">
 					<td class="py-2"><code class="font-sans">sm</code></td>
-					<td class="py-2"><code class="font-sans">h-10 px-4 text-sm</code></td>
+					<td class="py-2"><code class="font-sans">h-10 px-4 text-sm rounded-full</code></td>
 					<td class="py-2">Compact UI action</td>
 				</tr>
 				<tr class="border-b border-border">
 					<td class="py-2"><code class="font-sans">default</code></td>
-					<td class="py-2"><code class="font-sans">h-12 px-6 text-base</code></td>
+					<td class="py-2"><code class="font-sans">h-12 px-6 text-base rounded-full</code></td>
 					<td class="py-2">Forms and standard application actions</td>
 				</tr>
 				<tr class="border-b border-border">

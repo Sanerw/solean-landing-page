@@ -124,7 +124,7 @@
 </script>
 
 {#if headingQuestion}
-	<h1 class="font-display text-3xl font-medium sm:text-4xl">{headingLines[0]}</h1>
+	<h1 class="font-display text-2xl font-medium sm:text-3xl">{headingLines[0]}</h1>
 	{#if headingLines.length > 1}
 		<p class="mt-2 text-sm text-muted-foreground sm:text-base">
 			{headingLines.slice(1).join(' ')}

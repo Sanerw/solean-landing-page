@@ -38,9 +38,20 @@
 	{#each choices as choice, index (choice.value)}
 		{@const choiceValue = String(choice.value)}
 		{@const id = `${controlId}-${index}`}
-		<div class={choiceValue === otherValue ? 'sm:col-span-2' : undefined}>
-			<FieldLabel for={id} class="*:data-[slot=field]:min-h-12 *:data-[slot=field]:p-3">
-				<Field orientation="horizontal">
+		{@const isOther = choiceValue === otherValue}
+		<div class={isOther ? 'sm:col-span-2' : 'h-full'}>
+			<FieldLabel
+				for={id}
+				class={isOther
+					? '*:data-[slot=field]:min-h-12 *:data-[slot=field]:p-3'
+					: 'h-full *:data-[slot=field]:min-h-12 *:data-[slot=field]:p-3'}
+			>
+				<Field
+					orientation="horizontal"
+					class={isOther
+						? 'has-[>[data-slot=field-content]]:items-center'
+						: 'h-full has-[>[data-slot=field-content]]:items-center'}
+				>
 					<Checkbox
 						{id}
 						checked={selected.includes(choiceValue)}
@@ -48,13 +59,15 @@
 						aria-describedby={describedBy}
 						onCheckedChange={(checked) => toggle(choiceValue, checked === true)}
 					/>
-					<FieldContent>
-						<FieldTitle class="font-display text-sm font-semibold">{choice.text}</FieldTitle>
+					<FieldContent class="min-w-0">
+						<FieldTitle class="w-full min-w-0 break-words font-display text-sm font-semibold">
+							{choice.text}
+						</FieldTitle>
 					</FieldContent>
 				</Field>
 			</FieldLabel>
 
-			{#if otherValue !== null && choiceValue === otherValue && selected.includes(otherValue)}
+			{#if otherValue !== null && isOther && selected.includes(otherValue)}
 				<OtherChoiceInput {question} {controlId} {comment} {oncomment} />
 			{/if}
 		</div>

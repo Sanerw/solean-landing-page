@@ -27,8 +27,8 @@
 					"bg-destructive text-destructive-foreground hover:bg-destructive-hover active:bg-destructive-active",
 			},
 			size: {
-				sm: "h-10 rounded-md px-4 text-sm",
-				default: "h-12 rounded-md px-6 text-base",
+				sm: "h-10 rounded-full px-4 text-sm",
+				default: "h-12 rounded-full px-6 text-base",
 				// h-17 compiles to 4.25rem = 68px, the reference's pill height.
 				lg: "h-17 rounded-full px-8 text-lg",
 				icon: "size-10 rounded-full",

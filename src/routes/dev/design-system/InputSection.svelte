@@ -9,7 +9,7 @@
 <ShowcaseSection
 	id="input-label"
 	title="Input and Label"
-	description="White fields, a corrected --input boundary, rounded-md corners and the shared focus ring reproduce the reference. Focus-visible, invalid and disabled states are design-system decisions because no artboard captures them."
+	description="White 48px fields, the --border boundary, rounded-md corners and the shared focus ring reproduce the reference. Focus-visible, invalid and disabled states are design-system decisions because no artboard captures them."
 >
 	<div class="grid gap-8 md:grid-cols-2">
 		<Field>

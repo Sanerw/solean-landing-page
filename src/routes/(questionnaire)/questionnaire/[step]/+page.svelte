@@ -190,7 +190,6 @@
 	progress={redirecting ? null : progress}
 	{backHref}
 	backLabel={isCompletion ? 'Home' : 'Back'}
-	showPrototypeNotice={!isCompletion}
 >
 	{#if redirecting}
 		<h1 class="font-display text-4xl font-medium sm:text-5xl">Opening your questionnaire</h1>

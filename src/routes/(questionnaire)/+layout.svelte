@@ -38,7 +38,7 @@
 {#if data.questionnaire.ok}
 	{@render children()}
 {:else}
-	<QuestionnaireShell backHref={QUESTIONNAIRE_HOME_HREF} showPrototypeNotice={false}>
+	<QuestionnaireShell backHref={QUESTIONNAIRE_HOME_HREF}>
 		<h1 class="font-display text-4xl font-medium sm:text-5xl">We cannot open the questionnaire</h1>
 		<p class="mt-3 text-base text-muted-foreground md:text-lg">
 			The medical questionnaire could not be loaded, so there is nothing to answer yet. Nothing you
