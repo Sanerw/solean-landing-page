@@ -287,7 +287,7 @@
 		disabled={!hydrated || unrenderable || submitting}
 	>
 		{#if submitting}
-			Loading...
+			Sending your answers
 		{:else}
 			{submission ? 'Try again' : 'Continue'}
 			<ArrowRightIcon aria-hidden="true" />
