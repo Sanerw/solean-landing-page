@@ -55,6 +55,21 @@ function variantFor(
 	return null;
 }
 
+/**
+ * What distinguishes one option from another within a plan, which is the dose. Empty when
+ * there is nothing to distinguish: Shopify names the only variant of a single-variant product
+ * `Default Title`, and the shop's own display name repeats the product title in front of it.
+ * Either would render as a label saying what the heading above it already says.
+ */
+function doseLabel(sku: Record<string, unknown>, shopData: Record<string, unknown> | null): string {
+	const dose = text(sku.display_name);
+	if (dose && dose !== 'Default Title') return dose;
+
+	const displayed = text(shopData?.displayName);
+
+	return displayed.endsWith('Default Title') ? '' : displayed;
+}
+
 function offersIn(
 	entry: Record<string, unknown>,
 	storeDomain: string
@@ -79,7 +94,7 @@ function offersIn(
 
 		options.push({
 			variantId: variant.id,
-			label: text(record(offer.shop_data)?.displayName) || text(sku.display_name) || 'Treatment',
+			label: doseLabel(sku, record(offer.shop_data)),
 			price: eur(variant.price),
 			preSelected: offer.pre_selected === true
 		});

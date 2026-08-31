@@ -145,13 +145,23 @@
 									orientation="horizontal"
 									class="has-[>[data-slot=field-content]]:items-center"
 								>
-									<RadioGroup.Item id="plan-{option.variantId}" value={option.variantId} />
+									<!--
+										A single-variant plan has no dose to name, so the radio takes the plan's
+										own name: an option announced as "99.00 EUR" alone says nothing.
+									-->
+									<RadioGroup.Item
+										id="plan-{option.variantId}"
+										value={option.variantId}
+										aria-label={option.label ? undefined : plan.name}
+									/>
 									<FieldContent class="min-w-0">
 										<FieldTitle
 											class="flex w-full min-w-0 items-baseline justify-between gap-3 font-display text-sm font-semibold"
 										>
-											<span class="min-w-0 break-words">{option.label}</span>
-											<span class="shrink-0">{formatEur(option.price)}</span>
+											{#if option.label}
+												<span class="min-w-0 break-words">{option.label}</span>
+											{/if}
+											<span class="ml-auto shrink-0">{formatEur(option.price)}</span>
 										</FieldTitle>
 									</FieldContent>
 								</Field>
