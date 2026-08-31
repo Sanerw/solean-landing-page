@@ -1,6 +1,8 @@
 import { defineConfig, devices } from '@playwright/test';
 import {
 	FIXTURE_PORT,
+	FIXTURE_PRESCRIPTION_VARIANT_ID,
+	FIXTURE_SHOP_IDENTIFIER,
 	FIXTURE_STORE_DOMAIN,
 	FIXTURE_UID,
 	FIXTURE_VARIANT_ID
@@ -28,7 +30,12 @@ export default defineConfig({
 			command: 'node e2e/fixture-server.mjs',
 			url: `http://localhost:${FIXTURE_PORT}/api/v2/anamnesis/questionnaires/${FIXTURE_UID}`,
 			reuseExistingServer: !process.env.CI,
-			env: { FIXTURE_PORT: String(FIXTURE_PORT), FIXTURE_QUESTIONNAIRE_UID: FIXTURE_UID }
+			env: {
+				FIXTURE_PORT: String(FIXTURE_PORT),
+				FIXTURE_QUESTIONNAIRE_UID: FIXTURE_UID,
+				FIXTURE_VARIANT_ID,
+				FIXTURE_PRESCRIPTION_VARIANT_ID
+			}
 		},
 		{
 			// The production build, not `vite dev`. Journey state is client-owned and hydration
@@ -44,7 +51,10 @@ export default defineConfig({
 				// would either refuse for want of configuration or, worse, create a cart in the
 				// real shop.
 				SHOPIFY_STORE_DOMAIN: FIXTURE_STORE_DOMAIN,
-				SHOPIFY_VARIANT_ID: FIXTURE_VARIANT_ID
+				SHOPIFY_VARIANT_ID: FIXTURE_VARIANT_ID,
+				// The recommendation, served by the same fixture. Without a shop identifier the
+				// call is not made at all and every plan would come from the fallback.
+				PUBLIC_RXSCALE_SHOP_IDENTIFIER: FIXTURE_SHOP_IDENTIFIER
 			}
 		}
 	]

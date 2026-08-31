@@ -6,7 +6,9 @@ import type { RequestHandler } from './$types';
  * The checkout handoff. This endpoint exists so the rules that make an order reviewable are
  * enforced in one place and the browser keeps one stable contract, not to hide a secret:
  * there is none on this path. The browser sends only what the browser owns, which is the
- * anamnesis uid and the e-mail the visitor answered with.
+ * anamnesis uid, the e-mail the visitor answered with, and the variant they chose. The
+ * variant is checked against RxScale's recommendation before a cart is made, because a
+ * browser naming its own merchandise is a request, not an authorisation.
  *
  * Neither is stored or logged here. They are used for one upstream call and forgotten.
  */
@@ -15,6 +17,7 @@ import type { RequestHandler } from './$types';
 const STATUS: Record<CheckoutFailure, number> = {
 	'missing-anamnesis': 400,
 	'not-configured': 500,
+	'not-recommended': 422,
 	refused: 422,
 	unavailable: 502
 };
@@ -34,7 +37,11 @@ export const POST: RequestHandler = async ({ request }) => {
 		return json({ ok: false, reason: 'missing-anamnesis' }, { status: 400 });
 	}
 
-	const result = await createCart(field(body, 'anamnesisUid'), field(body, 'email'));
+	const result = await createCart(
+		field(body, 'anamnesisUid'),
+		field(body, 'email'),
+		field(body, 'variantId')
+	);
 
 	return result.ok ? json(result) : json(result, { status: STATUS[result.reason] });
 };

@@ -2,15 +2,21 @@
 	import * as Alert from '$lib/components/ui/alert';
 	import { Badge } from '$lib/components/ui/badge';
 	import { Button } from '$lib/components/ui/button';
+	import { Field, FieldContent, FieldLabel, FieldTitle } from '$lib/components/ui/field';
+	import * as RadioGroup from '$lib/components/ui/radio-group';
 	import { Separator } from '$lib/components/ui/separator';
-	import { RECOMMENDED_TREATMENT_ID } from '$lib/config/treatment';
-	import { eur, findTreatment, formatEur } from '$lib/domain';
+	import { formatEur } from '$lib/domain';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 	import CheckIcon from '@lucide/svelte/icons/check';
 	import CircleCheckIcon from '@lucide/svelte/icons/circle-check';
 	import TriangleAlertIcon from '@lucide/svelte/icons/triangle-alert';
 	import { CHECKOUT_FAILURES, RECOMMENDATION as COPY } from './recommendation-content';
 	import { requestCheckout, type CheckoutFailure } from './checkout-client';
+	import {
+		defaultVariant,
+		fetchRecommendation,
+		type RecommendedPlan
+	} from './recommendation-client';
 
 	interface Props {
 		/** Questions answered, from the plan. The reference's own count is a known defect. */
@@ -30,16 +36,50 @@
 
 	let { questionTotal, anamnesisUid, email, answersHeld, onhandoff }: Props = $props();
 
-	const treatment = findTreatment(RECOMMENDED_TREATMENT_ID);
-
 	/**
-	 * The order needs the answers, which only the browser has, so the action cannot work until
+	 * The order needs the answers, which only the browser has, so nothing here can work until
 	 * this screen is running. It says so by staying disabled rather than by doing nothing.
 	 */
 	let hydrated = $state(false);
 	$effect(() => {
 		hydrated = true;
 	});
+
+	let loading = $state(true);
+	let plans = $state<RecommendedPlan[]>([]);
+	let unreachable = $state(false);
+	let selected = $state('');
+
+	/**
+	 * Read once the browser has the uid. This is a read and creates nothing, which is why it
+	 * may happen on entry where the checkout may not.
+	 */
+	$effect(() => {
+		if (!hydrated || !answersHeld) return;
+
+		let current = true;
+		void (async () => {
+			const result = await fetchRecommendation(fetch, anamnesisUid);
+			if (!current) return;
+
+			loading = false;
+			unreachable = !result.ok;
+			plans = result.ok ? result.plans : [];
+			selected = defaultVariant(plans) ?? '';
+		})();
+
+		return () => {
+			current = false;
+		};
+	});
+
+	// Two headings, because a prescription with no medication is a different purchase and its
+	// lower price would otherwise read as a discount on the same thing.
+	const treatments = $derived(plans.filter((plan) => !plan.prescriptionOnly));
+	const prescriptions = $derived(plans.filter((plan) => plan.prescriptionOnly));
+
+	/** Nothing recommended is an answer. The order still stands, on the configured plan. */
+	const nothingOffered = $derived(!loading && plans.length === 0);
 
 	let ordering = $state(false);
 	let failure = $state<CheckoutFailure | null>(null);
@@ -54,7 +94,7 @@
 		ordering = true;
 		failure = null;
 
-		const result = await requestCheckout(fetch, anamnesisUid, email);
+		const result = await requestCheckout(fetch, anamnesisUid, email, selected || null);
 
 		if (!result.ok) {
 			ordering = false;
@@ -69,13 +109,60 @@
 		// `ordering` stays true: the button must not be pressable while the browser is leaving.
 		window.location.assign(result.checkoutUrl);
 	}
-
-	// Displayed, never charged: Shopify owns the amount, so this total is the sum of the
-	// lines above it and nothing else depends on it.
-	const total = $derived(
-		eur(COPY.priceLines.reduce((sum, line) => sum + line.amount.amount, 0))
-	);
 </script>
+
+{#snippet planGroup(group: RecommendedPlan[], heading: string, note: string | null)}
+	<section class="mt-4">
+		<h2 class="font-sans text-xs font-semibold tracking-widest text-text-tertiary uppercase">
+			{heading}
+		</h2>
+		{#if note}
+			<p class="mt-1 text-xs text-text-tertiary">{note}</p>
+		{/if}
+
+		<div class="mt-3 space-y-3">
+			{#each group as plan (plan.id)}
+				<div class="rounded-lg bg-surface-warm p-4">
+					<div class="flex items-center gap-3">
+						{#if plan.image}
+							<img
+								src={plan.image}
+								alt=""
+								loading="lazy"
+								class="size-12 shrink-0 rounded-md bg-card object-contain"
+							/>
+						{/if}
+						<h3 class="font-display text-lg font-medium">{plan.name}</h3>
+					</div>
+
+					<div class="mt-3 grid gap-2 sm:grid-cols-2">
+						{#each plan.options as option (option.variantId)}
+							<FieldLabel
+								for="plan-{option.variantId}"
+								class="*:data-[slot=field]:min-h-12 *:data-[slot=field]:p-3"
+							>
+								<Field
+									orientation="horizontal"
+									class="has-[>[data-slot=field-content]]:items-center"
+								>
+									<RadioGroup.Item id="plan-{option.variantId}" value={option.variantId} />
+									<FieldContent class="min-w-0">
+										<FieldTitle
+											class="flex w-full min-w-0 items-baseline justify-between gap-3 font-display text-sm font-semibold"
+										>
+											<span class="min-w-0 break-words">{option.label}</span>
+											<span class="shrink-0">{formatEur(option.price)}</span>
+										</FieldTitle>
+									</FieldContent>
+								</Field>
+							</FieldLabel>
+						{/each}
+					</div>
+				</div>
+			{/each}
+		</div>
+	</section>
+{/snippet}
 
 <!--
 	The artboard's celebration mark. Decorative: the heading below says the same thing, so it
@@ -116,38 +203,38 @@
 	{/each}
 </ul>
 
-{#if treatment}
-	<section aria-labelledby="plan-heading" class="mt-4 rounded-lg bg-surface-warm p-4">
-		<div class="flex flex-wrap items-baseline justify-between gap-2">
-			<h2 id="plan-heading" class="font-display text-xl font-medium">{treatment.name}</h2>
-			<p class="text-sm text-muted-foreground">{treatment.dose} · {treatment.form}</p>
-		</div>
-
-		<dl class="mt-3 space-y-1 text-sm">
-			{#each COPY.priceLines as line (line.label)}
-				<div class="flex items-baseline justify-between gap-4">
-					<dt class="text-muted-foreground">{line.label}</dt>
-					<dd class="font-display font-semibold">{formatEur(line.amount)}</dd>
-				</div>
-			{/each}
-			<div class="flex items-baseline justify-between gap-4">
-				<dt class="text-muted-foreground">{COPY.shippingLabel}</dt>
-				<dd class="font-display font-semibold">{COPY.shippingValue}</dd>
-			</div>
-
-			<Separator class="my-2" />
-
-			<div class="flex items-baseline justify-between gap-4">
-				<dt class="font-medium text-foreground">{COPY.totalLabel}</dt>
-				<dd class="font-display text-xl font-semibold">{formatEur(total)}</dd>
-			</div>
-		</dl>
-
-		<p class="mt-2 text-xs text-text-tertiary">{COPY.totalNote}</p>
-	</section>
-{/if}
-
 {#if answersHeld}
+	{#if loading}
+		<p role="status" class="mt-6 text-center text-sm text-muted-foreground">
+			{COPY.loading}
+		</p>
+	{:else if plans.length > 0}
+		<!--
+			One group across every plan: a person orders one treatment, so two treatments and a
+			prescription are three answers to the same question, not three questions.
+		-->
+		<RadioGroup.Root bind:value={selected} aria-label={COPY.choiceLabel}>
+			{#if treatments.length > 0}
+				{@render planGroup(treatments, COPY.treatmentsHeading, null)}
+			{/if}
+			{#if prescriptions.length > 0}
+				{@render planGroup(prescriptions, COPY.prescriptionsHeading, COPY.prescriptionsNote)}
+			{/if}
+		</RadioGroup.Root>
+
+		<p class="mt-3 text-xs text-text-tertiary">{COPY.totalNote}</p>
+	{:else}
+		<!--
+			Both cases say the same thing on purpose: what the person can do next is identical,
+			and "we could not reach the service" invites a reload that changes nothing here.
+		-->
+		<Alert.Root class="mt-6">
+			<CircleCheckIcon aria-hidden="true" />
+			<Alert.Title>{COPY.noPlans.title}</Alert.Title>
+			<Alert.Description>{COPY.noPlans.body}</Alert.Description>
+		</Alert.Root>
+	{/if}
+
 	{#if failure}
 		<!--
 			The press was supposed to open a payment page and nothing visible moved, so this is
@@ -164,11 +251,11 @@
 		type="button"
 		size="default"
 		class="relative mt-4 w-full"
-		disabled={!hydrated || ordering}
+		disabled={!hydrated || loading || ordering || (!selected && !nothingOffered && !unreachable)}
 		onclick={order}
 	>
 		{#if ordering}
-			Opening your checkout
+			{COPY.ordering}
 		{:else}
 			{failure ? 'Try again' : COPY.action}
 			<ArrowRightIcon aria-hidden="true" class="absolute right-8" />
@@ -185,4 +272,5 @@
 	</p>
 {/if}
 
+<Separator class="mt-6" />
 <p class="mt-3 text-center text-xs text-text-tertiary">{COPY.trust.join(' · ')}</p>

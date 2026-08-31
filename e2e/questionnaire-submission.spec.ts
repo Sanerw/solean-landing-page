@@ -119,9 +119,7 @@ test('reaching the end is not the same as having sent it', async ({ page }) => {
 	await expect(page).toHaveURL(LAST_STEP);
 });
 
-test('the recommendation presents the configured treatment and the reference prices', async ({
-	page
-}) => {
+test('the recommendation presents what RxScale offers, prices included', async ({ page }) => {
 	await atLastStep(page, WITH_EMAIL);
 	await page.getByRole('button', { name: 'Continue' }).click();
 	await expect(page).toHaveURL('/questionnaire/complete');
@@ -129,10 +127,22 @@ test('the recommendation presents the configured treatment and the reference pri
 	// The count comes from the plan, not from the artboard, which says eight whatever the
 	// model asks.
 	await expect(page.getByText('All 9 steps complete')).toBeVisible();
-	await expect(page.getByRole('heading', { level: 2 })).toHaveText('Wegovy');
-	await expect(page.getByText('144.00 EUR')).toBeVisible();
-	await expect(page.getByText('-75.00 EUR')).toBeVisible();
-	await expect(page.getByText('78.90 EUR')).toBeVisible();
+
+	// Both groups, because a prescription with no medication is a different purchase and its
+	// lower price would read as a discount if it sat under the same heading.
+	await expect(page.getByRole('heading', { name: 'Your treatment.' })).toBeVisible();
+	await expect(page.getByRole('heading', { name: 'Prescription only.' })).toBeVisible();
+	await expect(
+		page.getByText('No medication is dispensed or delivered.', { exact: false })
+	).toBeVisible();
+
+	// Straight off the recommendation. Nothing on this screen is written down here any more.
+	await expect(page.getByText('249.00 EUR')).toBeVisible();
+	await expect(page.getByText('49.90 EUR')).toBeVisible();
+
+	// RxScale names its own default, and it is the one that arrives selected.
+	await expect(page.getByRole('radio', { name: '0.25 mg 249.00 EUR' })).toBeChecked();
+	await expect(page.getByRole('radio', { name: '0.25 mg Digital-Rezept 49.90 EUR' })).not.toBeChecked();
 
 	// The order action is the handoff's, and covered by its own spec.
 	await expect(page.getByRole('button', { name: 'Place your order' })).toBeEnabled();

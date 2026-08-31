@@ -4,13 +4,22 @@
  *
  * The e-mail travels because only the browser has the answers. It is a prefill, sent when the
  * questionnaire collected one, used for the one upstream call and kept nowhere.
+ *
+ * The chosen variant travels too, and is a request rather than an instruction: the endpoint
+ * checks it against RxScale's recommendation for this anamnesis before any cart exists.
  */
 
 /**
  * The reasons our endpoint can give. Listed at runtime as well as in the type, because a
  * response body is still untrusted input even when we wrote the server that sent it.
  */
-const FAILURES = ['missing-anamnesis', 'not-configured', 'refused', 'unavailable'] as const;
+const FAILURES = [
+	'missing-anamnesis',
+	'not-configured',
+	'not-recommended',
+	'refused',
+	'unavailable'
+] as const;
 
 export type CheckoutFailure = (typeof FAILURES)[number];
 
@@ -37,7 +46,8 @@ function toFailure(body: unknown): CheckoutResult {
 export async function requestCheckout(
 	fetch: Fetch,
 	anamnesisUid: string | null,
-	email: string | null
+	email: string | null,
+	variantId: string | null
 ): Promise<CheckoutResult> {
 	// Checked here as well as at the endpoint, so an order that cannot be reviewed costs no
 	// request at all.
@@ -48,7 +58,11 @@ export async function requestCheckout(
 		response = await fetch('/api/checkout', {
 			method: 'POST',
 			headers: { 'content-type': 'application/json', accept: 'application/json' },
-			body: JSON.stringify(email ? { anamnesisUid, email } : { anamnesisUid })
+			body: JSON.stringify({
+				anamnesisUid,
+				...(email ? { email } : {}),
+				...(variantId ? { variantId } : {})
+			})
 		});
 	} catch {
 		return { ok: false, reason: 'unavailable' };

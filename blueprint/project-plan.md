@@ -62,7 +62,7 @@ The flow, end to end:
 Landing page
   -> Questionnaire, fetched from RxScale, interleaved with Solean interludes
   -> Submission to the Anamnesis API, which returns an anamnesis uid
-  -> Recommendation screen for one configured SKU
+  -> Recommendation screen: the plans RxScale recommends, treatment or prescription only
   -> "Place your order" calls Solean's own server endpoint
   -> The endpoint creates a Shopify cart carrying the anamnesis as an order attribute
   -> Redirect off-site. Payment, doctor review, and order status are theirs
@@ -237,10 +237,22 @@ Rules:
   to review, so a missing uid blocks the redirect and shows an error.
 - **The returned `checkoutUrl` is opaque.** No appended parameters, no trimming,
   no domain substitution. It arrives on the shop's own domain.
-- **One variant, from config.** The recommendation is fixed: the catalogue is not
-  queried and nothing is computed from the answers. The configured variant is a
-  bundle, and Shopify expands it into medication, treatment fee, and needles, so
-  no fee line is ever built here.
+- **The recommendation is RxScale's.** After the submission,
+  `GET /api/v2/anamnesis/{uid}/recommendation` returns the treatments and doses
+  the answers allow, each with its Shopify variant, its price, and their own
+  `pre_selected` default. Nothing is computed here and the catalogue is never
+  queried. It is read server-side, because the raw document is over a megabyte
+  of catalogue graph and because the same read validates the order.
+- **The variant the browser names is a request, not an authorisation.** The
+  checkout endpoint reads the recommendation again and refuses a variant that is
+  not in it, so it cannot be used to order arbitrary merchandise.
+- **The configured variant is the fallback and only that**, offered when RxScale
+  recommends nothing or cannot be reached. It is a bundle Shopify expands into
+  medication, treatment fee, and needles, so no fee line is ever built here.
+- **A prescription-only listing is a different purchase.** `sku.digital` marks
+  the ones where the signed prescription is all that is sold, at a fraction of
+  the price and with nothing dispensed or delivered, so they get their own
+  heading and are never shown beside a treatment price.
 - **The e-mail for `buyerIdentity` is read from the answers by a configured
   question name**, never by a name written into the code. It is a prefill and
   never a condition: Shopify collects the address at checkout, so an order
@@ -265,9 +277,10 @@ Pages:
 /questionnaire/[step]
 ```
 
-Server endpoint:
+Server endpoints:
 
 ```
+GET  /api/recommendation
 POST /api/checkout
 ```
 
@@ -289,19 +302,20 @@ visits: no saved progress, no resume link by e-mail, no account.
 Revenue happens in Shopify, through the checkout URL RxScale generates. Solean
 takes no payment, calculates no total, and applies no discount.
 
-Money on Solean pages is therefore **marketing copy**: the reference prices the
-landing page, the learn comparison, and the recommendation screen display.
+Money on the landing page and the learn comparison is **marketing copy**:
+reference prices, written here and kept in step by hand.
 
-| Line item | Displayed price |
+**The recommendation screen is not.** Its prices come from RxScale's own product
+recommendation, which reads the shop's catalogue, so they cannot drift from what
+Shopify charges. What it offers, on the live shop:
+
+| Offer | Price |
 | --- | --- |
-| Treatment plan, first month supply | 144.00 EUR |
-| Initial treatment fee | 9.90 EUR |
-| First-order discount | -75.00 EUR |
-| Shipping | Free |
+| Treatment, one month | 99.00 to 549.00 EUR by product and dose |
+| Prescription only, no medication dispensed | 49.90 EUR |
 
-> Keeping the displayed price in step with the Shopify price of the configured
-> SKU is a manual editorial task. This app never reads the catalogue, so nothing
-> detects a divergence. Check it whenever the SKU or its price changes.
+> The landing page and the learn article still carry hand-written prices, and
+> nothing detects a divergence there. Check them whenever the catalogue changes.
 
 The add-on price list (consultation, coaching, body smart scale) and the
 "6 month plan, pause anytime" terms leave the build. Add-ons belonged to the
@@ -561,7 +575,7 @@ The export contains errors that must not be transcribed as requirements:
 | Inconsistency | Resolution |
 | --- | --- |
 | "All 8 steps complete" versus "Question 9 of 9" | One count, from `steps[]`. The model defines the questions and interludes never inflate the total |
-| Mounjaro selected in the questionnaire, Wegovy shown in checkout | Not applicable: one configured SKU, and no in-app checkout to diverge from |
+| Mounjaro selected in the questionnaire, Wegovy shown in checkout | Not applicable: the plan is chosen on the recommendation screen and the cart is built from that same variant, with no in-app checkout to diverge from |
 | Contradictory totals (202.90 to 127.90, 153.90 to 78.90, button reading 69.00) | Not applicable: Shopify owns the amount charged |
 | Coaching priced 29 in one panel and 39 in another | Not applicable: add-ons are out of scope |
 | "Wegovy Pill", "change to an injection", and treatment-fee copy conflict | Treatment naming on marketing pages comes from centralized fixtures |

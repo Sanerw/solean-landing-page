@@ -10,6 +10,7 @@ import {
 	WITH_EMAIL,
 	writeAnswers
 } from './answers';
+import { FIXTURE_PRESCRIPTION_VARIANT_ID } from './fixture';
 
 /**
  * The handoff itself. The fixture stands in for the Shopify Storefront API and for the page a
@@ -176,4 +177,39 @@ test('leaving takes the answers with it, and keeps what a return needs', async (
 	await expect(page.getByText(/steps complete/)).toBeHidden();
 	await expect(page.getByRole('button', { name: 'Place your order' })).toBeHidden();
 	await expect(page.getByText('Your checkout has already been opened')).toBeVisible();
+});
+
+test('the plan the visitor picks is the plan the cart is built from', async ({ page }) => {
+	await atRecommendation(page, WITH_EMAIL);
+
+	let ordered: string | null = null;
+	page.on('request', (request) => {
+		if (!request.url().includes('/api/checkout')) return;
+		const body = request.postDataJSON() as { variantId?: string } | null;
+		ordered = body?.variantId ?? null;
+	});
+
+	// The prescription, not the pre-selected treatment: choosing has to reach the cart, and
+	// this is the pair a person is most likely to get wrong money on.
+	await page.getByRole('radio', { name: '0.25 mg Digital-Rezept 49.90 EUR' }).click();
+	await page.getByRole('button', { name: 'Place your order' }).click();
+
+	await expect(page.getByRole('heading', { name: 'Fixture checkout' })).toBeVisible();
+	expect(ordered).toBe(FIXTURE_PRESCRIPTION_VARIANT_ID);
+});
+
+test('a variant nobody recommended is refused, and no cart is made', async ({ page }) => {
+	await atRecommendation(page, WITH_EMAIL);
+
+	// The browser names its own merchandise, which is exactly the request the endpoint must
+	// not honour: this variant is in the shop and is not in this anamnesis's recommendation.
+	await page.route('**/api/checkout', async (route) => {
+		const body = route.request().postDataJSON() as Record<string, unknown>;
+		await route.continue({ postData: JSON.stringify({ ...body, variantId: '49703591706957' }) });
+	});
+
+	await page.getByRole('button', { name: 'Place your order' }).click();
+
+	await expect(page.getByText('That treatment is not available to you')).toBeVisible();
+	await expect(page).toHaveURL('/questionnaire/complete');
 });

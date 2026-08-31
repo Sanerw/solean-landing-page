@@ -104,7 +104,8 @@ and medical answers to RxScale, who own storage, retention, and clinical review.
 | Questionnaire model and theme | RxScale | SurveyJS JSON, versioned, fetched on entry to the flow, never hardcoded, never cached past the visit |
 | Answers in progress | Browser session | `survey.data` in SSR-safe `sessionStorage`, keyed by questionnaire identifier and version so a model change cannot resume against stale answers |
 | `steps[]` | Solean | Survey pages interleaved with Solean interludes. The single source of truth for position, progress, and routing |
-| Anamnesis uid | Browser session | Returned by the submission, and the cart's order attribute |
+| Anamnesis uid | Browser session | Returned by the submission, the key to the recommendation, and the cart's order attribute |
+| Recommendation | RxScale | Which treatments and doses the answers allow, with the Shopify variant and price of each. Read on the screen and again on the order, never cached |
 | Questionnaire uid, store domain, variant id, question names | Config | One module per concern. Nothing on the checkout path is a secret |
 | Order, payment, prescription, delivery | Shopify, then RxScale by webhook | Not modelled here. RxScale is never told about the order by us |
 
@@ -177,8 +178,9 @@ service interface per screen. No abstraction is built before something calls it.
 
 | Call | Endpoint | Auth |
 | --- | --- | --- |
-| Fetch the questionnaire | `GET https://api.rxscale.com/v4/anamnesis/questionnaires/{uid}` | public |
-| Submit answers | `POST https://api.rxscale.com/v4/anamnesis/questionnaires/{uid}/submissions` | public |
+| Fetch the questionnaire | `GET https://api.rxscale.com/api/v3-1/anamnesis/questionnaires/{uid}` | public |
+| Submit answers | `POST https://api.rxscale.com/api/v3-1/anamnesis/questionnaires/{uid}/submissions` | public |
+| Read the recommendation | `GET https://api.rxscale.com/api/v2/anamnesis/{anamnesisUid}/recommendation` | public |
 | Create the cart | `POST https://{store}/api/{version}/graphql.json`, `cartCreate` | Storefront token when configured |
 
 **RxScale is not called to place the order.** They import it from Shopify by
@@ -215,9 +217,23 @@ Rules that bind every feature from 9 onward:
 - The cart is created on click, never on screen entry, and the returned
   `checkoutUrl` is opaque: no appended parameters, no trimming, no domain
   substitution.
-- One configured variant. The catalogue is not queried and no recommendation is
-  computed from the answers. The variant is a bundle Shopify expands into
-  medication, treatment fee, and needles, so no fee line is ever built here.
+- **The recommendation is RxScale's, not ours.** After the submission,
+  `GET /api/v2/anamnesis/{uid}/recommendation` returns the treatments and doses
+  the answers allow, each with its Shopify variant, its price, and RxScale's own
+  `pre_selected` default. Nothing is computed here and the catalogue is never
+  queried. It is read server-side: the raw document is over a megabyte of
+  catalogue graph, and the same read validates the order.
+- **The variant the browser names is a request, not an authorisation.**
+  `/api/checkout` reads the recommendation again and refuses a variant that is
+  not in it, so the endpoint cannot be used to order arbitrary merchandise.
+- `SHOPIFY_VARIANT_ID` is the fallback and only that: the plan offered when
+  RxScale recommends nothing, or cannot be reached. It is a bundle Shopify
+  expands into medication, treatment fee, and needles, so no fee line is ever
+  built here.
+- **A prescription-only listing is a different purchase.** `sku.digital` marks
+  the ones where the signed prescription is all that is sold, at a fraction of
+  the price and with nothing dispensed or delivered, so they are shown under
+  their own heading and never beside a treatment price.
 - The `buyerIdentity` e-mail is read from the answers by a configured question
   name. It is a prefill, not a condition: Shopify collects the address at
   checkout, so an order without one is complete rather than unreachable. The
@@ -239,19 +255,21 @@ walkthrough, and the build.
 Revenue happens in Shopify, through the checkout URL RxScale generates. Solean
 takes no payment, calculates no total, and applies no discount.
 
-Money on Solean pages is marketing copy: the reference prices the landing page,
-the learn comparison, and the recommendation screen display.
+Money on the landing page and the learn comparison is marketing copy: reference
+prices, kept in step by hand.
 
-| Line item | Displayed price |
+**The recommendation screen is not.** Every amount it shows comes from the
+recommendation, which reads the shop's own catalogue, so it cannot drift from
+what Shopify charges. It shows what is offered rather than a fixed line-item
+breakdown:
+
+| Offer | Price, live shop |
 | --- | --- |
-| Treatment plan, first month supply | 144.00 EUR |
-| Initial treatment fee | 9.90 EUR |
-| First-order discount | -75.00 EUR |
-| Shipping | Free |
+| Treatment, one month | 99.00 to 549.00 EUR by product and dose |
+| Prescription only, no medication | 49.90 EUR |
 
-> Keeping the displayed price in step with the Shopify price of the configured
-> SKU is a manual editorial task. This app never reads the catalogue, so nothing
-> detects a divergence.
+> The landing page and the learn article still carry hand-written reference
+> prices, and nothing detects a divergence there.
 
 ## UI/UX
 
@@ -287,7 +305,8 @@ the RxScale validation errors.
 | `/` | Landing page: hero, product story, social proof, FAQ, footer |
 | `/learn/blog/[slug]` | Learn article with ToC, comparison, related content |
 | `/questionnaire/[step]` | Every survey page, interlude, and the recommendation screen |
-| `POST /api/checkout` | Server endpoint: creates the RxScale checkout and returns the URL to redirect to |
+| `GET /api/recommendation` | Server endpoint: what RxScale recommends for one anamnesis, trimmed for the screen |
+| `POST /api/checkout` | Server endpoint: checks the chosen variant against the recommendation, creates the Shopify cart, returns the URL to redirect to |
 
 Route groups: `(marketing)`, `(questionnaire)`. The `(checkout)` group is not
 built.
@@ -326,10 +345,11 @@ platform with a matching SvelteKit adapter.
 | Variable | Visibility | Purpose |
 | --- | --- | --- |
 | `SHOPIFY_STORE_DOMAIN` | server only | the shop the cart is created in |
-| `SHOPIFY_VARIANT_ID` | server only | the variant the recommendation presents |
+| `SHOPIFY_VARIANT_ID` | server only | fallback only: the plan offered when RxScale recommends nothing |
 | `SHOPIFY_STOREFRONT_TOKEN` | server only, optional | sent when configured |
 | `SHOPIFY_STOREFRONT_API_VERSION` | server only, optional | defaults to `2025-01` |
 | `PUBLIC_RXSCALE_QUESTIONNAIRE_UID` | public | the questionnaire to fetch |
+| `PUBLIC_RXSCALE_SHOP_IDENTIFIER` | public | the shop the recommendation is keyed by. The storefront hostname (`solean.com`), not the myshopify domain, which is refused |
 
 > TODO: choose a host, swap `adapter-auto` for the matching adapter, and set the
 > variables in the provider. Handle it through `/release`.
@@ -351,9 +371,12 @@ Resolve each before the feature named, then re-run `/overview` if a plan changes
    confirmed against the real model, needed by feature 11. The e-mail is now a
    prefill rather than a requirement, so a wrong name there costs a convenience,
    not an order.
-5. **Market and country code.** `DE` is assumed for `buyerIdentity.countryCode`.
-   Accepted by the live shop, but still a choice rather than a confirmation:
-   decide whether it stays fixed or is derived.
+5. **Market and country code.** `DE` is configured, and now reaches two calls:
+   `buyerIdentity.countryCode` on the cart and `country_code` on the
+   recommendation. The live snippet derives it from Shopify's market detection
+   instead, which answered `IE` from an Irish address. Observed 2026-08-31: the
+   recommendation is identical for `DE`, `IE`, `AT` and `US`, so nothing depends
+   on it today. Whether it should be derived is still open.
 6. ~~**Live-stock preflight.**~~ Dropped. It was an RxScale public-API call on a
    path that no longer exists here, and it needed the same key that was refused.
    Shopify's own inventory rules apply at checkout instead.
@@ -366,9 +389,10 @@ Resolve each before the feature named, then re-run `/overview` if a plan changes
    GET, so the route exists there and takes POST only. What remains is whether
    that prefix returns the v4 documented 400 and 502 bodies, which feature 12
    settles with one live submission.
-10. **Displayed price versus SKU price.** See Monetization. The live cart totals
-    399.00 EUR against the 78.90 the recommendation screen shows, so these are
-    already far apart.
+10. ~~**Displayed price versus SKU price.**~~ Resolved for the recommendation
+    screen on 2026-08-31: its prices come from the recommendation, which reads
+    the shop, so there is nothing left to keep in step. Still open for the
+    landing page and the learn comparison, which remain hand-written.
 11. **The Storefront access token.** The shop answered `cartCreate` with no token
     on 2026-08-31, twice. Undocumented behaviour is not a foundation, so the
     token is sent when configured and its absence is not an error. Adopting a

@@ -1,5 +1,6 @@
 import { env } from '$env/dynamic/private';
 import { ANAMNESIS_ATTRIBUTE_KEY, CHECKOUT_COUNTRY_CODE } from '$lib/config/checkout';
+import { fetchRecommendation } from '$lib/server/rxscale/recommendation';
 
 /**
  * The Shopify Storefront cart the handoff redirects to. RxScale is not called on this path at
@@ -27,6 +28,7 @@ const CART_CREATE = `
 export type CheckoutFailure =
 	| 'missing-anamnesis'
 	| 'not-configured'
+	| 'not-recommended'
 	| 'refused'
 	| 'unavailable';
 
@@ -184,16 +186,56 @@ async function postCart(storeDomain: string, input: CartInput): Promise<CartAtte
 }
 
 /**
+ * Which variant this anamnesis may actually buy. The browser names one, and the browser is
+ * not the authority: RxScale decides which treatments and doses a person's answers allow, so
+ * the recommendation is read again here and a variant that is not in it is refused. Without
+ * this the endpoint would order any variant in the shop for any uid.
+ *
+ * When nothing is recommended, or the recommendation cannot be reached, the configured
+ * variant is the only one allowed. That keeps a person who reached the end of the
+ * questionnaire from being stranded, and it is the one case where a variant is offered that
+ * RxScale did not name.
+ */
+async function allowedVariant(
+	anamnesisUid: string,
+	storeDomain: string,
+	requested: string
+): Promise<{ variantId: string } | { ok: false; reason: CheckoutFailure }> {
+	const fallback = configured(env.SHOPIFY_VARIANT_ID);
+	const recommendation = await fetchRecommendation(anamnesisUid, storeDomain);
+	const offered = recommendation.ok
+		? recommendation.plans.flatMap((plan) => plan.options.map((option) => option.variantId))
+		: [];
+
+	if (offered.length === 0) {
+		return fallback ? { variantId: fallback } : { ok: false, reason: 'not-configured' };
+	}
+
+	const wanted = requested.trim();
+	if (!wanted) return { ok: false, reason: 'not-recommended' };
+
+	return offered.includes(wanted)
+		? { variantId: wanted }
+		: { ok: false, reason: 'not-recommended' };
+}
+
+/**
  * Creates the cart and returns the URL Shopify gives back, untouched. The upstream error body
  * is deliberately not passed on: the caller gets a name instead.
  */
-export async function createCart(anamnesisUid: string, email: string): Promise<CheckoutResult> {
+export async function createCart(
+	anamnesisUid: string,
+	email: string,
+	variantId: string
+): Promise<CheckoutResult> {
 	const storeDomain = configured(env.SHOPIFY_STORE_DOMAIN);
-	const variantId = configured(env.SHOPIFY_VARIANT_ID);
+	if (!storeDomain) return { ok: false, reason: 'not-configured' };
+	if (!anamnesisUid.trim()) return { ok: false, reason: 'missing-anamnesis' };
 
-	if (!storeDomain || !variantId) return { ok: false, reason: 'not-configured' };
+	const allowed = await allowedVariant(anamnesisUid, storeDomain, variantId);
+	if ('reason' in allowed) return allowed;
 
-	const input = buildCartInput({ anamnesisUid, email, variantId });
+	const input = buildCartInput({ anamnesisUid, email, variantId: allowed.variantId });
 	if ('ok' in input) return input;
 
 	const attempt = await postCart(storeDomain, input);
@@ -203,7 +245,7 @@ export async function createCart(anamnesisUid: string, email: string): Promise<C
 	// A refusal carries no cart, so the order still costs exactly one.
 	if (attempt.emailRefused && input.buyerIdentity.email) {
 		// Rebuilt rather than edited, so the retry obeys the same rules as the first attempt.
-		const retry = buildCartInput({ anamnesisUid, email: '', variantId });
+		const retry = buildCartInput({ anamnesisUid, email: '', variantId: allowed.variantId });
 		if ('ok' in retry) return retry;
 
 		return (await postCart(storeDomain, retry)).result;

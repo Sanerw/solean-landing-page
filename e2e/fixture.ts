@@ -10,4 +10,13 @@ export const FIXTURE_ELEMENTS = 15;
  * fixture is what keeps the harness from creating a cart in the real shop.
  */
 export const FIXTURE_STORE_DOMAIN = `http://localhost:${FIXTURE_PORT}`;
-export const FIXTURE_VARIANT_ID = '49703544684877';
+export const FIXTURE_VARIANT_ID = '49703576666445';
+
+/** The prescription-only listing, which the fixture recommendation offers beside the plan. */
+export const FIXTURE_PRESCRIPTION_VARIANT_ID = '48233241215309';
+
+/**
+ * The shop RxScale keys the recommendation by. The storefront hostname rather than the
+ * myshopify domain, which is what the live service accepts; here it is the fixture itself.
+ */
+export const FIXTURE_SHOP_IDENTIFIER = `localhost:${FIXTURE_PORT}`;

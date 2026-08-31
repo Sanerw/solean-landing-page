@@ -11,10 +11,51 @@ import { fileURLToPath } from 'node:url';
  */
 
 const PORT = Number(process.env.FIXTURE_PORT ?? 4319);
+const FIXTURE_VARIANT_ID = process.env.FIXTURE_VARIANT_ID ?? '49703576666445';
+const FIXTURE_PRESCRIPTION_VARIANT_ID = process.env.FIXTURE_PRESCRIPTION_VARIANT_ID ?? '48233241215309';
 const FIXTURE_UID = process.env.FIXTURE_QUESTIONNAIRE_UID ?? 'fixture-questionnaire';
 const FIXTURE_PATH = join(dirname(fileURLToPath(import.meta.url)), 'fixtures/questionnaire-model.json');
 
 const PREFIXES = ['/api/v2/anamnesis', '/api/v3-1/anamnesis', '/v4/anamnesis'];
+
+const RECOMMENDATION_PATH = /^\/api\/(?:v2|v3-1)\/anamnesis\/([^/]+)\/recommendation$/;
+
+/**
+ * The shop identifier RxScale records on a listing. The preview server points the app's store
+ * domain at this fixture, and the mapper compares the two bare, so this is that host.
+ */
+const FIXTURE_SHOP = `localhost:${PORT}`;
+
+/**
+ * One treatment and one prescription-only listing, which is the split the live document has
+ * and the only thing the screen groups on. Trimmed to the fields the app reads: the real
+ * document carries the whole catalogue graph beside them.
+ */
+function recommendation() {
+	const plan = (name, variantId, price, digital, preSelected, label) => ({
+		product: { display_name: name, uid: `product-${variantId}` },
+		shop_data: { title: name, featuredImage: null },
+		skus: [
+			{
+				selectable: true,
+				pre_selected: preSelected,
+				shop_data: { displayName: label },
+				sku: {
+					display_name: label,
+					digital,
+					shop_skus: [
+						{ price, shop: { identifier: FIXTURE_SHOP }, shop_variation_id: variantId }
+					]
+				}
+			}
+		]
+	});
+
+	return [
+		plan('Fixture Treatment', FIXTURE_VARIANT_ID, 24900, false, true, '0.25 mg'),
+		plan('Fixture Treatment', FIXTURE_PRESCRIPTION_VARIANT_ID, 4990, true, false, '0.25 mg Digital-Rezept')
+	];
+}
 
 function questionnaireUid(pathname, suffix = '') {
 	for (const prefix of PREFIXES) {
@@ -239,6 +280,15 @@ const server = createServer(async (request, response) => {
 
 		submissionCount += 1;
 		send(response, 201, { uid: `anam-fixture-${submissionCount}` });
+		return;
+	}
+
+	// The recommendation. An anamnesis marked `empty` answers with none, which is the live
+	// service's own way of saying nothing was matched.
+	const recommendationFor = pathname.match(RECOMMENDATION_PATH);
+	if (request.method === 'GET' && recommendationFor) {
+		const anamnesis = decodeURIComponent(recommendationFor[1]);
+		send(response, 200, anamnesis.includes('empty') ? [] : recommendation());
 		return;
 	}
 
