@@ -548,25 +548,25 @@ and no hover-only interactions.
 
 ## 8. Deployment - Where and how will this ship?
 
-**A static build is no longer possible.** `POST /api/checkout` runs server-side
-so the cart's rules are enforced in one place and the variant stays out of the
-client bundle, so the host must execute server code: Node, or a serverless
-platform with a matching SvelteKit adapter.
-`@sveltejs/adapter-auto` still cannot detect a target and warns at build time.
+**A static build is no longer possible.** `POST /api/checkout` and
+`GET /api/recommendation` run server-side, so the host must execute server code.
+**Vercel is the target**, pinned as `@sveltejs/adapter-vercel` in
+`vite.config.ts` rather than left to `adapter-auto`, which would install the same
+adapter part way through a build.
 
-That makes the host choice blocking rather than deferrable, and it brings env
-configuration with it:
+The host choice is settled; what it brings with it is env configuration:
 
 | Variable | Visibility | Purpose |
 | --- | --- | --- |
 | `SHOPIFY_STORE_DOMAIN` | server only | the shop the cart is created in |
-| `SHOPIFY_VARIANT_ID` | server only | the variant the recommendation presents |
+| `SHOPIFY_VARIANT_ID` | server only | fallback only: the plan offered when RxScale recommends nothing |
 | `SHOPIFY_STOREFRONT_TOKEN` | server only, optional | sent when configured, see section 11 |
 | `SHOPIFY_STOREFRONT_API_VERSION` | server only, optional | defaults to `2025-01` |
 | `PUBLIC_RXSCALE_QUESTIONNAIRE_UID` | public | the questionnaire to fetch |
+| `PUBLIC_RXSCALE_SHOP_IDENTIFIER` | public | the shop the recommendation is keyed by, the storefront hostname |
 
-> TODO: choose a host, swap `adapter-auto` for the matching adapter, and set the
-> variables in the provider. Handle it through `/release`.
+> TODO: set the variables in the Vercel project and run a deploy. Handle it
+> through `/release vercel`.
 
 ## 9. Reference inconsistencies
 
@@ -607,8 +607,10 @@ Explicitly excluded, and not to be added as implementation tasks now:
   contains it, because hiding a required question breaks submission validation,
   but only the e-mail is sent. Removing the question is a change in RxScale's
   Admin Tool, not in this code
-- **Product catalogue querying and computed recommendations.** One configured
-  SKU
+- **Querying the Shopify catalogue ourselves.** The recommendation carries the
+  variant, price and image of everything it offers, so nothing here reads the
+  catalogue directly. Computing a recommendation from the answers stays RxScale's
+  job and is not a non-goal any more: we render theirs
 - A database of our own
 - Dark mode
 - Multi-language routing and translated content. The language `Select` exposes
@@ -636,19 +638,27 @@ Explicitly excluded, and not to be added as implementation tasks now:
    All three are configured by name and must be confirmed against the real
    model. The e-mail is now a prefill rather than a requirement, so a wrong name
    there costs a convenience, not an order.
-4. **Market and country code.** `DE` is assumed for `buyerIdentity.countryCode`.
-   Accepted by the live shop, but still a choice rather than a confirmation:
-   decide whether it stays fixed or is derived.
+4. **Market and country code.** `DE` is configured, and reaches two calls now:
+   `buyerIdentity.countryCode` on the cart and `country_code` on the
+   recommendation. RxScale's own snippet derives it from Shopify's market
+   detection instead, which answered `IE` from an Irish address. Observed
+   2026-08-31: the recommendation is identical for `DE`, `IE`, `AT` and `US`, so
+   nothing depends on it today. Whether it should be derived is still open.
 5. **Live-stock preflight. Dropped.** It was an RxScale public-API call on a
    path that no longer exists here, and it needed the same key that was refused.
    Shopify's own inventory rules apply at checkout instead.
-6. **Deployment target.** Now blocking, see section 8.
-7. **Displayed price versus SKU price.** See section 6.
+6. **Deployment target. Resolved.** Vercel, pinned as
+   `@sveltejs/adapter-vercel` in `vite.config.ts`. What remains is setting the
+   variables in the provider and deploying, through `/release vercel`.
+7. **Displayed price versus SKU price. Resolved for the recommendation
+   screen** on 2026-08-31: its prices come from the recommendation, which reads
+   the shop, so there is nothing left to keep in step. Still open for the landing
+   page and the learn comparison, which remain hand-written. See section 6.
 8. **The `os-date-picker` value format. Resolved.** RxScale's widget declares no
    properties, so the stored shape was the renderer's choice. Confirmed as
    `YYYY-MM-DD` on 2026-08-30; feature 10 already stores it that way.
 9. **The Storefront access token.** The shop answered `cartCreate` with no token
-   on 2026-08-31, twice. Undocumented behaviour is not a foundation, so the token
+   on 2026-08-31, three times now. Undocumented behaviour is not a foundation, so the token
    is read from configuration and sent when present, and its absence is not an
    error. Ask RxScale or the shop owner for a proper token; adopting it is one
    header and no code change.

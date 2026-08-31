@@ -1,6 +1,6 @@
 # Solean - Project Overview
 
-<!-- blueprint:source-hash f6cabbc69ae583920a0d7802d97e1629062a4ea89884b75f5de75b5f0852bbf3 -->
+<!-- blueprint:source-hash 4902512fc9f99572804a0d3357a76e59636f66229f71717f6c7bfec67c06a28b -->
 
 > The Solean front end: a marketing site and a doctor-led GLP-1 funnel that runs
 > on RxScale's Anamnesis API and hands the order to Shopify by creating a cart
@@ -336,11 +336,11 @@ single choice to `RadioGroup`, multiple choice to `Checkbox`, dropdown to
 
 ## Deployment
 
-**A static build is no longer possible.** `POST /api/checkout` runs server-side
-so the cart's rules are enforced in one place and the variant stays out of the
-client bundle, so the host must execute server code: Node, or a serverless
-platform with a matching SvelteKit adapter.
-`@sveltejs/adapter-auto` still cannot detect a target and warns at build time.
+**A static build is no longer possible.** `POST /api/checkout` and
+`GET /api/recommendation` run server-side, so the host must execute server code.
+**Vercel is the target**, pinned as `@sveltejs/adapter-vercel` in
+`vite.config.ts` rather than left to `adapter-auto`, which would install the same
+adapter part way through a build.
 
 | Variable | Visibility | Purpose |
 | --- | --- | --- |
@@ -351,8 +351,8 @@ platform with a matching SvelteKit adapter.
 | `PUBLIC_RXSCALE_QUESTIONNAIRE_UID` | public | the questionnaire to fetch |
 | `PUBLIC_RXSCALE_SHOP_IDENTIFIER` | public | the shop the recommendation is keyed by. The storefront hostname (`solean.com`), not the myshopify domain, which is refused |
 
-> TODO: choose a host, swap `adapter-auto` for the matching adapter, and set the
-> variables in the provider. Handle it through `/release`.
+> TODO: set the variables in the Vercel project and run a deploy. Handle it
+> through `/release vercel`.
 
 ## Open questions
 
@@ -380,7 +380,9 @@ Resolve each before the feature named, then re-run `/overview` if a plan changes
 6. ~~**Live-stock preflight.**~~ Dropped. It was an RxScale public-API call on a
    path that no longer exists here, and it needed the same key that was refused.
    Shopify's own inventory rules apply at checkout instead.
-7. **Deployment target.** Now blocking, see Deployment.
+7. ~~**Deployment target.**~~ Resolved: Vercel, pinned as
+   `@sveltejs/adapter-vercel` in `vite.config.ts`. What remains is setting the
+   variables in the provider and deploying, which is `/release vercel`.
 8. ~~**The `os-date-picker` value format.**~~ Resolved: `YYYY-MM-DD`, confirmed
    2026-08-30. That is what feature 10 stores and what the submission sends.
 9. **Whether `/v4/anamnesis` will be routed.** Answered in part: it is not.

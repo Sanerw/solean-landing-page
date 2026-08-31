@@ -14,7 +14,7 @@
 | Styling         | Tailwind CSS v4, CSS-first config                        |
 | Components      | shadcn-svelte (`luma` style, `neutral` base, Lucide icons) |
 | Package manager | pnpm                                                     |
-| Adapter         | `@sveltejs/adapter-auto`                                 |
+| Adapter         | `@sveltejs/adapter-vercel`, pinned in `vite.config.ts`   |
 
 > TODO: no database, auth, or backend data layer exists yet. Add conventions here
 > when one is introduced.

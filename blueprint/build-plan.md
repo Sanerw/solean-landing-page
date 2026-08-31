@@ -387,10 +387,10 @@ Not in scope. Listed without checkboxes so `/feature` never selects them.
 
 - Solean-side checkout: account, shipping, pricing engine, add-ons, payment
 - Doctor review and order status screens inside Solean
-- Shopify Storefront API, `cartCreate`, cart attributes, discount codes
+- Discount codes
 - Saved progress and resume by e-mail link
 - Phone in `buyerIdentity`
-- Product catalogue querying and an answer-driven recommendation
+- Querying the Shopify catalogue ourselves, and computing a recommendation here
 - Authentication and a member account area
 - German language and `/de` routing
 - Undesigned routes: treatments index, product pages, about, contact, legal,
