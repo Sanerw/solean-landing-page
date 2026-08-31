@@ -394,13 +394,38 @@ Resolve each before the feature named, then re-run `/overview` if a plan changes
     the shop, so there is nothing left to keep in step. Still open for the
     landing page and the learn comparison, which remain hand-written.
 11. **The Storefront access token.** The shop answered `cartCreate` with no token
-    on 2026-08-31, twice. Undocumented behaviour is not a foundation, so the
-    token is sent when configured and its absence is not an error. Adopting a
-    proper one is one header and no code change.
+    on 2026-08-31, three times now. Undocumented behaviour is not a foundation,
+    so the token is sent when configured and its absence is not an error.
+    Adopting a proper one is one header and no code change.
 12. **Whether one order attribute reaches every component of the bundle.**
     RxScale confirmed it on 2026-08-31, and their line, group, order fallback is
     why. Not observed here: the live cart proves the attribute is attached and
     reads back, and only a paid order would prove the import.
+
+### The recommendation path, proven live
+
+Run 2026-08-31 against the real RxScale recommendation and the live shop. One
+cart, no order.
+
+| | |
+| --- | --- |
+| Anamnesis | `b326f1e3-...`, feature 12's own test submission, reused so no new record was created |
+| Recommended | six offers: Nevolat 99.00, Wegovy 0,25 mg 249.00, Mounjaro 2,5 mg 299.00, and the three prescription-only listings at 49.90 |
+| Chosen | the prescription-only `2.5 mg KwikPen - digital`, deliberately not RxScale's pre-selected plan |
+| Cart | `gid://shopify/Cart/hWNGIE3OjuO15CAU0nExLiz5`, landing on the shop's own checkout |
+| Attribute, read back | `_anamnesis_uid` = the uid, exact, order level, off a separate `cart(id:)` query |
+| Line | one, quantity 1, variant `48908103352653`, total 49.90 EUR |
+
+Two things this settles. The variant a person picks survives the round trip and
+the server's own check against the recommendation. And a prescription-only
+listing is a single line that does **not** expand, unlike the bundle, which is
+why its price may never be shown beside a treatment's.
+
+One thing it raises: `buyerIdentity.email` read back as `null` although a prefill
+was sent. Either the shop refused that address and the e-mail retry dropped it as
+designed, or it does not echo the field back without a customer token. Not worth
+a second cart to separate, because the e-mail is a prefill and Shopify collects
+one at checkout either way.
 
 ### Reference errors are not requirements
 
