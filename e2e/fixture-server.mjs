@@ -82,6 +82,20 @@ function readBody(request) {
 }
 
 /**
+ * Which recommendation the resulting anamnesis should get. Read off the answers for the same
+ * reason as the failures below: the uid it lands in is what the recommendation route reads,
+ * and no browser can seed one.
+ */
+function recommendationMarkerIn(data) {
+	const text = JSON.stringify(data ?? {});
+
+	if (text.includes('TRIGGER-NO-PLANS')) return 'empty';
+	if (text.includes('TRIGGER-NO-RECOMMENDATION')) return 'unreachable';
+
+	return null;
+}
+
+/**
  * The harness asks for a failure by answering with a marker rather than by a side channel,
  * so no question exists only for testing and the request under test is a real one.
  */
@@ -281,7 +295,15 @@ const server = createServer(async (request, response) => {
 		}
 
 		submissionCount += 1;
-		send(response, 201, { uid: `anam-fixture-${submissionCount}` });
+		// The recommendation is selected by the uid, and a browser can no longer be handed one:
+		// nothing is stored, so the only uid a session has is the one this answers with. A
+		// marker in the answers therefore has to reach the uid, the same way the failures above
+		// are asked for through an answer rather than a side channel.
+		const recommendationMarker = recommendationMarkerIn(body.data);
+		const uid = recommendationMarker
+			? `anam-${recommendationMarker}-recommendation-${submissionCount}`
+			: `anam-fixture-${submissionCount}`;
+		send(response, 201, { uid });
 		return;
 	}
 

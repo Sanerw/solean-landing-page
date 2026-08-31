@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { seedAnswers, THROUGH_ALLERGY, THROUGH_GENDER, THROUGH_NAME } from './answers';
+import { walkTo } from './answers';
 import { selectDateOfBirth } from './date-picker';
 
 /**
@@ -14,8 +14,7 @@ async function ready(page: Page): Promise<void> {
 }
 
 test('the date of birth is required by the model, not by the renderer', async ({ page }) => {
-	await seedAnswers(page, THROUGH_NAME);
-	await page.goto('/questionnaire/page26');
+	await walkTo(page, 'page26');
 	await ready(page);
 
 	await page.getByRole('button', { name: 'Continue' }).click();
@@ -32,8 +31,7 @@ test('the date of birth is required by the model, not by the renderer', async ({
 });
 
 test('a composite question reports its failure on the control that failed', async ({ page }) => {
-	await seedAnswers(page, THROUGH_GENDER);
-	await page.goto('/questionnaire/page2');
+	await walkTo(page, 'page2');
 	await ready(page);
 
 	await page.getByLabel('Größe (cm)').fill('5');
@@ -50,8 +48,7 @@ test('a composite question reports its failure on the control that failed', asyn
 });
 
 test('the exclusive option is the engine\'s, not ours', async ({ page }) => {
-	await seedAnswers(page, THROUGH_GENDER);
-	await page.goto('/questionnaire/page2');
+	await walkTo(page, 'page2');
 	await ready(page);
 	// The model shows the conditions question only for a BMI between 27 and 30, so the walk
 	// has to arrive there with one.
@@ -81,8 +78,7 @@ test('the exclusive option is the engine\'s, not ours', async ({ page }) => {
 });
 
 test('an "other" choice reveals the free text the model describes', async ({ page }) => {
-	await seedAnswers(page, THROUGH_ALLERGY);
-	await page.goto('/questionnaire/page18');
+	await walkTo(page, 'page18');
 	await ready(page);
 
 	const other = page.getByRole('radio', { name: 'Andere' });

@@ -117,7 +117,7 @@ What lives where:
 | Data | Owner | Notes |
 | --- | --- | --- |
 | Questionnaire model and theme | RxScale | SurveyJS JSON, versioned, fetched on entry to the flow, never hardcoded, never cached past the visit |
-| Answers in progress | Browser session | `survey.data` in SSR-safe `sessionStorage`, keyed by questionnaire identifier and version so a model change cannot resume against stale answers |
+| Answers in progress | Browser memory | `survey.data` in one module, never persisted. Client-side navigation between steps keeps them; a reload does not |
 | `steps[]` | Solean | Survey pages interleaved with Solean interludes. The single source of truth for position, progress, and routing |
 | Anamnesis uid | Browser session | Returned by the submission, required by the checkout call |
 | Questionnaire uid, store domain, variant id, question names | Config | One module, see section 5 |

@@ -1,6 +1,6 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
-import { EVERY_ANSWER, seedAnamnesis, seedAnswers } from './answers';
+import { walkAndSubmit, walkTo } from './answers';
 import { confirmPlan } from './recommendation';
 
 /**
@@ -49,18 +49,14 @@ const QUESTION_STEPS = ['page30', 'page27', 'page26', 'page3', 'page2', 'page1',
 
 for (const step of QUESTION_STEPS) {
 	test(`questionnaire ${step} has no serious accessibility violations`, async ({ page }) => {
-		await seedAnswers(page, EVERY_ANSWER);
-		await page.goto(`/questionnaire/${step}`);
-		await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled();
+		await walkTo(page, step);
 
 		expect(await violations(page)).toEqual([]);
 	});
 }
 
 test('both recommendation screens have no serious accessibility violations', async ({ page }) => {
-	await seedAnswers(page, EVERY_ANSWER);
-	await seedAnamnesis(page, 'anam-a11y');
-	await page.goto('/questionnaire/complete');
+	await walkAndSubmit(page);
 	await expect(page.getByRole('tab', { name: 'Treatment' })).toBeVisible();
 
 	expect(await violations(page)).toEqual([]);

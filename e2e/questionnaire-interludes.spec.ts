@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { seedAnswers, THROUGH_GENDER } from './answers';
+import { walkTo } from './answers';
 
 /**
  * Solean's own screens between the model's questions. Unlike the questions, this content is
@@ -9,9 +9,7 @@ import { seedAnswers, THROUGH_GENDER } from './answers';
 
 async function answerWeight(page: Page, sizeCm: string, weightKg: string): Promise<void> {
 	// The weight question is only reachable once the questions before it are answered.
-	await seedAnswers(page, THROUGH_GENDER);
-	await page.goto('/questionnaire/page2');
-	await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled();
+	await walkTo(page, 'page2');
 	await page.getByLabel('Größe (cm)').fill(sizeCm);
 	await page.getByLabel('Gewicht (kg)').fill(weightKg);
 	await page.getByRole('button', { name: 'Continue' }).click();

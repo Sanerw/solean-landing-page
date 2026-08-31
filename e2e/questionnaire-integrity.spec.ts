@@ -1,72 +1,47 @@
 import { expect, test, type Page } from '@playwright/test';
-import {
-	answersKey,
-	EVERY_ANSWER,
-	seedAnamnesis,
-	seedAnswers,
-	THROUGH_ALLERGY,
-	THROUGH_DOB,
-	THROUGH_NAME
-} from './answers';
+import { stepIsInteractive, walkAndSubmit, walkTo } from './answers';
 import { confirmPlan } from './recommendation';
 
 /**
- * What holds the walk together around the questions: answers that survive a reload, a model
- * change that discards them, and a step that cannot be opened before the answers before it
+ * What holds the walk together around the questions: answers that live for exactly as long
+ * as the page asking for them, and a step that cannot be opened before the answers before it
  * are in.
  */
-
-async function ready(page: Page): Promise<void> {
-	await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled();
-}
 
 const firstName = (page: Page) => page.getByLabel('Bitte gib Deinen Vornamen an.');
 const surname = (page: Page) => page.getByLabel('Bitte gib Deinen Nachnamen an.');
 
-test('answers survive a refresh', async ({ page }) => {
-	await page.goto('/questionnaire/page27');
-	await ready(page);
+/** Every key this app could be writing. The assertion is that it writes none of them. */
+function soleanKeys(page: Page): Promise<string[]> {
+	return page.evaluate(() =>
+		Object.keys(window.sessionStorage).filter((key) => key.startsWith('solean:'))
+	);
+}
+
+test('nothing a visitor answers is written down', async ({ page }) => {
+	await walkTo(page, 'page27');
 	await firstName(page).fill('Jonas');
 	await surname(page).fill('Weber');
 
+	// Answered, and still nothing stored. These are real medical answers, and the guarantee is
+	// that they exist in the page and in the submission, nowhere else.
+	expect(await soleanKeys(page)).toEqual([]);
+
+	await page.getByRole('button', { name: 'Continue' }).click();
+	await expect(page).toHaveURL('/questionnaire/page26');
+	expect(await soleanKeys(page)).toEqual([]);
+});
+
+test('a refresh starts the questionnaire over', async ({ page }) => {
+	await walkTo(page, 'page16');
+
 	await page.reload();
-	await ready(page);
 
-	await expect(firstName(page)).toHaveValue('Jonas');
-	await expect(surname(page)).toHaveValue('Weber');
-});
-
-test('a new version of the model discards the answers to the old one', async ({ page }) => {
-	await seedAnswers(page, { FirstName: 'Ghost', Surname: 'Answer' }, '0');
-
-	await page.goto('/questionnaire/page27');
-	await ready(page);
-
+	// Back to the first question the model requires, with the answers gone. `page30` asks for
+	// an e-mail and requires nothing, so an empty session reaches past it to the name.
+	await expect(page).toHaveURL('/questionnaire/page27');
+	await stepIsInteractive(page);
 	await expect(firstName(page)).toHaveValue('');
-
-	const stored = await page.evaluate(() =>
-		Object.keys(window.sessionStorage).filter((key) => key.startsWith('solean:questionnaire:'))
-	);
-	expect(stored).not.toContain(answersKey('0'));
-});
-
-test('the answers are stored under the questionnaire and its version', async ({ page }) => {
-	await page.goto('/questionnaire/page27');
-	await ready(page);
-	await firstName(page).fill('Jonas');
-
-	await expect
-		.poll(() => page.evaluate(() => Object.keys(window.sessionStorage)))
-		.toContain(answersKey());
-});
-
-test('a seeded resume opens the step those answers reach', async ({ page }) => {
-	await seedAnswers(page, THROUGH_NAME);
-
-	await page.goto('/questionnaire/page27');
-	await ready(page);
-
-	await expect(firstName(page)).toHaveValue('Jonas');
 });
 
 test('a step the answers do not reach sends you to the one they do', async ({ page }) => {
@@ -75,7 +50,7 @@ test('a step the answers do not reach sends you to the one they do', async ({ pa
 	// The name question is the first thing this fixture requires, so that is as far as an
 	// empty session reaches.
 	await expect(page).toHaveURL('/questionnaire/page27');
-	await ready(page);
+	await stepIsInteractive(page);
 	await expect(firstName(page)).toBeVisible();
 });
 
@@ -85,20 +60,13 @@ test('the completion screen is not a place you can jump to', async ({ page }) =>
 	await expect(page).toHaveURL('/questionnaire/page27');
 });
 
-test('a resumed session reaches the step its answers justify', async ({ page }) => {
-	await seedAnswers(page, THROUGH_ALLERGY);
-
-	await page.goto('/questionnaire/complete');
-
-	// Everything up to the medication question is answered, and that is where it stops.
-	await expect(page).toHaveURL('/questionnaire/page18');
-});
-
 test('a step already answered can be reopened and changed', async ({ page }) => {
-	await seedAnswers(page, THROUGH_ALLERGY);
+	await walkTo(page, 'page2');
 
-	await page.goto('/questionnaire/page3');
-	await ready(page);
+	// Back, the way a visitor goes back: a link, so the session the answers live in survives.
+	await page.getByRole('link', { name: 'Back' }).click();
+	await expect(page).toHaveURL('/questionnaire/page3');
+	await stepIsInteractive(page);
 
 	await expect(page.getByRole('radio', { name: 'Männlich' })).toBeChecked();
 	await page.getByRole('radio', { name: 'Weiblich' }).click();
@@ -106,14 +74,13 @@ test('a step already answered can be reopened and changed', async ({ page }) => 
 });
 
 async function questionLabel(page: Page): Promise<string | null> {
-	await ready(page);
+	await stepIsInteractive(page);
 
 	return page.locator('[aria-label^="Question "]').first().getAttribute('aria-label');
 }
 
 test('the progress denominator follows the branch the answers open', async ({ page }) => {
-	await seedAnswers(page, THROUGH_DOB);
-	await page.goto('/questionnaire/page3');
+	await walkTo(page, 'page3');
 
 	// Eight questions is what this fixture asks before any conditional page is opened.
 	expect(await questionLabel(page)).toBe('Question 4 of 8');
@@ -127,15 +94,14 @@ test('the progress denominator follows the branch the answers open', async ({ pa
 });
 
 test('the completion screen reads the whole questionnaire as done', async ({ page }) => {
-	await seedAnswers(page, EVERY_ANSWER);
-	// The screen belongs to a submitted anamnesis, not merely to a finished walk.
-	await seedAnamnesis(page);
-
-	await page.goto('/questionnaire/complete');
+	await walkAndSubmit(page);
 	await confirmPlan(page);
 
 	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Congratulations, you did it!');
+	// Ten, because the walk answers "Andere" to the medication question, and that opens the
+	// side-effects pages behind it. The denominator is the branch actually walked, not a fixed
+	// length the model does not have.
 	await expect
 		.poll(() => page.locator('[aria-label^="Question "]').first().getAttribute('aria-label'))
-		.toBe('Question 9 of 9');
+		.toBe('Question 10 of 10');
 });

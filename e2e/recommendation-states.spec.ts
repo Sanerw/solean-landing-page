@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { EVERY_ANSWER, seedAnamnesis, seedAnswers } from './answers';
+import { NO_PLANS, NO_RECOMMENDATION, walkAndSubmit } from './answers';
 import { FIXTURE_VARIANT_ID } from './fixture';
 import { confirmPlan } from './recommendation';
 
@@ -9,13 +9,12 @@ import { confirmPlan } from './recommendation';
  * that fails. Neither may end the funnel, because the person has already filed a medical
  * record a doctor will read.
  *
- * The anamnesis is seeded rather than submitted: the fixture's own submissions return
- * `anam-fixture-N`, and these outcomes are selected by the uid.
+ * Which one the fixture gives is asked for through an answer, and the anamnesis is submitted
+ * rather than seeded: nothing is stored any more, so the only uid a session holds is the one
+ * its own submission returned.
  */
-async function atRecommendation(page: Page, uid: string): Promise<void> {
-	await seedAnswers(page, EVERY_ANSWER);
-	await seedAnamnesis(page, uid);
-	await page.goto('/questionnaire/complete');
+async function atRecommendation(page: Page, email: string): Promise<void> {
+	await walkAndSubmit(page, { email });
 	await expect(page.getByRole('heading', { name: 'Choose your treatment' })).toBeVisible();
 }
 
@@ -32,7 +31,7 @@ function orderedVariant(page: Page): { current: string | null } {
 
 test('an anamnesis nothing was matched to still reaches a checkout', async ({ page }) => {
 	const ordered = orderedVariant(page);
-	await atRecommendation(page, 'anam-empty-recommendation');
+	await atRecommendation(page, NO_PLANS);
 
 	await expect(page.getByText('A doctor is reviewing your answers')).toBeVisible();
 
@@ -49,7 +48,7 @@ test('an anamnesis nothing was matched to still reaches a checkout', async ({ pa
 });
 
 test('a recommendation that cannot be reached is not a dead end', async ({ page }) => {
-	await atRecommendation(page, 'anam-unreachable-recommendation');
+	await atRecommendation(page, NO_RECOMMENDATION);
 
 	// The same screen as nothing-matched on purpose: what the person can do next is identical,
 	// and naming the outage would only invite a reload that changes nothing here.
@@ -62,7 +61,7 @@ test('a recommendation that cannot be reached is not a dead end', async ({ page 
 });
 
 test('the configured fallback is what a plan-less order actually buys', async ({ page }) => {
-	await atRecommendation(page, 'anam-empty-recommendation');
+	await atRecommendation(page, NO_PLANS);
 
 	await confirmPlan(page);
 	await page.getByRole('button', { name: 'Go to checkout' }).click();

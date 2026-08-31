@@ -1,14 +1,25 @@
 import { expect, test, type Page } from '@playwright/test';
-import { anamnesisKey, EVERY_ANSWER, seedAnswers, WITH_EMAIL, writeAnswers } from './answers';
+import {
+	REJECTED_SUBMISSION,
+	UNAVAILABLE_SUBMISSION,
+	stepIsInteractive,
+	walkAndSubmit,
+	walkTo
+} from './answers';
 import { confirmPlan } from './recommendation';
 
 /**
  * The submission itself. The fixture server answers the three documented outcomes, and asks
  * for the two failures through a marker typed into an answer, so every request under test is
  * a real one rather than a stubbed route.
+ *
+ * The marker rides in the last question's free text rather than the e-mail, because a walk
+ * cannot be rewound to an earlier answer without reloading, and reloading is now the same as
+ * starting over.
  */
 
-const LAST_STEP = '/questionnaire/page22';
+const LAST_STEP = '/questionnaire/page23';
+const SIDE_EFFECTS = 'Leichte Übelkeit in der ersten Woche.';
 
 function submissions(page: Page): string[] {
 	const posts: string[] = [];
@@ -21,29 +32,30 @@ function submissions(page: Page): string[] {
 	return posts;
 }
 
-async function atLastStep(page: Page, answers: Record<string, unknown>): Promise<void> {
-	await seedAnswers(page, answers);
-	await page.goto(LAST_STEP);
-	await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled();
+/** The last question, open and unanswered, so each test types what it needs into it. */
+async function atLastStep(page: Page): Promise<void> {
+	await walkTo(page, 'page23');
+	await expect(page).toHaveURL(LAST_STEP);
 }
 
 test('the last question sends the answers and lands on the recommendation', async ({ page }) => {
 	const posts = submissions(page);
-	await atLastStep(page, EVERY_ANSWER);
+	await atLastStep(page);
+	await page.getByRole('textbox').fill(SIDE_EFFECTS);
 
 	await page.getByRole('button', { name: 'Continue' }).click();
 
 	await expect(page).toHaveURL('/questionnaire/complete');
 	expect(posts).toHaveLength(1);
-
-	const uid = await page.evaluate((key) => window.sessionStorage.getItem(key), anamnesisKey());
-	expect(uid).toMatch(/^anam-fixture-/);
+	// The uid it answered with is what this screen exists on, and it is held in memory alone.
+	await expect(page.getByRole('heading', { name: 'Choose your treatment' })).toBeVisible();
 });
 
 test('a rejected submission stays on the question and shows what the service said', async ({
 	page
 }) => {
-	await atLastStep(page, { ...EVERY_ANSWER, EMail: 'TRIGGER-400' });
+	await atLastStep(page);
+	await page.getByRole('textbox').fill(REJECTED_SUBMISSION);
 
 	await page.getByRole('button', { name: 'Continue' }).click();
 
@@ -51,22 +63,14 @@ test('a rejected submission stays on the question and shows what the service sai
 	// The fixture's own messages, in the documented list shape.
 	await expect(page.getByText('dob must be a valid date')).toBeVisible();
 	await expect(page).toHaveURL(LAST_STEP);
-
-	const uid = await page.evaluate((key) => window.sessionStorage.getItem(key), anamnesisKey());
-	expect(uid).toBeNull();
 });
 
 test('an unavailable validator says nothing was saved, and the retry goes through', async ({
 	page
 }) => {
 	const posts = submissions(page);
-
-	// Written into the open page rather than seeded per navigation, because this test goes on
-	// to change the answer that carries the marker.
-	await page.goto('/questionnaire/page30');
-	await writeAnswers(page, { ...EVERY_ANSWER, EMail: 'TRIGGER-502' });
-	await page.goto(LAST_STEP);
-	await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled();
+	await atLastStep(page);
+	await page.getByRole('textbox').fill(UNAVAILABLE_SUBMISSION);
 
 	await page.getByRole('button', { name: 'Continue' }).click();
 	await expect(page.getByText('We could not send your answers')).toBeVisible();
@@ -79,14 +83,10 @@ test('an unavailable validator says nothing was saved, and the retry goes throug
 	await expect(page.getByText('We could not send your answers')).toBeVisible();
 	expect(posts).toHaveLength(2);
 
-	// Take the marker back out, the way anyone would: at the question that holds it.
-	await page.goto('/questionnaire/page30');
-	await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled();
-	await page.getByRole('textbox').fill('jonas@example.com');
-
-	await page.goto(LAST_STEP);
-	await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled();
-	await page.getByRole('button', { name: 'Continue' }).click();
+	// Take the marker back out, at the question that holds it, and the third attempt goes.
+	// The action is still "Try again": the failure it names has not been cleared by editing.
+	await page.getByRole('textbox').fill(SIDE_EFFECTS);
+	await page.getByRole('button', { name: 'Try again' }).click();
 
 	await expect(page).toHaveURL('/questionnaire/complete');
 	expect(posts).toHaveLength(3);
@@ -94,35 +94,36 @@ test('an unavailable validator says nothing was saved, and the retry goes throug
 
 test('one anamnesis per session, whatever the visitor does next', async ({ page }) => {
 	const posts = submissions(page);
-	await atLastStep(page, EVERY_ANSWER);
-	await page.getByRole('button', { name: 'Continue' }).click();
+	await walkAndSubmit(page);
 	await expect(page).toHaveURL('/questionnaire/complete');
 
-	await page.reload();
-	await expect(page).toHaveURL('/questionnaire/complete');
-
-	// The questionnaire is over: a doctor has these answers and editing them changes nothing.
-	await page.goto('/questionnaire/page3');
-	await expect(page).toHaveURL('/questionnaire/complete');
-
-	await page.goto('/questionnaire');
+	// Back is a link, so the session survives it, and the questionnaire is over: a doctor has
+	// these answers and reopening a question would change nothing.
+	await page.getByRole('link', { name: 'Home', exact: true }).click();
+	await expect(page).toHaveURL('/');
+	await page.getByRole('link', { name: 'Check your eligibility' }).first().click();
 	await expect(page).toHaveURL('/questionnaire/complete');
 
 	expect(posts).toHaveLength(1);
 });
 
-test('reaching the end is not the same as having sent it', async ({ page }) => {
-	await seedAnswers(page, EVERY_ANSWER);
+test('a reload after the submission starts the questionnaire over', async ({ page }) => {
+	const posts = submissions(page);
+	await walkAndSubmit(page);
+	await expect(page).toHaveURL('/questionnaire/complete');
 
-	await page.goto('/questionnaire/complete');
+	await page.reload();
 
-	// Every answer is in, but nothing has been submitted, so this lands where sending happens.
-	await expect(page).toHaveURL(LAST_STEP);
+	// The consequence of storing nothing, stated rather than discovered: the anamnesis is at
+	// RxScale and a doctor will read it, but this browser no longer knows about it, so the
+	// order screen is out of reach and walking again would file a second one.
+	await expect(page).toHaveURL('/questionnaire/page27');
+	await stepIsInteractive(page);
+	expect(posts).toHaveLength(1);
 });
 
 test('the recommendation presents what RxScale offers, prices included', async ({ page }) => {
-	await atLastStep(page, WITH_EMAIL);
-	await page.getByRole('button', { name: 'Continue' }).click();
+	await walkAndSubmit(page);
 	await expect(page).toHaveURL('/questionnaire/complete');
 
 	// Both purchases are offered, and never on the same list: a prescription with no
@@ -163,6 +164,6 @@ test('the recommendation presents what RxScale offers, prices included', async (
 
 	// The count comes from the plan, not from the artboard, which says eight whatever the
 	// model asks.
-	await expect(page.getByText('All 9 steps complete')).toBeVisible();
+	await expect(page.getByText('All 10 steps complete')).toBeVisible();
 	await expect(page.getByRole('button', { name: 'Go to checkout' })).toBeEnabled();
 });

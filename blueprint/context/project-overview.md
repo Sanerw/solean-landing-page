@@ -69,7 +69,8 @@ live funnel, features 9 to 13.
     signature answers in exact SurveyJS shape.
 11. **Interludes, progress and flow integrity** - projection computed from
     `survey.data`, motivation screen, progress counting survey steps only,
-    refresh, back, deep links, and version-keyed in-session persistence.
+    refresh, back, and deep links. In-session persistence was later removed: nothing
+    is stored, so a refresh starts the questionnaire over.
 12. **Submission and the recommendation screen** - the anamnesis submission, its
     400 and 502 paths, and the congratulations screen for one configured SKU.
 13. **Checkout handoff** - `POST /api/checkout` in `+server.ts`, the Shopify
@@ -86,8 +87,10 @@ doctor review and order status screens.
 ## Data model
 
 **Solean stores nothing server-side.** No database, no session store, no logging
-of answers. In-progress answers live in the browser (`sessionStorage`, SSR-safe)
-and are discarded once the submission succeeds.
+of answers. **The browser stores nothing either.** In-progress answers live in
+one module in memory and are never written to `sessionStorage` or anywhere else,
+so a reload starts the questionnaire over: the medical answers a person types do
+not outlive the page asking for them.
 
 **Real data now leaves the browser.** The questionnaire carries genuine personal
 and medical answers to RxScale, who own storage, retention, and clinical review.
@@ -102,9 +105,9 @@ and medical answers to RxScale, who own storage, retention, and clinical review.
 | Data | Owner | Notes |
 | --- | --- | --- |
 | Questionnaire model and theme | RxScale | SurveyJS JSON, versioned, fetched on entry to the flow, never hardcoded, never cached past the visit |
-| Answers in progress | Browser session | `survey.data` in SSR-safe `sessionStorage`, keyed by questionnaire identifier and version so a model change cannot resume against stale answers |
+| Answers in progress | Browser memory | `survey.data` in one module, never persisted. Client-side navigation between steps keeps them; a reload does not |
 | `steps[]` | Solean | Survey pages interleaved with Solean interludes. The single source of truth for position, progress, and routing |
-| Anamnesis uid | Browser session | Returned by the submission, the key to the recommendation, and the cart's order attribute |
+| Anamnesis uid | Browser memory | Returned by the submission, the key to the recommendation, and the cart's order attribute. Not persisted, so a reload after the submission cannot reach the order screen |
 | Recommendation | RxScale | Which treatments and doses the answers allow, with the Shopify variant and price of each. Read on the screen and again on the order, never cached |
 | Questionnaire uid, store domain, variant id, question names | Config | One module per concern. Nothing on the checkout path is a secret |
 | Order, payment, prescription, delivery | Shopify, then RxScale by webhook | Not modelled here. RxScale is never told about the order by us |

@@ -1,5 +1,5 @@
 import { expect, test } from '@playwright/test';
-import { EVERY_ANSWER, seedAnswers } from './answers';
+import { REJECTED_SUBMISSION, UNAVAILABLE_SUBMISSION, walkTo } from './answers';
 import { selectDateOfBirth } from './date-picker';
 import { confirmPlan } from './recommendation';
 
@@ -115,12 +115,13 @@ test('capture the submission failures', async ({ page }) => {
 	const shot = (name: string) => page.screenshot({ path: `screens/${name}.png`, fullPage: true });
 
 	for (const [marker, name] of [
-		['TRIGGER-400', '15-submission-rejected'],
-		['TRIGGER-502', '16-submission-unavailable']
+		[REJECTED_SUBMISSION, '15-submission-rejected'],
+		[UNAVAILABLE_SUBMISSION, '16-submission-unavailable']
 	] as const) {
-		await seedAnswers(page, { ...EVERY_ANSWER, EMail: marker });
-		await page.goto('/questionnaire/page22');
-		await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled();
+		// The marker rides in the last question's free text: the walk cannot be rewound to an
+		// earlier answer without reloading, and reloading now starts the questionnaire over.
+		await walkTo(page, 'page23');
+		await page.getByRole('textbox').fill(marker);
 		await page.getByRole('button', { name: 'Continue' }).click();
 		await expect(page.getByRole('button', { name: 'Try again' })).toBeVisible();
 		await shot(name);

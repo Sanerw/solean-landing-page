@@ -20,6 +20,10 @@
 		/**
 		 * False once the handoff has taken them. The count and the order action both describe a
 		 * walk this browser no longer holds, so neither may be shown as though it still did.
+		 *
+		 * Reachable only when a browser restores this page alive, from its back-forward cache,
+		 * after the redirect to Shopify. A plain reload holds nothing at all and lands back at
+		 * the first question instead, because nothing is stored.
 		 */
 		answersHeld: boolean;
 		/**
@@ -158,7 +162,8 @@
 {:else}
 	<!--
 		Nothing here can build a second order: the answers a checkout is made from went with the
-		handoff. Saying so beats an action that would fail for a reason that is not true.
+		handoff. Saying so beats an action that would fail for a reason that is not true. Only a
+		back-forward cache restore arrives here; a reload starts the questionnaire over.
 	-->
 	<p class="mt-4 text-center text-sm text-muted-foreground">
 		Your checkout has already been opened, and this session's answers went with it. Ordering
