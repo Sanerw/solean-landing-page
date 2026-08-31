@@ -251,8 +251,8 @@ Rules:
   medication, treatment fee, and needles, so no fee line is ever built here.
 - **A prescription-only listing is a different purchase.** `sku.digital` marks
   the ones where the signed prescription is all that is sold, at a fraction of
-  the price and with nothing dispensed or delivered, so they get their own
-  heading and are never shown beside a treatment price.
+  the price and with nothing dispensed or delivered, so they get a panel of
+  their own and are never shown beside a treatment price.
 - **The e-mail for `buyerIdentity` is read from the answers by a configured
   question name**, never by a name written into the code. It is a prefill and
   never a condition: Shopify collects the address at checkout, so an order

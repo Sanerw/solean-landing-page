@@ -21,6 +21,7 @@ function offer(overrides: Record<string, unknown> = {}) {
 				sku: {
 					display_name: '2.5 mg',
 					digital: false,
+					therapy_duration: 30,
 					shop_skus: [{ price: 29900, shop: { identifier: SHOP }, shop_variation_id: '111' }]
 				}
 			}
@@ -37,7 +38,13 @@ describe('toRecommendedPlans', () => {
 		expect(plan.image).toBe('https://cdn/img.png');
 		expect(plan.prescriptionOnly).toBe(false);
 		expect(plan.options).toEqual([
-			{ variantId: '111', label: '2.5 mg', price: { amount: 29900, currency: 'EUR' }, preSelected: true }
+			{
+				variantId: '111',
+				label: '2.5 mg',
+				price: { amount: 29900, currency: 'EUR' },
+				therapyDays: 30,
+				preSelected: true
+			}
 		]);
 	});
 
@@ -94,6 +101,25 @@ describe('toRecommendedPlans', () => {
 		});
 
 		expect(toRecommendedPlans([single], SHOP)[0].options[0].label).toBe('');
+	});
+
+	// Live listings carry the duration as a number, as a numeric string, or not at all, and
+	// the screen only says "30-day treatment" when RxScale actually recorded one.
+	it('reads a therapy duration however the listing states it, and nothing when it does not', () => {
+		const withDuration = (therapy_duration: unknown) =>
+			offer({
+				skus: [
+					{
+						...offer().skus[0],
+						sku: { ...offer().skus[0].sku, therapy_duration }
+					}
+				]
+			});
+
+		expect(toRecommendedPlans([withDuration('28')], SHOP)[0].options[0].therapyDays).toBe(28);
+		expect(toRecommendedPlans([withDuration(null)], SHOP)[0].options[0].therapyDays).toBeNull();
+		expect(toRecommendedPlans([withDuration('a month')], SHOP)[0].options[0].therapyDays).toBeNull();
+		expect(toRecommendedPlans([withDuration(0)], SHOP)[0].options[0].therapyDays).toBeNull();
 	});
 
 	it('takes an empty recommendation as an answer, not a failure', () => {

@@ -61,8 +61,12 @@ test('both recommendation screens have no serious accessibility violations', asy
 	await seedAnswers(page, EVERY_ANSWER);
 	await seedAnamnesis(page, 'anam-a11y');
 	await page.goto('/questionnaire/complete');
-	await expect(page.getByRole('heading', { name: 'Your treatment.' })).toBeVisible();
+	await expect(page.getByRole('tab', { name: 'Treatment' })).toBeVisible();
 
+	expect(await violations(page)).toEqual([]);
+
+	// The other purchase is a panel of its own, and axe only sees the one on screen.
+	await page.getByRole('tab', { name: 'Prescription only' }).click();
 	expect(await violations(page)).toEqual([]);
 
 	// The order screen is the other half of this step and is never reached without the choice.

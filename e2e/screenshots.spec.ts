@@ -96,6 +96,12 @@ test('capture the questionnaire screens', async ({ page }) => {
 	await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled();
 	await shot('13-recommendation-choice');
 
+	// The other purchase, which is a panel of its own and never on screen beside the prices
+	// of the treatments.
+	await page.getByRole('tab', { name: 'Prescription only' }).click();
+	await shot('13b-recommendation-prescriptions');
+	await page.getByRole('tab', { name: 'Treatment' }).click();
+
 	await confirmPlan(page);
 	await expect(page.getByRole('button', { name: 'Go to checkout' })).toBeVisible();
 	await shot('14-recommendation');

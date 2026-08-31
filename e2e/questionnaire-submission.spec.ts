@@ -125,17 +125,18 @@ test('the recommendation presents what RxScale offers, prices included', async (
 	await page.getByRole('button', { name: 'Continue' }).click();
 	await expect(page).toHaveURL('/questionnaire/complete');
 
-	// Both groups, because a prescription with no medication is a different purchase and its
-	// lower price would read as a discount if it sat under the same heading.
-	await expect(page.getByRole('heading', { name: 'Your treatment.' })).toBeVisible();
-	await expect(page.getByRole('heading', { name: 'Prescription only.' })).toBeVisible();
-	await expect(
-		page.getByText('No medication is dispensed or delivered.', { exact: false })
-	).toBeVisible();
+	// Both purchases are offered, and never on the same list: a prescription with no
+	// medication costs a fraction of a treatment, and the two prices side by side would read
+	// as a discount on one purchase rather than as two.
+	await expect(page.getByRole('tab', { name: 'Treatment' })).toBeVisible();
+	await expect(page.getByRole('tab', { name: 'Prescription only' })).toBeVisible();
 
 	// Straight off the recommendation. Nothing on this screen is written down here any more.
 	await expect(page.getByText('249.00 EUR')).toBeVisible();
-	await expect(page.getByText('49.90 EUR')).toBeVisible();
+	// The other purchase's price is not on screen beside it, which is the whole point of the
+	// split, and the button names back what confirming would buy.
+	await expect(page.getByText('49.90 EUR')).toBeHidden();
+	await expect(page.getByRole('button', { name: 'Continue with Fixture Treatment' })).toBeEnabled();
 
 	// RxScale names its own default, and it is the one that arrives selected.
 	// The name is the plan, the dose and the price: a `<button role="radio">` is not named by
@@ -143,9 +144,18 @@ test('the recommendation presents what RxScale offers, prices included', async (
 	await expect(
 		page.getByRole('radio', { name: 'Fixture Treatment 0.25 mg 249.00 EUR' })
 	).toBeChecked();
+
+	await page.getByRole('tab', { name: 'Prescription only' }).click();
+	await expect(page.getByText('49.90 EUR')).toBeVisible();
+	await expect(page.getByText('249.00 EUR')).toBeHidden();
+
+	// Switching brings its own default: the treatment must not stay chosen while a list of
+	// prescriptions is on screen, or Continue would confirm merchandise nobody can see.
 	await expect(
 		page.getByRole('radio', { name: 'Fixture Treatment 0.25 mg Digital-Rezept 49.90 EUR' })
-	).not.toBeChecked();
+	).toBeChecked();
+
+	await page.getByRole('tab', { name: 'Treatment' }).click();
 
 	// Confirming the choice is what opens the order screen, and the handoff itself is covered
 	// by its own spec.

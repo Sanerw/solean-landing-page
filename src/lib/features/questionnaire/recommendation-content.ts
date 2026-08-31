@@ -21,24 +21,32 @@ export const RECOMMENDATION = {
 	assurances: ['Health profile complete', 'Sent for doctor review', 'Plan ready'],
 	loading: 'Preparing your plan.',
 	choiceLabel: 'Your plan',
-	treatmentsHeading: 'Your treatment.',
-	prescriptionsHeading: 'Prescription only.',
 	/**
-	 * The one line on this screen that has to be read. These cost a fraction of a treatment
-	 * because nothing is dispensed or delivered, and a price seen without that reads as a
-	 * discount on the same purchase.
+	 * The two purchases, as the switch above the list names them. They are separated rather
+	 * than listed together because one delivers medication and the other does not.
 	 */
-	prescriptionsNote: 'The signed prescription alone. No medication is dispensed or delivered.',
+	modes: {
+		treatment: 'Treatment',
+		prescription: 'Prescription only'
+	},
 	noPlans: {
 		title: 'A doctor is reviewing your answers',
 		body: 'No plan has been matched to your profile yet. You can still place your order, and the doctor decides what is prescribed after reviewing what you told us.'
 	},
 	choiceAction: 'Continue',
+	/** Names the choice back, so the button is not the one place the decision goes unsaid. */
+	choiceActionFor: (plan: string) => `Continue with ${plan}`,
+	/**
+	 * The reference's footnote, and the truth this screen must not let a choice imply: what
+	 * is picked here is a preference, and the doctor reviewing the answers decides.
+	 */
+	reviewNote: 'Treatment is prescribed only after clinical review and may differ from your choice.',
+	/** Only ever shown for a treatment: a prescription delivers no days of anything. */
+	durationFor: (days: number) => `${days}-day treatment`,
 	action: 'Go to checkout',
 	changeAction: 'Choose a different plan',
 	ordering: 'Opening your checkout',
-	trust: ['Ongoing medical support', 'Pause or cancel anytime'],
-	totalNote: 'Prices come from the shop. The total is confirmed at checkout, where the payment is taken.'
+	trust: ['Ongoing medical support', 'Pause or cancel anytime']
 } as const;
 
 /**

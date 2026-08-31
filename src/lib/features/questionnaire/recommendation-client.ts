@@ -1,4 +1,5 @@
-import type { RecommendedPlan } from './recommendation';
+import type { Money } from '$lib/domain';
+import type { RecommendedOption, RecommendedPlan } from './recommendation';
 
 /**
  * The browser half of the recommendation. It asks Solean's own endpoint rather than RxScale
@@ -18,27 +19,37 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 	return typeof value === 'object' && value !== null;
 }
 
-function isMoney(value: unknown): boolean {
+function isMoney(value: unknown): value is Money {
 	return isRecord(value) && typeof value.amount === 'number' && value.currency === 'EUR';
 }
 
 /**
  * The body is our own endpoint's, and is still validated: a plan that arrives without a
- * variant id or a price would render as a button that cannot buy anything.
+ * variant id or a price would render as a button that cannot buy anything. Rebuilt field by
+ * field rather than passed through, so nothing the endpoint grows later arrives unread.
  */
+function toOption(value: unknown): RecommendedOption | null {
+	if (!isRecord(value)) return null;
+	if (typeof value.variantId !== 'string' || value.variantId.length === 0) return null;
+	if (typeof value.label !== 'string' || !isMoney(value.price)) return null;
+
+	return {
+		variantId: value.variantId,
+		label: value.label,
+		price: value.price,
+		therapyDays: typeof value.therapyDays === 'number' ? value.therapyDays : null,
+		preSelected: value.preSelected === true
+	};
+}
+
 function toPlan(value: unknown): RecommendedPlan | null {
 	if (!isRecord(value)) return null;
 	if (typeof value.id !== 'string' || typeof value.name !== 'string') return null;
 	if (!Array.isArray(value.options)) return null;
 
-	const options = value.options.filter(
-		(option): option is RecommendedPlan['options'][number] =>
-			isRecord(option) &&
-			typeof option.variantId === 'string' &&
-			option.variantId.length > 0 &&
-			typeof option.label === 'string' &&
-			isMoney(option.price)
-	);
+	const options = value.options
+		.map(toOption)
+		.filter((option): option is RecommendedOption => option !== null);
 
 	if (options.length === 0) return null;
 
@@ -83,14 +94,4 @@ export async function fetchRecommendation(
 	if (!plans) return { ok: false, reason: 'unavailable' };
 
 	return { ok: true, plans: plans.map(toPlan).filter((plan): plan is RecommendedPlan => plan !== null) };
-}
-
-/** RxScale's own default, and the first option when it names none. */
-export function defaultVariant(plans: RecommendedPlan[]): string | null {
-	for (const plan of plans) {
-		const preSelected = plan.options.find((option) => option.preSelected);
-		if (preSelected) return preSelected.variantId;
-	}
-
-	return plans[0]?.options[0]?.variantId ?? null;
 }

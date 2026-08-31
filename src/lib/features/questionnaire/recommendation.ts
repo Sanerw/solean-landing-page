@@ -11,6 +11,12 @@ export interface RecommendedOption {
 	variantId: string;
 	label: string;
 	price: Money;
+	/**
+	 * How many days of treatment the SKU covers, when RxScale records one. Null is common:
+	 * a listing without a duration says nothing about how long it lasts, and a screen that
+	 * invented a number would be quoting a course of medication nobody promised.
+	 */
+	therapyDays: number | null;
 	/** RxScale's own default for this plan. */
 	preSelected: boolean;
 }

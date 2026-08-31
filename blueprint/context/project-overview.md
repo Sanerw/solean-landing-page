@@ -232,8 +232,10 @@ Rules that bind every feature from 9 onward:
   built here.
 - **A prescription-only listing is a different purchase.** `sku.digital` marks
   the ones where the signed prescription is all that is sold, at a fraction of
-  the price and with nothing dispensed or delivered, so they are shown under
-  their own heading and never beside a treatment price.
+  the price and with nothing dispensed or delivered, so they are shown in a
+  panel of their own and never beside a treatment price. The choice screen
+  switches between the two rather than listing them together, and switching
+  takes the selection with it.
 - The `buyerIdentity` e-mail is read from the answers by a configured question
   name. It is a prefill, not a condition: Shopify collects the address at
   checkout, so an order without one is complete rather than unreachable. The

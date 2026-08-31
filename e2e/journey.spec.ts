@@ -80,7 +80,7 @@ test('a visitor walks from the landing page to the shop', async ({ page }) => {
 	// The submission happened on that last Continue, and the recommendation follows from it.
 	await expect(page).toHaveURL('/questionnaire/complete');
 	await expect(page.getByRole('heading', { name: 'Choose your treatment' })).toBeVisible();
-	await expect(page.getByRole('heading', { name: 'Your treatment.' })).toBeVisible();
+	await expect(page.getByRole('tab', { name: 'Treatment' })).toBeVisible();
 
 	// The plan RxScale pre-selected is taken as offered: what this walk is about is that the
 	// two screens connect, not which of them was picked.

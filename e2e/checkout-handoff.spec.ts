@@ -11,7 +11,7 @@ import {
 	writeAnswers
 } from './answers';
 import { FIXTURE_PRESCRIPTION_VARIANT_ID } from './fixture';
-import { confirmPlan } from './recommendation';
+import { confirmPlan, type PlanChoice } from './recommendation';
 
 /**
  * The handoff itself. The fixture stands in for the Shopify Storefront API and for the page a
@@ -35,14 +35,14 @@ function checkoutCalls(page: Page): string[] {
 async function atRecommendation(
 	page: Page,
 	answers: Record<string, unknown>,
-	plan?: string | RegExp
+	choice: PlanChoice = {}
 ): Promise<void> {
 	await seedAnswers(page, answers);
 	await page.goto(LAST_STEP);
 	await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled();
 	await page.getByRole('button', { name: 'Continue' }).click();
 	await expect(page).toHaveURL('/questionnaire/complete');
-	await confirmPlan(page, plan);
+	await confirmPlan(page, choice);
 }
 
 test('the order is created by the press, and lands exactly where Shopify said', async ({
@@ -198,7 +198,10 @@ test('the plan the visitor picks is the plan the cart is built from', async ({ p
 
 	// The prescription, not the pre-selected treatment: the choice has to survive the screen
 	// it was made on, and this is the pair a person is most likely to get wrong money on.
-	await atRecommendation(page, WITH_EMAIL, /Digital-Rezept 49\.90 EUR/);
+	await atRecommendation(page, WITH_EMAIL, {
+		mode: 'prescription',
+		plan: /Digital-Rezept 49\.90 EUR/
+	});
 
 	await page.getByRole('button', { name: 'Go to checkout' }).click();
 

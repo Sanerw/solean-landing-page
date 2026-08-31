@@ -70,6 +70,18 @@ function doseLabel(sku: Record<string, unknown>, shopData: Record<string, unknow
 	return displayed.endsWith('Default Title') ? '' : displayed;
 }
 
+/**
+ * `therapy_duration` arrives as a number on some listings and as a string on others, and is
+ * absent on the rest. Only a whole positive count of days is worth showing: anything else is
+ * a value we do not understand, and the screen says nothing rather than guessing.
+ */
+function therapyDays(sku: Record<string, unknown>): number | null {
+	const raw = sku.therapy_duration;
+	const days = typeof raw === 'number' ? raw : typeof raw === 'string' ? Number(raw) : NaN;
+
+	return Number.isInteger(days) && days > 0 ? days : null;
+}
+
 function offersIn(
 	entry: Record<string, unknown>,
 	storeDomain: string
@@ -96,6 +108,7 @@ function offersIn(
 			variantId: variant.id,
 			label: doseLabel(sku, record(offer.shop_data)),
 			price: eur(variant.price),
+			therapyDays: therapyDays(sku),
 			preSelected: offer.pre_selected === true
 		});
 	}
