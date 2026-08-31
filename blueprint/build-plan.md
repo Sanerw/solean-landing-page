@@ -369,6 +369,13 @@ claims are not approved production content.
   `design/mobile/prio_one_landing_page_men_mobile.html`, while preserving the
   existing desktop experience.
 
+- [x] 16. **Mobile menu panel** - Give the opened mobile menu the reference's
+  full-screen treatment: numbered navigation rows in display type under the
+  offer bar, a logo-and-close header aligned with the closed state, a gold
+  primary CTA, and a utilities row. Carries three hero refinements agreed
+  during review: the viewport-minus-offer-bar height, a larger mobile headline,
+  and a scrim that darkens the photograph instead of tinting it green.
+
 ## Testing
 
 **Decided, then deferred at 9a.** The plan was to run `/tests` before feature 9;

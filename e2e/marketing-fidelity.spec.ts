@@ -46,10 +46,15 @@ test('the announcement and reference hero asset render without narrow-screen ove
 	expect(heroBox?.width).toBe(375);
 	await expect(hero).toHaveCSS('border-top-left-radius', '0px');
 
-	// Read the viewport rather than repeating the literal set above, so the claim stays
-	// "at least one screen tall" if the test's own viewport ever changes.
+	// The bar and the hero together fill exactly one screen: the hero takes the viewport
+	// minus the offer bar, so the fold lands at the hero's edge rather than inside it.
+	// Read from the page rather than repeating the literals set above.
 	const viewportHeight = await page.evaluate(() => window.innerHeight);
-	expect(heroBox?.height).toBeGreaterThanOrEqual(viewportHeight);
+	const barBox = await announcement.boundingBox();
+	expect(Math.round(barBox!.height + heroBox!.height)).toBe(viewportHeight);
+
+	// The narrow frame carries the headline a step up the scale from the wide one.
+	await expect(page.getByRole('heading', { level: 1 })).toHaveCSS('font-size', '48px');
 
 	// One heading, and only the visible branch reaches the accessibility tree: the
 	// unused copy is display:none, which removes it rather than merely hiding it.
@@ -298,4 +303,77 @@ test('dissolves the care artwork into the band and restores the review column', 
 	});
 	expect(order.heading).toBeLessThan(order.image);
 	expect(order.image).toBeLessThan(order.quote);
+});
+
+test('the mobile menu opens as the reference full-screen panel', async ({ page }) => {
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto('/');
+
+	const announcementBar = page.getByRole('complementary', { name: 'Wegovy Pill offer' });
+	const trigger = page.getByRole('button', { name: 'Open menu' });
+	const closedLogo = await page.getByLabel('Solean, home').locator('svg').first().boundingBox();
+	const closedTrigger = await trigger.boundingBox();
+
+	await trigger.click();
+	const panel = page.getByRole('dialog');
+	await expect(panel).toBeVisible();
+
+	// Sits under the offer bar on the deep green ground, not over the whole viewport.
+	// Polled, because the panel is still sliding in when it first becomes visible.
+	const barHeight = (await announcementBar.boundingBox())!.height;
+	expect(barHeight).toBe(64);
+	await expect
+		.poll(async () => {
+			const box = await panel.boundingBox();
+			return { x: box?.x, y: box?.y, width: box?.width };
+		})
+		.toEqual({ x: 0, y: barHeight, width: 390 });
+	await expect(panel).toHaveCSS('background-color', 'rgb(23, 56, 36)');
+	// The offer bar stays readable: the scrim starts at the panel, not above it.
+	expect((await page.getByRole('complementary', { name: 'Wegovy Pill offer' }).boundingBox())?.y).toBe(0);
+
+	// The logo and the button do not move when the menu opens.
+	expect(await panel.getByLabel('Solean, home').locator('svg').boundingBox()).toMatchObject(closedLogo!);
+	expect(await page.getByRole('button', { name: 'Close menu' }).boundingBox()).toMatchObject(closedTrigger!);
+
+	// Every label starts on the same line, whatever the width of its number.
+	const labelLefts = await panel
+		.locator('nav li span.font-display')
+		.evaluateAll((els) => els.map((e) => e.getBoundingClientRect().left));
+	expect(labelLefts).toHaveLength(5);
+	expect(new Set(labelLefts).size).toBe(1);
+
+	// Treatments is one destination here, not a list of its products.
+	await expect(panel.getByText('Mounjaro Injection')).toHaveCount(0);
+
+	// Numbered rows in display type, one per nav item, in order.
+	await expect(panel.getByText(/^0[1-5]$/)).toHaveCount(5);
+	const home = panel.getByRole('link', { name: /01\s*Home/ });
+	await expect(home).toBeVisible();
+	await expect(panel.getByText('Home', { exact: true })).toHaveCSS('font-size', '30px');
+
+	// Destinations and inert state are unchanged: Treatments and About Us promise nothing.
+	await expect(home).toHaveAttribute('href', '/');
+	await expect(panel.getByRole('link', { name: /Learn/ })).toHaveAttribute('href', '/learn');
+	await expect(panel.getByRole('link', { name: /Treatments/ })).toHaveCount(0);
+	await expect(panel.getByRole('link', { name: /About Us/ })).toHaveCount(0);
+
+	// The CTA reaches the funnel and closes the panel behind it.
+	const cta = panel.getByRole('link', { name: 'Check your eligibility' });
+	await expect(cta).toHaveAttribute('href', '/questionnaire');
+
+	// Escape and the close button both return focus to the trigger.
+	await page.keyboard.press('Escape');
+	await expect(panel).toBeHidden();
+	await expect(trigger).toBeFocused();
+
+	await trigger.click();
+	await page.getByRole('button', { name: 'Close menu' }).click();
+	await expect(panel).toBeHidden();
+	await expect(trigger).toBeFocused();
+
+	// The desktop header still uses its own navigation, not this panel.
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await expect(page.getByRole('button', { name: 'Open menu' })).toBeHidden();
+	await expect(page.getByRole('button', { name: 'Treatments' })).toBeVisible();
 });

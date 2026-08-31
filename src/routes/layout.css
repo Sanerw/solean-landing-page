@@ -51,6 +51,11 @@
 	--primary: #E2B64F;
 	--primary-foreground: #172019;
 	--primary-hover: #D9971C;
+	/* The hero scrim. Not --foreground: the brand green is light enough to cast the
+	   photograph green rather than darken it. The artboards use #071D10 (wide) and
+	   #041309 (narrow); the narrow one serves both, because three points of green
+	   are invisible next to the alpha difference and one token beats two. */
+	--scrim: #041309;
 	--announcement: #0C2517;
 	--announcement-foreground: #FFFFFF;
 	--secondary: #F7F8F5;
@@ -159,6 +164,9 @@
 	--font-sans: 'DM Sans Variable', 'DM Sans Fallback', ui-sans-serif, system-ui, sans-serif;
 	--font-display: 'Inter Tight Variable', 'Inter Tight Fallback', ui-sans-serif, system-ui, sans-serif;
 	--spacing-hero-frame: calc(100svh - 5rem);
+	/* The narrow hero fills what the offer bar leaves, and the bar is 64px, then 44px. */
+	--spacing-hero-bleed: calc(100svh - 4rem);
+	--spacing-hero-bleed-sm: calc(100svh - 2.75rem);
 
 	--color-background: var(--background);
 	--color-foreground: var(--foreground);
@@ -169,6 +177,7 @@
 	--color-primary: var(--primary);
 	--color-primary-foreground: var(--primary-foreground);
 	--color-primary-hover: var(--primary-hover);
+	--color-scrim: var(--scrim);
 	--color-announcement: var(--announcement);
 	--color-announcement-foreground: var(--announcement-foreground);
 	--color-secondary: var(--secondary);

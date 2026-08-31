@@ -13,7 +13,7 @@
      radius return with the wider composition. -->
 <div class="sm:px-3 sm:py-3">
 	<section
-		class="relative isolate flex min-h-svh flex-col overflow-hidden sm:rounded-xl lg:h-hero-frame lg:min-h-0"
+		class="relative isolate flex min-h-hero-bleed flex-col overflow-hidden sm:min-h-hero-bleed-sm sm:rounded-xl lg:h-hero-frame lg:min-h-0"
 		aria-labelledby="hero-heading"
 	>
 		<!-- One asset, cropped by object-position rather than a second source: the narrow
@@ -25,15 +25,14 @@
 			class="absolute inset-0 -z-10 size-full object-cover object-[86%_center] sm:object-center"
 		/>
 
-		<!-- The export layers a light colour wash over a directional scrim. Keeping them
-		     separate preserves the photograph while the header and lower overlays stay legible.
-		     The narrow crop keeps the sunlit facade and the pale pavement, so its scrim runs
-		     heavier than the wide one: these stops reproduce the reference's own contrast
-		     profile with --foreground, which is lighter than the colour the export picked. -->
-		<div aria-hidden="true" class="absolute inset-0 -z-10 bg-foreground/15"></div>
+		<!-- Each artboard darkens differently, so each is followed rather than averaged. The
+		     wide one lays a flat wash under a 28-to-72 percent scrim; the narrow one carries
+		     no wash and runs 45 to 90, because its crop keeps the sunlit facade and the pale
+		     pavement that the wide composition crops out. -->
+		<div aria-hidden="true" class="absolute inset-0 -z-10 sm:bg-scrim/15"></div>
 		<div
 			aria-hidden="true"
-			class="absolute inset-0 -z-10 bg-gradient-to-b from-foreground/45 via-foreground/75 to-foreground/95 sm:via-foreground/55 sm:to-foreground/75"
+			class="absolute inset-0 -z-10 bg-gradient-to-b from-scrim/45 via-scrim/70 to-scrim/90 sm:from-scrim/30 sm:via-scrim/55 sm:to-scrim/70"
 		></div>
 
 		<SiteHeader variant="overlay" />
@@ -45,7 +44,7 @@
 				<!-- Each branch is display:none when it is not the live one, so the accessibility
 				     tree only ever carries the copy actually on screen. -->
 				<p
-					class="inline-block rounded-full border border-background/30 px-4 py-1.5 text-xs font-semibold uppercase tracking-widest text-background"
+					class="inline-block rounded-full border border-background/30 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-background sm:px-4 sm:py-1.5"
 				>
 					<span class="sm:hidden">{HERO.mobile.eyebrow}</span>
 					<span class="hidden sm:inline">{HERO.eyebrow}</span>
@@ -53,7 +52,7 @@
 
 				<h1
 					id="hero-heading"
-					class="mt-4 max-w-5xl text-balance font-display text-4xl font-medium leading-none tracking-tight text-background sm:text-4xl lg:text-5xl xl:text-6xl"
+					class="mt-4 max-w-5xl text-balance font-display text-5xl font-medium leading-none tracking-tight text-background sm:text-4xl lg:text-5xl xl:text-6xl"
 				>
 					<!-- The narrow frame drops the struck phrase: at this measure the rule breaks
 					     across lines and reads as two struck words rather than one struck idea. -->
