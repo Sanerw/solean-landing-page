@@ -284,9 +284,11 @@ prices, stats. DM Sans (`--font-sans`) for everything else.
 `#173824`, warm sand `--background` `#FBFAF7`. `--rating` `#00B67A` is for stars
 only. Base `--radius: 1.25rem`, stock radius classes, pills use `rounded-full`.
 
-**Focus:** `--ring` is deep green `#173824`. Default
-`focus-visible:ring-2 ring-ring ring-offset-2 ring-offset-background`; gold ring
-only on dark surfaces.
+**Focus:** `--ring` is deep green `#173824`. Buttons, links and other
+non-field controls take `focus-visible:ring-2 ring-ring ring-offset-2
+ring-offset-background`; gold ring only on dark surfaces. **Form fields** take
+`focus-visible:border-ring ring-[3px] ring-ring/20` instead: the border itself
+goes solid deep green and the halo sits against it with no offset.
 
 **Destructive is provisional.** `--destructive` `#C34E45` with white foreground
 is approved for this build and still needs final brand review, with a darker
@@ -294,7 +296,9 @@ is approved for this build and still needs final brand review, with a darker
 the RxScale validation errors.
 
 **Stock Tailwind scales only.** No arbitrary visual values. SVG geometry,
-`viewBox`, path data, and data-driven values are exempt.
+`viewBox`, path data, and data-driven values are exempt, and so is the form
+field's `ring-[3px]`: the stock ring scale steps 2 to 4, and neither reads as
+the intended halo. It is the one recorded exception, not a precedent.
 
 **Dark mode is out of scope.**
 
@@ -304,7 +308,7 @@ the RxScale validation errors.
 | --- | --- |
 | `/` | Landing page: hero, product story, social proof, FAQ, footer |
 | `/learn/blog/[slug]` | Learn article with ToC, comparison, related content |
-| `/questionnaire/[step]` | Every survey page, interlude, and the recommendation screen |
+| `/questionnaire/[step]` | Every survey page, interlude, and the two completion screens: the plan choice, then the order |
 | `GET /api/recommendation` | Server endpoint: what RxScale recommends for one anamnesis, trimmed for the screen |
 | `POST /api/checkout` | Server endpoint: checks the chosen variant against the recommendation, creates the Shopify cart, returns the URL to redirect to |
 
@@ -323,8 +327,9 @@ Development surfaces, not public routes:
 Twenty-two adapted primitives from features 1 and 3a: `button`, `input`,
 `textarea`, `label`, `select`, `checkbox`, `radio-group`, `card`, `badge`,
 `separator`, `dialog`, `sheet`, `accordion`, `field`, `input-group`, `progress`,
-`navigation-menu`, `tabs`, `carousel`, `alert`, `breadcrumb`, `collapsible`.
-Still deferred: `popover`, `tooltip`, `sonner`, `skeleton`, `chart`.
+`navigation-menu`, `tabs`, `carousel`, `alert`, `breadcrumb`, `collapsible`, and
+three more the date question needed: `popover`, `calendar`, `date-picker`.
+Still deferred: `tooltip`, `sonner`, `skeleton`, `chart`.
 
 Question types map to primitives through a registry keyed by the model's type:
 single choice to `RadioGroup`, multiple choice to `Checkbox`, dropdown to

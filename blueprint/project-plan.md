@@ -424,9 +424,15 @@ destructive focus states. The rating green is never a success, validation, or
 destructive colour.
 
 `--ring` is the deep green `#173824`, not gold: the gold ring was too close to
-the gold primary button. Default treatment is `focus-visible:ring-2
-ring-ring ring-offset-2 ring-offset-background`, with a gold ring only on dark
-surfaces where deep green would be invisible. Full contrast measurements and the
+the gold primary button. Buttons, links and other non-field controls take
+`focus-visible:ring-2 ring-ring ring-offset-2 ring-offset-background`, with a
+gold ring only on dark surfaces where deep green would be invisible.
+
+Form fields diverged later. `input`, `textarea`, `select-trigger` and
+`input-group` take `focus-visible:border-ring ring-[3px] ring-ring/20`: the
+border goes solid deep green and a soft halo sits directly against it, with no
+offset. The `3px` is the single accepted arbitrary visual value in the project,
+because the stock ring scale steps straight from 2 to 4. Full contrast measurements and the
 button, hover/active, and Textarea/Select specifications are in
 `blueprint/reference/design-system.md`.
 
@@ -467,8 +473,11 @@ Button's stable API has seven variants: `default`, `inverse`, `secondary`,
 `outline`, `ghost`, `link`, and `destructive`; and four sizes: `sm`, `default`,
 `lg`, and `icon`.
 
-Still deferred until a feature proves it genuinely needs one: `popover`,
-`tooltip`, `sonner`, `skeleton`, `chart`.
+`popover`, with `calendar` and `date-picker`, was added later when the model's
+date question needed a bounded picker instead of the browser's own widget.
+
+Still deferred until a feature proves it genuinely needs one: `tooltip`,
+`sonner`, `skeleton`, `chart`.
 
 **Installing a shadcn primitive is not completion. Each primitive must be
 visually adapted to the Solean design reference using semantic tokens and

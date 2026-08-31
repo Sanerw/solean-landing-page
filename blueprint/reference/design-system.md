@@ -202,7 +202,8 @@ The gold `--ring` was insufficient: too close to the gold primary button and
 weak on the warm background. **`--ring` is now `#173824`, the deep green
 foreground.**
 
-Default treatment on every focusable component:
+Default treatment on buttons, links, and every focusable component that is not
+a form field:
 
 ```
 focus-visible:ring-2
@@ -213,6 +214,22 @@ focus-visible:ring-offset-background
 
 No permanent outline when focus is not keyboard-visible. The offset must create
 real separation between the component and the ring.
+
+**Form fields take a different treatment.** `input`, `textarea`,
+`select-trigger` and `input-group`:
+
+```
+focus-visible:border-ring
+focus-visible:ring-[3px]
+focus-visible:ring-ring/20
+```
+
+The separation the offset provides elsewhere comes from the border here: it goes
+solid `--ring` on focus, and the halo reads against it rather than against the
+page. `ring-[3px]` is the one arbitrary visual value the project accepts, since
+the stock scale steps from 2 to 4 and neither width reads as this halo. An
+invalid field swaps the halo for `ring-destructive/20` and keeps the destructive
+border.
 
 Measured, focus indicators need 3:1:
 
@@ -440,10 +457,12 @@ whole library.
 
 ### Deferred
 
-`popover`, `tooltip`, `sonner`, `skeleton`, `chart`
+`tooltip`, `sonner`, `skeleton`, `chart`
 
 Deferred until a feature proves it genuinely needs one. Adding it then is
-allowed and carries the adaptation requirement with it.
+allowed and carries the adaptation requirement with it. `popover`, `calendar`
+and `date-picker` were on this list until the questionnaire's date question
+needed a bounded picker, and were adapted when they came off it.
 
 ### What adapting a primitive means
 

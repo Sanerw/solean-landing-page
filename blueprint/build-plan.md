@@ -114,8 +114,9 @@ when the difference is only visual styling.
 
 Feature 3a adds and adapts `field`, `input-group`, `progress`,
 `navigation-menu`, `tabs`, `carousel`, `alert`, `breadcrumb`, and `collapsible`.
-Still deferred until a feature proves it genuinely needs one: `popover`,
-`tooltip`, `sonner`, `skeleton`, `chart`.
+Still deferred until a feature proves it genuinely needs one: `tooltip`,
+`sonner`, `skeleton`, `chart`. `popover`, `calendar` and `date-picker` were
+deferred until the date question proved it needed them.
 
 "Learn more" is a link or a dialog, not a tooltip by default. Not every visual
 panel needs to be a shadcn `Card`. Question types map to primitives through a
