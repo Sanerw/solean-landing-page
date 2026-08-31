@@ -72,6 +72,29 @@ function userErrors(...messages) {
 	return { data: { cartCreate: { cart: null, userErrors: errors } } };
 }
 
+/**
+ * Shopify attributes a refusal to the input it rejected, and the app decides whether to
+ * answer a refusal by reading that path. A stand-in that reported every complaint the same
+ * way could not tell the two cases apart.
+ */
+function fieldError(field, message) {
+	return { data: { cartCreate: { cart: null, userErrors: [{ field, message, code: 'INVALID' }] } } };
+}
+
+/**
+ * Roughly the shop's own verdict, not a copy of it: the live store refuses `niepoprawny` and
+ * `a@b` alike. What the harness needs is that some addresses draw the refusal and what its
+ * shape is, because the address rule belongs to Shopify and is not ours to restate.
+ */
+const DELIVERABLE_EMAIL = /^[^@\s]+@[^@\s.]+\.[^@\s]+$/;
+
+/** What each created cart was built with, so the checkout page can report its prefill. */
+const carts = new Map();
+
+function escape(value) {
+	return value.replace(/[&<>"]/g, (character) => `&#${character.charCodeAt(0)};`);
+}
+
 /** The order-level attribute rule, checked where breaking it would otherwise go unnoticed. */
 function cartComplaint(input) {
 	const lines = input?.lines ?? [];
@@ -121,9 +144,12 @@ const server = createServer(async (request, response) => {
 		return;
 	}
 
-	// The page a checkout link leads to. Real enough to navigate to and assert on.
+	// The page a checkout link leads to. Real enough to navigate to and assert on. It reports
+	// the prefill its own cart was created with, so a test can read that off the page it lands
+	// on rather than off counters this server shares between parallel workers.
 	if (request.method === 'GET' && pathname.startsWith('/checkout/')) {
-		const page = '<!doctype html><meta charset="utf-8"><title>Fixture checkout</title><h1>Fixture checkout</h1>';
+		const prefill = carts.get(pathname.slice('/checkout/'.length))?.email || 'none';
+		const page = `<!doctype html><meta charset="utf-8"><title>Fixture checkout</title><h1>Fixture checkout</h1><p data-testid="prefill">${escape(prefill)}</p>`;
 		response.writeHead(200, {
 			'content-type': 'text/html; charset=utf-8',
 			'content-length': Buffer.byteLength(page)
@@ -158,11 +184,20 @@ const server = createServer(async (request, response) => {
 			return;
 		}
 
+		// The model does not validate the e-mail question, so an address the shop will not take
+		// is a walk anybody can mistype their way into.
+		if (email && !DELIVERABLE_EMAIL.test(email)) {
+			send(response, 200, fieldError(['input', 'buyerIdentity', 'email'], 'Email ist ungültig'));
+			return;
+		}
+
 		cartCount += 1;
+		const id = `fixture-${cartCount}`;
+		carts.set(id, { email });
 		send(response, 200, {
 			data: {
 				cartCreate: {
-					cart: { checkoutUrl: `http://localhost:${PORT}/checkout/fixture-${cartCount}` },
+					cart: { checkoutUrl: `http://localhost:${PORT}/checkout/${id}` },
 					userErrors: []
 				}
 			}

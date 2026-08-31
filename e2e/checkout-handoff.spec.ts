@@ -3,6 +3,7 @@ import {
 	anamnesisKey,
 	answersKey,
 	EVERY_ANSWER,
+	MALFORMED_EMAIL,
 	REFUSED_CHECKOUT,
 	seedAnswers,
 	UNREACHABLE_CHECKOUT,
@@ -73,6 +74,10 @@ test('the order is created by the press, and lands exactly where Shopify said', 
 	expect(issued).not.toBeNull();
 	expect(page.url()).toBe(issued);
 	expect(calls).toHaveLength(1);
+
+	// An address the shop accepts is still sent, so the refusal path cannot pass by dropping
+	// every prefill.
+	await expect(page.getByTestId('prefill')).toHaveText('jonas@example.com');
 });
 
 test('a service that refuses the line says so, and stays where it is', async ({ page }) => {
@@ -103,6 +108,24 @@ test('a service that does not answer offers the retry, and stays where it is', a
 	await expect.poll(() => calls.length).toBe(2);
 	await expect(page.getByText('We could not reach the checkout')).toBeVisible();
 	await expect(page).toHaveURL('/questionnaire/complete');
+});
+
+test('an e-mail the shop refuses is dropped rather than allowed to end the order', async ({
+	page
+}) => {
+	const calls = checkoutCalls(page);
+	await atRecommendation(page, MALFORMED_EMAIL);
+
+	await page.getByRole('button', { name: 'Place your order' }).click();
+
+	await expect(page.getByRole('heading', { name: 'Fixture checkout' })).toBeVisible();
+
+	// The cart that exists was built without the prefill. That is the whole rule: the e-mail is
+	// a convenience, and Shopify asks for an address at checkout either way.
+	await expect(page.getByTestId('prefill')).toHaveText('none');
+
+	// One press, one order. The refusal carried no cart, so answering it left exactly one.
+	expect(calls).toHaveLength(1);
 });
 
 test('an answer set with no e-mail still reaches the checkout', async ({ page }) => {

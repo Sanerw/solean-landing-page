@@ -102,32 +102,44 @@ function record(value: unknown): Record<string, unknown> | null {
 
 /**
  * `userErrors` is Shopify's refusal channel and arrives with a 200, so the body decides
- * whether a cart exists, not the status.
+ * whether a cart exists, not the status. The errors come back as well as the URL, because
+ * which input they name decides whether the refusal is worth answering.
  */
-function checkoutUrlIn(body: unknown): string | null {
+function cartCreateIn(body: unknown): { url: string | null; errors: unknown[] } {
 	const created = record(record(record(body)?.data)?.cartCreate);
-	const errors = created?.userErrors;
-
-	if (Array.isArray(errors) && errors.length > 0) return null;
-
+	const raw = created?.userErrors;
+	const errors = Array.isArray(raw) ? raw : [];
 	const url = record(created?.cart)?.checkoutUrl;
+	if (errors.length > 0 || typeof url !== 'string' || url.length === 0) {
+		return { url: null, errors };
+	}
 
-	return typeof url === 'string' && url.length > 0 ? url : null;
+	return { url, errors };
 }
 
 /**
- * Creates the cart and returns the URL Shopify gives back, untouched. The upstream error body
- * is deliberately not passed on: the caller gets a name instead.
+ * Shopify names the input path it rejected, as `["input", "buyerIdentity", "email"]`. Matched
+ * on its tail so the leading `input` is not load-bearing, and on the whole path rather than
+ * the message, which is localized: the live shop answers in German.
  */
-export async function createCart(anamnesisUid: string, email: string): Promise<CheckoutResult> {
-	const storeDomain = configured(env.SHOPIFY_STORE_DOMAIN);
-	const variantId = configured(env.SHOPIFY_VARIANT_ID);
+function isEmailError(error: unknown): boolean {
+	const field = record(error)?.field;
 
-	if (!storeDomain || !variantId) return { ok: false, reason: 'not-configured' };
+	return (
+		Array.isArray(field) &&
+		field.length >= 2 &&
+		field.at(-2) === 'buyerIdentity' &&
+		field.at(-1) === 'email'
+	);
+}
 
-	const input = buildCartInput({ anamnesisUid, email, variantId });
-	if ('ok' in input) return input;
+/** A refusal the e-mail alone explains is answerable; every other one is the shop's verdict. */
+interface CartAttempt {
+	result: CheckoutResult;
+	emailRefused: boolean;
+}
 
+async function postCart(storeDomain: string, input: CartInput): Promise<CartAttempt> {
 	// The shop answers without a token today, which is undocumented behaviour rather than a
 	// foundation, so it is sent when configured and its absence is not an error.
 	const token = configured(env.SHOPIFY_STOREFRONT_TOKEN);
@@ -144,10 +156,12 @@ export async function createCart(anamnesisUid: string, email: string): Promise<C
 			body: JSON.stringify({ query: CART_CREATE, variables: { input } })
 		});
 	} catch {
-		return { ok: false, reason: 'unavailable' };
+		return { result: { ok: false, reason: 'unavailable' }, emailRefused: false };
 	}
 
-	if (response.status >= 500) return { ok: false, reason: 'unavailable' };
+	if (response.status >= 500) {
+		return { result: { ok: false, reason: 'unavailable' }, emailRefused: false };
+	}
 
 	let body: unknown = null;
 	try {
@@ -156,9 +170,44 @@ export async function createCart(anamnesisUid: string, email: string): Promise<C
 		body = null;
 	}
 
-	if (!response.ok) return { ok: false, reason: 'refused' };
+	if (!response.ok) return { result: { ok: false, reason: 'refused' }, emailRefused: false };
 
-	const url = checkoutUrlIn(body);
+	const { url, errors } = cartCreateIn(body);
+	if (url) return { result: { ok: true, checkoutUrl: url }, emailRefused: false };
 
-	return url ? { ok: true, checkoutUrl: url } : { ok: false, reason: 'refused' };
+	return {
+		result: { ok: false, reason: 'refused' },
+		// Every complaint, not merely one of them: a cart refused for the line as well would
+		// be refused again without the e-mail, and the second answer would say less.
+		emailRefused: errors.length > 0 && errors.every(isEmailError)
+	};
+}
+
+/**
+ * Creates the cart and returns the URL Shopify gives back, untouched. The upstream error body
+ * is deliberately not passed on: the caller gets a name instead.
+ */
+export async function createCart(anamnesisUid: string, email: string): Promise<CheckoutResult> {
+	const storeDomain = configured(env.SHOPIFY_STORE_DOMAIN);
+	const variantId = configured(env.SHOPIFY_VARIANT_ID);
+
+	if (!storeDomain || !variantId) return { ok: false, reason: 'not-configured' };
+
+	const input = buildCartInput({ anamnesisUid, email, variantId });
+	if ('ok' in input) return input;
+
+	const attempt = await postCart(storeDomain, input);
+
+	// The e-mail is a prefill and never a condition, so an address the shop will not take is
+	// dropped rather than allowed to end the order: Shopify collects one at checkout anyway.
+	// A refusal carries no cart, so the order still costs exactly one.
+	if (attempt.emailRefused && input.buyerIdentity.email) {
+		// Rebuilt rather than edited, so the retry obeys the same rules as the first attempt.
+		const retry = buildCartInput({ anamnesisUid, email: '', variantId });
+		if ('ok' in retry) return retry;
+
+		return (await postCart(storeDomain, retry)).result;
+	}
+
+	return attempt.result;
 }

@@ -44,6 +44,13 @@ export const EVERY_ANSWER = {
 export const WITH_EMAIL = { ...EVERY_ANSWER, EMail: 'jonas@example.com' };
 
 /**
+ * The same walk with an e-mail the shop will not take. The model asks for the address in a
+ * plain text question with no validators, so this is a walk anybody can mistype their way
+ * into, and the order still has to go through: Shopify collects an address at checkout.
+ */
+export const MALFORMED_EMAIL = { ...EVERY_ANSWER, EMail: 'nicht-eine-adresse' };
+
+/**
  * The two checkout failures, asked for through the buyer's e-mail the way the submission
  * markers work, because the store domain is server configuration a browser cannot vary.
  */
