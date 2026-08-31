@@ -13,6 +13,12 @@ import howItWorksPanel from '$lib/assets/panels/how-it-works.jpg';
 import planPanel from '$lib/assets/panels/plan.jpg';
 import supportPanel from '$lib/assets/panels/support.jpg';
 import treatmentPanel from '$lib/assets/panels/treatment.jpg';
+import amexLogo from '$lib/assets/logos/american-express.png';
+import dhlLogo from '$lib/assets/logos/dhl.png';
+import euPharmacyBadge from '$lib/assets/logos/eu-pharmacy-badge.png';
+import klarnaLogo from '$lib/assets/logos/klarna.png';
+import mastercardLogo from '$lib/assets/logos/mastercard.png';
+import visaLogo from '$lib/assets/logos/visa.png';
 import danielPortrait from '$lib/assets/people/daniel-m.jpg';
 import eliasVossPortrait from '$lib/assets/people/elias-voss.jpg';
 import gredelPortrait from '$lib/assets/people/gredel.jpg';
@@ -188,16 +194,32 @@ export const CONTACT = {
 	]
 } as const;
 
+export interface SocialAccount {
+	icon: 'instagram' | 'facebook';
+	/** Accessible name; the button itself is icon only. */
+	label: string;
+	href: string;
+}
+
 export const FOOTER_BRAND = {
 	tagline: 'Better health, built around you',
 	deliveryTitle: 'Payment & delivery.',
 	deliveryBody: 'Trusted delivery and secure checkout',
 	shippingLabel: 'Shipping',
 	paymentsLabel: 'Payments',
-	// Named as text rather than shipped as trademarked logo art. See the spec's open decision.
-	shipping: ['DHL'],
-	payments: ['Visa', 'Mastercard', 'American Express', 'Klarna'],
+	shipping: [{ name: 'DHL', src: dhlLogo }],
+	payments: [
+		{ name: 'Visa', src: visaLogo },
+		{ name: 'Mastercard', src: mastercardLogo },
+		{ name: 'American Express', src: amexLogo },
+		{ name: 'Klarna', src: klarnaLogo }
+	],
 	pharmacyNote: 'Registered EU pharmacy',
+	pharmacyBadge: {
+		src: euPharmacyBadge,
+		// The badge art is Dutch; its own wording is the verification claim, not ours to translate.
+		alt: 'Registered EU pharmacy verification badge'
+	},
 	copyright: '© 2026 Solean',
 	legal: [
 		{ label: 'Privacy', href: '/privacy', inert: true },
@@ -205,9 +227,9 @@ export const FOOTER_BRAND = {
 		{ label: 'Accessibility', href: '/accessibility', inert: true }
 	] satisfies NavItem[],
 	social: [
-		{ name: 'Instagram', label: 'Solean on Instagram', href: 'https://instagram.com' },
-		{ name: 'Facebook', label: 'Solean on Facebook', href: 'https://facebook.com' }
-	]
+		{ icon: 'instagram', label: 'Solean on Instagram', href: 'https://instagram.com' },
+		{ icon: 'facebook', label: 'Solean on Facebook', href: 'https://facebook.com' }
+	] satisfies readonly SocialAccount[]
 } as const;
 
 export interface BentoCard {
