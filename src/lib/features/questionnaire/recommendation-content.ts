@@ -10,8 +10,10 @@ export const RECOMMENDATION = {
 	headline: 'Congratulations, you did it!',
 	body: [
 		'Your health profile is complete and a licensed doctor will review your answers.',
-		'Choose the plan you want and we will take you to checkout.'
+		'Your treatment choice is saved. Continue to checkout when you are ready.'
 	],
+	choiceHeadline: 'Choose your treatment',
+	choiceBody: 'Select the treatment or prescription you want to continue with.',
 	/**
 	 * The reference's third pill reads "Eligibility checked", which this product must not
 	 * claim: nothing here judges eligibility, and the doctor's review has not happened yet.
@@ -31,7 +33,9 @@ export const RECOMMENDATION = {
 		title: 'A doctor is reviewing your answers',
 		body: 'No plan has been matched to your profile yet. You can still place your order, and the doctor decides what is prescribed after reviewing what you told us.'
 	},
-	action: 'Place your order',
+	choiceAction: 'Continue',
+	action: 'Go to checkout',
+	changeAction: 'Choose a different plan',
 	ordering: 'Opening your checkout',
 	trust: ['Ongoing medical support', 'Pause or cancel anytime'],
 	totalNote: 'Prices come from the shop. The total is confirmed at checkout, where the payment is taken.'

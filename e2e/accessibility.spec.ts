@@ -1,6 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { expect, test, type Page } from '@playwright/test';
 import { EVERY_ANSWER, seedAnamnesis, seedAnswers } from './answers';
+import { confirmPlan } from './recommendation';
 
 /**
  * One automated pass over every surface a visitor sees. Axe proves a subset of accessibility
@@ -56,11 +57,15 @@ for (const step of QUESTION_STEPS) {
 	});
 }
 
-test('the recommendation screen has no serious accessibility violations', async ({ page }) => {
+test('both recommendation screens have no serious accessibility violations', async ({ page }) => {
 	await seedAnswers(page, EVERY_ANSWER);
 	await seedAnamnesis(page, 'anam-a11y');
 	await page.goto('/questionnaire/complete');
 	await expect(page.getByRole('heading', { name: 'Your treatment.' })).toBeVisible();
 
+	expect(await violations(page)).toEqual([]);
+
+	// The order screen is the other half of this step and is never reached without the choice.
+	await confirmPlan(page);
 	expect(await violations(page)).toEqual([]);
 });

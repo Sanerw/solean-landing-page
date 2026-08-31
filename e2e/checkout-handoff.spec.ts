@@ -11,6 +11,7 @@ import {
 	writeAnswers
 } from './answers';
 import { FIXTURE_PRESCRIPTION_VARIANT_ID } from './fixture';
+import { confirmPlan } from './recommendation';
 
 /**
  * The handoff itself. The fixture stands in for the Shopify Storefront API and for the page a
@@ -30,12 +31,18 @@ function checkoutCalls(page: Page): string[] {
 	return calls;
 }
 
-async function atRecommendation(page: Page, answers: Record<string, unknown>): Promise<void> {
+/** Through the submission and the choice, to the screen the order is placed on. */
+async function atRecommendation(
+	page: Page,
+	answers: Record<string, unknown>,
+	plan?: string | RegExp
+): Promise<void> {
 	await seedAnswers(page, answers);
 	await page.goto(LAST_STEP);
 	await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled();
 	await page.getByRole('button', { name: 'Continue' }).click();
 	await expect(page).toHaveURL('/questionnaire/complete');
+	await confirmPlan(page, plan);
 }
 
 test('the order is created by the press, and lands exactly where Shopify said', async ({
@@ -44,14 +51,15 @@ test('the order is created by the press, and lands exactly where Shopify said', 
 	const calls = checkoutCalls(page);
 	await atRecommendation(page, WITH_EMAIL);
 
-	const order = page.getByRole('button', { name: 'Place your order' });
+	const order = page.getByRole('button', { name: 'Go to checkout' });
 	await expect(order).toBeEnabled();
 
 	// Arriving orders nothing. Every checkout is a cart at Shopify, so reaching the screen,
-	// reloading it, or coming back to it must not create one.
+	// reloading it, or coming back to it must not create one. The reload also proves the
+	// choice was kept: a lost one would put the plans back on the screen instead.
 	expect(calls).toHaveLength(0);
 	await page.reload();
-	await expect(page.getByRole('button', { name: 'Place your order' })).toBeEnabled();
+	await expect(page.getByRole('button', { name: 'Go to checkout' })).toBeEnabled();
 	expect(calls).toHaveLength(0);
 
 	/**
@@ -67,7 +75,7 @@ test('the order is created by the press, and lands exactly where Shopify said', 
 		await route.fulfill({ response });
 	});
 
-	await page.getByRole('button', { name: 'Place your order' }).click();
+	await page.getByRole('button', { name: 'Go to checkout' }).click();
 
 	await expect(page.getByRole('heading', { name: 'Fixture checkout' })).toBeVisible();
 
@@ -85,7 +93,7 @@ test('a service that refuses the line says so, and stays where it is', async ({ 
 	const calls = checkoutCalls(page);
 	await atRecommendation(page, REFUSED_CHECKOUT);
 
-	await page.getByRole('button', { name: 'Place your order' }).click();
+	await page.getByRole('button', { name: 'Go to checkout' }).click();
 
 	await expect(page.getByText('Your order was not accepted')).toBeVisible();
 	await expect(page).toHaveURL('/questionnaire/complete');
@@ -99,7 +107,7 @@ test('a service that does not answer offers the retry, and stays where it is', a
 	const calls = checkoutCalls(page);
 	await atRecommendation(page, UNREACHABLE_CHECKOUT);
 
-	await page.getByRole('button', { name: 'Place your order' }).click();
+	await page.getByRole('button', { name: 'Go to checkout' }).click();
 
 	await expect(page.getByText('We could not reach the checkout')).toBeVisible();
 	await expect(page).toHaveURL('/questionnaire/complete');
@@ -117,7 +125,7 @@ test('an e-mail the shop refuses is dropped rather than allowed to end the order
 	const calls = checkoutCalls(page);
 	await atRecommendation(page, MALFORMED_EMAIL);
 
-	await page.getByRole('button', { name: 'Place your order' }).click();
+	await page.getByRole('button', { name: 'Go to checkout' }).click();
 
 	await expect(page.getByRole('heading', { name: 'Fixture checkout' })).toBeVisible();
 
@@ -137,7 +145,7 @@ test('an answer set with no e-mail still reaches the checkout', async ({ page })
 	// is an order to be completed there and not a dead end here.
 	await atRecommendation(page, EVERY_ANSWER);
 
-	await page.getByRole('button', { name: 'Place your order' }).click();
+	await page.getByRole('button', { name: 'Go to checkout' }).click();
 
 	await expect(page.getByRole('heading', { name: 'Fixture checkout' })).toBeVisible();
 	expect(calls).toHaveLength(1);
@@ -152,8 +160,9 @@ test('leaving takes the answers with it, and keeps what a return needs', async (
 	await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled();
 	await page.getByRole('button', { name: 'Continue' }).click();
 	await expect(page).toHaveURL('/questionnaire/complete');
+	await confirmPlan(page);
 
-	await page.getByRole('button', { name: 'Place your order' }).click();
+	await page.getByRole('button', { name: 'Go to checkout' }).click();
 	await expect(page.getByRole('heading', { name: 'Fixture checkout' })).toBeVisible();
 
 	// Back the way anyone would come back: the checkout is another origin, so the storage this
@@ -175,13 +184,11 @@ test('leaving takes the answers with it, and keeps what a return needs', async (
 
 	// The count and the action both described a walk this browser no longer holds.
 	await expect(page.getByText(/steps complete/)).toBeHidden();
-	await expect(page.getByRole('button', { name: 'Place your order' })).toBeHidden();
+	await expect(page.getByRole('button', { name: 'Go to checkout' })).toBeHidden();
 	await expect(page.getByText('Your checkout has already been opened')).toBeVisible();
 });
 
 test('the plan the visitor picks is the plan the cart is built from', async ({ page }) => {
-	await atRecommendation(page, WITH_EMAIL);
-
 	let ordered: string | null = null;
 	page.on('request', (request) => {
 		if (!request.url().includes('/api/checkout')) return;
@@ -189,10 +196,11 @@ test('the plan the visitor picks is the plan the cart is built from', async ({ p
 		ordered = body?.variantId ?? null;
 	});
 
-	// The prescription, not the pre-selected treatment: choosing has to reach the cart, and
-	// this is the pair a person is most likely to get wrong money on.
-	await page.getByRole('radio', { name: /Digital-Rezept 49\.90 EUR/ }).click();
-	await page.getByRole('button', { name: 'Place your order' }).click();
+	// The prescription, not the pre-selected treatment: the choice has to survive the screen
+	// it was made on, and this is the pair a person is most likely to get wrong money on.
+	await atRecommendation(page, WITH_EMAIL, /Digital-Rezept 49\.90 EUR/);
+
+	await page.getByRole('button', { name: 'Go to checkout' }).click();
 
 	await expect(page.getByRole('heading', { name: 'Fixture checkout' })).toBeVisible();
 	expect(ordered).toBe(FIXTURE_PRESCRIPTION_VARIANT_ID);
@@ -208,7 +216,7 @@ test('a variant nobody recommended is refused, and no cart is made', async ({ pa
 		await route.continue({ postData: JSON.stringify({ ...body, variantId: '49703591706957' }) });
 	});
 
-	await page.getByRole('button', { name: 'Place your order' }).click();
+	await page.getByRole('button', { name: 'Go to checkout' }).click();
 
 	await expect(page.getByText('That treatment is not available to you')).toBeVisible();
 	await expect(page).toHaveURL('/questionnaire/complete');

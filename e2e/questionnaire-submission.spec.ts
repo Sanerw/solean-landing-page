@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { anamnesisKey, EVERY_ANSWER, seedAnswers, WITH_EMAIL, writeAnswers } from './answers';
+import { confirmPlan } from './recommendation';
 
 /**
  * The submission itself. The fixture server answers the three documented outcomes, and asks
@@ -124,10 +125,6 @@ test('the recommendation presents what RxScale offers, prices included', async (
 	await page.getByRole('button', { name: 'Continue' }).click();
 	await expect(page).toHaveURL('/questionnaire/complete');
 
-	// The count comes from the plan, not from the artboard, which says eight whatever the
-	// model asks.
-	await expect(page.getByText('All 9 steps complete')).toBeVisible();
-
 	// Both groups, because a prescription with no medication is a different purchase and its
 	// lower price would read as a discount if it sat under the same heading.
 	await expect(page.getByRole('heading', { name: 'Your treatment.' })).toBeVisible();
@@ -150,6 +147,12 @@ test('the recommendation presents what RxScale offers, prices included', async (
 		page.getByRole('radio', { name: 'Fixture Treatment 0.25 mg Digital-Rezept 49.90 EUR' })
 	).not.toBeChecked();
 
-	// The order action is the handoff's, and covered by its own spec.
-	await expect(page.getByRole('button', { name: 'Place your order' })).toBeEnabled();
+	// Confirming the choice is what opens the order screen, and the handoff itself is covered
+	// by its own spec.
+	await confirmPlan(page);
+
+	// The count comes from the plan, not from the artboard, which says eight whatever the
+	// model asks.
+	await expect(page.getByText('All 9 steps complete')).toBeVisible();
+	await expect(page.getByRole('button', { name: 'Go to checkout' })).toBeEnabled();
 });

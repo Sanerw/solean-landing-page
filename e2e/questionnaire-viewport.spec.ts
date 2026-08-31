@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { selectDateOfBirth } from './date-picker';
+import { confirmPlan } from './recommendation';
 
 /**
  * Every step of the questionnaire, at the widths people actually use. The rule changes with
@@ -24,7 +25,7 @@ async function ready(page: Page, step: string): Promise<void> {
 async function fitsViewport(
 	page: Page,
 	step: string,
-	actionName: 'Continue' | 'Place your order' = 'Continue'
+	actionName: 'Continue' | 'Go to checkout' = 'Continue'
 ): Promise<void> {
 	const action = page.getByRole('button', { name: actionName });
 	await expect(action).toBeVisible();
@@ -138,7 +139,12 @@ for (const viewport of VIEWPORTS) {
 		await fitsViewport(page, 'page23');
 		await advance();
 
+		// Two screens share this step, and the plan cards make the first one the taller of them.
 		await expect(page).toHaveURL('/questionnaire/complete');
-		await fitsViewport(page, 'complete', 'Place your order');
+		await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled();
+		await fitsViewport(page, 'complete choice');
+
+		await confirmPlan(page);
+		await fitsViewport(page, 'complete order', 'Go to checkout');
 	});
 }

@@ -8,6 +8,7 @@ import {
 	THROUGH_DOB,
 	THROUGH_NAME
 } from './answers';
+import { confirmPlan } from './recommendation';
 
 /**
  * What holds the walk together around the questions: answers that survive a reload, a model
@@ -131,6 +132,7 @@ test('the completion screen reads the whole questionnaire as done', async ({ pag
 	await seedAnamnesis(page);
 
 	await page.goto('/questionnaire/complete');
+	await confirmPlan(page);
 
 	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Congratulations, you did it!');
 	await expect

@@ -10,6 +10,12 @@ import type { AnswerData } from './answers';
  */
 const ANSWERS_PREFIX = 'solean:questionnaire:';
 const ANAMNESIS_PREFIX = 'solean:anamnesis:';
+const RECOMMENDATION_PREFIX = 'solean:recommendation:';
+
+export interface RecommendationChoice {
+	confirmed: true;
+	variantId: string | null;
+}
 
 /** Version included, so a model change cannot resume against answers to the old one. */
 export function answerStorageKey(identifier: string, version: string): string {
@@ -22,6 +28,11 @@ export function answerStorageKey(identifier: string, version: string): string {
  */
 export function anamnesisStorageKey(identifier: string, version: string): string {
 	return `${ANAMNESIS_PREFIX}${identifier}@${version}`;
+}
+
+/** The recommendation choice belongs to the same versioned questionnaire session. */
+export function recommendationStorageKey(identifier: string, version: string): string {
+	return `${RECOMMENDATION_PREFIX}${identifier}@${version}`;
 }
 
 /** Storage can be unavailable or full, and neither is a reason to lose the questionnaire. */
@@ -75,6 +86,40 @@ export function saveAnamnesisUid(key: string, uid: string): void {
 	}
 }
 
+export function loadRecommendationChoice(key: string): RecommendationChoice | null {
+	const raw = storage()?.getItem(key);
+	if (!raw) return null;
+
+	try {
+		const parsed: unknown = JSON.parse(raw);
+		if (typeof parsed !== 'object' || parsed === null) return null;
+
+		const value = parsed as Record<string, unknown>;
+		if (value.confirmed !== true) return null;
+		if (value.variantId !== null && typeof value.variantId !== 'string') return null;
+
+		return { confirmed: true, variantId: value.variantId };
+	} catch {
+		return null;
+	}
+}
+
+export function saveRecommendationChoice(key: string, variantId: string | null): void {
+	try {
+		storage()?.setItem(key, JSON.stringify({ confirmed: true, variantId }));
+	} catch {
+		// A blocked store loses refresh continuity, not the submitted questionnaire.
+	}
+}
+
+export function clearRecommendationChoice(key: string): void {
+	try {
+		storage()?.removeItem(key);
+	} catch {
+		// As above.
+	}
+}
+
 export function clearAnswers(key: string): void {
 	try {
 		storage()?.removeItem(key);
@@ -95,7 +140,9 @@ export function dropStaleKeys(keep: readonly string[]): void {
 	try {
 		const stale = Object.keys(store).filter(
 			(name) =>
-				(name.startsWith(ANSWERS_PREFIX) || name.startsWith(ANAMNESIS_PREFIX)) &&
+				(name.startsWith(ANSWERS_PREFIX) ||
+					name.startsWith(ANAMNESIS_PREFIX) ||
+					name.startsWith(RECOMMENDATION_PREFIX)) &&
 				!keep.includes(name)
 		);
 		for (const name of stale) store.removeItem(name);

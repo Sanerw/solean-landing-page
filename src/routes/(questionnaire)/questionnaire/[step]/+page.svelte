@@ -3,11 +3,16 @@
 	import MotivationInterstitial from '$lib/features/questionnaire/MotivationInterstitial.svelte';
 	import ProjectionInterstitial from '$lib/features/questionnaire/ProjectionInterstitial.svelte';
 	import RecommendationScreen from '$lib/features/questionnaire/RecommendationScreen.svelte';
+	import RecommendationSelectionScreen from '$lib/features/questionnaire/RecommendationSelectionScreen.svelte';
 	import QuestionnaireShell from '$lib/features/questionnaire/QuestionnaireShell.svelte';
 	import SurveyStepScreen from '$lib/features/questionnaire/SurveyStepScreen.svelte';
 	import { questionnaireSession } from '$lib/features/questionnaire/survey-state.svelte';
 	import { readEmail, readWeightKg, weightStepId } from '$lib/features/questionnaire/answers';
 	import { submitAnamnesis, type AnamnesisSubmission } from '$lib/features/questionnaire/anamnesis-client';
+	import {
+		fetchRecommendation,
+		type RecommendationFetch
+	} from '$lib/features/questionnaire/recommendation-client';
 	import { questionnaireUid } from '$lib/config/rxscale';
 	import {
 		COMPLETION_STEP_ID,
@@ -138,6 +143,24 @@
 	let submission = $state<Extract<AnamnesisSubmission, { ok: false }> | null>(null);
 
 	/**
+	 * The read the completion screen needs, started as the submission returns rather than when
+	 * that screen mounts. It is handed over unresolved, so the navigation waits for nothing and
+	 * the screen still makes one request instead of two.
+	 */
+	let recommendation = $state<Promise<RecommendationFetch> | null>(null);
+
+	/**
+	 * Which of the two completion screens is due. Null until hydration for the same reason as
+	 * the answers: the server holds no session and must not decide that a plan was chosen.
+	 */
+	const recommendationChoice = $derived.by(() => {
+		questionnaireSession.revision;
+		if (!hydrated) return null;
+
+		return questionnaireSession.recommendationChoice;
+	});
+
+	/**
 	 * The end of the plan is where the answers leave the browser. Anywhere else, continuing is
 	 * a navigation and nothing more.
 	 */
@@ -177,6 +200,7 @@
 		}
 
 		questionnaireSession.recordSubmission(result.uid);
+		recommendation = fetchRecommendation(fetch, result.uid);
 		await goto(questionnaireStepHref(COMPLETION_STEP_ID));
 	}
 </script>
@@ -197,13 +221,28 @@
 			Taking you to where you left off.
 		</p>
 	{:else if isCompletion}
-		<RecommendationScreen
-			questionTotal={plan?.questionTotal ?? 0}
-			anamnesisUid={questionnaireSession.anamnesisUid}
-			{email}
-			{answersHeld}
-			onhandoff={() => questionnaireSession.forgetAnswers()}
-		/>
+		<!--
+			One step, two screens: the plan is chosen first and ordered second, and the choice is
+			what separates them. It is held in the session rather than the URL so a refresh does
+			not send someone back to a decision they already made.
+		-->
+		{#if answersHeld && recommendationChoice === null}
+			<RecommendationSelectionScreen
+				anamnesisUid={questionnaireSession.anamnesisUid}
+				prefetched={recommendation}
+				onconfirm={(variantId) => questionnaireSession.recordRecommendationChoice(variantId)}
+			/>
+		{:else}
+			<RecommendationScreen
+				questionTotal={plan?.questionTotal ?? 0}
+				anamnesisUid={questionnaireSession.anamnesisUid}
+				{email}
+				{answersHeld}
+				selectedVariant={recommendationChoice?.variantId ?? null}
+				onchangeplan={() => questionnaireSession.forgetRecommendationChoice()}
+				onhandoff={() => questionnaireSession.forgetAnswers()}
+			/>
+		{/if}
 	{:else if planStep?.kind === 'interlude'}
 		{#if planStep.variant === 'motivation'}
 			<MotivationInterstitial oncontinue={advance} />

@@ -5,11 +5,16 @@ import {
 	anamnesisStorageKey,
 	answerStorageKey,
 	clearAnswers,
+	clearRecommendationChoice,
 	dropStaleKeys,
 	loadAnamnesisUid,
 	loadAnswers,
+	loadRecommendationChoice,
+	recommendationStorageKey,
 	saveAnamnesisUid,
-	saveAnswers
+	saveAnswers,
+	saveRecommendationChoice,
+	type RecommendationChoice
 } from './answer-storage';
 import { createSurvey } from './survey-model';
 
@@ -34,6 +39,8 @@ class QuestionnaireSession {
 
 	#anamnesisUid: string | null = null;
 	#anamnesisKey = '';
+	#recommendationChoice: RecommendationChoice | null = null;
+	#recommendationKey = '';
 	#storageKey = '';
 
 	/**
@@ -47,6 +54,12 @@ class QuestionnaireSession {
 		this.revision;
 
 		return this.#anamnesisUid;
+	}
+
+	get recommendationChoice(): RecommendationChoice | null {
+		this.revision;
+
+		return this.#recommendationChoice;
 	}
 
 	touch(): void {
@@ -71,6 +84,19 @@ class QuestionnaireSession {
 		this.revision += 1;
 	}
 
+	recordRecommendationChoice(variantId: string | null): void {
+		this.#recommendationChoice = { confirmed: true, variantId };
+		if (this.#recommendationKey) saveRecommendationChoice(this.#recommendationKey, variantId);
+		this.revision += 1;
+	}
+
+	/** Returns the completion step to the choice, and keeps a refresh from undoing that. */
+	forgetRecommendationChoice(): void {
+		this.#recommendationChoice = null;
+		if (this.#recommendationKey) clearRecommendationChoice(this.#recommendationKey);
+		this.revision += 1;
+	}
+
 	surveyFor(document: QuestionnaireDocument): Model {
 		const key = `${document.identifier}@${document.version}`;
 
@@ -81,18 +107,21 @@ class QuestionnaireSession {
 		if (this.#survey === null || this.#key !== key) {
 			const storageKey = answerStorageKey(document.identifier, document.version);
 			const anamnesisKey = anamnesisStorageKey(document.identifier, document.version);
+			const recommendationKey = recommendationStorageKey(document.identifier, document.version);
 			const survey = createSurvey(document.model);
 
 			this.#key = key;
 			this.#survey = survey;
 			this.#anamnesisKey = anamnesisKey;
+			this.#recommendationKey = recommendationKey;
 			this.#storageKey = storageKey;
 
 			// Restored before the listener is attached, so resuming is not written straight back.
-			dropStaleKeys([storageKey, anamnesisKey]);
+			dropStaleKeys([storageKey, anamnesisKey, recommendationKey]);
 			const saved = loadAnswers(storageKey);
 			if (saved) survey.data = saved;
 			this.#anamnesisUid = loadAnamnesisUid(anamnesisKey);
+			this.#recommendationChoice = loadRecommendationChoice(recommendationKey);
 
 			survey.onValueChanged.add(() => {
 				this.revision += 1;

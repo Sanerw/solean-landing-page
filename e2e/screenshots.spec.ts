@@ -1,6 +1,7 @@
 import { expect, test } from '@playwright/test';
 import { EVERY_ANSWER, seedAnswers } from './answers';
 import { selectDateOfBirth } from './date-picker';
+import { confirmPlan } from './recommendation';
 
 /**
  * Not an assertion suite: it walks the fixture questionnaire once and captures the screen
@@ -92,8 +93,12 @@ test('capture the questionnaire screens', async ({ page }) => {
 	await advance();
 
 	await expect(page).toHaveURL('/questionnaire/complete');
-	await expect(page.getByRole('button', { name: 'Place your order' })).toBeVisible();
-	await shot('13-recommendation');
+	await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled();
+	await shot('13-recommendation-choice');
+
+	await confirmPlan(page);
+	await expect(page.getByRole('button', { name: 'Go to checkout' })).toBeVisible();
+	await shot('14-recommendation');
 });
 
 /**
@@ -104,8 +109,8 @@ test('capture the submission failures', async ({ page }) => {
 	const shot = (name: string) => page.screenshot({ path: `screens/${name}.png`, fullPage: true });
 
 	for (const [marker, name] of [
-		['TRIGGER-400', '14-submission-rejected'],
-		['TRIGGER-502', '15-submission-unavailable']
+		['TRIGGER-400', '15-submission-rejected'],
+		['TRIGGER-502', '16-submission-unavailable']
 	] as const) {
 		await seedAnswers(page, { ...EVERY_ANSWER, EMail: marker });
 		await page.goto('/questionnaire/page22');
