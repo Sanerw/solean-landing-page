@@ -352,7 +352,7 @@ claims are not approved production content.
   attribute. The visitor's journey is unchanged. One live cart confirmed the shop
   accepts it. See the fix in `blueprint/history/fixes/`.
 
-- [ ] 14. **End-to-end hardening** - The whole path from landing page to the
+- [x] 14. **End-to-end hardening** - The whole path from landing page to the
   external redirect: transitions between route groups, deep links, refresh and
   back-button behavior, empty, loading and integration-error states, a
   mobile/tablet/desktop pass, a cross-feature accessibility sweep, browser tests

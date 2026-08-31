@@ -52,9 +52,17 @@
 						? 'has-[>[data-slot=field-content]]:items-center'
 						: 'h-full has-[>[data-slot=field-content]]:items-center'}
 				>
+					<!--
+						`aria-label`, because the wrapping `<label for>` does not name this control.
+						bits-ui renders the item as a `<button role="checkbox">`, and a button takes its
+						name from its own content or from aria-*; HTML-AAM does not consult a `<label>`
+						for it. Without this a screen reader announces an unnamed checkbox, which
+						axe reports as a critical `button-name` violation.
+					-->
 					<Checkbox
 						{id}
 						checked={selected.includes(choiceValue)}
+						aria-label={choice.text}
 						aria-invalid={invalid ? 'true' : undefined}
 						aria-describedby={describedBy}
 						onCheckedChange={(checked) => toggle(choiceValue, checked === true)}

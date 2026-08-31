@@ -54,9 +54,17 @@
 						? 'has-[>[data-slot=field-content]]:items-center'
 						: 'h-full has-[>[data-slot=field-content]]:items-center'}
 				>
+					<!--
+						`aria-label`, because the wrapping `<label for>` does not name this control.
+						bits-ui renders the item as a `<button role="radio">`, and a button takes its
+						name from its own content or from aria-*; HTML-AAM does not consult a `<label>`
+						for it. Without this a screen reader announces an unnamed radio button, which
+						axe reports as a critical `button-name` violation.
+					-->
 					<RadioGroup.Item
 						id={choiceId}
 						value={choiceValue}
+						aria-label={choice.text}
 						aria-invalid={invalid ? 'true' : undefined}
 					/>
 					<FieldContent class="min-w-0">

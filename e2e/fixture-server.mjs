@@ -129,7 +129,7 @@ function fieldError(field, message) {
  */
 const DELIVERABLE_EMAIL = /^[^@\s]+@[^@\s.]+\.[^@\s]+$/;
 
-/** What each created cart was built with, so the checkout page can report its prefill. */
+/** What each created cart was built with, so the checkout page can report it back. */
 const carts = new Map();
 
 function escape(value) {
@@ -189,8 +189,8 @@ const server = createServer(async (request, response) => {
 	// the prefill its own cart was created with, so a test can read that off the page it lands
 	// on rather than off counters this server shares between parallel workers.
 	if (request.method === 'GET' && pathname.startsWith('/checkout/')) {
-		const prefill = carts.get(pathname.slice('/checkout/'.length))?.email || 'none';
-		const page = `<!doctype html><meta charset="utf-8"><title>Fixture checkout</title><h1>Fixture checkout</h1><p data-testid="prefill">${escape(prefill)}</p>`;
+		const cart = carts.get(pathname.slice('/checkout/'.length));
+		const page = `<!doctype html><meta charset="utf-8"><title>Fixture checkout</title><h1>Fixture checkout</h1><p data-testid="prefill">${escape(cart?.email || 'none')}</p><p data-testid="variant">${escape(cart?.variantId || 'none')}</p>`;
 		response.writeHead(200, {
 			'content-type': 'text/html; charset=utf-8',
 			'content-length': Buffer.byteLength(page)
@@ -234,7 +234,9 @@ const server = createServer(async (request, response) => {
 
 		cartCount += 1;
 		const id = `fixture-${cartCount}`;
-		carts.set(id, { email });
+		// The variant too, not only the e-mail: which merchandise a cart was built from is the
+		// one thing a redirect leaves no other trace of, and the fallback is only observable here.
+		carts.set(id, { email, variantId: String(input.lines[0].merchandiseId).split('/').pop() });
 		send(response, 200, {
 			data: {
 				cartCreate: {
@@ -283,11 +285,17 @@ const server = createServer(async (request, response) => {
 		return;
 	}
 
-	// The recommendation. An anamnesis marked `empty` answers with none, which is the live
-	// service's own way of saying nothing was matched.
+	// The recommendation, selected by the anamnesis the way the submission and cart failures
+	// are selected by an answer: `empty` answers with none, which is the live service's own
+	// way of saying nothing was matched, and `unreachable` does not answer at all.
 	const recommendationFor = pathname.match(RECOMMENDATION_PATH);
 	if (request.method === 'GET' && recommendationFor) {
 		const anamnesis = decodeURIComponent(recommendationFor[1]);
+		if (anamnesis.includes('unreachable')) {
+			send(response, 502, { error: 'recommendation service unavailable' });
+			return;
+		}
+
 		send(response, 200, anamnesis.includes('empty') ? [] : recommendation());
 		return;
 	}

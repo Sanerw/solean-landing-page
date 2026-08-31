@@ -182,7 +182,16 @@
 				</FieldSet>
 			{:else}
 				<Field class="gap-2">
-					<FieldLabel for={id} class={question === headingQuestion ? 'sr-only' : undefined}>
+					<!--
+						`w-px!` beside `sr-only`. Field sets `[&>.sr-only]:w-auto` so an sr-only child
+						is not stretched by its `[&>*]:w-full`, and that also undoes sr-only's own
+						`width: 1px`: the hidden label becomes as wide as the sentence it repeats,
+						absolutely positioned past the viewport. Clipped, so invisible, but still
+						counted in the page's scroll width, which on a phone is a horizontal
+						scrollbar with no visible cause. The `!` is what beats that rule's
+						specificity; a plain `w-px` loses to it.
+					-->
+					<FieldLabel for={id} class={question === headingQuestion ? 'sr-only w-px!' : undefined}>
 						{question.title}
 					</FieldLabel>
 					{#if question.description}

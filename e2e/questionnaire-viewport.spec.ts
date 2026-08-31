@@ -1,9 +1,19 @@
 import { expect, test, type Page } from '@playwright/test';
 
-const DESKTOP_VIEWPORTS = [
+/**
+ * Every step of the questionnaire, at the widths people actually use. The rule changes with
+ * the width, because "fits without scrolling" is a desktop rule: on a phone a long question
+ * scrolls, and asserting otherwise would only teach us to cut content.
+ */
+const VIEWPORTS = [
+	{ width: 390, height: 844 },
+	{ width: 768, height: 1024 },
 	{ width: 1440, height: 900 },
 	{ width: 1920, height: 1040 }
 ] as const;
+
+/** Below this the layout is expected to scroll vertically. */
+const DESKTOP_FROM = 1024;
 
 async function ready(page: Page, step: string): Promise<void> {
 	await expect(page).toHaveURL(`/questionnaire/${step}`);
@@ -24,22 +34,35 @@ async function fitsViewport(
 		scrollHeight: document.documentElement.scrollHeight,
 		scrollWidth: document.documentElement.scrollWidth
 	}));
-	const actionBox = await action.boundingBox();
 
+	// Horizontal overflow is a defect at every width: nothing here is meant to scroll sideways.
 	expect(metrics.scrollWidth, `${step} must not overflow horizontally`).toBeLessThanOrEqual(
 		metrics.clientWidth
 	);
+
+	// The action has to be reachable and whole. Scrolled to on a phone, already on screen on a
+	// desktop, and inside the viewport's width either way.
+	await action.scrollIntoViewIfNeeded();
+	const actionBox = await action.boundingBox();
+	expect(actionBox, `${step} must render its primary action`).not.toBeNull();
+	expect(actionBox?.x ?? -1, `${step} must not clip its primary action on the left`).toBeGreaterThanOrEqual(0);
+	expect(
+		(actionBox?.x ?? 0) + (actionBox?.width ?? metrics.clientWidth + 1),
+		`${step} must not clip its primary action on the right`
+	).toBeLessThanOrEqual(metrics.clientWidth);
+
+	if (metrics.clientWidth < DESKTOP_FROM) return;
+
 	expect(metrics.scrollHeight, `${step} must fit without vertical scrolling`).toBeLessThanOrEqual(
 		metrics.clientHeight
 	);
-	expect(actionBox, `${step} must render its primary action`).not.toBeNull();
 	expect(
 		(actionBox?.y ?? metrics.clientHeight) + (actionBox?.height ?? 1),
 		`${step} must show the full primary action`
 	).toBeLessThanOrEqual(metrics.clientHeight);
 }
 
-for (const viewport of DESKTOP_VIEWPORTS) {
+for (const viewport of VIEWPORTS) {
 	test(`every questionnaire step fits at ${viewport.width}x${viewport.height}`, async ({
 		page
 	}) => {

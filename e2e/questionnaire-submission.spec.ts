@@ -141,8 +141,14 @@ test('the recommendation presents what RxScale offers, prices included', async (
 	await expect(page.getByText('49.90 EUR')).toBeVisible();
 
 	// RxScale names its own default, and it is the one that arrives selected.
-	await expect(page.getByRole('radio', { name: '0.25 mg 249.00 EUR' })).toBeChecked();
-	await expect(page.getByRole('radio', { name: '0.25 mg Digital-Rezept 49.90 EUR' })).not.toBeChecked();
+	// The name is the plan, the dose and the price: a `<button role="radio">` is not named by
+	// the label that wraps it, so this is what a screen reader actually announces.
+	await expect(
+		page.getByRole('radio', { name: 'Fixture Treatment 0.25 mg 249.00 EUR' })
+	).toBeChecked();
+	await expect(
+		page.getByRole('radio', { name: 'Fixture Treatment 0.25 mg Digital-Rezept 49.90 EUR' })
+	).not.toBeChecked();
 
 	// The order action is the handoff's, and covered by its own spec.
 	await expect(page.getByRole('button', { name: 'Place your order' })).toBeEnabled();

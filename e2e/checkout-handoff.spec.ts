@@ -191,7 +191,7 @@ test('the plan the visitor picks is the plan the cart is built from', async ({ p
 
 	// The prescription, not the pre-selected treatment: choosing has to reach the cart, and
 	// this is the pair a person is most likely to get wrong money on.
-	await page.getByRole('radio', { name: '0.25 mg Digital-Rezept 49.90 EUR' }).click();
+	await page.getByRole('radio', { name: /Digital-Rezept 49\.90 EUR/ }).click();
 	await page.getByRole('button', { name: 'Place your order' }).click();
 
 	await expect(page.getByRole('heading', { name: 'Fixture checkout' })).toBeVisible();

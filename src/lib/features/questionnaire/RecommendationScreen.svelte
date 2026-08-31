@@ -146,13 +146,17 @@
 									class="has-[>[data-slot=field-content]]:items-center"
 								>
 									<!--
-										A single-variant plan has no dose to name, so the radio takes the plan's
-										own name: an option announced as "99.00 EUR" alone says nothing.
+										Named here rather than by the wrapping `<label for>`, which does not
+										name a `<button role="radio">`. Plan, dose and price together, because
+										each alone leaves out what a person is choosing between: the price is
+										beside the option visually and would otherwise never be announced.
 									-->
 									<RadioGroup.Item
 										id="plan-{option.variantId}"
 										value={option.variantId}
-										aria-label={option.label ? undefined : plan.name}
+										aria-label={[plan.name, option.label, formatEur(option.price)]
+											.filter(Boolean)
+											.join(' ')}
 									/>
 									<FieldContent class="min-w-0">
 										<FieldTitle
