@@ -1,5 +1,6 @@
 import { expect, test } from '@playwright/test';
 import { EVERY_ANSWER, seedAnswers } from './answers';
+import { selectDateOfBirth } from './date-picker';
 
 /**
  * Not an assertion suite: it walks the fixture questionnaire once and captures the screen
@@ -30,7 +31,11 @@ test('capture the questionnaire screens', async ({ page }) => {
 	await advance();
 
 	await ready('page26');
-	await page.getByRole('textbox').fill('1990-05-14');
+	await page.getByLabel('Bitte gib Dein Geburtsdatum an').click();
+	await expect(page.locator('[data-slot="popover-content"]')).toHaveCSS('opacity', '1');
+	await shot('03-date-picker-open');
+	await page.keyboard.press('Escape');
+	await selectDateOfBirth(page);
 	await shot('03-date-of-birth');
 	await advance();
 

@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { selectDateOfBirth } from './date-picker';
 
 /**
  * Every step of the questionnaire, at the widths people actually use. The rule changes with
@@ -81,7 +82,7 @@ for (const viewport of VIEWPORTS) {
 		await advance();
 
 		await ready(page, 'page26');
-		await page.getByRole('textbox').fill('1990-05-14');
+		await selectDateOfBirth(page);
 		await fitsViewport(page, 'page26');
 		await advance();
 

@@ -1,23 +1,32 @@
 <script lang="ts">
-	import { Input } from '$lib/components/ui/input';
+	import { today } from '@internationalized/date';
+	import { DatePicker } from '$lib/components/ui/date-picker';
 	import type { QuestionFieldProps } from '../question-registry';
 
 	let { controlId, invalid, describedBy, value, onchange }: QuestionFieldProps = $props();
 
 	/**
-	 * RxScale's `os-date-picker` declares no properties, so the stored shape is ours to
-	 * choose. A native date input speaks the visitor's locale while its value is always
-	 * `YYYY-MM-DD`, which is what reaches the submission.
+	 * RxScale's validator accepts visitors from their 18th birthday until the day before
+	 * their 80th. The picker mirrors that rule so impossible dates are not offered, while
+	 * SurveyJS remains the authority that validates the submitted answer.
 	 */
 	const date = $derived(typeof value === 'string' ? value : '');
+	const todayInGermany = today('Europe/Berlin');
+	const minValue = todayInGermany.subtract({ years: 80 }).add({ days: 1 });
+	const maxValue = todayInGermany.subtract({ years: 18 });
+	const initialValue = todayInGermany.subtract({ years: 35 });
 </script>
 
-<Input
+<DatePicker
 	id={controlId}
-	type="date"
 	value={date}
-	class="h-12 max-w-xs px-3 py-2 text-sm"
-	aria-invalid={invalid ? 'true' : undefined}
-	aria-describedby={describedBy}
-	oninput={(event) => onchange(event.currentTarget.value)}
+	placeholder="TT.MM.JJJJ"
+	calendarLabel="Geburtsdatum"
+	{minValue}
+	{maxValue}
+	{initialValue}
+	{invalid}
+	{describedBy}
+	class="max-w-xs"
+	onchange={(next) => onchange(next)}
 />

@@ -1,7 +1,6 @@
 <script lang="ts">
 	import { Input } from '$lib/components/ui/input';
 	import { Field, FieldDescription, FieldError, FieldLabel } from '$lib/components/ui/field';
-	import CalendarIcon from '@lucide/svelte/icons/calendar';
 	import MailIcon from '@lucide/svelte/icons/mail';
 	import ShowcaseSection from './ShowcaseSection.svelte';
 </script>
@@ -34,18 +33,6 @@
 				<Input id="input-email" type="email" value="jonas.weber@gmail.com" class="pl-12" />
 			</div>
 			<FieldDescription>Leading icons are composed around the primitive.</FieldDescription>
-		</Field>
-
-		<Field>
-			<FieldLabel for="input-date">Date of birth</FieldLabel>
-			<div class="relative">
-				<CalendarIcon
-					aria-hidden="true"
-					class="pointer-events-none absolute top-1/2 left-4 size-5 -translate-y-1/2 text-text-faint"
-				/>
-				<Input id="input-date" inputmode="numeric" placeholder="DD / MM / YYYY" class="pl-12" />
-			</div>
-			<FieldDescription>Placeholder-only date field from checkout.</FieldDescription>
 		</Field>
 
 		<Field>

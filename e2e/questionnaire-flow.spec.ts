@@ -74,7 +74,9 @@ test('an interlude does not count as a question', async ({ page }) => {
 	const before = await questionCount(page);
 
 	await page.goto('/questionnaire/motivation');
-	await expect(page.getByRole('heading', { level: 1 })).toContainText('Halfway done');
+	await expect(page.getByRole('heading', { level: 1 })).toContainText(
+		'This is where life starts to change.'
+	);
 	await stepIsInteractive(page);
 	expect(await questionCount(page)).toEqual(before);
 

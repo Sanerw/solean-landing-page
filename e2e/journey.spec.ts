@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { selectDateOfBirth } from './date-picker';
 
 /**
  * One walk, the way a person takes it: the landing page, the questionnaire, and out to the
@@ -40,7 +41,7 @@ test('a visitor walks from the landing page to the shop', async ({ page }) => {
 		await page.getByLabel('Bitte gib Deinen Nachnamen an.').fill('Weber');
 	});
 	await answer(page, 'page26', async () => {
-		await page.getByRole('textbox').fill('1990-05-14');
+		await selectDateOfBirth(page);
 	});
 	await answer(page, 'page3', async () => {
 		await page.getByRole('radio', { name: 'Weiblich' }).click();

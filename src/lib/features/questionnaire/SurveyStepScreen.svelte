@@ -70,10 +70,21 @@
 	 * the same sentence does not appear twice.
 	 */
 	const headingQuestion = $derived(questions.find(collectsAnswer) ?? questions[0] ?? null);
+	// Preserve the model's reading order. A question title can lead the screen only when that
+	// question is the first visible element; otherwise its preceding notices must stay first.
+	const headingIsHoisted = $derived(
+		headingQuestion !== null && questions[0] === headingQuestion
+	);
 
-	// Several titles in the model carry a second line, which reads as help text under the
-	// headline rather than as part of it.
-	const headingLines = $derived((headingQuestion?.title ?? '').split('\n'));
+	// A meaningful second line names the first control. Empty trailing lines occur elsewhere
+	// in the live model, so discard them rather than drawing an empty label.
+	const headingLines = $derived(
+		(headingQuestion?.title ?? '')
+			.split('\n')
+			.map((line) => line.trim())
+			.filter(Boolean)
+	);
+	const headingLabel = $derived(headingLines.slice(1).join(' '));
 
 	function controlId(question: Question): string {
 		return `q-${question.name}`;
@@ -123,13 +134,8 @@
 	}
 </script>
 
-{#if headingQuestion}
+{#if headingQuestion && headingIsHoisted}
 	<h1 class="font-display text-2xl font-medium sm:text-3xl">{headingLines[0]}</h1>
-	{#if headingLines.length > 1}
-		<p class="mt-2 text-sm text-muted-foreground sm:text-base">
-			{headingLines.slice(1).join(' ')}
-		</p>
-	{/if}
 {/if}
 
 <form novalidate onsubmit={submit} class="mt-6">
@@ -139,9 +145,17 @@
 		{@const error = errorFor(question)}
 		{@const answer = valueOf(question)}
 		{@const comment = commentOf(question)}
-		{@const describedBy = error ? `${id}-error` : undefined}
+		{@const descriptionId = question.description ? `${id}-description` : null}
+		{@const describedBy =
+			[descriptionId, error ? `${id}-error` : null].filter(Boolean).join(' ') || undefined}
 
 		<div class="mb-5">
+			{#if question === headingQuestion && !headingIsHoisted}
+				<!-- Leading display-only content stays ahead of the question it qualifies. The
+				     question still supplies the page heading, but at its position in the model. -->
+				<h1 class="mb-6 font-display text-2xl font-medium sm:text-3xl">{headingLines[0]}</h1>
+			{/if}
+
 			{#if lookup.renderer === null}
 				<UnsupportedQuestion {question} reason={lookup.reason} blocking={collectsAnswer(question)} />
 			{:else if lookup.presentation === 'display'}
@@ -158,11 +172,13 @@
 				/>
 			{:else if lookup.presentation === 'group'}
 				<FieldSet class="gap-3">
-					<FieldLegend class={question === headingQuestion ? 'sr-only' : 'mb-2 text-lg'}>
-						{question.title}
+					<FieldLegend
+						class={question === headingQuestion && !headingLabel ? 'sr-only' : 'mb-2 text-lg'}
+					>
+						{question === headingQuestion && headingLabel ? headingLabel : question.title}
 					</FieldLegend>
 					{#if question.description}
-						<FieldDescription class="leading-snug whitespace-pre-line">
+						<FieldDescription id={descriptionId ?? undefined} class="leading-snug whitespace-pre-line">
 							{question.description}
 						</FieldDescription>
 					{/if}
@@ -191,14 +207,12 @@
 						scrollbar with no visible cause. The `!` is what beats that rule's
 						specificity; a plain `w-px` loses to it.
 					-->
-					<FieldLabel for={id} class={question === headingQuestion ? 'sr-only w-px!' : undefined}>
-						{question.title}
+					<FieldLabel
+						for={id}
+						class={question === headingQuestion && !headingLabel ? 'sr-only w-px!' : undefined}
+					>
+						{question === headingQuestion && headingLabel ? headingLabel : question.title}
 					</FieldLabel>
-					{#if question.description}
-						<FieldDescription class="leading-snug whitespace-pre-line">
-							{question.description}
-						</FieldDescription>
-					{/if}
 					<lookup.renderer
 						{question}
 						controlId={id}
@@ -209,6 +223,11 @@
 						{comment}
 						oncomment={(next) => (question.comment = next)}
 					/>
+					{#if question.description}
+						<FieldDescription id={descriptionId ?? undefined} class="leading-snug whitespace-pre-line">
+							{question.description}
+						</FieldDescription>
+					{/if}
 					{#if error}
 						<FieldError id="{id}-error">{error}</FieldError>
 					{/if}
@@ -268,7 +287,7 @@
 		disabled={!hydrated || unrenderable || submitting}
 	>
 		{#if submitting}
-			Sending your answers
+			Loading...
 		{:else}
 			{submission ? 'Try again' : 'Continue'}
 			<ArrowRightIcon aria-hidden="true" />

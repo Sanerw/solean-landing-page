@@ -12,8 +12,8 @@
 </script>
 
 <!--
-	Two roles share this element. A bare label ("FIRST NAME") takes the eyebrow
-	typography, measured from the reference at DM Sans 14px semibold on #405756.
+	Two roles share this element. A bare label ("FIRST NAME") takes compact eyebrow
+	typography scaled down from the larger reference artboards.
 	An option-card label (radio or checkbox choice) wraps a nested Field instead,
 	and every artboard draws those choices in sentence case, so the eyebrow classes
 	are scoped with not-has-*: text-transform and letter-spacing inherit, and left
@@ -24,7 +24,7 @@
 	data-slot="field-label"
 	class={cn(
 		"gap-2 leading-snug group-data-[disabled=true]/field:opacity-50",
-		"not-has-[>[data-slot=field]]:text-sm not-has-[>[data-slot=field]]:font-semibold",
+		"not-has-[>[data-slot=field]]:text-xs not-has-[>[data-slot=field]]:font-semibold",
 		"not-has-[>[data-slot=field]]:tracking-widest not-has-[>[data-slot=field]]:uppercase",
 		"not-has-[>[data-slot=field]]:text-muted-foreground",
 		"has-[>[data-slot=field]]:w-full has-[>[data-slot=field]]:flex-col",

@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { seedAnswers, THROUGH_ALLERGY, THROUGH_GENDER, THROUGH_NAME } from './answers';
+import { selectDateOfBirth } from './date-picker';
 
 /**
  * One spec per question type the live model uses, and one walk through all of them. Every
@@ -24,7 +25,8 @@ test('the date of birth is required by the model, not by the renderer', async ({
 	).toBeVisible();
 	await expect(page).toHaveURL('/questionnaire/page26');
 
-	await page.getByRole('textbox').fill('1990-05-14');
+	await selectDateOfBirth(page);
+	await expect(page.getByLabel('Bitte gib Dein Geburtsdatum an')).toHaveText('14.05.1990');
 	await page.getByRole('button', { name: 'Continue' }).click();
 	await expect(page).toHaveURL('/questionnaire/page3');
 });
@@ -106,6 +108,23 @@ test('every question in the model has a renderer', async ({ page }) => {
 test('the questionnaire can be answered from the first page to the last', async ({ page }) => {
 	await page.goto('/questionnaire');
 	await expect(page).toHaveURL('/questionnaire/page30');
+	const email = page.getByLabel('Bitte gib Deine E-Mail ein:');
+	await expect(email).toHaveAttribute('type', 'email');
+	await expect(email).toHaveAttribute('placeholder', 'name@example.com');
+	await expect(email).toHaveAttribute('aria-describedby', /q-EMail-description/);
+	await expect(page.locator('#q-EMail-description')).toHaveText(
+		'Deine Antworten werden vertraulich zwischen Dir und unserem Ärzteteam behandelt.'
+	);
+	await expect(email.locator('xpath=following-sibling::*[1]')).toHaveAttribute(
+		'id',
+		'q-EMail-description'
+	);
+	const infoAlert = page.locator('[data-slot="alert"]').filter({ hasText: 'Info:' });
+	await expect(infoAlert).toBeVisible();
+	await expect(infoAlert.locator('[data-slot="alert-title"]')).toHaveText('Info:');
+	await expect(infoAlert.locator('[data-slot="alert-description"]')).toContainText(
+		'Mit der Angabe Deiner E-Mail-Adresse bestätigst Du'
+	);
 
 	// The display-only element on this page states the consent notice the model carries in its
 	// description, next to a question that asks for something.
@@ -125,7 +144,7 @@ test('the questionnaire can be answered from the first page to the last', async 
 
 	await expect(page).toHaveURL('/questionnaire/page26');
 	await ready(page);
-	await page.getByRole('textbox').fill('1990-05-14');
+	await selectDateOfBirth(page);
 	await page.getByRole('button', { name: 'Continue' }).click();
 
 	await expect(page).toHaveURL('/questionnaire/page3');

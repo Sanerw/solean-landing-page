@@ -117,6 +117,7 @@ export const HERO: HeroContent = {
 export const RATING = {
 	score: 4.7,
 	label: '4.7 - 1,200+ reviews',
+	href: 'https://www.reviews.io/company-reviews/store/www.solean.com',
 	/** The results band prints the score as a numeral, so its line carries the volume only. */
 	reviewCount: '1,200+ reviews',
 	caption: 'Mock prototype rating'

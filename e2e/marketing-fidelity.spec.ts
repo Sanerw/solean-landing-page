@@ -16,6 +16,13 @@ test('the announcement and reference hero asset render without narrow-screen ove
 		.poll(() => heroImage.evaluate((image: HTMLImageElement) => [image.naturalWidth, image.naturalHeight]))
 		.toEqual([1376, 768]);
 
+	const reviewsLink = page.getByRole('link', { name: /Read reviews on Reviews\.io/ });
+	await expect(reviewsLink).toHaveAttribute(
+		'href',
+		'https://www.reviews.io/company-reviews/store/www.solean.com'
+	);
+	await expect(reviewsLink).toHaveAttribute('target', '_blank');
+
 	const widths = await page.evaluate(() => ({
 		client: document.documentElement.clientWidth,
 		scroll: document.documentElement.scrollWidth

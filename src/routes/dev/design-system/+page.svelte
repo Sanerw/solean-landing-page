@@ -5,6 +5,7 @@
 	import ButtonSection from './ButtonSection.svelte';
 	import CarouselSection from './CarouselSection.svelte';
 	import CollapsibleSection from './CollapsibleSection.svelte';
+	import DatePickerSection from './DatePickerSection.svelte';
 	import ExampleFormSection from './ExampleFormSection.svelte';
 	import ChoiceControlsSection from './ChoiceControlsSection.svelte';
 	import OverlaysSection from './OverlaysSection.svelte';
@@ -255,6 +256,7 @@
 
 	<ButtonSection />
 	<InputSection />
+	<DatePickerSection />
 	<InputGroupSection />
 	<ProgressSection />
 	<NavigationMenuSection />

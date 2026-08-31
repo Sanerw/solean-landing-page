@@ -33,7 +33,7 @@ export const PROJECTION_INTERSTITIAL = {
 
 export const MOTIVATION_INTERSTITIAL = {
 	eyebrow: "You're almost there",
-	headline: 'Halfway done. This is where life starts to change.',
+	headline: 'This is where life starts to change.',
 	body: [
 		'Medical weight loss changes more than the number on the scale.',
 		'It shapes how you feel, how you move and how you show up around others.'

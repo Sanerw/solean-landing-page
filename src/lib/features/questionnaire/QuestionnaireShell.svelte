@@ -35,7 +35,7 @@
 	-->
 	<nav
 		aria-label="Questionnaire"
-		class="grid grid-cols-[1fr_auto_1fr] items-center gap-4 px-4 py-3 sm:px-6 lg:px-8"
+		class="grid grid-cols-[1fr_auto_1fr] items-center gap-4 p-4"
 	>
 		<Button href={backHref} variant="secondary" size="sm" class="justify-self-start rounded-full">
 			<ArrowLeftIcon aria-hidden="true" />
