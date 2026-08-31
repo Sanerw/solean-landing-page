@@ -1,22 +1,23 @@
 <script lang="ts">
 	import * as Accordion from '$lib/components/ui/accordion';
-	import { CONTAINER } from './container';
+	import { CONTAINER, SECTION_Y } from './container';
+	import { SECTION_HEADING, SECTION_LEAD } from './type';
 	import { FAQ } from './content';
 </script>
 
-<section class={[CONTAINER, 'py-16 lg:py-20']} aria-label={FAQ.title}>
-	<h2 class="font-display text-3xl font-medium text-foreground md:text-4xl lg:text-5xl">
+<section class={[CONTAINER, SECTION_Y]} aria-label={FAQ.title}>
+	<h2 class={SECTION_HEADING}>
 		{FAQ.title}
 	</h2>
-	<p class="mt-2 text-base text-muted-foreground">{FAQ.lead}</p>
+	<p class={SECTION_LEAD}>{FAQ.lead}</p>
 
-	<!-- First item open, as drawn. `single` so one answer is visible at a time. -->
+	<!-- Every row starts closed, so the section opens at one consistent height. `single`
+	     so one answer is visible at a time. -->
 	<!-- The adapted Accordion ships a boxed treatment (rounded-2xl + border). The reference
 	     FAQ is not a box, it is hairline-separated rows on the page, so the box is removed
 	     here at the call site and a top rule added above the first row. -->
 	<Accordion.Root
 		type="single"
-		value={FAQ.items[0].question}
 		class="mt-10 rounded-none border-0 border-t border-border"
 	>
 		{#each FAQ.items as item (item.question)}

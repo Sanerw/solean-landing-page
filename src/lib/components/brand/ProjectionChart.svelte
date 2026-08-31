@@ -34,6 +34,19 @@
 <figure class="m-0">
 	<figcaption class="sr-only">{title}</figcaption>
 
+	<!-- mb-12 clears the value pill on the first point, which hangs about 40px above the
+	     plot's top edge, so the legend cannot collide with it. -->
+	<ul class={compact ? 'mb-12 flex list-none gap-4 p-0' : 'mb-12 flex list-none gap-6 p-0'} aria-hidden="true">
+		<li class="flex items-center gap-2 text-sm text-muted-foreground">
+			<span class="block h-0.5 w-6 rounded-full bg-foreground"></span>
+			{seriesLabel}
+		</li>
+		<li class="flex items-center gap-2 text-sm text-muted-foreground">
+			<span class="block h-0.5 w-6 rounded-full bg-text-faint"></span>
+			{comparisonLabel}
+		</li>
+	</ul>
+
 	<div class={compact ? 'relative h-44 w-full sm:h-52' : 'relative aspect-video w-full'}>
 		<!--
 			Stretched to the container rather than letterboxed, so the HTML markers and pills
@@ -133,20 +146,9 @@
 		{/each}
 	</div>
 
-	<ul class={compact ? 'mt-2 flex list-none gap-4 p-0' : 'mt-4 flex list-none gap-6 p-0'} aria-hidden="true">
-		<li class="flex items-center gap-2 text-sm text-muted-foreground">
-			<span class="block h-0.5 w-6 rounded-full bg-foreground"></span>
-			{seriesLabel}
-		</li>
-		<li class="flex items-center gap-2 text-sm text-muted-foreground">
-			<span class="block h-0.5 w-6 rounded-full bg-text-faint"></span>
-			{comparisonLabel}
-		</li>
-	</ul>
-
 	<!-- Positioned from the same percentages as the markers rather than spaced with
 	     justify-between, which distributes label boxes evenly and leaves them off their points. -->
-	<div class="relative mt-1 h-5 text-xs text-muted-foreground" aria-hidden="true">
+	<div class="relative mt-4 h-5 text-xs text-muted-foreground" aria-hidden="true">
 		{#each geo.points as point, index (point.month)}
 			<span
 				class={[

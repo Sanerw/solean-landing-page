@@ -1,12 +1,13 @@
 <script lang="ts">
 	import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
 	import StethoscopeIcon from '@lucide/svelte/icons/stethoscope';
-	import { BLEED, CONTAINER } from './container';
+	import { BLEED, CONTAINER, PANEL_GAP_Y, PANEL_Y } from './container';
+	import { CARD_HEADING, SECTION_HEADING, SECTION_LEAD } from './type';
 	import { HOW_IT_WORKS } from './content';
 </script>
 
-<section class={[BLEED, 'py-8']} aria-label="How it works">
-	<div class="rounded-xl bg-muted py-12 lg:py-16">
+<section class={[BLEED, PANEL_GAP_Y]} aria-label="How it works">
+	<div class={['rounded-xl bg-muted', PANEL_Y]}>
 		<div class={CONTAINER}>
 			<div class="grid gap-10 lg:grid-cols-2 lg:items-center">
 				<div class="relative">
@@ -36,10 +37,10 @@
 				</div>
 
 				<div>
-					<h2 class="font-display text-3xl font-medium text-foreground md:text-4xl">
+					<h2 class={SECTION_HEADING}>
 						{HOW_IT_WORKS.title}
 					</h2>
-					<p class="mt-3 text-base text-muted-foreground">{HOW_IT_WORKS.lead}</p>
+					<p class={SECTION_LEAD}>{HOW_IT_WORKS.lead}</p>
 
 					<!-- An ordered list, so the sequence is conveyed to assistive tech even though the
 					     visible numerals are decorative and derived from the index. -->
@@ -48,12 +49,12 @@
 							<li class="flex flex-wrap items-start gap-4 py-5">
 								<span
 									aria-hidden="true"
-									class="flex size-10 shrink-0 items-center justify-center rounded-md bg-card font-display text-sm font-semibold text-foreground"
+									class="flex size-10 shrink-0 items-center justify-center rounded-full bg-foreground font-display text-sm font-semibold text-background"
 								>
 									{String(index + 1).padStart(2, '0')}
 								</span>
 								<div class="min-w-0 flex-1">
-									<h3 class="font-display text-lg font-semibold text-foreground">{step.title}</h3>
+									<h3 class={CARD_HEADING}>{step.title}</h3>
 									<p class="mt-1 text-sm text-muted-foreground">{step.body}</p>
 								</div>
 								{#if step.href && step.linkLabel}

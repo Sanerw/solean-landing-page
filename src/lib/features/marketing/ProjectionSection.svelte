@@ -1,6 +1,7 @@
 <script lang="ts">
 	import * as Tabs from '$lib/components/ui/tabs';
-	import { CONTAINER } from './container';
+	import { CONTAINER, SECTION_Y } from './container';
+	import { SUB_HEADING } from './type';
 	import {
 		DEFAULT_HORIZON_MONTH,
 		PROJECTION,
@@ -16,10 +17,10 @@
 	let horizon = $state(String(DEFAULT_HORIZON_MONTH));
 </script>
 
-<section class={[CONTAINER, 'py-16 lg:py-20']} aria-label={PROJECTION.title}>
+<section class={[CONTAINER, SECTION_Y]} aria-label={PROJECTION.title}>
 	<div class="grid gap-14 lg:grid-cols-2 lg:items-center lg:gap-16">
 		<div>
-			<h2 class="font-display text-2xl font-medium text-foreground md:text-3xl">
+			<h2 class={SUB_HEADING}>
 				{PROJECTION.title}
 			</h2>
 			<p class="mt-2 text-sm text-muted-foreground">{PROJECTION.lead}</p>
@@ -30,7 +31,7 @@
 				the selected tab impossible to get out of step, since only the matching panel
 				is ever mounted.
 			-->
-			<Tabs.Root bind:value={horizon} class="mt-8">
+			<Tabs.Root bind:value={horizon} class="mt-6">
 				{#each PROJECTION_HORIZONS as option (option.month)}
 					<Tabs.Content value={String(option.month)}>
 						<ProjectionChart

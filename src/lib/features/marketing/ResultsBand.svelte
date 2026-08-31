@@ -6,7 +6,8 @@
 	import ClipboardCheckIcon from '@lucide/svelte/icons/clipboard-check';
 	import MessageCircleIcon from '@lucide/svelte/icons/message-circle';
 	import StethoscopeIcon from '@lucide/svelte/icons/stethoscope';
-	import { BLEED, CONTAINER } from './container';
+	import { BLEED, CONTAINER, PANEL_GAP_Y, PANEL_Y } from './container';
+	import { SECTION_HEADING, SECTION_LEAD } from './type';
 	import { RATING, RESULTS_BAND, ROUTES, type MiniBenefit } from './content';
 
 	const ICONS = {
@@ -20,8 +21,8 @@
      text roles but not --text-faint, so nothing on this band uses that role. -->
 <!-- The rounded panel needs its own breathing room: BLEED carries only the horizontal
      gutter, so without this the card butts straight into the section above and below. -->
-<section class={[BLEED, 'py-8']} aria-label="Care built in">
-	<div class="overflow-hidden rounded-xl bg-highlight py-12 lg:py-16">
+<section class={[BLEED, PANEL_GAP_Y]} aria-label="Care built in">
+	<div class={['overflow-hidden rounded-xl bg-highlight', PANEL_Y]}>
 		<div class={CONTAINER}>
 			<ul class="grid gap-8 sm:grid-cols-3">
 				{#each RESULTS_BAND.benefits as benefit (benefit.title)}
@@ -41,10 +42,10 @@
 			     top-aligned rather than centred. -->
 			<div class="mt-12 grid gap-8 lg:grid-cols-10">
 				<div class="lg:col-span-3">
-					<h2 class="font-display text-3xl font-medium text-foreground md:text-4xl">
+					<h2 class={SECTION_HEADING}>
 						{RESULTS_BAND.title}
 					</h2>
-					<p class="mt-4 text-base text-muted-foreground">{RESULTS_BAND.lead}</p>
+					<p class={SECTION_LEAD}>{RESULTS_BAND.lead}</p>
 					<Button
 						href={ROUTES.questionnaire}
 						variant="inverse"
@@ -90,9 +91,7 @@
 					<div class="flex items-center gap-3">
 						<p class="font-display text-4xl font-medium text-foreground">{RATING.score}</p>
 						<div>
-							<StarRating rating={RATING.score} treatment="outline" class="text-foreground" />
-							<!-- The reference credits a named review platform here. The figures are
-							     invented, so the line carries the volume without the company. -->
+							<StarRating rating={RATING.score} treatment="outline" class="mt-1.5 text-foreground" />
 							<p class="mt-1 text-xs font-semibold text-muted-foreground">
 								{RATING.reviewCount}
 							</p>
@@ -123,10 +122,17 @@
 						</figcaption>
 					</figure>
 
-					<!-- Focusable so the affordance is discoverable, but inert: no review platform
-					     is wired up, so there is nowhere for it to go. -->
+					<!-- Same destination as the hero badge, so the page never offers two review
+					     platforms. -->
 					<div class="mt-5 flex justify-end">
-						<Button variant="link" size="sm" aria-disabled="true">
+						<Button
+							href={RATING.href}
+							variant="link"
+							size="sm"
+							target="_blank"
+							rel="noopener noreferrer"
+							aria-label="{RESULTS_BAND.reviewCta} on Reviews.io (opens in a new tab)"
+						>
 							{RESULTS_BAND.reviewCta}
 							<ArrowUpRightIcon aria-hidden="true" class="size-4" />
 						</Button>

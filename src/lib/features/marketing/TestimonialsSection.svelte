@@ -1,20 +1,21 @@
 <script lang="ts">
 	import * as Carousel from '$lib/components/ui/carousel';
-	import { BLEED, CONTAINER } from './container';
+	import { BLEED, CONTAINER, PANEL_GAP_Y, PANEL_Y } from './container';
+	import { SECTION_HEADING, SECTION_LEAD } from './type';
 	import { TESTIMONIALS, TESTIMONIALS_SECTION } from './content';
 	import TestimonialCard from './TestimonialCard.svelte';
 </script>
 
-<section class={[BLEED, 'py-8']} aria-label={TESTIMONIALS_SECTION.title}>
-	<div class="rounded-xl bg-accent py-14 lg:py-20">
+<section class={[BLEED, PANEL_GAP_Y]} aria-label={TESTIMONIALS_SECTION.title}>
+	<div class={['rounded-xl bg-accent', PANEL_Y]}>
 		<div class={CONTAINER}>
 			<Carousel.Root opts={{ align: 'start' }} class="w-full">
 				<div class="flex flex-wrap items-end justify-between gap-6">
 					<div>
-						<h2 class="font-display text-3xl font-medium text-foreground md:text-4xl lg:text-5xl">
+						<h2 class={SECTION_HEADING}>
 							{TESTIMONIALS_SECTION.title}
 						</h2>
-						<p class="mt-2 text-base text-muted-foreground">{TESTIMONIALS_SECTION.lead}</p>
+						<p class={SECTION_LEAD}>{TESTIMONIALS_SECTION.lead}</p>
 					</div>
 					<!-- Controls sit inline with the heading, as drawn, rather than floating over the
 					     cards, so they never cover a story on a narrow screen. -->

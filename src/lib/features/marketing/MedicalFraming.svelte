@@ -6,6 +6,7 @@
 	import BrainIcon from '@lucide/svelte/icons/brain';
 	import DnaIcon from '@lucide/svelte/icons/dna';
 	import { MEDICAL_FRAMING, ROUTES, type MedicalFactor } from './content';
+	import { SECTION_HEADING, SECTION_LEAD } from './type';
 
 	const ICONS = {
 		brain: BrainIcon,
@@ -15,24 +16,24 @@
 </script>
 
 <div>
-	<h2 class="font-display text-3xl font-medium text-foreground md:text-4xl lg:text-5xl">
+	<h2 class={SECTION_HEADING}>
 		{MEDICAL_FRAMING.title}
 	</h2>
-	<p class="mt-6 text-base text-muted-foreground md:text-lg">{MEDICAL_FRAMING.body}</p>
+	<p class={SECTION_LEAD}>{MEDICAL_FRAMING.body}</p>
 
-	<ul class="mt-8 flex flex-wrap gap-x-10 gap-y-4">
+	<ul class="mt-7 flex flex-wrap gap-x-8 gap-y-4">
 		{#each MEDICAL_FRAMING.factors as factor (factor.label)}
 			{@const Icon = ICONS[factor.icon]}
 			<li class="flex items-center gap-3">
-				<span class="flex size-10 items-center justify-center rounded-full bg-accent">
-					<Icon aria-hidden="true" class="size-5 text-foreground" />
+				<span class="flex size-9 items-center justify-center rounded-full bg-accent">
+					<Icon aria-hidden="true" class="size-4 text-foreground" />
 				</span>
-				<span class="text-base text-foreground">{factor.label}</span>
+				<span class="text-sm text-foreground">{factor.label}</span>
 			</li>
 		{/each}
 	</ul>
 
-	<div class="mt-10 flex flex-col gap-4 sm:flex-row">
+	<div class="mt-8 flex flex-col gap-4 sm:flex-row">
 		<Button href={ROUTES.questionnaire} class="rounded-full">
 			{MEDICAL_FRAMING.primaryCta}
 			<ArrowRightIcon aria-hidden="true" class="size-5" />

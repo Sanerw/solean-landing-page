@@ -39,19 +39,29 @@
 	<Select.Trigger
 		aria-label="Language"
 		class={[
+			variant === 'field' && 'w-fit',
+			// Geometry and states are the NavigationMenu link's, so the control reads as one
+			// more item in the row rather than a form field parked beside it.
 			variant === 'bare' && [
-				'h-10 w-auto gap-1 rounded-full border-transparent bg-transparent px-3 text-sm font-medium',
+				'h-9 w-auto gap-1.5 rounded-full border-transparent bg-transparent px-4.5 py-2.5 text-sm font-medium',
+				// The chevron is the primitive's own, so it is matched to the NavigationMenu
+				// trigger's here rather than left at the form field's size and grey.
+				'[&>svg]:size-3 [&>svg]:text-current',
 				surface === 'dark'
-					? 'text-background hover:bg-background hover:text-foreground focus-visible:ring-primary focus-visible:ring-offset-foreground'
-					: 'text-foreground hover:bg-accent'
+					? 'text-background hover:bg-background/10 hover:text-background data-[state=open]:bg-background/10 data-[state=open]:text-background focus-visible:ring-primary focus-visible:ring-offset-foreground'
+					: 'text-foreground hover:bg-accent data-[state=open]:bg-accent data-[state=open]:text-accent-foreground'
 			],
 			className
 		]}
 	>
-		{#if showIcon}
-			<GlobeIcon aria-hidden="true" class="size-4" />
-		{/if}
-		{label}
+		<!-- One child, so the trigger's justify-between separates the label group from the
+		     chevron rather than spreading the icon away from the word it belongs to. -->
+		<span class="flex items-center gap-2">
+			{#if showIcon}
+				<GlobeIcon aria-hidden="true" class="size-4" />
+			{/if}
+			{label}
+		</span>
 	</Select.Trigger>
 	<Select.Content>
 		{#each LANGUAGES as language (language.value)}

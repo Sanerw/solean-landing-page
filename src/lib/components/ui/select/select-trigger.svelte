@@ -15,7 +15,7 @@
 	bind:ref
 	data-slot="select-trigger"
 	class={cn(
-		"flex h-14 w-full items-center justify-between gap-2 rounded-md border border-input bg-card px-4 py-3 text-base text-foreground whitespace-nowrap outline-none transition-[color,box-shadow,border-color] data-placeholder:text-text-faint focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/20 aria-invalid:border-destructive aria-invalid:focus-visible:ring-destructive/20 disabled:cursor-not-allowed disabled:bg-muted disabled:opacity-50 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0",
+		"flex h-12 w-full items-center justify-between gap-2 rounded-md border border-border bg-transparent px-4 py-3 text-base text-foreground whitespace-nowrap outline-none transition-[color,box-shadow,border-color] data-placeholder:text-text-faint focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/20 aria-invalid:border-destructive aria-invalid:focus-visible:ring-destructive/20 disabled:cursor-not-allowed disabled:bg-muted disabled:opacity-50 *:data-[slot=select-value]:line-clamp-1 *:data-[slot=select-value]:flex *:data-[slot=select-value]:items-center *:data-[slot=select-value]:gap-2 [&_svg]:pointer-events-none [&_svg]:shrink-0",
 		className
 	)}
 	{...restProps}

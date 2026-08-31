@@ -118,8 +118,8 @@ export const RATING = {
 	score: 4.7,
 	label: '4.7 - 1,200+ reviews',
 	href: 'https://www.reviews.io/company-reviews/store/www.solean.com',
-	/** The results band prints the score as a numeral, so its line carries the volume only. */
-	reviewCount: '1,200+ reviews',
+	/** The results band prints the score as a numeral, so its line carries the volume and the source. */
+	reviewCount: '1,200+ reviews on Reviews.io',
 	caption: 'Mock prototype rating'
 } as const;
 
