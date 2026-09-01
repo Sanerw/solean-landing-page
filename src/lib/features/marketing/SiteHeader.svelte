@@ -1,15 +1,22 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import SoleanLogo from '$lib/components/brand/SoleanLogo.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as NavigationMenu from '$lib/components/ui/navigation-menu';
 	import { CONTAINER } from './container';
-	import { HERO, NAV_ITEMS, ROUTES } from './content';
+	import { hero, navItems, ROUTES } from './content';
+
+	// Read during render so the labels follow the active locale.
+	const NAV_ITEMS = $derived(navItems());
 	import LanguageSelect from './LanguageSelect.svelte';
 	import MobileNav from './MobileNav.svelte';
 	import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
 	import CircleDotIcon from '@lucide/svelte/icons/circle-dot';
 	import PillIcon from '@lucide/svelte/icons/pill';
 	import SyringeIcon from '@lucide/svelte/icons/syringe';
+
+	// Read during render so the copy follows the active locale.
+	const HERO = $derived(hero());
 
 	interface Props {
 		/** `overlay` sits inside the hero card on the scrim; `solid` is every other page. */
@@ -90,7 +97,7 @@
 		<!-- Centred by the equal flex-1 columns either side, not by absolute positioning. -->
 		<a
 			href={ROUTES.home}
-			aria-label="Solean, home"
+			aria-label={m.a11y_home()}
 			class={[
 				'shrink-0 rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
 				surface === 'dark'

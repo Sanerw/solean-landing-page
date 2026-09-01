@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb';
 	import { BLEED, CONTAINER, PANEL_ROUND } from '$lib/features/marketing/container';
 	import { ROUTES } from '$lib/features/marketing/content';
@@ -20,11 +21,11 @@
 				<Breadcrumb.Root>
 					<Breadcrumb.List>
 						<Breadcrumb.Item>
-							<Breadcrumb.Link href={ROUTES.home}>Home</Breadcrumb.Link>
+							<Breadcrumb.Link href={ROUTES.home}>{m.breadcrumb_home()}</Breadcrumb.Link>
 						</Breadcrumb.Item>
 						<Breadcrumb.Separator />
 						<Breadcrumb.Item>
-							<Breadcrumb.Link href={ROUTES.learn}>Learn</Breadcrumb.Link>
+							<Breadcrumb.Link href={ROUTES.learn}>{m.learn_breadcrumb_learn()}</Breadcrumb.Link>
 						</Breadcrumb.Item>
 						<Breadcrumb.Separator />
 						<Breadcrumb.Item>
@@ -69,8 +70,9 @@
 							Medically reviewed by {article.review.reviewer.name}
 						</span>
 						<span>
-							Updated <time datetime={article.review.updatedAt}>{formatArticleDate(article.review.updatedAt)}</time>
-							<span aria-hidden="true"> · </span>{article.review.readTimeMinutes} min read
+							{m.learn_updated()}
+							<time datetime={article.review.updatedAt}>{formatArticleDate(article.review.updatedAt)}</time>
+							<span aria-hidden="true"> · </span>{m.learn_read_time({ minutes: article.review.readTimeMinutes })}
 						</span>
 					</p>
 				</div>

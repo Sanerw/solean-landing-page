@@ -4,13 +4,16 @@
 	import { SUB_HEADING } from './type';
 	import {
 		DEFAULT_HORIZON_MONTH,
-		PROJECTION,
+		projection,
 		PROJECTION_COMPARISON,
 		PROJECTION_HORIZONS,
 		PROJECTION_SERIES
 	} from './content';
 	import MedicalFraming from './MedicalFraming.svelte';
 	import ProjectionChart from '$lib/components/brand/ProjectionChart.svelte';
+
+	// Read during render so the copy follows the active locale.
+	const PROJECTION = $derived(projection());
 
 	// The one piece of state in the section. Everything the chart draws is derived from it
 	// through the geometry module, so there is no second copy to fall out of step.

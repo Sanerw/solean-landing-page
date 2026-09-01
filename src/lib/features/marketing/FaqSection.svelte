@@ -2,7 +2,10 @@
 	import * as Accordion from '$lib/components/ui/accordion';
 	import { CONTAINER, SECTION_Y } from './container';
 	import { SECTION_HEADING, SECTION_LEAD } from './type';
-	import { FAQ } from './content';
+	import { faq } from './content';
+
+	// Read during render so the copy follows the active locale.
+	const FAQ = $derived(faq());
 </script>
 
 <section class={[CONTAINER, SECTION_Y]} aria-label={FAQ.title}>

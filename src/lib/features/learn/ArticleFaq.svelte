@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import * as Accordion from '$lib/components/ui/accordion';
 	import type { Article } from './types';
 
@@ -11,7 +12,7 @@
 
 <section id="faqs" class="scroll-mt-6" aria-labelledby="article-faq-title">
 	<h2 id="article-faq-title" class="font-display text-3xl font-medium text-foreground md:text-4xl">
-		Frequently asked questions
+		{m.learn_faq_heading()}
 	</h2>
 	<Accordion.Root type="single" class="mt-8 rounded-none border-0 border-t border-border">
 		{#each article.faqs as item, index (item.question)}

@@ -1,6 +1,8 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import * as Select from '$lib/components/ui/select';
 	import GlobeIcon from '@lucide/svelte/icons/globe';
+	import { getLocale, isLocale, setLocale } from '$lib/paraglide/runtime';
 	import { LANGUAGES } from './content';
 
 	interface Props {
@@ -22,12 +24,24 @@
 		class: className
 	}: Props = $props();
 
-	// Only English is selectable, so this never actually changes. It is bound anyway so the
-	// control behaves like a real Select rather than a decoration.
-	let value = $state('en');
+	// The runtime owns the locale, so the control reflects it rather than holding its own copy:
+	// arriving on /de must show German even though nobody touched this select.
+	const value = $derived(getLocale());
 
 	const selected = $derived(LANGUAGES.find((language) => language.value === value) ?? LANGUAGES[0]);
 	const label = $derived(display === 'short' ? selected.short : selected.label);
+
+	/**
+	 * `setLocale` writes the cookie and navigates to the same page under the other locale, so
+	 * the choice survives the next visit and the reader keeps their place. It reloads the
+	 * document by design: messages are resolved during render, so a client-side navigation
+	 * would leave the already-rendered page in the language it was built with.
+	 */
+	function choose(next: string): void {
+		if (!isLocale(next) || next === value) return;
+
+		setLocale(next);
+	}
 </script>
 
 <!--
@@ -35,9 +49,9 @@
 	reference draws, so `field` takes the primitive untouched. A header is the wrong place for
 	a form field, so `bare` strips the chrome down to text and a chevron.
 -->
-<Select.Root type="single" bind:value>
+<Select.Root type="single" {value} onValueChange={choose}>
 	<Select.Trigger
-		aria-label="Language"
+		aria-label={m.a11y_language()}
 		class={[
 			variant === 'field' && 'w-fit',
 			// Geometry and states are the NavigationMenu link's, so the control reads as one
@@ -65,7 +79,7 @@
 	</Select.Trigger>
 	<Select.Content>
 		{#each LANGUAGES as language (language.value)}
-			<Select.Item value={language.value} label={language.label} disabled={!language.available} />
+			<Select.Item value={language.value} label={language.label} />
 		{/each}
 	</Select.Content>
 </Select.Root>

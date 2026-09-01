@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { UI } from './ui-labels';
 import { NO_PLANS, NO_RECOMMENDATION, walkAndSubmit } from './answers';
 import { FIXTURE_VARIANT_ID } from './fixture';
 import { orderPlan } from './recommendation';
@@ -15,7 +16,7 @@ import { orderPlan } from './recommendation';
  */
 async function atRecommendation(page: Page, email: string): Promise<void> {
 	await walkAndSubmit(page, { email });
-	await expect(page.getByRole('heading', { name: 'Choose your treatment' })).toBeVisible();
+	await expect(page.getByRole('heading', { name: UI.chooseTreatment })).toBeVisible();
 }
 
 /** What the browser asked the cart for, which on these paths should be nothing at all. */
@@ -33,7 +34,7 @@ test('an anamnesis nothing was matched to still reaches a checkout', async ({ pa
 	const ordered = orderedVariant(page);
 	await atRecommendation(page, NO_PLANS);
 
-	await expect(page.getByText('A doctor is reviewing your answers')).toBeVisible();
+	await expect(page.getByText(UI.noPlans)).toBeVisible();
 
 	// No plan means no price: a screen that showed one would be quoting an offer nobody made.
 	await expect(page.getByText('EUR')).toHaveCount(0);
@@ -51,7 +52,7 @@ test('a recommendation that cannot be reached is not a dead end', async ({ page 
 
 	// The same screen as nothing-matched on purpose: what the person can do next is identical,
 	// and naming the outage would only invite a reload that changes nothing here.
-	await expect(page.getByText('A doctor is reviewing your answers')).toBeVisible();
+	await expect(page.getByText(UI.noPlans)).toBeVisible();
 	await expect(page.getByText('EUR')).toHaveCount(0);
 
 	await orderPlan(page);

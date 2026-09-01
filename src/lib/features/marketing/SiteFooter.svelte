@@ -6,7 +6,13 @@
 	import MailIcon from '@lucide/svelte/icons/mail';
 	import PhoneIcon from '@lucide/svelte/icons/phone';
 	import { BLEED, CONTAINER } from './container';
-	import { CONTACT, FOOTER_BRAND, FOOTER_COLUMNS } from './content';
+	import { contact, footerBrand, footerColumns } from './content';
+
+	// Derived, not imported as constants: the messages inside them resolve against the active
+	// locale, so they have to be read during render rather than once at module load.
+	const CONTACT = $derived(contact());
+	const FOOTER_BRAND = $derived(footerBrand());
+	const FOOTER_COLUMNS = $derived(footerColumns());
 	import LanguageSelect from './LanguageSelect.svelte';
 
 	const LINK =
@@ -35,12 +41,12 @@
 					<ul class="mt-4 space-y-2 text-sm text-muted-foreground">
 						<li class="flex items-center gap-2">
 							<MailIcon aria-hidden="true" class="size-4 shrink-0" />
-							<a href="mailto:{CONTACT.email}" class={LINK}>Email: {CONTACT.email}</a>
+							<a href="mailto:{CONTACT.email}" class={LINK}>{CONTACT.emailLabel}: {CONTACT.email}</a>
 						</li>
 						<li class="flex items-center gap-2">
 							<PhoneIcon aria-hidden="true" class="size-4 shrink-0" />
 							<a href="tel:{CONTACT.phone.replace(/\s/g, '')}" class={LINK}>
-								Telephone: {CONTACT.phone}
+								{CONTACT.phoneLabel}: {CONTACT.phone}
 							</a>
 						</li>
 					</ul>

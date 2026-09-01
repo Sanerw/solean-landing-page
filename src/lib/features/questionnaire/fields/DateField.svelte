@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import { today } from '@internationalized/date';
 	import { DatePicker } from '$lib/components/ui/date-picker';
 	import type { QuestionFieldProps } from '../question-registry';
@@ -21,8 +22,8 @@
 	id={controlId}
 	value={date}
 	placeholder="DD/MM/YYYY"
-	calendarLabel="Date of birth"
-	openLabel="Open the calendar"
+	calendarLabel={m.q_date_of_birth()}
+	openLabel={m.q_open_calendar()}
 	{minValue}
 	{maxValue}
 	{initialValue}

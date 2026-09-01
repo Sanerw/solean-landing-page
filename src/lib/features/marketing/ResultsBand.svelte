@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
+	import { getLocale } from '$lib/paraglide/runtime';
 	import StarRating from '$lib/components/brand/StarRating.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
@@ -8,7 +10,7 @@
 	import StethoscopeIcon from '@lucide/svelte/icons/stethoscope';
 	import { BLEED, CONTAINER, PANEL_GAP_Y, PANEL_ROUND, PANEL_Y } from './container';
 	import { SECTION_HEADING, SECTION_LEAD } from './type';
-	import { RATING, RESULTS_BAND, ROUTES, type MiniBenefit } from './content';
+	import { RATING, resultsBand, ROUTES, type MiniBenefit } from './content';
 	import { formatScore, type Rating } from './reviews';
 
 	interface Props {
@@ -19,6 +21,8 @@
 	let { rating }: Props = $props();
 
 	const shown = $derived(rating ?? RATING.fallback);
+	// Read during render so the copy follows the active locale.
+	const RESULTS_BAND = $derived(resultsBand());
 
 	const ICONS = {
 		stethoscope: StethoscopeIcon,
@@ -31,7 +35,7 @@
      text roles but not --text-faint, so nothing on this band uses that role. -->
 <!-- The rounded panel needs its own breathing room: BLEED carries only the horizontal
      gutter, so without this the card butts straight into the section above and below. -->
-<section class={[BLEED, PANEL_GAP_Y]} aria-label="Care built in">
+<section class={[BLEED, PANEL_GAP_Y]} aria-label={m.a11y_results_section()}>
 	<div class={['overflow-hidden bg-highlight', PANEL_ROUND, PANEL_Y]}>
 		<div class={CONTAINER}>
 			<!-- The narrow artboard opens this band on its heading. The three assurances are
@@ -112,7 +116,10 @@
 						<div>
 							<StarRating rating={shown.score} treatment="outline" class="mt-1.5 text-foreground" />
 							<p class="mt-1 text-xs font-semibold text-muted-foreground">
-								{shown.total.toLocaleString('en-GB')} reviews on {RATING.platform}
+								{m.rating_reviews_on({
+									count: shown.total.toLocaleString(getLocale()),
+									platform: RATING.platform
+								})}
 							</p>
 						</div>
 					</div>

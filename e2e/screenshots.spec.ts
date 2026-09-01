@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { UI } from './ui-labels';
 import { REJECTED_SUBMISSION, UNAVAILABLE_SUBMISSION, walkTo } from './answers';
 import { openCalendar, selectDateOfBirth } from './date-picker';
 import { checkoutButton } from './recommendation';
@@ -16,9 +17,9 @@ test('capture the questionnaire screens', async ({ page }) => {
 	// behind too, so waiting on it alone would type the next answer into the previous page.
 	const ready = async (step: string) => {
 		await expect(page).toHaveURL(`/questionnaire/${step}`);
-		await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled();
+		await expect(page.getByRole('button', { name: UI.continue })).toBeEnabled();
 	};
-	const advance = () => page.getByRole('button', { name: 'Continue' }).click();
+	const advance = () => page.getByRole('button', { name: UI.continue }).click();
 
 	await page.goto('/questionnaire');
 	await ready('page30');
@@ -98,9 +99,9 @@ test('capture the questionnaire screens', async ({ page }) => {
 
 	// The other purchase, which is a panel of its own and never on screen beside the prices
 	// of the treatments.
-	await page.getByRole('tab', { name: 'Prescription only' }).click();
+	await page.getByRole('tab', { name: UI.modePrescription }).click();
 	await shot('13b-recommendation-prescriptions');
-	await page.getByRole('tab', { name: 'Treatment' }).click();
+	await page.getByRole('tab', { name: UI.modeTreatment }).click();
 
 });
 
@@ -119,8 +120,8 @@ test('capture the submission failures', async ({ page }) => {
 		// earlier answer without reloading, and reloading now starts the questionnaire over.
 		await walkTo(page, 'page23');
 		await page.getByRole('textbox').fill(marker);
-		await page.getByRole('button', { name: 'Continue' }).click();
-		await expect(page.getByRole('button', { name: 'Try again' })).toBeVisible();
+		await page.getByRole('button', { name: UI.continue }).click();
+		await expect(page.getByRole('button', { name: UI.tryAgain })).toBeVisible();
 		await shot(name);
 	}
 });

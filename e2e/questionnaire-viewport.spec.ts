@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { UI } from './ui-labels';
 import { selectDateOfBirth } from './date-picker';
 
 /**
@@ -18,13 +19,13 @@ const DESKTOP_FROM = 1024;
 
 async function ready(page: Page, step: string): Promise<void> {
 	await expect(page).toHaveURL(`/questionnaire/${step}`);
-	await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled();
+	await expect(page.getByRole('button', { name: UI.continue })).toBeEnabled();
 }
 
 async function fitsViewport(
 	page: Page,
 	step: string,
-	actionName: string | RegExp = 'Continue'
+	actionName: string | RegExp = UI.continue
 ): Promise<void> {
 	const action = page.getByRole('button', { name: actionName });
 	await expect(action).toBeVisible();
@@ -68,7 +69,7 @@ for (const viewport of VIEWPORTS) {
 		page
 	}) => {
 		await page.setViewportSize(viewport);
-		const advance = () => page.getByRole('button', { name: 'Continue' }).click();
+		const advance = () => page.getByRole('button', { name: UI.continue }).click();
 
 		await page.goto('/questionnaire');
 		await ready(page, 'page30');
@@ -103,7 +104,7 @@ for (const viewport of VIEWPORTS) {
 		await advance();
 
 		await expect(page).toHaveURL('/questionnaire/projection');
-		await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled();
+		await expect(page.getByRole('button', { name: UI.continue })).toBeEnabled();
 		await fitsViewport(page, 'projection');
 		await advance();
 
@@ -118,7 +119,7 @@ for (const viewport of VIEWPORTS) {
 		await advance();
 
 		await expect(page).toHaveURL('/questionnaire/motivation');
-		await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled();
+		await expect(page.getByRole('button', { name: UI.continue })).toBeEnabled();
 		await fitsViewport(page, 'motivation');
 		await advance();
 
@@ -140,6 +141,6 @@ for (const viewport of VIEWPORTS) {
 
 		// One screen ends the step, and the plan cards make it the tallest of them.
 		await expect(page).toHaveURL('/questionnaire/complete');
-		await fitsViewport(page, 'complete', /Checkout with|Go to checkout/);
+		await fitsViewport(page, 'complete', /Zur Kasse/);
 	});
 }

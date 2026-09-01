@@ -1,11 +1,18 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import StarRating from '$lib/components/brand/StarRating.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 	// Reused rather than restated: duplicated testimonials are a recorded reference defect,
 	// and the learn feature already sets the precedent for reading marketing content fixtures.
-	import { TESTIMONIALS } from '$lib/features/marketing/content';
-	import { MOTIVATION_INTERSTITIAL as COPY } from './interstitial-content';
+	import { testimonials } from '$lib/features/marketing/content';
+	import { motivationInterstitial } from './interstitial-content';
+
+	// Read during render so the copy follows the active locale.
+	const COPY = $derived(motivationInterstitial());
+
+	// Read during render so the copy follows the active locale.
+	const TESTIMONIALS = $derived(testimonials());
 
 	interface Props {
 		oncontinue: () => void;
@@ -21,7 +28,7 @@
 	});
 
 	// The one testimonial with a portrait, which is the card the reference builds here.
-	const story = TESTIMONIALS.find((testimonial) => testimonial.photo) ?? TESTIMONIALS[0];
+	const story = $derived(TESTIMONIALS.find((testimonial) => testimonial.photo) ?? TESTIMONIALS[0]);
 </script>
 
 <p class="text-center font-sans text-xs font-semibold uppercase tracking-widest text-highlight-foreground">
@@ -89,6 +96,6 @@
 	disabled={!hydrated}
 	onclick={oncontinue}
 >
-	Continue
+	{m.q_continue()}
 	<ArrowRightIcon aria-hidden="true" class="absolute right-8" />
 </Button>

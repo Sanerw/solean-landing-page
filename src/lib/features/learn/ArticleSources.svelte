@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import * as Alert from '$lib/components/ui/alert';
 	import ShieldCheckIcon from '@lucide/svelte/icons/shield-check';
 	import { formatArticleDate } from './format-article-date';
@@ -17,7 +18,7 @@
 -->
 <section id="sources" class="scroll-mt-6" aria-labelledby="sources-title">
 	<h2 id="sources-title" class="font-display text-3xl font-medium text-foreground">
-		Sources and medical review
+		{m.learn_sources_heading()}
 	</h2>
 
 	<p class="mt-4 text-sm leading-relaxed text-muted-foreground">
@@ -45,9 +46,9 @@
 
 	<Alert.Root class="mt-6">
 		<ShieldCheckIcon aria-hidden="true" />
-		<Alert.Title>Clinically reviewed for accuracy</Alert.Title>
+		<Alert.Title>{m.learn_reviewed_title()}</Alert.Title>
 		<Alert.Description>
-			Reviewed by {article.review.reviewer.name}. Next review due
+			{m.learn_reviewed_body({ reviewer: article.review.reviewer.name })}
 			<time datetime={article.review.nextReviewAt}>
 				{formatArticleDate(article.review.nextReviewAt)}
 			</time>.

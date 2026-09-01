@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import type { Article } from './types';
 
 	interface Props {
@@ -9,23 +10,23 @@
 
 	const comparisonRows = $derived([
 		{
-			label: 'Active ingredient',
+			label: m.learn_row_active_ingredient(),
 			values: article.comparison.profiles.map((profile) => profile.activeIngredient)
 		},
 		{
-			label: 'Manufacturer',
+			label: m.learn_row_manufacturer(),
 			values: article.comparison.profiles.map((profile) => profile.manufacturer)
 		},
 		{
-			label: 'How often',
+			label: m.learn_row_frequency(),
 			values: article.comparison.profiles.map((profile) => profile.frequency)
 		},
 		{
-			label: 'Main action',
+			label: m.learn_row_main_action(),
 			values: article.comparison.profiles.map((profile) => profile.mainAction)
 		},
 		{
-			label: 'Prototype result claim',
+			label: m.learn_row_result_claim(),
 			values: article.comparison.profiles.map((profile) => profile.treatment.claim)
 		}
 	]);
@@ -34,7 +35,7 @@
 <div class="min-w-0 space-y-12 lg:col-span-2">
 	<section id="quick-answer" class="scroll-mt-6" aria-labelledby="quick-answer-title">
 		<h2 id="quick-answer-title" class="font-display text-3xl font-medium text-foreground md:text-4xl">
-			Quick answer
+			{m.learn_h_quick()}
 		</h2>
 		<div class="mt-4 space-y-4 text-base leading-relaxed text-muted-foreground">
 			{#each article.quickAnswer as paragraph (paragraph)}
@@ -45,22 +46,26 @@
 
 	<section id="at-a-glance" class="scroll-mt-6" aria-labelledby="comparison-title">
 		<h2 id="comparison-title" class="font-display text-3xl font-medium text-foreground md:text-4xl">
-			{article.comparison.profiles[0].treatment.name} vs
-			{article.comparison.profiles[1].treatment.name} at a glance
+			{m.learn_h_glance({
+				a: article.comparison.profiles[0].treatment.name,
+				b: article.comparison.profiles[1].treatment.name
+			})}
 		</h2>
 
 		<div class="mt-6 overflow-x-auto rounded-lg border border-border bg-card">
 			<table class="w-full min-w-lg border-collapse text-left text-sm">
 				<caption class="sr-only">
-					Comparison of {article.comparison.profiles[0].treatment.name} and
-					{article.comparison.profiles[1].treatment.name}
+					{m.learn_table_comparison({
+						a: article.comparison.profiles[0].treatment.name,
+						b: article.comparison.profiles[1].treatment.name
+					})}
 				</caption>
 				<thead class="bg-foreground text-background">
 					<tr>
 						<!-- Blank by design, as drawn: the row headers below name each attribute, so a
 						     column head here would label the labels. The caption carries the table's
 						     name for assistive tech. -->
-						<th scope="col" class="px-5 py-4 font-semibold"><span class="sr-only">Attribute</span></th>
+						<th scope="col" class="px-5 py-4 font-semibold"><span class="sr-only">{m.learn_table_attribute()}</span></th>
 						{#each article.comparison.profiles as profile (profile.treatment.id)}
 							<th scope="col" class="px-5 py-4 font-semibold">{profile.treatment.name}</th>
 						{/each}
@@ -82,7 +87,7 @@
 
 	<section id="how-they-work" class="scroll-mt-6" aria-labelledby="how-they-work-title">
 		<h2 id="how-they-work-title" class="font-display text-3xl font-medium text-foreground md:text-4xl">
-			How the treatments work
+			{m.learn_h_how()}
 		</h2>
 		<div class="mt-4 space-y-4 text-base leading-relaxed text-muted-foreground">
 			{#each article.howTheyWork as paragraph (paragraph)}
@@ -93,7 +98,7 @@
 
 	<section id="expected-results" class="scroll-mt-6" aria-labelledby="expected-results-title">
 		<h2 id="expected-results-title" class="font-display text-3xl font-medium text-foreground md:text-4xl">
-			Expected weight-loss results
+			{m.learn_h_results()}
 		</h2>
 		<div class="mt-4 space-y-4 text-base leading-relaxed text-muted-foreground">
 			{#each article.expectedResults as paragraph (paragraph)}
@@ -104,7 +109,7 @@
 
 	<section id="side-effects" class="scroll-mt-6" aria-labelledby="side-effects-title">
 		<h2 id="side-effects-title" class="font-display text-3xl font-medium text-foreground md:text-4xl">
-			Side effects and safety
+			{m.learn_h_side_effects()}
 		</h2>
 		<p class="mt-4 text-base leading-relaxed text-muted-foreground">{article.sideEffects.intro}</p>
 		<ul class="mt-5 list-disc space-y-2 pl-5 text-sm text-muted-foreground marker:text-highlight-foreground">
@@ -116,8 +121,10 @@
 
 	<section id="manufacturers" class="scroll-mt-6" aria-labelledby="manufacturers-title">
 		<h2 id="manufacturers-title" class="font-display text-3xl font-medium text-foreground md:text-4xl">
-			Who makes {article.manufacturers[0].treatment.name} and
-			{article.manufacturers[1].treatment.name}?
+			{m.learn_h_manufacturers({
+				a: article.manufacturers[0].treatment.name,
+				b: article.manufacturers[1].treatment.name
+			})}
 		</h2>
 		<div class="mt-6 grid gap-4 sm:grid-cols-2">
 			{#each article.manufacturers as profile (profile.treatment.id)}

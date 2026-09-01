@@ -1,56 +1,55 @@
-/** Copy for the two mid-questionnaire screens. Illustrative prototype content only. */
+import { m } from '$lib/paraglide/messages';
 
-export const PROJECTION_INTERSTITIAL = {
-	eyebrow: 'Your projection',
-	headline: 'You could reach',
-	tabsLabel: 'Projection horizon',
-	seriesLabel: 'With Solean',
-	comparisonLabel: 'Lifestyle alone',
-	chartTitle: 'Your projected weight with Solean',
-	tableCaption: 'Modelled weight at each milestone',
-	footnote:
-		'Based on outcomes data from patients using GLP-1 treatments with ongoing clinical support. Illustrative only; individual results vary.',
-	callouts: {
-		3: {
-			title: 'At 3 months',
-			body: 'Early changes show up first in appetite and habits, before the scale catches up.'
-		},
-		6: {
-			title: 'At 6 months',
-			body: 'Enough time to lose weight steadily, build healthier habits, and see meaningful, lasting change.'
-		},
-		12: {
-			title: 'At 12 months',
-			body: 'A full year of clinical support, where the change you have made has time to settle into how you live.'
-		}
-	},
-	missingWeight: {
-		title: 'We need your weight to show this',
-		body: 'Your projection is built from the weight you enter at the first question. Go back and add it to see it here.',
-		action: 'Back to question 1'
-	}
-} as const;
+/**
+ * Copy for the two mid-questionnaire screens. Illustrative prototype content only.
+ *
+ * Functions rather than constants: the messages resolve against the active locale at call
+ * time, and a module-level object would freeze whichever locale was current at import.
+ */
 
-export const MOTIVATION_INTERSTITIAL = {
-	eyebrow: "You're almost there",
-	headline: 'This is where life starts to change.',
-	body: [
-		'Medical weight loss changes more than the number on the scale.',
-		'It shapes how you feel, how you move and how you show up around others.'
-	],
-	storyLabel: 'Member story',
-	stats: [
-		{
-			figure: '-15%',
-			label: 'average body weight lost over 68 weeks',
-			source: 'Semaglutide, STEP 1 trial, NEJM 2021'
+export function projectionInterstitial() {
+	return {
+		eyebrow: m.proj_eyebrow(),
+		headline: m.proj_headline(),
+		tabsLabel: m.proj_tabs_label(),
+		seriesLabel: m.proj_series_label(),
+		comparisonLabel: m.proj_comparison_label(),
+		chartTitle: m.proj_chart_title(),
+		tableCaption: m.proj_table_caption(),
+		footnote: m.proj_footnote(),
+		loading: m.proj_loading(),
+		callouts: {
+			3: { title: m.proj_callout_3_title(), body: m.proj_callout_3_body() },
+			6: { title: m.proj_callout_6_title(), body: m.proj_callout_6_body() },
+			12: { title: m.proj_callout_12_title(), body: m.proj_callout_12_body() }
 		},
-		{
-			figure: '-21%',
-			label: 'average body weight lost over 72 weeks',
-			source: 'Tirzepatide, SURMOUNT-1 trial, NEJM 2022'
+		missingWeight: {
+			title: m.proj_missing_title(),
+			body: m.proj_missing_body(),
+			action: m.proj_missing_action()
 		}
-	],
-	footnote:
-		'Individual results vary. Sources: Wilding et al., NEJM 2021; Jastreboff et al., NEJM 2022.'
-} as const;
+	};
+}
+
+export function motivationInterstitial() {
+	return {
+		eyebrow: m.motivation_eyebrow(),
+		headline: m.motivation_headline(),
+		body: [m.motivation_body_1(), m.motivation_body_2()],
+		storyLabel: m.motivation_story_label(),
+		// Figures and trial citations are data, not prose: they read the same in both languages.
+		stats: [
+			{
+				figure: '-15%',
+				label: m.motivation_stat_1_label(),
+				source: 'Semaglutide, STEP 1 trial, NEJM 2021'
+			},
+			{
+				figure: '-21%',
+				label: m.motivation_stat_2_label(),
+				source: 'Tirzepatide, SURMOUNT-1 trial, NEJM 2022'
+			}
+		],
+		footnote: m.motivation_footnote()
+	};
+}

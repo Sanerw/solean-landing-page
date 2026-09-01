@@ -1,4 +1,5 @@
 import { expect, type Page } from '@playwright/test';
+import { UI } from './ui-labels';
 
 /** The field itself, which is a text input a visitor can type a date straight into. */
 export function dateOfBirthField(page: Page) {
@@ -7,7 +8,7 @@ export function dateOfBirthField(page: Page) {
 
 /** Opens the calendar, which hangs off its own icon now that the field takes typing. */
 export async function openCalendar(page: Page) {
-	await page.getByRole('button', { name: 'Open the calendar' }).click();
+	await page.getByRole('button', { name: UI.openCalendar }).click();
 	const popover = page.locator('[data-slot="popover-content"]');
 	await expect(popover).toBeVisible();
 

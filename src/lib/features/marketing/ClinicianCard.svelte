@@ -1,6 +1,9 @@
 <script lang="ts">
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
-	import { CLINICAL_TEAM, type Clinician } from './content';
+	import { clinicalTeam, type Clinician } from './content';
+
+	// Read during render so the copy follows the active locale.
+	const CLINICAL_TEAM = $derived(clinicalTeam());
 
 	interface Props {
 		clinician: Clinician;

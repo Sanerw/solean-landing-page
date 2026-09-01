@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import { goto } from '$app/navigation';
 	import { Spinner } from '$lib/components/ui/spinner';
 	import MotivationInterstitial from '$lib/features/questionnaire/MotivationInterstitial.svelte';
@@ -184,20 +185,20 @@
 </script>
 
 <svelte:head>
-	<title>{isCompletion ? 'Questionnaire complete' : title} | Solean</title>
+	<title>{isCompletion ? m.title_questionnaire_complete() : title} | Solean</title>
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
 <QuestionnaireShell
 	progress={redirecting ? null : progress}
 	{backHref}
-	backLabel={isCompletion ? 'Home' : 'Back'}
+	backLabel={isCompletion ? m.q_home() : m.q_back()}
 >
 	{#if redirecting}
 		<!-- The same handoff as the flow's entry page, and the same reasoning. -->
 		<div role="status" class="flex justify-center py-16">
 			<Spinner aria-hidden="true" class="size-8 text-primary" />
-			<span class="sr-only">Taking you to where you left off.</span>
+			<span class="sr-only">{m.q_opening_resume()}</span>
 		</div>
 	{:else if isCompletion}
 		<!--

@@ -1,15 +1,20 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import * as Carousel from '$lib/components/ui/carousel';
 	import BentoCard from './BentoCard.svelte';
-	import { BENTO_CARDS, BENTO_SECTION } from './content';
+	import { bentoCards, bentoSection } from './content';
 	import { BLEED, CONTAINER } from './container';
 	import { SUB_HEADING } from './type';
 
-	const [tall, ...rest] = BENTO_CARDS;
+	// Read during render so the copy follows the active locale.
+	const BENTO_SECTION = $derived(bentoSection());
+	const cards = $derived(bentoCards());
+	const tall = $derived(cards[0]);
+	const rest = $derived(cards.slice(1));
 </script>
 
 <!-- Bottom only: the trust row above already ends with its own padding. -->
-<section class={[BLEED, 'max-sm:bg-muted max-sm:py-11 sm:pb-8']} aria-label="What Solean gives you">
+<section class={[BLEED, 'max-sm:bg-muted max-sm:py-11 sm:pb-8']} aria-label={m.a11y_bento_section()}>
 	<div class={CONTAINER}>
 		<!--
 			Two arrangements of the same five cards, not one that bends: the wide artboard is a

@@ -1,10 +1,15 @@
+/**
+ * Visual fidelity against the artboards in `blueprint/reference/`, which are English. This
+ * spec therefore walks `/en`: asserting German copy and German-length text boxes against an
+ * English reference would be measuring the wrong page.
+ */
 import { expect, test } from '@playwright/test';
 
 test('the announcement and reference hero asset render without narrow-screen overflow', async ({
 	page
 }) => {
 	await page.setViewportSize({ width: 375, height: 812 });
-	await page.goto('/');
+	await page.goto('/en');
 
 	const announcement = page.getByRole('complementary', { name: 'Wegovy Pill offer' });
 	await expect(announcement).toHaveCSS('height', '64px');
@@ -136,7 +141,7 @@ test('the announcement and reference hero asset render without narrow-screen ove
 
 test('keeps the Learn teaser compact and uses the reference divider', async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 768 });
-	await page.goto('/');
+	await page.goto('/en');
 
 	const teaser = page.getByTestId('hero-article-teaser');
 	await expect(teaser).toBeVisible();
@@ -157,7 +162,7 @@ test('keeps the Learn teaser compact and uses the reference divider', async ({ p
 
 test('matches the desktop Treatments menu geometry and keyboard behaviour', async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 900 });
-	await page.goto('/');
+	await page.goto('/en');
 
 	const logo = page.getByLabel('Solean, home').locator('svg');
 	await expect(logo).toHaveCSS('height', '60px');
@@ -207,7 +212,7 @@ test('matches the desktop Treatments menu geometry and keyboard behaviour', asyn
 
 test('keeps the bento hierarchy compact and aligned', async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
-	await page.goto('/');
+	await page.goto('/en');
 
 	const section = page.getByTestId('bento-grid');
 	const cards = section.locator('article');
@@ -261,7 +266,7 @@ test('dissolves the care artwork into the band and restores the review column', 
 	page
 }) => {
 	await page.setViewportSize({ width: 1920, height: 1000 });
-	await page.goto('/');
+	await page.goto('/en');
 
 	const band = page.getByLabel('Care built in');
 	const visual = band.locator('img').first();
@@ -333,7 +338,7 @@ test('dissolves the care artwork into the band and restores the review column', 
 
 test('the mobile menu opens as the reference full-screen panel', async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
-	await page.goto('/');
+	await page.goto('/en');
 
 	const announcementBar = page.getByRole('complementary', { name: 'Wegovy Pill offer' });
 	const trigger = page.getByRole('button', { name: 'Open menu' });
@@ -409,7 +414,7 @@ test('the narrow landing sections follow the artboard', async ({ page }) => {
 		els.filter((e) => (e as HTMLElement).offsetParent !== null).length;
 
 	await page.setViewportSize({ width: 390, height: 844 });
-	await page.goto('/');
+	await page.goto('/en');
 
 	// The artboard has no trust band.
 	await expect(page.getByLabel('Why Solean')).toBeHidden();
@@ -503,19 +508,19 @@ test('the article header sits exactly where the landing header does', async ({
 	] as const) {
 		await page.setViewportSize({ width, height });
 
-		await page.goto('/');
+		await page.goto('/en');
 		const home = { header: await headerBox(), logo: await logoBox() };
 
-		await page.goto('/learn/blog/mounjaro-vs-wegovy');
+		await page.goto('/en/learn/blog/mounjaro-vs-wegovy');
 		expect(await headerBox()).toMatchObject(home.header!);
 		expect(await logoBox()).toMatchObject(home.logo!);
 	}
 
 	// The menu trigger travels with it.
 	await page.setViewportSize({ width: 390, height: 844 });
-	await page.goto('/learn/blog/mounjaro-vs-wegovy');
+	await page.goto('/en/learn/blog/mounjaro-vs-wegovy');
 	const articleTrigger = await page.getByRole('button', { name: 'Open menu' }).boundingBox();
-	await page.goto('/');
+	await page.goto('/en');
 	expect(await page.getByRole('button', { name: 'Open menu' }).boundingBox()).toMatchObject(
 		articleTrigger!
 	);
@@ -530,7 +535,7 @@ test('the article header sits exactly where the landing header does', async ({
 
 test('the article follows its artboard below the hero', async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 900 });
-	await page.goto('/learn/blog/mounjaro-vs-wegovy');
+	await page.goto('/en/learn/blog/mounjaro-vs-wegovy');
 
 	// The last crumb is a short name, not the truncated headline.
 	const crumb = page.locator('[data-slot="breadcrumb-page"]');
@@ -609,7 +614,7 @@ test('no marketing image is drawn larger than the pixels it carries', async ({ p
 
 	const read = async (width: number, height: number) => {
 		await page.setViewportSize({ width, height });
-		await page.goto('/');
+		await page.goto('/en');
 		await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
 		await page.waitForLoadState('networkidle');
 		await page.evaluate(() => window.scrollTo(0, 0));

@@ -4,7 +4,10 @@
 	import BadgeCheckIcon from '@lucide/svelte/icons/badge-check';
 	import PillIcon from '@lucide/svelte/icons/pill';
 	import SyringeIcon from '@lucide/svelte/icons/syringe';
-	import { TESTIMONIALS_SECTION, type Testimonial } from './content';
+	import { testimonialsSection, type Testimonial } from './content';
+
+	// Read during render so the copy follows the active locale.
+	const TESTIMONIALS_SECTION = $derived(testimonialsSection());
 
 	interface Props {
 		testimonial: Testimonial;

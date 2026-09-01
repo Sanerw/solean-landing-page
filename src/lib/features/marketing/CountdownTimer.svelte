@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import { OFFER_WINDOW_MS, pad, remainingUntil, type Remaining } from './countdown';
 
 	interface Props {
@@ -15,10 +16,10 @@
 	// The narrow bar has room for three units under one-letter labels, so seconds and the
 	// colons drop out below `sm` rather than being rebuilt as a second component.
 	const units = $derived([
-		{ value: remaining.days, label: 'days', short: 'D' },
-		{ value: remaining.hours, label: 'hrs', short: 'H' },
-		{ value: remaining.minutes, label: 'mins', short: 'M' },
-		{ value: remaining.seconds, label: 'secs', short: 'S' }
+		{ value: remaining.days, label: m.countdown_days(), short: m.countdown_days_short() },
+		{ value: remaining.hours, label: m.countdown_hours(), short: m.countdown_hours_short() },
+		{ value: remaining.minutes, label: m.countdown_minutes(), short: m.countdown_minutes_short() },
+		{ value: remaining.seconds, label: m.countdown_seconds(), short: m.countdown_seconds_short() }
 	]);
 
 	$effect(() => {
@@ -39,7 +40,7 @@
 	a screen reader once per second for a mock promotion.
 -->
 <div class={['flex items-center gap-1.5 sm:gap-2.5', className]}>
-	<span class="sr-only">Offer ends in about {remaining.hours} hours.</span>
+	<span class="sr-only">{m.countdown_sr({ hours: remaining.hours })}</span>
 	{#each units as unit, index (unit.label)}
 		{#if index > 0}
 			<span aria-hidden="true" class="hidden text-sm font-bold leading-normal sm:inline">:</span>

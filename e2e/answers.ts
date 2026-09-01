@@ -1,4 +1,5 @@
 import { expect, type Page } from '@playwright/test';
+import { UI } from './ui-labels';
 import { selectDateOfBirth } from './date-picker';
 
 /**
@@ -123,7 +124,7 @@ export const COMPLETE_STEP = 'complete';
  * the engine. Continue being enabled is the honest signal to wait on.
  */
 export async function stepIsInteractive(page: Page): Promise<void> {
-	await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled();
+	await expect(page.getByRole('button', { name: UI.continue })).toBeEnabled();
 }
 
 /**
@@ -154,7 +155,7 @@ export async function walkTo(
 		await expect(page).toHaveURL(`/questionnaire/${step.id}`);
 		await stepIsInteractive(page);
 		await step.fill?.(page, options);
-		await page.getByRole('button', { name: 'Continue' }).click();
+		await page.getByRole('button', { name: UI.continue }).click();
 	}
 
 	await expect(page).toHaveURL(`/questionnaire/${COMPLETE_STEP}`);

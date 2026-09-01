@@ -5,8 +5,11 @@
 	import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
 	import BrainIcon from '@lucide/svelte/icons/brain';
 	import DnaIcon from '@lucide/svelte/icons/dna';
-	import { MEDICAL_FRAMING, ROUTES, type MedicalFactor } from './content';
+	import { medicalFraming, ROUTES, type MedicalFactor } from './content';
 	import { SECTION_HEADING, SECTION_LEAD } from './type';
+
+	// Read during render so the copy follows the active locale.
+	const MEDICAL_FRAMING = $derived(medicalFraming());
 
 	const ICONS = {
 		brain: BrainIcon,

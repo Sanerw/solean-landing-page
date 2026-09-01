@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import type { ArticleTocItem } from './types';
 
 	interface Props {
@@ -8,8 +9,8 @@
 	let { items }: Props = $props();
 </script>
 
-<nav aria-label="On this page" class="lg:sticky lg:top-6 lg:self-start">
-	<h2 class="font-display text-lg font-semibold text-foreground">On this page</h2>
+<nav aria-label={m.learn_toc_heading()} class="lg:sticky lg:top-6 lg:self-start">
+	<h2 class="font-display text-lg font-semibold text-foreground">{m.learn_toc_heading()}</h2>
 	<ul class="mt-4 grid grid-cols-2 gap-x-4 gap-y-3 sm:grid-cols-4 lg:grid-cols-1">
 		{#each items as item (item.id)}
 			<li>

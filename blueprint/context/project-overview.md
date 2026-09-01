@@ -37,7 +37,7 @@ happens inside RxScale, not on a Solean screen.
 
 ## Features
 
-Eighteen in build-plan order. All eighteen are complete.
+Nineteen in build-plan order. All nineteen are complete.
 
 1. **Design system and core UI components** (done) - semantic tokens, two fonts,
    radii, brand foundations, thirteen adapted shadcn primitives on a showcase at
@@ -88,6 +88,11 @@ Eighteen in build-plan order. All eighteen are complete.
 18. **Legal pages and real contact details** (done) - the four German policy documents
     Solean already publishes, served on their own routes and linked from the
     footer, plus the real support address, telephone number and service hours.
+19. **German as the default language, English at `/en`** (done) - 19a the Paraglide
+    runtime, locale routing and the shared chrome; 19b the landing page; 19c the
+    Learn article; 19d the questionnaire chrome; 19e the flip that moves German
+    to the bare path. The questionnaire's own questions stay RxScale's and stay
+    German, so an English visitor reaches a German funnel by decision.
 
 Dropped to the deferred backlog with this plan change: Solean's own checkout
 (account, shipping, payment), the pricing engine, add-on selection, and the

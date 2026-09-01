@@ -4,10 +4,13 @@
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 	import type { Rating } from './reviews';
 	import { CONTAINER } from './container';
-	import { HERO, ROUTES } from './content';
+	import { hero, ROUTES } from './content';
 	import HeroArticleTeaser from './HeroArticleTeaser.svelte';
 	import HeroRatingBadge from './HeroRatingBadge.svelte';
 	import SiteHeader from './SiteHeader.svelte';
+
+	// Read during render so the copy follows the active locale.
+	const HERO = $derived(hero());
 
 	interface Props {
 		/** Read on the server; null when Reviews.io could not be reached. */

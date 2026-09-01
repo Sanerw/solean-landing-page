@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { UI } from './ui-labels';
 import { FIXTURE_ELEMENTS, FIXTURE_IDENTIFIER, FIXTURE_PAGES } from './fixture';
 
 test('the dev surface reports what the fetched model contains', async ({ page }) => {
@@ -32,7 +33,7 @@ test('the model is fetched once per entry to the flow', async ({ page }) => {
 	await expect(page).toHaveURL('/questionnaire/page30');
 
 	// A second step, so the assertion is about the layout load and not about a single page.
-	await page.getByRole('button', { name: 'Continue' }).click();
+	await page.getByRole('button', { name: UI.continue }).click();
 	await expect(page).toHaveURL('/questionnaire/page27');
 
 	expect(modelRequests).toHaveLength(1);
@@ -45,9 +46,9 @@ test('the questionnaire refuses to open when the model cannot be fetched', async
 	await page.locator('a[href="/questionnaire"]').first().click();
 
 	await expect(page.getByRole('heading', { level: 1 })).toHaveText(
-		'We cannot open the questionnaire'
+		UI.cannotOpen
 	);
-	await expect(page.getByRole('button', { name: 'Try again' })).toBeVisible();
+	await expect(page.getByRole('button', { name: UI.tryAgain })).toBeVisible();
 	// No fallback questionnaire behind the failure.
 	await expect(page.getByRole('radio')).toHaveCount(0);
 });

@@ -1,9 +1,16 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import * as Carousel from '$lib/components/ui/carousel';
 	import ClinicianCard from './ClinicianCard.svelte';
 	import { CONTAINER, SECTION_Y } from './container';
 	import { SECTION_HEADING, SECTION_LEAD } from './type';
-	import { CLINICAL_TEAM, CLINICIANS } from './content';
+	import { clinicalTeam, clinicians } from './content';
+
+	// Read during render so the copy follows the active locale.
+	const CLINICIANS = $derived(clinicians());
+
+	// Read during render so the copy follows the active locale.
+	const CLINICAL_TEAM = $derived(clinicalTeam());
 </script>
 
 <section class={[CONTAINER, SECTION_Y]} aria-label={CLINICAL_TEAM.title}>
@@ -19,8 +26,8 @@
 			     dissolves this row into the carousel's own column there, so one set of
 			     controls is reordered rather than a second set rendered and hidden. -->
 			<div class="relative flex shrink-0 gap-2 max-sm:order-3 max-sm:mt-8 max-sm:justify-center">
-				<Carousel.Previous class="static translate-y-0" aria-label="Previous clinician" variant="ghost" />
-				<Carousel.Next class="static translate-y-0" aria-label="Next clinician" variant="inverse" />
+				<Carousel.Previous class="static translate-y-0" aria-label={m.a11y_prev_clinician()} variant="ghost" />
+				<Carousel.Next class="static translate-y-0" aria-label={m.a11y_next_clinician()} variant="inverse" />
 			</div>
 		</div>
 

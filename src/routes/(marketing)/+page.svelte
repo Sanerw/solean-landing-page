@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import BentoGrid from '$lib/features/marketing/BentoGrid.svelte';
 	import ClinicalTeamSection from '$lib/features/marketing/ClinicalTeamSection.svelte';
 	import FaqSection from '$lib/features/marketing/FaqSection.svelte';
@@ -14,10 +15,10 @@
 </script>
 
 <svelte:head>
-	<title>Solean - doctor-led weight loss for men</title>
+	<title>{m.title_home()}</title>
 	<meta
 		name="description"
-		content="Personalised, doctor-led weight-loss care designed to help men feel healthier, more confident and supported for the long term."
+		content={m.meta_home()}
 	/>
 </svelte:head>
 

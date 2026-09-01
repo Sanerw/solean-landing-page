@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import SoleanLogo from '$lib/components/brand/SoleanLogo.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import * as Sheet from '$lib/components/ui/sheet';
@@ -6,8 +7,14 @@
 	import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
 	import MenuIcon from '@lucide/svelte/icons/menu';
 	import XIcon from '@lucide/svelte/icons/x';
-	import { HERO, NAV_ITEMS, ROUTES } from './content';
+	import { hero, navItems, ROUTES } from './content';
+
+	// Read during render so the labels follow the active locale.
+	const NAV_ITEMS = $derived(navItems());
 	import LanguageSelect from './LanguageSelect.svelte';
+
+	// Read during render so the copy follows the active locale.
+	const HERO = $derived(hero());
 
 	interface Props {
 		surface?: 'default' | 'dark';
@@ -34,7 +41,7 @@
 					// header, which has no scrim to lift a translucent fill.
 					surface === 'dark' ? 'max-sm:bg-background/10' : 'max-sm:border-border'
 				]}
-				aria-label="Open menu"
+				aria-label={m.a11y_open_menu()}
 			>
 				<MenuIcon aria-hidden="true" class="size-4 max-sm:size-5" />
 			</Button>
@@ -60,7 +67,7 @@
 			<Sheet.Title class="sr-only">Menu</Sheet.Title>
 			<a
 				href={ROUTES.home}
-				aria-label="Solean, home"
+				aria-label={m.a11y_home()}
 				class="rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-foreground"
 				onclick={() => (open = false)}
 			>
@@ -75,7 +82,7 @@
 						size="icon"
 						surface="dark"
 						class="size-11 bg-background/10"
-						aria-label="Close menu"
+						aria-label={m.a11y_close_menu()}
 					>
 						<XIcon aria-hidden="true" class="size-5" />
 					</Button>
@@ -84,7 +91,7 @@
 		</Sheet.Header>
 
 		<!-- Numbered rows in display type, separated by hairlines rather than boxed. -->
-		<nav aria-label="Main" class="flex-1 overflow-y-auto pt-10">
+		<nav aria-label={m.a11y_main_nav()} class="flex-1 overflow-y-auto pt-10">
 			<ul>
 				{#each NAV_ITEMS as item, index (item.label)}
 					<li class="border-b border-background/20">

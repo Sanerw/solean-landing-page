@@ -1,9 +1,10 @@
 <script lang="ts">
 	import { Spinner } from '$lib/components/ui/spinner';
 	import CircleCheckIcon from '@lucide/svelte/icons/circle-check';
-	import { RECOMMENDATION as COPY } from './recommendation-content';
+	import { recommendation } from './recommendation-content';
 
-	const { steps, headline } = COPY.building;
+	// Read during render so the copy follows the active locale.
+	const building = $derived(recommendation().building);
 </script>
 
 <!--
@@ -13,10 +14,10 @@
 	happened.
 -->
 <div role="status" class="py-10 sm:py-16">
-	<h1 class="font-display text-3xl font-medium sm:text-4xl">{headline}</h1>
+	<h1 class="font-display text-3xl font-medium sm:text-4xl">{building.headline}</h1>
 
 	<ul class="mt-10 space-y-5">
-		{#each steps as step (step.label)}
+		{#each building.steps as step (step.label)}
 			<li class="flex items-center gap-4">
 				{#if step.done}
 					<CircleCheckIcon aria-hidden="true" class="size-7 shrink-0 text-primary" />

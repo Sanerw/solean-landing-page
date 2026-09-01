@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { UI } from './ui-labels';
 import { walkTo } from './answers';
 
 /**
@@ -14,12 +15,13 @@ import { walkTo } from './answers';
  * on a slow connection.
  */
 async function stepIsInteractive(page: Page): Promise<void> {
-	await expect(page.getByRole('button', { name: 'Continue' })).toBeEnabled();
+	await expect(page.getByRole('button', { name: UI.continue })).toBeEnabled();
 }
 
 async function questionCount(page: Page): Promise<{ current: number; total: number }> {
-	const label = await page.locator('[aria-label^="Question "]').first().getAttribute('aria-label');
-	const match = label?.match(/Question (\d+) of (\d+)/);
+	const label = await page.locator(`[aria-label^="${UI.progressPrefix}"]`).first().getAttribute('aria-label');
+	// The label is localised; the two numbers in it are not, so they are what is read.
+	const match = label?.match(/(\d+)\D+(\d+)/);
 	if (!match) throw new Error(`No question count on this step: ${label}`);
 
 	return { current: Number(match[1]), total: Number(match[2]) };
@@ -33,7 +35,7 @@ test('a required question refuses to advance, with the message from the model', 
 		'Welches biologische Geschlecht hast Du?'
 	);
 
-	await page.getByRole('button', { name: 'Continue' }).click();
+	await page.getByRole('button', { name: UI.continue }).click();
 
 	await expect(
 		page.getByText('Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.')
@@ -44,7 +46,7 @@ test('a required question refuses to advance, with the message from the model', 
 test('branching follows the visibleIf in the model', async ({ page }) => {
 	await walkTo(page, 'page3');
 	await page.getByRole('radio', { name: 'Weiblich' }).click();
-	await page.getByRole('button', { name: 'Continue' }).click();
+	await page.getByRole('button', { name: UI.continue }).click();
 
 	// The pregnancy question is conditional on this answer.
 	await expect(page).toHaveURL('/questionnaire/page4');
@@ -54,7 +56,7 @@ test('branching follows the visibleIf in the model', async ({ page }) => {
 test('the other branch skips the question it does not apply to', async ({ page }) => {
 	await walkTo(page, 'page3');
 	await page.getByRole('radio', { name: 'Männlich' }).click();
-	await page.getByRole('button', { name: 'Continue' }).click();
+	await page.getByRole('button', { name: UI.continue }).click();
 
 	await expect(page).toHaveURL('/questionnaire/page2');
 });
@@ -69,16 +71,16 @@ test('an interlude does not count as a question', async ({ page }) => {
 	// Answered and continued rather than navigated to. A `goto` is a fresh load, and a fresh
 	// load now has no answers at all, so it would bounce back to the first open question.
 	await page.getByRole('checkbox', { name: 'Keine der Genannten' }).click();
-	await page.getByRole('button', { name: 'Continue' }).click();
+	await page.getByRole('button', { name: UI.continue }).click();
 
 	await expect(page).toHaveURL('/questionnaire/motivation');
 	await expect(page.getByRole('heading', { level: 1 })).toContainText(
-		'This is where life starts to change.'
+		UI.motivationHeadline
 	);
 	await stepIsInteractive(page);
 	expect(await questionCount(page)).toEqual(before);
 
-	await page.getByRole('button', { name: 'Continue' }).click();
+	await page.getByRole('button', { name: UI.continue }).click();
 
 	await expect
 		.poll(async () => (await questionCount(page)).current)

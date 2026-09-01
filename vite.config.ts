@@ -1,3 +1,4 @@
+import { paraglideVitePlugin } from '@inlang/paraglide-js';
 import tailwindcss from '@tailwindcss/vite';
 import adapter from '@sveltejs/adapter-vercel';
 import { enhancedImages } from '@sveltejs/enhanced-img';
@@ -7,6 +8,14 @@ import { defineConfig } from 'vitest/config';
 
 export default defineConfig({
 	plugins: [
+		// Compiles messages/{locale}.json into typed functions under src/lib/paraglide, which is
+		// generated and git-ignored. `baseLocale` is German, set in project.inlang/settings.json,
+		// so the bare path serves the market's own language and English lives under `/en`.
+		paraglideVitePlugin({
+			project: './project.inlang',
+			outdir: './src/lib/paraglide',
+			strategy: ['url', 'cookie', 'baseLocale']
+		}),
 		tailwindcss(),
 		enhancedImages(),
 		sveltekit({

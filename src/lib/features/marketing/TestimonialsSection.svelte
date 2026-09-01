@@ -1,9 +1,16 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import * as Carousel from '$lib/components/ui/carousel';
 	import { BLEED, CONTAINER, PANEL_GAP_Y, PANEL_ROUND, PANEL_Y } from './container';
 	import { SECTION_HEADING, SECTION_LEAD } from './type';
-	import { TESTIMONIALS, TESTIMONIALS_SECTION } from './content';
+	import { testimonials, testimonialsSection } from './content';
 	import TestimonialCard from './TestimonialCard.svelte';
+
+	// Read during render so the copy follows the active locale.
+	const TESTIMONIALS = $derived(testimonials());
+
+	// Read during render so the copy follows the active locale.
+	const TESTIMONIALS_SECTION = $derived(testimonialsSection());
 </script>
 
 <section class={[BLEED, PANEL_GAP_Y]} aria-label={TESTIMONIALS_SECTION.title}>
@@ -27,10 +34,10 @@
 					>
 						<Carousel.Previous
 							class="static translate-y-0"
-							aria-label="Previous story"
+							aria-label={m.a11y_prev_story()}
 							variant="ghost"
 						/>
-						<Carousel.Next class="static translate-y-0" aria-label="Next story" variant="inverse" />
+						<Carousel.Next class="static translate-y-0" aria-label={m.a11y_next_story()} variant="inverse" />
 					</div>
 				</div>
 

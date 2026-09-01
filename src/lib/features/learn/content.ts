@@ -1,8 +1,9 @@
+import { m } from '$lib/paraglide/messages';
 import { findTreatment, type Treatment } from '$lib/domain';
 import articleHero from '$lib/assets/learn/mounjaro-vs-wegovy.jpg';
 import {
 	FEATURED_ARTICLE_SLUG,
-	JURAJ_GALAN,
+	jurajGalan,
 	type FaqItem
 } from '$lib/features/marketing/content';
 import type { Article, ArticleTreatmentProfile } from './types';
@@ -20,137 +21,121 @@ function requireTreatment(id: string): Treatment {
 const mounjaro = requireTreatment('mounjaro');
 const wegovy = requireTreatment('wegovy');
 
-const mounjaroProfile: ArticleTreatmentProfile = {
-	treatment: mounjaro,
-	activeIngredient: 'Tirzepatide',
-	manufacturer: 'Eli Lilly',
-	frequency: 'Once weekly',
-	mainAction: 'GIP and GLP-1',
-	manufacturerLabel: 'Maker of the treatment',
-	manufacturerBody:
-		'A pharmaceutical company that developed tirzepatide and researches medicines for diabetes and obesity.'
-};
+function mounjaroProfile(): ArticleTreatmentProfile {
+	return {
+		treatment: mounjaro,
+		// Active ingredients and company names are not translated: they are the same words in
+		// German pharmaceutical writing.
+		activeIngredient: 'Tirzepatide',
+		manufacturer: 'Eli Lilly',
+		frequency: m.learn_frequency_weekly(),
+		mainAction: m.learn_main_action_both(),
+		manufacturerLabel: m.learn_manufacturer_label(),
+		manufacturerBody: m.learn_lilly_body()
+	};
+}
 
-const wegovyProfile: ArticleTreatmentProfile = {
-	treatment: wegovy,
-	activeIngredient: 'Semaglutide',
-	manufacturer: 'Novo Nordisk',
-	frequency: 'Once weekly',
-	mainAction: 'GLP-1',
-	manufacturerLabel: 'Maker of the treatment',
-	manufacturerBody:
-		'A healthcare company with decades of research in diabetes and obesity and the developer of semaglutide.'
-};
+function wegovyProfile(): ArticleTreatmentProfile {
+	return {
+		treatment: wegovy,
+		activeIngredient: 'Semaglutide',
+		manufacturer: 'Novo Nordisk',
+		frequency: m.learn_frequency_weekly(),
+		mainAction: 'GLP-1',
+		manufacturerLabel: m.learn_manufacturer_label(),
+		manufacturerBody: m.learn_novo_body()
+	};
+}
 
-const ARTICLE_FAQS: readonly FaqItem[] = [
-	{
-		question: `Is ${mounjaro.name} stronger than ${wegovy.name}?`,
-		answer:
-			'Published studies report different average outcomes, but they are not a direct promise of an individual result. A clinician considers suitability, tolerability, availability, and health history together.'
-	},
-	{
-		question: 'Can you switch between the treatments?',
-		answer:
-			'Any treatment change needs clinical review. Timing, dose, side effects, and the reason for switching all affect the advice a prescriber gives.'
-	},
-	{
-		question: 'How quickly do results appear?',
-		answer:
-			'Results vary by person, dose, adherence, and health factors. A clinician should set expectations and review progress over time.'
-	},
-	{
-		question: 'Are these medicines available without a prescription?',
-		answer:
-			'No. These are prescription treatments and should only be used after a qualified clinician confirms that they are appropriate.'
-	}
-];
+function articleFaqs(): readonly FaqItem[] {
+	return [
+		{
+			question: m.learn_faq_stronger_q({ a: mounjaro.name, b: wegovy.name }),
+			answer: m.learn_faq_stronger_a()
+		},
+		{ question: m.learn_faq_switch_q(), answer: m.learn_faq_switch_a() },
+		{ question: m.learn_faq_speed_q(), answer: m.learn_faq_speed_a() },
+		{ question: m.learn_faq_otc_q(), answer: m.learn_faq_otc_a() }
+	];
+}
 
-export const FEATURED_ARTICLE: Article = {
-	slug: FEATURED_ARTICLE_SLUG,
-	category: 'Treatment comparison',
-	title: `${mounjaro.name} vs ${wegovy.name}: differences, results and which may suit you`,
-	shortTitle: `${mounjaro.name} vs ${wegovy.name}`,
-	sourcesSummary:
-		`Key sources include the SURMOUNT-1 and STEP 1 clinical trials, European Medicines Agency product information, and prescribing information from ${mounjaroProfile.manufacturer} and ${wegovyProfile.manufacturer}. This article is educational and does not replace individual medical advice.`,
-	summary:
-		'An expert-reviewed prototype comparison of two weekly prescription treatments, including how they work, possible side effects, and questions to discuss with a clinician.',
-	hero: {
-		src: articleHero,
-		alt: 'A hand holding several capped injection syringes'
-	},
-	review: {
-		reviewer: JURAJ_GALAN,
-		updatedAt: '2026-08-28',
-		nextReviewAt: '2027-08-28',
-		readTimeMinutes: 12
-	},
-	toc: [
-		{ id: 'quick-answer', label: 'Quick answer' },
-		{ id: 'at-a-glance', label: 'At a glance' },
-		{ id: 'how-they-work', label: 'How they work' },
-		{ id: 'expected-results', label: 'Expected results' },
-		{ id: 'side-effects', label: 'Side effects' },
-		{ id: 'manufacturers', label: 'Makers and research' },
-		{ id: 'faqs', label: 'FAQs' },
-		{ id: 'sources', label: 'Sources' }
-	],
-	quickAnswer: [
-		'Both options are once-weekly prescription injections used alongside nutrition, movement, and clinical support.',
-		'They act on related appetite pathways but contain different active ingredients. Suitability depends on medical history, goals, side-effect risk, and availability.'
-	],
-	keyTakeaways: [
-		'Both are weekly prescription injections.',
-		'They contain different active ingredients.',
-		'Average study outcomes do not predict an individual result.',
-		'A clinician should decide suitability.'
-	],
-	comparison: {
-		profiles: [mounjaroProfile, wegovyProfile]
-	},
-	howTheyWork: [
-		'Both medicines mimic gut hormones involved in appetite and blood-sugar regulation. They can help people feel fuller for longer and reduce food noise.',
-		'Their hormone targets differ, but that difference alone does not make one option right for every person.'
-	],
-	expectedResults: [
-		'Clinical studies report meaningful average weight loss when treatment is used alongside lifestyle support. Studies vary in design and should not be treated as a direct head-to-head promise.',
-		'Individual response depends on dose, adherence, health conditions, and ongoing clinical support.'
-	],
-	sideEffects: {
-		intro:
-			'Common effects are often gastrointestinal and may be more noticeable while a dose is increasing. A prescriber should review medical history and current medicines first.',
-		items: [
-			'Nausea, diarrhoea, or constipation',
-			'Vomiting, reflux, or stomach discomfort',
-			'Reduced appetite and fatigue',
-			'Rare but serious symptoms that need urgent medical advice'
+/**
+ * A function, not a constant: every string in it resolves against the active locale, and a
+ * module-level object would freeze whichever locale was current at import.
+ */
+export function featuredArticle(): Article {
+	const mounjaroDetail = mounjaroProfile();
+	const wegovyDetail = wegovyProfile();
+
+	return {
+		slug: FEATURED_ARTICLE_SLUG,
+		category: m.learn_category(),
+		title: m.learn_title({ a: mounjaro.name, b: wegovy.name }),
+		shortTitle: `${mounjaro.name} vs ${wegovy.name}`,
+		sourcesSummary: m.learn_sources_summary({
+			a: mounjaroDetail.manufacturer,
+			b: wegovyDetail.manufacturer
+		}),
+		summary: m.learn_summary(),
+		hero: { src: articleHero, alt: m.learn_hero_alt() },
+		review: {
+			reviewer: jurajGalan(),
+			updatedAt: '2026-08-28',
+			nextReviewAt: '2027-08-28',
+			readTimeMinutes: 12
+		},
+		toc: [
+			{ id: 'quick-answer', label: m.learn_toc_quick() },
+			{ id: 'at-a-glance', label: m.learn_toc_glance() },
+			{ id: 'how-they-work', label: m.learn_toc_how() },
+			{ id: 'expected-results', label: m.learn_toc_results() },
+			{ id: 'side-effects', label: m.learn_toc_side_effects() },
+			{ id: 'manufacturers', label: m.learn_toc_manufacturers() },
+			{ id: 'faqs', label: m.learn_toc_faqs() },
+			{ id: 'sources', label: m.learn_toc_sources() }
+		],
+		quickAnswer: [m.learn_quick_1(), m.learn_quick_2()],
+		keyTakeaways: [
+			m.learn_takeaway_1(),
+			m.learn_takeaway_2(),
+			m.learn_takeaway_3(),
+			m.learn_takeaway_4()
+		],
+		comparison: { profiles: [mounjaroDetail, wegovyDetail] },
+		howTheyWork: [m.learn_how_1(), m.learn_how_2()],
+		expectedResults: [m.learn_results_1(), m.learn_results_2()],
+		sideEffects: {
+			intro: m.learn_side_intro(),
+			items: [m.learn_side_1(), m.learn_side_2(), m.learn_side_3(), m.learn_side_4()]
+		},
+		manufacturers: [mounjaroDetail, wegovyDetail],
+		faqs: articleFaqs(),
+		sources: [
+			{ label: m.learn_source_surmount() },
+			{ label: m.learn_source_step() },
+			{ label: m.learn_source_ema() },
+			{ label: m.learn_source_manufacturers() }
+		],
+		related: [
+			{
+				category: m.learn_related_category_treatments(),
+				title: m.learn_related_dosing({ a: mounjaro.name })
+			},
+			{
+				category: m.learn_related_category_treatments(),
+				title: m.learn_related_guide({ a: wegovy.name })
+			},
+			{
+				category: m.learn_related_category_companies(),
+				title: m.learn_related_companies({
+					a: mounjaroDetail.manufacturer,
+					b: wegovyDetail.manufacturer
+				})
+			}
 		]
-	},
-	manufacturers: [mounjaroProfile, wegovyProfile],
-	faqs: ARTICLE_FAQS,
-	sources: [
-		{ label: 'SURMOUNT-1 clinical trial' },
-		{ label: 'STEP 1 clinical trial' },
-		{ label: 'European Medicines Agency product information' },
-		{ label: 'Product information from the manufacturers' }
-	],
-	related: [
-		{
-			category: 'Treatments',
-			title: `${mounjaro.name}: dosing, side effects and results`
-		},
-		{
-			category: 'Treatments',
-			title: `${wegovy.name} explained: a complete guide`
-		},
-		{
-			category: 'Companies',
-			title: `${mounjaroProfile.manufacturer} and ${wegovyProfile.manufacturer} compared`
-		}
-	]
-};
-
-const ARTICLES: readonly Article[] = [FEATURED_ARTICLE];
+	};
+}
 
 export function getArticleBySlug(slug: string): Article | null {
-	return ARTICLES.find((article) => article.slug === slug) ?? null;
+	return featuredArticle().slug === slug ? featuredArticle() : null;
 }

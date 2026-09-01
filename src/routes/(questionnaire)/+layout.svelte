@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import { dev } from '$app/environment';
 	import { invalidate } from '$app/navigation';
 	import * as Alert from '$lib/components/ui/alert';
@@ -39,15 +40,14 @@
 	{@render children()}
 {:else}
 	<QuestionnaireShell backHref={QUESTIONNAIRE_HOME_HREF}>
-		<h1 class="font-display text-4xl font-medium sm:text-5xl">We cannot open the questionnaire</h1>
+		<h1 class="font-display text-4xl font-medium sm:text-5xl">{m.q_cannot_open_title()}</h1>
 		<p class="mt-3 text-base text-muted-foreground md:text-lg">
-			The medical questionnaire could not be loaded, so there is nothing to answer yet. Nothing you
-			entered has been lost, and no information has been sent.
+			{m.q_cannot_open_body()}
 		</p>
 
 		<Button class="mt-8" onclick={retry} disabled={retrying}>
 			<RefreshCwIcon aria-hidden="true" />
-			{retrying ? 'Trying again' : 'Try again'}
+			{retrying ? m.q_retrying() : m.q_try_again()}
 		</Button>
 
 		{#if dev && detail}

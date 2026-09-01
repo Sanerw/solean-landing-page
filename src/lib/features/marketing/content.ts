@@ -12,6 +12,7 @@
  * source is dropped rather than upscaled, so a re-exported asset degrades to the next
  * candidate down instead of breaking.
  */
+import { m } from '$lib/paraglide/messages';
 import { TREATMENTS } from '$lib/domain';
 import {
 	buildWeightProjection,
@@ -72,29 +73,39 @@ export interface NavItem {
  * Treatment labels come from the domain catalogue, never retyped, so the dropdown and
  * the questionnaire can never disagree about a product name.
  */
-export const NAV_ITEMS: readonly NavItem[] = [
-	{ label: 'Home', href: ROUTES.home },
-	{
-		label: 'Treatments',
-		href: '/treatments',
-		inert: true,
-		children: TREATMENTS.map((treatment) => ({
-			label: treatment.form === 'tablet' ? treatment.name : `${treatment.name} Injection`,
-			href: `/treatments/${treatment.id}`,
+/**
+ * A function, not a constant: messages resolve against the active locale at call time, and a
+ * module-level const would freeze whichever locale happened to be current when the module was
+ * first imported. Every localised export in this file is a function for the same reason.
+ *
+ * Product names are not translated. `Mounjaro` is a brand, and "Injection" stays attached to
+ * it as the German market writes it.
+ */
+export function navItems(): readonly NavItem[] {
+	return [
+		{ label: m.nav_home(), href: ROUTES.home },
+		{
+			label: m.nav_treatments(),
+			href: '/treatments',
 			inert: true,
-			description: treatment.form === 'tablet' ? 'Daily oral treatment' : 'Weekly prescription injection'
-		}))
-	},
-	{ label: 'About Us', href: '/about', inert: true },
-	{ label: 'FAQ', href: '/#faq' },
-	{ label: 'Learn', href: ROUTES.learn }
-];
+			children: TREATMENTS.map((treatment) => ({
+				label: treatment.form === 'tablet' ? treatment.name : `${treatment.name} Injection`,
+				href: `/treatments/${treatment.id}`,
+				inert: true,
+				description:
+					treatment.form === 'tablet' ? m.nav_treatment_tablet() : m.nav_treatment_injection()
+			}))
+		},
+		{ label: m.nav_about(), href: '/about', inert: true },
+		{ label: m.nav_faq(), href: '/#faq' },
+		{ label: m.nav_learn(), href: ROUTES.learn }
+	];
+}
 
+/** Both are real destinations now; the codes are the locales the Paraglide runtime knows. */
 export const LANGUAGES = [
-	{ value: 'en', label: 'English', short: 'EN', available: true },
-	// Visible but never selectable: the prototype ships English only, and hiding the
-	// option would misrepresent that as a decision rather than a scope boundary.
-	{ value: 'de', label: 'Deutsch', short: 'DE', available: false }
+	{ value: 'en', label: 'English', short: 'EN' },
+	{ value: 'de', label: 'Deutsch', short: 'DE' }
 ] as const;
 
 export interface AnnouncementContent {
@@ -106,16 +117,18 @@ export interface AnnouncementContent {
 	mobile: { title: string; detail: string };
 }
 
-export const ANNOUNCEMENT: AnnouncementContent = {
-	title: 'WEGOVY PILL NOW AVAILABLE',
-	prefix: 'Order today and get a free',
-	amount: '\u20ac50 gift',
-	suffix: '.',
-	mobile: {
-		title: 'WEGOVY PILL — NOW AVAILABLE',
-		detail: 'Order today + get a free \u20ac50 gift'
-	}
-};
+export function announcement(): AnnouncementContent {
+	return {
+		title: m.announcement_title(),
+		prefix: m.announcement_prefix(),
+		amount: m.announcement_amount(),
+		suffix: m.announcement_suffix(),
+		mobile: {
+			title: m.announcement_mobile_title(),
+			detail: m.announcement_mobile_detail()
+		}
+	};
+}
 
 export interface MobileHeroContent {
 	eyebrow: string;
@@ -134,20 +147,22 @@ export interface HeroContent {
 	mobile: MobileHeroContent;
 }
 
-export const HERO: HeroContent = {
-	eyebrow: 'Doctor-led weight loss for men',
-	headlineLead: 'Your pathway to lasting',
-	headlineStruck: 'perfect shape',
-	headlineTail: 'happiness.',
-	lead: 'Personalised, doctor-led weight-loss care designed to help men feel healthier, more confident and supported for the long term.',
-	primaryCta: 'Check your eligibility',
-	secondaryCta: 'Explore treatments',
-	mobile: {
-		eyebrow: 'Doctor-led weight loss',
-		headline: 'Feel healthier. Live more confidently.',
-		lead: 'Personalised, doctor-led weight-loss care designed to support lasting progress.'
-	}
-};
+export function hero(): HeroContent {
+	return {
+		eyebrow: m.hero_eyebrow(),
+		headlineLead: m.hero_headline_lead(),
+		headlineStruck: m.hero_headline_struck(),
+		headlineTail: m.hero_headline_tail(),
+		lead: m.hero_lead(),
+		primaryCta: m.hero_primary_cta(),
+		secondaryCta: m.hero_secondary_cta(),
+		mobile: {
+			eyebrow: m.hero_mobile_eyebrow(),
+			headline: m.hero_mobile_headline(),
+			lead: m.hero_mobile_lead()
+		}
+	};
+}
 
 /**
  * The figures shown when Reviews.io cannot be reached. They are the platform's own, read from
@@ -161,13 +176,15 @@ export const RATING = {
 	href: 'https://www.reviews.io/company-reviews/store/www.solean.com'
 } as const;
 
-export const ARTICLE_TEASER = {
-	eyebrow: 'Latest from Learn',
-	title: 'Mounjaro vs Wegovy.',
-	body: 'Compare results, side effects and how each weekly treatment works in our latest expert-reviewed guide.',
-	cta: 'Read the article',
-	href: ROUTES.learnArticle(FEATURED_ARTICLE_SLUG)
-} as const;
+export function articleTeaser() {
+	return {
+		eyebrow: m.teaser_eyebrow(),
+		title: m.teaser_title(),
+		body: m.teaser_body(),
+		cta: m.teaser_cta(),
+		href: ROUTES.learnArticle(FEATURED_ARTICLE_SLUG)
+	};
+}
 
 export interface TrustBenefit {
 	icon: 'stethoscope' | 'shield-check' | 'package-check' | 'lock';
@@ -175,65 +192,60 @@ export interface TrustBenefit {
 	body: string;
 }
 
-export const TRUST_BENEFITS: readonly TrustBenefit[] = [
-	{
-		icon: 'stethoscope',
-		title: 'Licensed physicians.',
-		body: 'Consult with licensed medical professionals experienced in men’s health.'
-	},
-	{
-		icon: 'shield-check',
-		title: 'GDPR compliant & discreet.',
-		body: 'Your personal data and treatment remain private at every stage of care.'
-	},
-	{
-		icon: 'package-check',
-		title: 'Discreet pharmacy delivery.',
-		body: 'When prescribed, medication is dispensed by a trusted partner pharmacy and delivered discreetly.'
-	},
-	{
-		icon: 'lock',
-		title: '100% digital & secure.',
-		body: 'From consultation to follow-up, the entire process happens securely online.'
-	}
-];
+export function trustBenefits(): readonly TrustBenefit[] {
+	return [
+		{ icon: 'stethoscope', title: m.trust_physicians_title(), body: m.trust_physicians_body() },
+		{ icon: 'shield-check', title: m.trust_gdpr_title(), body: m.trust_gdpr_body() },
+		{ icon: 'package-check', title: m.trust_delivery_title(), body: m.trust_delivery_body() },
+		{ icon: 'lock', title: m.trust_digital_title(), body: m.trust_digital_body() }
+	];
+}
 
 export interface FooterColumn {
 	title: string;
 	links: NavItem[];
 }
 
-export const FOOTER_COLUMNS: readonly FooterColumn[] = [
-	{
-		title: 'Explore',
-		links: [
-			{ label: 'Treatments', href: '/treatments', inert: true },
-			{ label: 'How it works', href: '/#how-it-works' },
-			{ label: 'Our experts', href: '/#experts' }
-		]
-	},
-	{
-		title: 'Support',
-		links: [
-			{ label: 'About Solean', href: '/about', inert: true },
-			{ label: 'FAQs', href: '/#faq' },
-			{ label: 'Contact', href: '/contact', inert: true }
-		]
-	}
-];
+export function footerColumns(): readonly FooterColumn[] {
+	return [
+		{
+			title: m.footer_column_explore(),
+			links: [
+				{ label: m.footer_link_treatments(), href: '/treatments', inert: true },
+				{ label: m.footer_link_how_it_works(), href: '/#how-it-works' },
+				{ label: m.footer_link_experts(), href: '/#experts' }
+			]
+		},
+		{
+			title: m.footer_column_support(),
+			links: [
+				{ label: m.footer_link_about(), href: '/about', inert: true },
+				{ label: m.footer_link_faqs(), href: '/#faq' },
+				{ label: m.footer_link_contact(), href: '/contact', inert: true }
+			]
+		}
+	];
+}
 
-/** The real support details and hours, as the Impressum and the contact page state them. */
-export const CONTACT = {
-	title: 'Contact our care team',
-	email: 'support@solean.com',
-	phone: '+49 40 87709420',
-	hoursTitle: 'Service hours.',
-	hours: [
-		{ days: 'Monday–Thursday', time: '09:00–17:00' },
-		{ days: 'Friday', time: '09:00–16:00' },
-		{ days: 'Saturday–Sunday', time: 'Closed' }
-	]
-} as const;
+/**
+ * The real support details and hours, as the Impressum and the contact page state them. The
+ * address and number are not translated; only the words around them are.
+ */
+export function contact() {
+	return {
+		title: m.footer_contact_title(),
+		emailLabel: m.footer_contact_email(),
+		email: 'support@solean.com',
+		phoneLabel: m.footer_contact_phone(),
+		phone: '+49 40 87709420',
+		hoursTitle: m.footer_hours_title(),
+		hours: [
+			{ days: m.footer_hours_weekdays(), time: '09:00–17:00' },
+			{ days: m.footer_hours_friday(), time: '09:00–16:00' },
+			{ days: m.footer_hours_weekend(), time: m.footer_hours_closed() }
+		]
+	};
+}
 
 export interface SocialAccount {
 	icon: 'instagram' | 'facebook';
@@ -242,41 +254,44 @@ export interface SocialAccount {
 	href: string;
 }
 
-export const FOOTER_BRAND = {
-	tagline: 'Better health, built around you',
-	deliveryTitle: 'Payment & delivery.',
-	deliveryBody: 'Trusted delivery and secure checkout',
-	shippingLabel: 'Shipping',
-	paymentsLabel: 'Payments',
-	shipping: [{ name: 'DHL', src: dhlLogo }],
-	payments: [
-		{ name: 'Visa', src: visaLogo },
-		{ name: 'Mastercard', src: mastercardLogo },
-		{ name: 'American Express', src: amexLogo },
-		{ name: 'Klarna', src: klarnaLogo }
-	],
-	pharmacyNote: 'Registered EU pharmacy',
-	pharmacyBadge: {
-		src: euPharmacyBadge,
-		// The badge art is Dutch; its own wording is the verification claim, not ours to translate.
-		alt: 'Registered EU pharmacy verification badge'
-	},
-	copyright: '© 2026 Solean',
-	/**
-	 * The four documents Solean publishes, in German. `Accessibility` is gone: there was no
-	 * such document behind it, and a label with nothing behind it is worse than no label.
-	 */
-	legal: [
-		{ label: 'Legal notice', href: '/legal-notice' },
-		{ label: 'Privacy', href: '/privacy' },
-		{ label: 'Terms', href: '/terms' },
-		{ label: 'Cancellation', href: '/returns' }
-	] satisfies NavItem[],
-	social: [
-		{ icon: 'instagram', label: 'Solean on Instagram', href: 'https://instagram.com' },
-		{ icon: 'facebook', label: 'Solean on Facebook', href: 'https://facebook.com' }
-	] satisfies readonly SocialAccount[]
-} as const;
+export function footerBrand() {
+	return {
+		tagline: m.footer_tagline(),
+		deliveryTitle: m.footer_delivery_title(),
+		deliveryBody: m.footer_delivery_body(),
+		shippingLabel: m.footer_shipping_label(),
+		paymentsLabel: m.footer_payments_label(),
+		// Carrier and card names are marks, not words: they read the same in both languages.
+		shipping: [{ name: 'DHL', src: dhlLogo }],
+		payments: [
+			{ name: 'Visa', src: visaLogo },
+			{ name: 'Mastercard', src: mastercardLogo },
+			{ name: 'American Express', src: amexLogo },
+			{ name: 'Klarna', src: klarnaLogo }
+		],
+		pharmacyNote: m.footer_pharmacy_note(),
+		pharmacyBadge: {
+			src: euPharmacyBadge,
+			// The badge art is Dutch; its own wording is the verification claim, not ours to translate.
+			alt: m.footer_pharmacy_badge_alt()
+		},
+		copyright: m.footer_copyright(),
+		/**
+		 * The four documents Solean publishes, German in both locales because they are the
+		 * German legal texts. Only the labels change language; the documents do not.
+		 */
+		legal: [
+			{ label: m.footer_legal_notice(), href: '/legal-notice' },
+			{ label: m.footer_legal_privacy(), href: '/privacy' },
+			{ label: m.footer_legal_terms(), href: '/terms' },
+			{ label: m.footer_legal_cancellation(), href: '/returns' }
+		] satisfies NavItem[],
+		social: [
+			{ icon: 'instagram', label: m.social_instagram(), href: 'https://instagram.com' },
+			{ icon: 'facebook', label: m.social_facebook(), href: 'https://facebook.com' }
+		] satisfies readonly SocialAccount[]
+	};
+}
 
 export interface BentoCard {
 	/** Drives the ground token, so a card cannot be given a colour that is not sanctioned. */
@@ -302,48 +317,49 @@ export const BENTO_GROUNDS: Record<BentoCard['category'], string> = {
 };
 
 /** The narrow artboard gives this section a visible heading; the wide one does not. */
-export const BENTO_SECTION = {
-	eyebrow: 'The Solean approach',
-	title: 'Everything you need to move forward.'
-} as const;
+export function bentoSection() {
+	return { eyebrow: m.bento_section_eyebrow(), title: m.bento_section_title() };
+}
 
-export const BENTO_CARDS: readonly BentoCard[] = [
-	{
-		category: 'treatment',
-		eyebrow: 'Treatment',
-		title: 'Treatment, chosen for you.',
-		body: 'Doctor-reviewed options tailored to your health and goals.',
-		image: treatmentPanel
-	},
-	{
-		category: 'clinical-care',
-		eyebrow: 'Clinical care',
-		title: 'Doctors who guide every decision.',
-		body: 'Personal guidance from consultation onward.',
-		image: clinicalCarePanel
-	},
-	{
-		category: 'plan',
-		eyebrow: 'Your plan',
-		title: 'Everything in one clear place.',
-		body: 'Track progress and stay on top of each step.',
-		image: planPanel
-	},
-	{
-		category: 'support',
-		eyebrow: 'Ongoing support',
-		title: 'Help throughout your journey.',
-		body: 'Questions, side effects and practical support.',
-		image: supportPanel
-	},
-	{
-		category: 'delivery',
-		eyebrow: 'Delivery',
-		title: 'Discreet delivery, direct to you.',
-		body: 'Secure treatment delivery to your door.',
-		image: deliveryPanel
-	}
-];
+export function bentoCards(): readonly BentoCard[] {
+	return [
+		{
+			category: 'treatment',
+			eyebrow: m.bento_treatment_eyebrow(),
+			title: m.bento_treatment_title(),
+			body: m.bento_treatment_body(),
+			image: treatmentPanel
+		},
+		{
+			category: 'clinical-care',
+			eyebrow: m.bento_care_eyebrow(),
+			title: m.bento_care_title(),
+			body: m.bento_care_body(),
+			image: clinicalCarePanel
+		},
+		{
+			category: 'plan',
+			eyebrow: m.bento_plan_eyebrow(),
+			title: m.bento_plan_title(),
+			body: m.bento_plan_body(),
+			image: planPanel
+		},
+		{
+			category: 'support',
+			eyebrow: m.bento_support_eyebrow(),
+			title: m.bento_support_title(),
+			body: m.bento_support_body(),
+			image: supportPanel
+		},
+		{
+			category: 'delivery',
+			eyebrow: m.bento_delivery_eyebrow(),
+			title: m.bento_delivery_title(),
+			body: m.bento_delivery_body(),
+			image: deliveryPanel
+		}
+	];
+}
 
 export interface MiniBenefit {
 	icon: 'stethoscope' | 'clipboard-check' | 'message-circle';
@@ -351,40 +367,28 @@ export interface MiniBenefit {
 	body: string;
 }
 
-export const RESULTS_BAND = {
-	/** The narrow artboard names this block above its heading; the wide one does not. */
-	eyebrow: 'Care built in',
-	benefits: [
-		{
-			icon: 'stethoscope',
-			title: 'Licensed doctors.',
-			body: 'Clinical assessment and prescribing from home.'
-		},
-		{
-			icon: 'clipboard-check',
-			title: 'A plan built around you.',
-			body: 'Treatment and guidance tailored to your health.'
-		},
-		{
-			icon: 'message-circle',
-			title: 'Support that stays with you.',
-			body: 'Ongoing clinical and coaching support.'
-		}
-	] satisfies MiniBenefit[],
-	title: 'Weight loss, with care built in.',
-	lead: 'Doctor-led treatment, tailored guidance and ongoing support to help you make progress that lasts.',
-	cta: 'Check your eligibility',
-	// The reference attributes its rating to a named review platform. Same decision as the
-	// hero badge: the figures are invented, so they do not carry a real company's name.
-	quote:
-		'For the first time, weight loss feels structured and manageable, not like another diet I have to do alone.',
-	author: 'Daniel M.',
-	authorRole: 'Verified Solean member',
-	authorAvatar: danielPortrait,
-	/** No destination exists until a review platform is chosen, so this stays inert. */
-	reviewCta: 'Leave a review',
-	image: careVisual
-} as const;
+export function resultsBand() {
+	return {
+		/** The narrow artboard names this block above its heading; the wide one does not. */
+		eyebrow: m.results_eyebrow(),
+		benefits: [
+			{ icon: 'stethoscope', title: m.results_doctors_title(), body: m.results_doctors_body() },
+			{ icon: 'clipboard-check', title: m.results_plan_title(), body: m.results_plan_body() },
+			{ icon: 'message-circle', title: m.results_support_title(), body: m.results_support_body() }
+		] satisfies MiniBenefit[],
+		title: m.results_title(),
+		lead: m.results_lead(),
+		cta: m.results_cta(),
+		quote: m.results_quote(),
+		// A person's name, not a word: the same in both languages.
+		author: 'Daniel M.',
+		authorRole: m.results_author_role(),
+		authorAvatar: danielPortrait,
+		/** No destination exists until a review platform is chosen, so this stays inert. */
+		reviewCta: m.results_review_cta(),
+		image: careVisual
+	};
+}
 
 export interface HowItWorksStep {
 	title: string;
@@ -394,30 +398,26 @@ export interface HowItWorksStep {
 	linkLabel?: string;
 }
 
-export const HOW_IT_WORKS = {
-	title: 'How it works.',
-	lead: 'Three simple steps, from a quick online consultation to treatment delivered discreetly to your door.',
-	image: howItWorksPanel,
-	captionEyebrow: 'Doctor-led care',
-	caption: 'From consultation to delivery, entirely online.',
-	// Numbering is the list index at render time, so a step cannot carry a stale numeral.
-	steps: [
-		{
-			title: 'Answer quick questions.',
-			body: 'Take the online quiz, no GP or pharmacy visits required.',
-			href: ROUTES.questionnaire,
-			linkLabel: 'Start questionnaire'
-		},
-		{
-			title: 'Get prescribed treatment.',
-			body: 'Our clinicians review your medical history and find the right treatment for you.'
-		},
-		{
-			title: 'Your treatment is delivered.',
-			body: 'Your treatment arrives in discreet packaging, direct to your door.'
-		}
-	] satisfies HowItWorksStep[]
-} as const;
+export function howItWorks() {
+	return {
+		title: m.how_title(),
+		lead: m.how_lead(),
+		image: howItWorksPanel,
+		captionEyebrow: m.how_caption_eyebrow(),
+		caption: m.how_caption(),
+		// Numbering is the list index at render time, so a step cannot carry a stale numeral.
+		steps: [
+			{
+				title: m.how_step1_title(),
+				body: m.how_step1_body(),
+				href: ROUTES.questionnaire,
+				linkLabel: m.how_step1_link()
+			},
+			{ title: m.how_step2_title(), body: m.how_step2_body() },
+			{ title: m.how_step3_title(), body: m.how_step3_body() }
+		] satisfies HowItWorksStep[]
+	};
+}
 
 /**
  * Illustrative figures, not clinical ones. Derived from the shared model at the reference
@@ -436,35 +436,38 @@ export const PROJECTION_HORIZONS: readonly ProjectionHorizon[] = PROJECTION_HORI
 
 export const DEFAULT_HORIZON_MONTH = 6;
 
-export const PROJECTION = {
-	title: 'Projected progress with Solean.',
-	lead: 'Illustrative weight change when treatment is combined with clinical support.',
-	seriesLabel: 'With Solean',
-	comparisonLabel: 'Lifestyle alone',
-	tabsLabel: 'Projection horizon',
-	disclaimer:
-		'Illustrative projection only. Actual outcomes vary by treatment, dose, adherence and individual health factors.',
-	tableCaption: 'Modelled weight at each milestone'
-} as const;
+export function projection() {
+	return {
+		title: m.projection_title(),
+		lead: m.projection_lead(),
+		seriesLabel: m.projection_series_label(),
+		comparisonLabel: m.projection_comparison_label(),
+		tabsLabel: m.projection_tabs_label(),
+		disclaimer: m.projection_disclaimer(),
+		tableCaption: m.projection_table_caption()
+	};
+}
 
 export interface MedicalFactor {
 	icon: 'brain' | 'activity' | 'dna';
 	label: string;
 }
 
-export const MEDICAL_FRAMING = {
-	title: 'Weight loss isn’t a motivational issue, it’s a medical one.',
-	// The artboard credits a competitor here; project-plan.md section 9 rules that
-	// competitor names become Solean.
-	body: 'Medicated weight loss isn’t ‘cheating’. Stress, hormones and genetics can all influence your weight. Solean evens the playing field.',
-	factors: [
-		{ icon: 'brain', label: 'Stress' },
-		{ icon: 'activity', label: 'Hormones' },
-		{ icon: 'dna', label: 'Genetics' }
-	] satisfies MedicalFactor[],
-	primaryCta: 'Check your eligibility',
-	secondaryCta: 'Explore treatments'
-} as const;
+export function medicalFraming() {
+	return {
+		title: m.framing_title(),
+		// The artboard credits a competitor here; project-plan.md section 9 rules that
+		// competitor names become Solean.
+		body: m.framing_body(),
+		factors: [
+			{ icon: 'brain', label: m.framing_factor_stress() },
+			{ icon: 'activity', label: m.framing_factor_hormones() },
+			{ icon: 'dna', label: m.framing_factor_genetics() }
+		] satisfies MedicalFactor[],
+		primaryCta: m.framing_primary_cta(),
+		secondaryCta: m.framing_secondary_cta()
+	};
+}
 
 export interface Testimonial {
 	name: string;
@@ -484,62 +487,67 @@ export interface Testimonial {
  * two of them. project-plan.md section 9 rules that duplication out, so each story here
  * carries its own figure and the treatments span the catalogue.
  */
-export const TESTIMONIALS: readonly Testimonial[] = [
-	{
-		name: 'Amy R.',
-		memberLabel: 'Solean member',
-		kgLost: 22,
-		quote: 'I finally feel in control of my health. The support was personal, clear and built around real life.',
-		rating: 5,
-		treatmentId: 'wegovy',
-		verified: true
-	},
-	{
-		name: 'Maya R.',
-		memberLabel: 'Solean member',
-		kgLost: 17,
-		quote: 'Having a clinician actually read my history changed how I felt about starting at all.',
-		rating: 5,
-		treatmentId: 'mounjaro',
-		verified: true,
-		photo: storyPhoto
-	},
-	{
-		name: 'Sarah T.',
-		memberLabel: 'Solean member',
-		kgLost: 14,
-		quote: 'The plan felt achievable from day one. I have more energy, more confidence and support when I need it.',
-		rating: 5,
-		treatmentId: 'wegovy-pill',
-		verified: true
-	},
-	{
-		name: 'Tom B.',
-		memberLabel: 'Solean member',
-		kgLost: 19,
-		quote: 'Being able to message the care team between reviews is what kept me going through the first month.',
-		rating: 5,
-		treatmentId: 'mounjaro',
-		verified: true
-	},
-	{
-		name: 'Priya N.',
-		memberLabel: 'Solean member',
-		kgLost: 11,
-		quote: 'No pharmacy queues, no awkward conversations. It arrived discreetly and the check-ins were genuinely useful.',
-		rating: 4,
-		treatmentId: 'wegovy',
-		verified: true
-	}
-];
+/** Names are people, not words: they read the same in both languages. */
+export function testimonials(): readonly Testimonial[] {
+	return [
+		{
+			name: 'Amy R.',
+			memberLabel: m.member_label(),
+			kgLost: 22,
+			quote: m.testimonial_amy(),
+			rating: 5,
+			treatmentId: 'wegovy',
+			verified: true
+		},
+		{
+			name: 'Maya R.',
+			memberLabel: m.member_label(),
+			kgLost: 17,
+			quote: m.testimonial_maya(),
+			rating: 5,
+			treatmentId: 'mounjaro',
+			verified: true,
+			photo: storyPhoto
+		},
+		{
+			name: 'Sarah T.',
+			memberLabel: m.member_label(),
+			kgLost: 14,
+			quote: m.testimonial_sarah(),
+			rating: 5,
+			treatmentId: 'wegovy-pill',
+			verified: true
+		},
+		{
+			name: 'Tom B.',
+			memberLabel: m.member_label(),
+			kgLost: 19,
+			quote: m.testimonial_tom(),
+			rating: 5,
+			treatmentId: 'mounjaro',
+			verified: true
+		},
+		{
+			name: 'Priya N.',
+			memberLabel: m.member_label(),
+			kgLost: 11,
+			quote: m.testimonial_priya(),
+			rating: 4,
+			treatmentId: 'wegovy',
+			verified: true
+		}
+	];
+}
 
-export const TESTIMONIALS_SECTION = {
-	title: 'Real stories. Real results.',
-	lead: 'Real experiences from members supported by Solean.',
-	carouselLabel: 'Member stories',
-	weightLostLabel: 'Weight lost',
-	verifiedLabel: 'Verified story'
-} as const;
+export function testimonialsSection() {
+	return {
+		title: m.stories_title(),
+		lead: m.stories_lead(),
+		carouselLabel: m.stories_carousel_label(),
+		weightLostLabel: m.stories_weight_lost(),
+		verifiedLabel: m.stories_verified()
+	};
+}
 
 export interface Clinician {
 	name: string;
@@ -548,82 +556,60 @@ export interface Clinician {
 	portrait?: Picture;
 }
 
-export const JURAJ_GALAN: Clinician = {
-	name: 'Dr. Juraj Galan',
-	role: 'Consulting physician',
-	description:
-		'Provides medical consultations, reviews your health profile and helps determine a safe, appropriate treatment plan.',
-	portrait: jurajGalanPortrait
-};
+/** The reviewer the Learn article credits, so it is named once and reused. */
+export function jurajGalan(): Clinician {
+	return {
+		name: 'Dr. Juraj Galan',
+		role: m.clinician_galan_role(),
+		description: m.clinician_galan_description(),
+		portrait: jurajGalanPortrait
+	};
+}
 
-export const CLINICIANS: readonly Clinician[] = [
-	JURAJ_GALAN,
-	{
-		name: 'Gredel',
-		role: 'Weight-loss coach',
-		description:
-			'Offers practical, one-to-one coaching to help you build sustainable habits and stay on track throughout your journey.',
-		portrait: gredelPortrait
-	},
-	{
-		name: 'Dr. Elias Voss',
-		role: 'Prescribing clinician',
-		description:
-			'Reviews treatment progress, answers medication questions and adjusts your care when clinically appropriate.',
-		portrait: eliasVossPortrait
-	}
-];
+export function clinicians(): readonly Clinician[] {
+	return [
+		jurajGalan(),
+		{
+			name: 'Gredel',
+			role: m.clinician_gredel_role(),
+			description: m.clinician_gredel_description(),
+			portrait: gredelPortrait
+		},
+		{
+			name: 'Dr. Elias Voss',
+			role: m.clinician_voss_role(),
+			description: m.clinician_voss_description(),
+			portrait: eliasVossPortrait
+		}
+	];
+}
 
-export const CLINICAL_TEAM = {
-	title: 'Doctors who stay with you.',
-	lead: 'Your doctor helps identify the right treatment and supports you through every stage of your plan.',
-	carouselLabel: 'Clinical team',
-	learnMore: 'Learn more'
-} as const;
+export function clinicalTeam() {
+	return {
+		title: m.team_title(),
+		lead: m.team_lead(),
+		carouselLabel: m.team_carousel_label(),
+		learnMore: m.team_learn_more()
+	};
+}
 
 export interface FaqItem {
 	question: string;
 	answer: string;
 }
 
-export const FAQ = {
-	title: 'Frequently asked questions.',
-	lead: 'Clear answers about treatment, eligibility, delivery and ongoing support.',
-	items: [
-		{
-			question: 'Are they safe, and what side effects should I expect?',
-			answer:
-				'Weight-loss medicines are clinically tested and prescribed only when a doctor considers them suitable for you. Common side effects can include nausea, constipation, diarrhoea or reduced appetite, and they often improve as your body adjusts. Your clinician will explain the risks, monitor your progress and advise you if symptoms persist or feel severe.'
-		},
-		{
-			question: 'Will I regain weight if I stop taking it?',
-			answer:
-				'Some weight regain is common after stopping, which is why treatment is paired with coaching and habit support. Your clinician will discuss how to taper and what to expect before you make that decision.'
-		},
-		{
-			question: 'Am I eligible?',
-			answer:
-				'Eligibility depends on your health profile, your medical history and your current measurements. The online questionnaire collects what a clinician needs, and they confirm whether treatment is appropriate for you.'
-		},
-		{
-			question: 'I don’t want anyone to know I’m receiving weight-loss treatment. Can I keep it private?',
-			answer:
-				'Yes. Consultations happen online, your data is handled under GDPR, and medication arrives in discreet, unbranded packaging.'
-		},
-		{
-			question: 'What’s included in the price?',
-			answer:
-				'Your plan covers the treatment itself, clinical review, and ongoing support from the care team. Optional extras such as coaching or a smart scale are priced separately and always shown before you pay.'
-		},
-		{
-			question: 'How quickly will I see results?',
-			answer:
-				'Most people notice changes within the first few months, though the pace varies by treatment, dose, adherence and individual health factors. Your clinician sets realistic expectations at the start.'
-		},
-		{
-			question: 'Will I lose my appetite completely, or still be able to enjoy food?',
-			answer:
-				'These treatments reduce appetite rather than remove it. Most people eat smaller portions and feel full sooner, while still enjoying meals normally.'
-		}
-	] satisfies FaqItem[]
-} as const;
+export function faq() {
+	return {
+		title: m.faq_title(),
+		lead: m.faq_lead(),
+		items: [
+			{ question: m.faq_safety_q(), answer: m.faq_safety_a() },
+			{ question: m.faq_regain_q(), answer: m.faq_regain_a() },
+			{ question: m.faq_eligible_q(), answer: m.faq_eligible_a() },
+			{ question: m.faq_privacy_q(), answer: m.faq_privacy_a() },
+			{ question: m.faq_price_q(), answer: m.faq_price_a() },
+			{ question: m.faq_results_q(), answer: m.faq_results_a() },
+			{ question: m.faq_appetite_q(), answer: m.faq_appetite_a() }
+		] satisfies FaqItem[]
+	};
+}

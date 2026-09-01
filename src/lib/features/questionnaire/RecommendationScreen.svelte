@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import * as Alert from '$lib/components/ui/alert';
 	import { Button } from '$lib/components/ui/button';
 	import {
@@ -16,7 +17,7 @@
 	import InfoIcon from '@lucide/svelte/icons/info';
 	import TriangleAlertIcon from '@lucide/svelte/icons/triangle-alert';
 	import BuildingPlanScreen from './BuildingPlanScreen.svelte';
-	import { CHECKOUT_FAILURES, RECOMMENDATION as COPY } from './recommendation-content';
+	import { checkoutFailures, recommendation as recommendationCopy } from './recommendation-content';
 	import { requestCheckout, type CheckoutFailure } from './checkout-client';
 	import {
 		chosenPlanName,
@@ -35,6 +36,10 @@
 	}
 
 	let { anamnesisUid, email }: Props = $props();
+
+	// Read during render so the copy follows the active locale.
+	const COPY = $derived(recommendationCopy());
+	const CHECKOUT_FAILURES = $derived(checkoutFailures());
 
 	let hydrated = $state(false);
 	$effect(() => {
@@ -203,7 +208,7 @@
 	<BuildingPlanScreen />
 {:else}
 	<p class="font-sans text-xs font-semibold tracking-widest text-highlight-foreground uppercase">
-		Your recommendation
+		{COPY.eyebrow}
 	</p>
 	<h1 class="mt-2 font-display text-3xl font-medium sm:text-4xl">{COPY.choiceHeadline}</h1>
 	<p class="mt-2 max-w-xl text-sm text-muted-foreground sm:text-base">{COPY.choiceBody}</p>
@@ -257,7 +262,7 @@
 		{#if ordering}
 			{COPY.ordering}
 		{:else}
-			{failure ? 'Try again' : chosen ? COPY.actionFor(chosen) : COPY.action}
+			{failure ? m.q_try_again() : chosen ? COPY.actionFor(chosen) : COPY.action}
 			<ArrowRightIcon aria-hidden="true" class="absolute right-8" />
 		{/if}
 	</Button>

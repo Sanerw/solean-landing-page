@@ -1,4 +1,5 @@
 import AxeBuilder from '@axe-core/playwright';
+import { UI } from './ui-labels';
 import { expect, test, type Page } from '@playwright/test';
 import { walkAndSubmit, walkTo } from './answers';
 
@@ -56,12 +57,12 @@ for (const step of QUESTION_STEPS) {
 
 test('the recommendation screen has no serious accessibility violations', async ({ page }) => {
 	await walkAndSubmit(page);
-	await expect(page.getByRole('tab', { name: 'Treatment' })).toBeVisible();
+	await expect(page.getByRole('tab', { name: UI.modeTreatment })).toBeVisible();
 
 	expect(await violations(page)).toEqual([]);
 
 	// The other purchase is a panel of its own, and axe only sees the one on screen.
-	await page.getByRole('tab', { name: 'Prescription only' }).click();
+	await page.getByRole('tab', { name: UI.modePrescription }).click();
 	expect(await violations(page)).toEqual([]);
 
 });

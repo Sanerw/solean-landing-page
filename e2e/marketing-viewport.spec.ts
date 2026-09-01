@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { UI } from './ui-labels';
 
 /**
  * The marketing surfaces at the widths people actually use. Nothing opened `/` or the learn
@@ -70,12 +71,12 @@ test('the mobile navigation opens and closes', async ({ page }) => {
 	await page.setViewportSize(NARROW[0]);
 	await page.goto('/');
 
-	await page.getByRole('button', { name: 'Open menu' }).click();
+	await page.getByRole('button', { name: UI.openMenu }).click();
 	const menu = page.getByRole('dialog');
-	await expect(menu.getByRole('navigation', { name: 'Main' })).toBeVisible();
+	await expect(menu.getByRole('navigation', { name: UI.mainNav })).toBeVisible();
 
 	// Open is not enough: a sheet that cannot be dismissed traps a phone user on one screen.
-	await menu.getByRole('button', { name: 'Close' }).click();
+	await menu.getByRole('button', { name: UI.closeMenu }).click();
 	await expect(menu).toBeHidden();
 	await noHorizontalOverflow(page, 'the landing page after the menu closes');
 });
@@ -122,7 +123,7 @@ test('the table of contents is reachable on a phone', async ({ page }) => {
 	// Two columns on a phone rather than the desktop's sticky rail, and every entry has to be
 	// a real link: the article is long enough that scrolling to a section by hand is the
 	// difference between reading it and leaving.
-	const toc = page.getByRole('navigation', { name: 'On this page' });
+	const toc = page.getByRole('navigation', { name: UI.tableOfContents });
 	await expect(toc).toBeVisible();
 	await expect(toc.getByRole('link').first()).toBeVisible();
 });

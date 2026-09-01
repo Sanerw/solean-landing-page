@@ -1,17 +1,21 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
 	import StethoscopeIcon from '@lucide/svelte/icons/stethoscope';
 	import { Button } from '$lib/components/ui/button';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 	import { BLEED, CONTAINER, PANEL_GAP_Y, PANEL_ROUND, PANEL_Y } from './container';
 	import { CARD_HEADING, SECTION_HEADING, SECTION_LEAD } from './type';
-	import { HOW_IT_WORKS } from './content';
+	import { howItWorks } from './content';
+
+	// Read during render so the copy follows the active locale.
+	const HOW_IT_WORKS = $derived(howItWorks());
 
 	/** The artboard's foot button is the step's own link, not a second destination. */
-	const primaryStep = HOW_IT_WORKS.steps.find((step) => step.href && step.linkLabel);
+	const primaryStep = $derived(HOW_IT_WORKS.steps.find((step) => step.href && step.linkLabel));
 </script>
 
-<section class={[BLEED, PANEL_GAP_Y]} aria-label="How it works">
+<section class={[BLEED, PANEL_GAP_Y]} aria-label={m.a11y_how_section()}>
 	<div class={['bg-muted', PANEL_ROUND, PANEL_Y]}>
 		<div class={CONTAINER}>
 			<div class="grid gap-10 lg:grid-cols-2 lg:items-center">

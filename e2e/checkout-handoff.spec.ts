@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { UI } from './ui-labels';
 import {
 	MALFORMED_EMAIL,
 	REFUSED_CHECKOUT,
@@ -85,9 +86,9 @@ test('a service that refuses the line says so, and stays where it is', async ({ 
 
 	await checkoutButton(page).click();
 
-	await expect(page.getByText('Your order was not accepted')).toBeVisible();
+	await expect(page.getByText(UI.refused)).toBeVisible();
 	await expect(page).toHaveURL('/questionnaire/complete');
-	await expect(page.getByRole('button', { name: 'Try again' })).toBeEnabled();
+	await expect(page.getByRole('button', { name: UI.tryAgain })).toBeEnabled();
 	expect(calls).toHaveLength(1);
 });
 
@@ -99,13 +100,13 @@ test('a service that does not answer offers the retry, and stays where it is', a
 
 	await checkoutButton(page).click();
 
-	await expect(page.getByText('We could not reach the checkout')).toBeVisible();
+	await expect(page.getByText(UI.unavailable)).toBeVisible();
 	await expect(page).toHaveURL('/questionnaire/complete');
 
 	// The action is ready again, and pressing it reaches the service a second time.
-	await page.getByRole('button', { name: 'Try again' }).click();
+	await page.getByRole('button', { name: UI.tryAgain }).click();
 	await expect.poll(() => calls.length).toBe(2);
-	await expect(page.getByText('We could not reach the checkout')).toBeVisible();
+	await expect(page.getByText(UI.unavailable)).toBeVisible();
 	await expect(page).toHaveURL('/questionnaire/complete');
 });
 
@@ -195,6 +196,6 @@ test('a variant nobody recommended is refused, and no cart is made', async ({ pa
 
 	await checkoutButton(page).click();
 
-	await expect(page.getByText('That treatment is not available to you')).toBeVisible();
+	await expect(page.getByText(UI.notRecommended)).toBeVisible();
 	await expect(page).toHaveURL('/questionnaire/complete');
 });

@@ -391,6 +391,30 @@ claims are not approved production content.
   rewritten: legal text is not ours to paraphrase. Carries the real support
   address, telephone number and service hours.
 
+- [x] 19. **German as the default language, English at `/en`** - the site becomes
+  bilingual, with German the language served at the bare path and English moved
+  behind a prefix. Split because the string surface is roughly 370 messages
+  across 61 components and five content modules, and because the default cannot
+  flip until both languages are complete.
+
+  **The funnel stays German either way.** The questionnaire's content is
+  RxScale's, fetched at runtime and authored in German, so only the chrome around
+  it is ours to translate. An English visitor reaches a German questionnaire, by
+  the user's decision on 2026-09-01, and deliberately without a warning screen.
+
+  - [x] 19a. Runtime and routing - Paraglide, locale-prefixed routing with
+    English still at `/` and German at `/de`, `<html lang>`, hreflang, the
+    language switcher made real, and the shared chrome (announcement bar, header,
+    footer) in both languages.
+  - [x] 19b. Landing page - the marketing content module and its components.
+  - [x] 19c. Learn article - the article, its table of contents, comparison and
+    related content.
+  - [x] 19d. Questionnaire chrome - the interludes, progress, buttons and the two
+    completion screens. The questions themselves stay RxScale's.
+  - [x] 19e. Flip the default - German moves to `/`, English to `/en`, with
+    redirects from the interim paths. Last, because every surface must already
+    exist in both languages before the bare path changes what it serves.
+
 ## Testing
 
 **Decided, then deferred at 9a.** The plan was to run `/tests` before feature 9;
@@ -423,7 +447,6 @@ Not in scope. Listed without checkboxes so `/feature` never selects them.
 - Phone in `buyerIdentity`
 - Querying the Shopify catalogue ourselves, and computing a recommendation here
 - Authentication and a member account area
-- German language and `/de` routing
 - Undesigned routes: treatments index, product pages, about, contact,
   clinician profile pages
 - Dark mode

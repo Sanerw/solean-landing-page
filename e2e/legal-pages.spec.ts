@@ -7,10 +7,10 @@ import { expect, test } from '@playwright/test';
  * rather than pinned here, where a lawful edit upstream would read as a test failure.
  */
 const DOCUMENTS = [
-	{ label: 'Legal notice', href: '/legal-notice', heading: 'Impressum' },
-	{ label: 'Privacy', href: '/privacy', heading: 'Datenschutzerklärung' },
-	{ label: 'Terms', href: '/terms', heading: 'AGB' },
-	{ label: 'Cancellation', href: '/returns', heading: 'Widerrufsrecht' }
+	{ label: 'Impressum', href: '/legal-notice', heading: 'Impressum' },
+	{ label: 'Datenschutz', href: '/privacy', heading: 'Datenschutzerklärung' },
+	{ label: 'AGB', href: '/terms', heading: 'AGB' },
+	{ label: 'Widerruf', href: '/returns', heading: 'Widerrufsrecht' }
 ] as const;
 
 for (const doc of DOCUMENTS) {
@@ -58,4 +58,5 @@ test('no accessibility statement is advertised, because there is none', async ({
 	await page.goto('/');
 
 	await expect(page.locator('footer').getByText('Accessibility')).toHaveCount(0);
+	await expect(page.locator('footer').getByText('Barrierefreiheit')).toHaveCount(0);
 });

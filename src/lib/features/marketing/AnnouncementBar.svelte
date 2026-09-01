@@ -1,9 +1,13 @@
 <script lang="ts">
-	import { ANNOUNCEMENT } from './content';
+	import { m } from '$lib/paraglide/messages';
+	import { announcement } from './content';
+
+	// Read during render so the bar follows the active locale.
+	const ANNOUNCEMENT = $derived(announcement());
 	import CountdownTimer from './CountdownTimer.svelte';
 </script>
 
-<aside class="bg-announcement text-announcement-foreground" aria-label="Wegovy Pill offer">
+<aside class="bg-announcement text-announcement-foreground" aria-label={m.a11y_announcement()}>
 	<div
 		class="mx-auto flex h-16 w-full items-center justify-between gap-3 px-4 py-2 text-left sm:h-11 sm:justify-center sm:gap-24 sm:px-9 sm:py-0 sm:text-center"
 	>

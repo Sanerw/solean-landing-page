@@ -1,11 +1,15 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import LockIcon from '@lucide/svelte/icons/lock';
 	import PackageCheckIcon from '@lucide/svelte/icons/package-check';
 	import ShieldCheckIcon from '@lucide/svelte/icons/shield-check';
 	import StethoscopeIcon from '@lucide/svelte/icons/stethoscope';
 	import { CONTAINER, SECTION_Y } from './container';
 	import { CARD_HEADING } from './type';
-	import { TRUST_BENEFITS, type TrustBenefit } from './content';
+	import { trustBenefits, type TrustBenefit } from './content';
+
+	// Read during render so the copy follows the active locale.
+	const TRUST_BENEFITS = $derived(trustBenefits());
 
 	const ICONS = {
 		stethoscope: StethoscopeIcon,
@@ -16,7 +20,7 @@
 </script>
 
 <!-- The narrow artboard has no trust band: the hero's rating badge already carries it. -->
-<section class={[CONTAINER, SECTION_Y, 'max-sm:hidden']} aria-label="Why Solean">
+<section class={[CONTAINER, SECTION_Y, 'max-sm:hidden']} aria-label={m.a11y_trust_section()}>
 	<ul class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
 		{#each TRUST_BENEFITS as benefit (benefit.title)}
 			{@const Icon = ICONS[benefit.icon]}

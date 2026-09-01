@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { UI } from './ui-labels';
 import { stepIsInteractive, walkAndSubmit, walkTo } from './answers';
 
 /**
@@ -26,7 +27,7 @@ test('nothing a visitor answers is written down', async ({ page }) => {
 	// that they exist in the page and in the submission, nowhere else.
 	expect(await soleanKeys(page)).toEqual([]);
 
-	await page.getByRole('button', { name: 'Continue' }).click();
+	await page.getByRole('button', { name: UI.continue }).click();
 	await expect(page).toHaveURL('/questionnaire/page26');
 	expect(await soleanKeys(page)).toEqual([]);
 });
@@ -63,7 +64,7 @@ test('a step already answered can be reopened and changed', async ({ page }) => 
 	await walkTo(page, 'page2');
 
 	// Back, the way a visitor goes back: a link, so the session the answers live in survives.
-	await page.getByRole('link', { name: 'Back' }).click();
+	await page.getByRole('link', { name: UI.back, exact: true }).click();
 	await expect(page).toHaveURL('/questionnaire/page3');
 	await stepIsInteractive(page);
 
@@ -72,34 +73,39 @@ test('a step already answered can be reopened and changed', async ({ page }) => 
 	await expect(page.getByRole('radio', { name: 'Weiblich' })).toBeChecked();
 });
 
+/** The progress bar's accessible name, in the language the app is serving. */
+function progressLabel(current: number, total: number): string {
+	return `${UI.progressPrefix}${current} von ${total}`;
+}
+
 async function questionLabel(page: Page): Promise<string | null> {
 	await stepIsInteractive(page);
 
-	return page.locator('[aria-label^="Question "]').first().getAttribute('aria-label');
+	return page.locator(`[aria-label^="${UI.progressPrefix}"]`).first().getAttribute('aria-label');
 }
 
 test('the progress denominator follows the branch the answers open', async ({ page }) => {
 	await walkTo(page, 'page3');
 
 	// Eight questions is what this fixture asks before any conditional page is opened.
-	expect(await questionLabel(page)).toBe('Question 4 of 8');
+	expect(await questionLabel(page)).toBe(progressLabel(4, 8));
 
 	await page.getByRole('radio', { name: 'Weiblich' }).click();
-	await page.getByRole('button', { name: 'Continue' }).click();
+	await page.getByRole('button', { name: UI.continue }).click();
 
 	// The pregnancy question is now one of them, and it is the visitor's to answer.
 	await expect(page).toHaveURL('/questionnaire/page4');
-	expect(await questionLabel(page)).toBe('Question 5 of 9');
+	expect(await questionLabel(page)).toBe(progressLabel(5, 9));
 });
 
 test('the completion screen reads the whole questionnaire as done', async ({ page }) => {
 	await walkAndSubmit(page);
 
-	await expect(page.getByRole('heading', { level: 1 })).toHaveText('Choose your treatment');
+	await expect(page.getByRole('heading', { level: 1 })).toHaveText(UI.chooseTreatment);
 	// Ten, because the walk answers "Andere" to the medication question, and that opens the
 	// side-effects pages behind it. The denominator is the branch actually walked, not a fixed
 	// length the model does not have.
 	await expect
-		.poll(() => page.locator('[aria-label^="Question "]').first().getAttribute('aria-label'))
-		.toBe('Question 10 of 10');
+		.poll(() => page.locator(`[aria-label^="${UI.progressPrefix}"]`).first().getAttribute('aria-label'))
+		.toBe(progressLabel(10, 10));
 });

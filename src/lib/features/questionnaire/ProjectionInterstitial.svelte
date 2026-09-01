@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import ProjectionChart from '$lib/components/brand/ProjectionChart.svelte';
 	import {
 		buildWeightProjection,
@@ -9,7 +10,10 @@
 	import * as Tabs from '$lib/components/ui/tabs';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 	import SparklesIcon from '@lucide/svelte/icons/sparkles';
-	import { PROJECTION_INTERSTITIAL as COPY } from './interstitial-content';
+	import { projectionInterstitial } from './interstitial-content';
+
+	// Read during render so the copy follows the active locale.
+	const COPY = $derived(projectionInterstitial());
 
 	interface Props {
 		/** `undefined` while the browser has not resolved it; `null` when there is none. */
@@ -44,7 +48,7 @@
 	<!-- The server render and the moment before hydration. Reserves the headline rather than
 	     flashing a fallback that is not yet known to be true. -->
 	<h1 class="mt-2 text-center font-display text-3xl font-medium sm:text-4xl">{COPY.headline}</h1>
-	<p class="mt-3 text-center text-sm text-text-faint">Loading your projection.</p>
+	<p class="mt-3 text-center text-sm text-text-faint">{COPY.loading}</p>
 {:else if projection === null || projectedKg === null}
 	<h1 class="mt-2 text-center font-display text-3xl font-medium sm:text-4xl">
 		{COPY.missingWeight.title}
@@ -67,7 +71,7 @@
 			value sits outside the tab panel yet changes when the horizon does.
 		-->
 		<output
-			aria-label="Projected weight"
+			aria-label={m.q_projection_chart_label()}
 			class="inline-block rounded-lg bg-highlight px-4 py-2 font-display text-3xl font-medium text-foreground"
 		>
 			{projectedKg} kg
@@ -119,6 +123,6 @@
 {/if}
 
 <Button type="button" size="default" class="relative mt-5 w-full" onclick={oncontinue}>
-	Continue
+	{m.q_continue()}
 	<ArrowRightIcon aria-hidden="true" class="absolute right-8" />
 </Button>

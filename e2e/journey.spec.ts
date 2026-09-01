@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { UI } from './ui-labels';
 import { selectDateOfBirth } from './date-picker';
 import { orderPlan } from './recommendation';
 
@@ -10,7 +11,7 @@ import { orderPlan } from './recommendation';
  * Nothing is seeded. Storage arrives the way a visitor's does, by answering.
  */
 
-const CONTINUE = { name: 'Continue' } as const;
+const CONTINUE = { name: UI.continue } as const;
 
 async function answer(page: Page, step: string, fill: () => Promise<void>): Promise<void> {
 	await expect(page).toHaveURL(`/questionnaire/${step}`);
@@ -28,7 +29,7 @@ test('a visitor walks from the landing page to the shop', async ({ page }) => {
 	await page.goto('/');
 
 	// The seam the marketing side owns: a link out of `(marketing)` into `(questionnaire)`.
-	await page.getByRole('link', { name: 'Check your eligibility' }).first().click();
+	await page.getByRole('link', { name: UI.checkEligibility }).first().click();
 
 	// The entry replaces itself with the first step, so Back must never land on it again.
 	await expect(page).toHaveURL('/questionnaire/page30');
@@ -79,8 +80,8 @@ test('a visitor walks from the landing page to the shop', async ({ page }) => {
 
 	// The submission happened on that last Continue, and the recommendation follows from it.
 	await expect(page).toHaveURL('/questionnaire/complete');
-	await expect(page.getByRole('heading', { name: 'Choose your treatment' })).toBeVisible();
-	await expect(page.getByRole('tab', { name: 'Treatment' })).toBeVisible();
+	await expect(page.getByRole('heading', { name: UI.chooseTreatment })).toBeVisible();
+	await expect(page.getByRole('tab', { name: UI.modeTreatment })).toBeVisible();
 
 	// The plan RxScale pre-selected is taken as offered: what this walk is about is that the
 	// questionnaire reaches the shop, not which plan was picked.
@@ -95,7 +96,7 @@ test('back from the recommendation leaves the questionnaire rather than breaking
 	page
 }) => {
 	await page.goto('/');
-	await page.getByRole('link', { name: 'Check your eligibility' }).first().click();
+	await page.getByRole('link', { name: UI.checkEligibility }).first().click();
 	await expect(page).toHaveURL('/questionnaire/page30');
 
 	// One step in is enough: what is under test is where the shell's Back points once the

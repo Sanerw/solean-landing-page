@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
 	import { Spinner } from '$lib/components/ui/spinner';
@@ -33,8 +34,8 @@
 </script>
 
 <svelte:head>
-	<title>Questionnaire | Solean</title>
-	<meta name="description" content="Start the Solean medical questionnaire." />
+	<title>{m.title_questionnaire()} | Solean</title>
+	<meta name="description" content={m.meta_questionnaire()} />
 </svelte:head>
 
 <QuestionnaireShell backHref={QUESTIONNAIRE_HOME_HREF}>
@@ -46,6 +47,6 @@
 	-->
 	<div role="status" class="flex justify-center py-16">
 		<Spinner aria-hidden="true" class="size-8 text-primary" />
-		<span class="sr-only">Taking you to the first question.</span>
+		<span class="sr-only">{m.q_opening_first()}</span>
 	</div>
 </QuestionnaireShell>

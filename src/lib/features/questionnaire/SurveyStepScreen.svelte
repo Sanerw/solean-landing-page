@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import { Button } from '$lib/components/ui/button';
 	import {
 		Field,
@@ -258,15 +259,12 @@
 			<TriangleAlertIcon aria-hidden="true" />
 			<Alert.Title>
 				{submission.reason === 'rejected'
-					? 'Your answers were not accepted'
-					: 'We could not send your answers'}
+					? m.q_submission_rejected_title()
+					: m.q_submission_failed_title()}
 			</Alert.Title>
 			<Alert.Description>
 				{#if submission.reason === 'rejected'}
-					<p>
-						The medical service checked your answers again and found something it cannot accept.
-						Nothing has been saved and no doctor has seen them.
-					</p>
+					<p>{m.q_submission_rejected_body()}</p>
 					{#if submission.messages.length > 0}
 						<!-- The service's own words. We do not translate them or guess which question
 						     each one meant, because our own validation already passed. -->
@@ -276,7 +274,7 @@
 							{/each}
 						</ul>
 					{:else}
-						<p class="mt-2">It did not say what was wrong.</p>
+						<p class="mt-2">{m.q_unknown_error()}</p>
 					{/if}
 				{:else}
 					<p>
@@ -299,9 +297,9 @@
 		disabled={!hydrated || unrenderable || busy}
 	>
 		{#if submitting}
-			Sending your answers
+			{m.q_submitting()}
 		{:else}
-			{submission ? 'Try again' : 'Continue'}
+			{submission ? m.q_try_again() : m.q_continue()}
 			<ArrowRightIcon aria-hidden="true" />
 		{/if}
 	</Button>

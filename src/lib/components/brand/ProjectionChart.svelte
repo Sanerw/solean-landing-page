@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import { buildProjection, type ProjectionPoint } from './projection';
 
 	interface Props {
@@ -189,10 +190,10 @@
 						<td>{geo.comparison[index]?.kg} kg</td>
 						<td>
 							{index < geo.horizonIndex
-								? 'Within the selected horizon'
+								? m.chart_within_horizon()
 								: index === geo.horizonIndex
-									? 'Selected horizon'
-									: 'Beyond the selected horizon'}
+									? m.chart_selected_horizon()
+									: m.chart_beyond_horizon()}
 						</td>
 					</tr>
 				{/each}

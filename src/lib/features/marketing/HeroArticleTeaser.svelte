@@ -1,7 +1,10 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
-	import { ARTICLE_TEASER } from './content';
+	import { articleTeaser } from './content';
+
+	// Read during render so the copy follows the active locale.
+	const ARTICLE_TEASER = $derived(articleTeaser());
 </script>
 
 <div data-testid="hero-article-teaser" class="w-full max-w-80">

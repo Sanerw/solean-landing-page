@@ -1,4 +1,5 @@
 import { expect, type Page } from '@playwright/test';
+import { UI } from './ui-labels';
 
 export type PlanMode = 'treatment' | 'prescription';
 
@@ -13,13 +14,13 @@ export interface PlanChoice {
 }
 
 const TAB_LABEL: Record<PlanMode, string> = {
-	treatment: 'Treatment',
-	prescription: 'Prescription only'
+	treatment: UI.modeTreatment,
+	prescription: UI.modePrescription
 };
 
 /** The one action that ends the questionnaire, whatever it is currently named. */
 export function checkoutButton(page: Page) {
-	return page.getByRole('button', { name: /Checkout with|Go to checkout|Try again/ });
+	return page.getByRole('button', { name: /Zur Kasse|Erneut versuchen/ });
 }
 
 /**

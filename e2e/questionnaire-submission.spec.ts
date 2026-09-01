@@ -1,4 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
+import { UI } from './ui-labels';
 import {
 	REJECTED_SUBMISSION,
 	UNAVAILABLE_SUBMISSION,
@@ -43,12 +44,12 @@ test('the last question sends the answers and lands on the recommendation', asyn
 	await atLastStep(page);
 	await page.getByRole('textbox').fill(SIDE_EFFECTS);
 
-	await page.getByRole('button', { name: 'Continue' }).click();
+	await page.getByRole('button', { name: UI.continue }).click();
 
 	await expect(page).toHaveURL('/questionnaire/complete');
 	expect(posts).toHaveLength(1);
 	// The uid it answered with is what this screen exists on, and it is held in memory alone.
-	await expect(page.getByRole('heading', { name: 'Choose your treatment' })).toBeVisible();
+	await expect(page.getByRole('heading', { name: UI.chooseTreatment })).toBeVisible();
 });
 
 test('a rejected submission stays on the question and shows what the service said', async ({
@@ -57,9 +58,9 @@ test('a rejected submission stays on the question and shows what the service sai
 	await atLastStep(page);
 	await page.getByRole('textbox').fill(REJECTED_SUBMISSION);
 
-	await page.getByRole('button', { name: 'Continue' }).click();
+	await page.getByRole('button', { name: UI.continue }).click();
 
-	await expect(page.getByText('Your answers were not accepted')).toBeVisible();
+	await expect(page.getByText(UI.submissionRejected)).toBeVisible();
 	// The fixture's own messages, in the documented list shape.
 	await expect(page.getByText('dob must be a valid date')).toBeVisible();
 	await expect(page).toHaveURL(LAST_STEP);
@@ -72,21 +73,21 @@ test('an unavailable validator says nothing was saved, and the retry goes throug
 	await atLastStep(page);
 	await page.getByRole('textbox').fill(UNAVAILABLE_SUBMISSION);
 
-	await page.getByRole('button', { name: 'Continue' }).click();
-	await expect(page.getByText('We could not send your answers')).toBeVisible();
-	await expect(page.getByRole('button', { name: 'Try again' })).toBeEnabled();
+	await page.getByRole('button', { name: UI.continue }).click();
+	await expect(page.getByText(UI.submissionFailed)).toBeVisible();
+	await expect(page.getByRole('button', { name: UI.tryAgain })).toBeEnabled();
 	await expect(page).toHaveURL(LAST_STEP);
 	expect(posts).toHaveLength(1);
 
 	// Pressing it again is the retry, and it reaches the service a second time.
-	await page.getByRole('button', { name: 'Try again' }).click();
-	await expect(page.getByText('We could not send your answers')).toBeVisible();
+	await page.getByRole('button', { name: UI.tryAgain }).click();
+	await expect(page.getByText(UI.submissionFailed)).toBeVisible();
 	expect(posts).toHaveLength(2);
 
 	// Take the marker back out, at the question that holds it, and the third attempt goes.
 	// The action is still "Try again": the failure it names has not been cleared by editing.
 	await page.getByRole('textbox').fill(SIDE_EFFECTS);
-	await page.getByRole('button', { name: 'Try again' }).click();
+	await page.getByRole('button', { name: UI.tryAgain }).click();
 
 	await expect(page).toHaveURL('/questionnaire/complete');
 	expect(posts).toHaveLength(3);
@@ -99,9 +100,9 @@ test('one anamnesis per session, whatever the visitor does next', async ({ page 
 
 	// Back is a link, so the session survives it, and the questionnaire is over: a doctor has
 	// these answers and reopening a question would change nothing.
-	await page.getByRole('link', { name: 'Home', exact: true }).click();
+	await page.getByRole('link', { name: UI.home, exact: true }).click();
 	await expect(page).toHaveURL('/');
-	await page.getByRole('link', { name: 'Check your eligibility' }).first().click();
+	await page.getByRole('link', { name: UI.checkEligibility }).first().click();
 	await expect(page).toHaveURL('/questionnaire/complete');
 
 	expect(posts).toHaveLength(1);
@@ -129,15 +130,17 @@ test('the recommendation presents what RxScale offers, prices included', async (
 	// Both purchases are offered, and never on the same list: a prescription with no
 	// medication costs a fraction of a treatment, and the two prices side by side would read
 	// as a discount on one purchase rather than as two.
-	await expect(page.getByRole('tab', { name: 'Treatment' })).toBeVisible();
-	await expect(page.getByRole('tab', { name: 'Prescription only' })).toBeVisible();
+	await expect(page.getByRole('tab', { name: UI.modeTreatment })).toBeVisible();
+	await expect(page.getByRole('tab', { name: UI.modePrescription })).toBeVisible();
 
 	// Straight off the recommendation. Nothing on this screen is written down here any more.
 	await expect(page.getByText('249.00 EUR')).toBeVisible();
 	// The other purchase's price is not on screen beside it, which is the whole point of the
 	// split, and the button names back what confirming would buy.
 	await expect(page.getByText('49.90 EUR')).toBeHidden();
-	await expect(page.getByRole('button', { name: 'Checkout with Fixture Treatment' })).toBeEnabled();
+	await expect(
+		page.getByRole('button', { name: `${UI.checkoutWith} Fixture Treatment` })
+	).toBeEnabled();
 
 	// RxScale names its own default, and it is the one that arrives selected.
 	// The name is the plan, the dose and the price: a `<button role="radio">` is not named by
@@ -146,7 +149,7 @@ test('the recommendation presents what RxScale offers, prices included', async (
 		page.getByRole('radio', { name: 'Fixture Treatment 0.25 mg 249.00 EUR' })
 	).toBeChecked();
 
-	await page.getByRole('tab', { name: 'Prescription only' }).click();
+	await page.getByRole('tab', { name: UI.modePrescription }).click();
 	await expect(page.getByText('49.90 EUR')).toBeVisible();
 	await expect(page.getByText('249.00 EUR')).toBeHidden();
 
@@ -156,7 +159,7 @@ test('the recommendation presents what RxScale offers, prices included', async (
 		page.getByRole('radio', { name: 'Fixture Treatment 0.25 mg Digital-Rezept 49.90 EUR' })
 	).toBeChecked();
 
-	await page.getByRole('tab', { name: 'Treatment' }).click();
+	await page.getByRole('tab', { name: UI.modeTreatment }).click();
 
 	// The same press that takes the choice is the one that orders it, and the handoff itself
 	// is covered by its own spec.
