@@ -68,12 +68,13 @@
 				     and dissolves on all four edges, so the negative margin lets it run into the
 				     panel's own padding instead of stopping on a card edge. -->
 				<div class="relative lg:col-span-4 lg:-mt-6 lg:-mb-16">
-					<img
+					<enhanced:img
 						src={RESULTS_BAND.image}
 						alt=""
 						aria-hidden="true"
-						width="1320"
-						height="1164"
+						loading="lazy"
+						decoding="async"
+						sizes="(min-width: 1024px) 40vw, 100vw"
 						class="w-full mix-blend-multiply"
 					/>
 					<div aria-hidden="true" class="absolute inset-0 bg-highlight/10"></div>
@@ -115,12 +116,13 @@
 							<p>&ldquo;{RESULTS_BAND.quote}&rdquo;</p>
 						</blockquote>
 						<figcaption class="mt-5 flex items-center gap-3">
-							<img
+							<enhanced:img
 								src={RESULTS_BAND.authorAvatar}
 								alt=""
 								aria-hidden="true"
-								width="168"
-								height="168"
+								loading="lazy"
+								decoding="async"
+								sizes="40px"
 								class="size-10 shrink-0 rounded-full object-cover"
 							/>
 							<span class="text-sm">

@@ -25,10 +25,13 @@
 	]}
 >
 	{#if testimonial.photo}
-		<img
+		<enhanced:img
 			src={testimonial.photo}
 			alt=""
 			aria-hidden="true"
+			loading="lazy"
+			decoding="async"
+			sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
 			class="absolute inset-0 -z-10 size-full object-cover"
 		/>
 		<!-- Contrast comes from the scrim, not the artwork, the same rule the hero follows.

@@ -16,13 +16,14 @@
 		<div class={CONTAINER}>
 			<div class="grid gap-10 lg:grid-cols-2 lg:items-center">
 				<div class="relative">
-					<img
+					<enhanced:img
 						src={HOW_IT_WORKS.image}
 						alt=""
 						aria-hidden="true"
+						loading="lazy"
+						decoding="async"
+						sizes="(min-width: 1024px) 50vw, 100vw"
 						class="w-full rounded-xl object-cover"
-						width="720"
-						height="430"
 					/>
 					<!-- Caption chip sits on the card ground, not on the artwork, so its contrast does
 					     not depend on whichever image ends up behind it. -->

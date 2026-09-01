@@ -1,5 +1,5 @@
 <script lang="ts">
-	import heroImage from '$lib/assets/hero.jpg';
+	import heroImage from '$lib/assets/hero-enhanced.webp?enhanced&imgSizes=100vw&quality=75';
 	import { Button } from '$lib/components/ui/button';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 	import { CONTAINER } from './container';
@@ -7,7 +7,30 @@
 	import HeroArticleTeaser from './HeroArticleTeaser.svelte';
 	import HeroRatingBadge from './HeroRatingBadge.svelte';
 	import SiteHeader from './SiteHeader.svelte';
+
+	const heroAvifSrcset = heroImage.sources.avif;
+	const heroPreloadHref =
+		heroAvifSrcset.split(',').at(-1)?.trim().split(/\s+/)[0] ?? heroImage.img.src;
+	// Below lg the frame is taller than the photograph, so object-cover scales the asset up
+	// until it covers the height and crops the overhanging width away. A width-shaped 100vw
+	// there buys a candidate about a third of what the frame actually draws, which is what
+	// made the narrow hero soft: ask for the whole asset and let the crop discard the rest.
+	const heroSizes = `(min-width: 1024px) 100vw, ${heroImage.img.w}px`;
 </script>
+
+<svelte:head>
+	<!-- Match the picture's preferred format, candidates and sizes so this request is reused
+	     when the hero markup is parsed instead of causing a second image download. -->
+	<link
+		rel="preload"
+		as="image"
+		href={heroPreloadHref}
+		imagesrcset={heroAvifSrcset}
+		imagesizes={heroSizes}
+		type="image/avif"
+		fetchpriority="high"
+	/>
+</svelte:head>
 
 <!-- The narrow reference runs the photograph to the viewport edge; the card gutter and
      radius return with the wider composition. -->
@@ -18,10 +41,12 @@
 	>
 		<!-- One asset, cropped by object-position rather than a second source: the narrow
 		     frame keeps the right of the photograph, which is where the subject sits. -->
-		<img
+		<enhanced:img
 			src={heroImage}
 			alt=""
 			aria-hidden="true"
+			sizes={heroSizes}
+			fetchpriority="high"
 			class="absolute inset-0 -z-10 size-full object-cover object-[86%_center] sm:object-center"
 		/>
 

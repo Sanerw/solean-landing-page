@@ -21,9 +21,31 @@ test('the announcement and reference hero asset render without narrow-screen ove
 
 	const heroImage = page.locator('section[aria-labelledby="hero-heading"] img').first();
 	await expect(heroImage).toBeVisible();
+	await expect(heroImage).toHaveAttribute('fetchpriority', 'high');
+	const heroPreload = page.locator('head link[rel="preload"][as="image"]');
+	await expect(heroPreload).toHaveCount(1);
+	await expect(heroPreload).toHaveAttribute('type', 'image/avif');
+	// The preload is only reused, rather than doubling the download, when it resolves to the
+	// same candidate the picture will. Assert the two agree instead of a fixed string, so the
+	// pair cannot drift apart silently.
+	const heroSourceSizes = await page
+		.locator('section[aria-labelledby="hero-heading"] source[type="image/avif"]')
+		.first()
+		.getAttribute('sizes');
+	expect(heroSourceSizes).toBe('(min-width: 1024px) 100vw, 1684px');
+	await expect(heroPreload).toHaveAttribute('imagesizes', heroSourceSizes!);
+	await expect(heroPreload).toHaveAttribute('imagesrcset', /hero-enhanced.*\.avif/);
+	await expect(heroImage).toHaveAttribute('width', '1684');
+	await expect(heroImage).toHaveAttribute('height', '934');
 	await expect
-		.poll(() => heroImage.evaluate((image: HTMLImageElement) => [image.naturalWidth, image.naturalHeight]))
-		.toEqual([1376, 768]);
+		.poll(() => heroImage.evaluate((image: HTMLImageElement) => image.currentSrc))
+		.toMatch(/\.(?:avif|webp|jpe?g)$/);
+	const loadedHeroUrl = await heroImage.evaluate((image: HTMLImageElement) => image.currentSrc);
+	await expect
+		.poll(() =>
+			page.evaluate((url) => performance.getEntriesByName(url, 'resource').length, loadedHeroUrl)
+		)
+		.toBe(1);
 
 	const reviewsLink = page.getByRole('link', { name: /Read reviews on Reviews\.io/ });
 	await expect(reviewsLink).toHaveAttribute(
@@ -219,6 +241,9 @@ test('keeps the bento hierarchy compact and aligned', async ({ page }) => {
 	expect(layout[3].top - layout[1].bottom).toBeCloseTo(20, 0);
 	expect(layout[0].bottom).toBeCloseTo(layout[3].bottom, 0);
 	expect(layout[0].bottom).toBeCloseTo(layout[4].bottom, 0);
+	// The tall treatment artwork fills the remaining column instead of ending early and
+	// leaving an empty block of the card ground below it.
+	expect(layout[0].bottomInset).toBeCloseTo(24, 0);
 	for (const card of layout.slice(1)) {
 		expect(card.bodyImageGap).toBeGreaterThanOrEqual(8);
 		expect(card.bottomInset).toBeCloseTo(20, 0);
@@ -240,13 +265,14 @@ test('dissolves the care artwork into the band and restores the review column', 
 
 	const band = page.getByLabel('Care built in');
 	const visual = band.locator('img').first();
-	await expect
-		.poll(() => visual.evaluate((image: HTMLImageElement) => [image.naturalWidth, image.naturalHeight]))
-		.toEqual([1320, 1164]);
+	// The optimizer can select a smaller or larger encoded candidate for the device, but the
+	// generated source asset's intrinsic ratio remains faithful to the reference geometry.
+	await expect(visual).toHaveAttribute('width', '1335');
+	await expect(visual).toHaveAttribute('height', '1178');
 	await expect(visual).toHaveCSS('mix-blend-mode', 'multiply');
 
 	// The colour wash plus one blend per edge, which is what makes the artwork unboxed.
-	const overlays = visual.locator('~ div[aria-hidden="true"]');
+	const overlays = visual.locator('xpath=..').locator('~ div[aria-hidden="true"]');
 	await expect(overlays).toHaveCount(5);
 
 	const columns = await band.evaluate((section) => {
@@ -396,6 +422,8 @@ test('the narrow landing sections follow the artboard', async ({ page }) => {
 	// The artboard leads with one card outside the carousel, so four dots cover five cards.
 	// Scoped to the narrow branch: the wide grid renders the same five cards alongside it.
 	await expect(page.getByTestId('bento-carousel').locator('article')).toHaveCount(5);
+	const firstCarouselCard = page.getByTestId('bento-carousel').locator('article').nth(1);
+	expect((await firstCarouselCard.locator('img').boundingBox())?.width).toBe(132);
 	const dots = bento.getByRole('tab');
 	await expect(dots).toHaveCount(4);
 	await expect(dots.first()).toHaveAttribute('aria-selected', 'true');
@@ -551,26 +579,56 @@ test('the article follows its artboard below the hero', async ({ page }) => {
 	expect((await panel.boundingBox())?.x).toBe(0);
 });
 
-test('no marketing image is drawn larger than it was exported', async ({ page }) => {
-	// Upscaling is what made these look soft: an image asked to fill more pixels than it
-	// carries. Anything at or above 1 has at least one source pixel per device pixel.
-	await page.setViewportSize({ width: 1920, height: 1080 });
-	await page.goto('/');
-	await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
-	await page.waitForLoadState('networkidle');
+test('no marketing image is drawn larger than the pixels it carries', async ({ page }) => {
+	// Two things a width-only ratio cannot see, and both hid a soft hero once. naturalWidth is
+	// normalised by the candidate's density descriptor, so a stretched image still reports 1x;
+	// and object-cover scales to whichever edge is short, which for a frame taller than the
+	// photograph is the height. Decode the file the browser actually chose and measure the way
+	// the compositor does.
+	const measure = async () => {
+		const images = [...document.querySelectorAll('img')].filter((image) => {
+			const box = image.getBoundingClientRect();
+			return box.width > 0 && box.height > 0 && image.currentSrc;
+		});
 
-	const soft = await page.evaluate(() =>
-		[...document.querySelectorAll('img')]
-			.filter((image) => image.getBoundingClientRect().width > 0 && image.naturalWidth > 0)
-			.map((image) => ({
-				src: image.currentSrc.split('/').pop()!,
-				density: image.naturalWidth / image.getBoundingClientRect().width
-			}))
-			.filter((entry) => entry.density < 1)
-			.map((entry) => `${entry.src} at ${entry.density.toFixed(2)}x`)
-	);
+		const dpr = window.devicePixelRatio;
+		const measured: { src: string; density: number }[] = [];
+		for (const image of images) {
+			const box = image.getBoundingClientRect();
+			const file = await createImageBitmap(await (await fetch(image.currentSrc)).blob());
+			const width = box.width * dpr;
+			const height = box.height * dpr;
+			const scale =
+				getComputedStyle(image).objectFit === 'cover'
+					? Math.max(width / file.width, height / file.height)
+					: width / file.width;
+			measured.push({ src: image.currentSrc.split('/').pop()!, density: 1 / scale });
+		}
+		return measured;
+	};
 
-	// The hero is the one exception: the reference ships it at 1376px and has nothing
-	// larger, so it cannot be raised without inventing pixels.
-	expect(soft.filter((entry) => !entry.startsWith('hero'))).toEqual([]);
+	const read = async (width: number, height: number) => {
+		await page.setViewportSize({ width, height });
+		await page.goto('/');
+		await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+		await page.waitForLoadState('networkidle');
+		await page.evaluate(() => window.scrollTo(0, 0));
+		return page.evaluate(measure);
+	};
+
+	const soften = (entries: { src: string; density: number }[], floor: number) =>
+		entries
+			.filter((entry) => entry.density < floor)
+			.map((entry) => `${entry.src} at ${entry.density.toFixed(2)}x`);
+
+	// The narrow frame is the one that regressed: it is taller than the photograph, so the
+	// crop consumes far more width than the frame shows, and a width-shaped `sizes` bought a
+	// candidate roughly a third of what was drawn.
+	expect(soften(await read(390, 844), 0.95)).toEqual([]);
+
+	// Wide, the hero alone sits below: its export is narrower than the desktop frame it has to
+	// cover, so the shortfall is in the asset, not the markup. Everything else has its pixels.
+	const wide = await read(1920, 1080);
+	expect(soften(wide, 0.85)).toEqual([]);
+	expect(soften(wide, 0.95).filter((entry) => !entry.startsWith('hero'))).toEqual([]);
 });

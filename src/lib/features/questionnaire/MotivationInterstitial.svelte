@@ -42,9 +42,11 @@
 -->
 <article class="mt-4 flex flex-col gap-3 rounded-lg bg-surface-warm p-4 sm:flex-row sm:items-center">
 	{#if story.photo}
-		<img
+		<enhanced:img
 			src={story.photo}
 			alt=""
+			decoding="async"
+			sizes="80px"
 			aria-hidden="true"
 			width="96"
 			height="96"

@@ -15,6 +15,12 @@
 	}
 
 	let { card, size = 'compact', variant = 'grid', class: className }: Props = $props();
+
+	const gridSizes = $derived(
+		size === 'tall'
+			? '(min-width: 1024px) 40vw, 100vw'
+			: '(min-width: 1024px) 30vw, (min-width: 640px) 50vw, 100vw'
+	);
 </script>
 
 <!--
@@ -65,24 +71,41 @@
 		{@render copy()}
 
 		{#if card.image}
-			<!-- Decorative: the heading above already carries the card's meaning. -->
-			<img
-				src={card.image}
-				alt=""
-				aria-hidden="true"
+			<!-- The generated picture element needs its own flexing wrapper: flex-grow on the
+			     nested img alone cannot consume the tall card's remaining height. -->
+			<div
 				class={[
-					'w-full rounded-lg object-cover',
-					// The compact cards define the grid's row heights via a fixed ratio; the tall card
-					// then grows into whatever those two rows add up to, so the column bottoms align.
-					size === 'tall' ? 'mt-3 min-h-64 flex-1' : 'mt-2 aspect-2/1'
+					'overflow-hidden rounded-lg',
+					size === 'tall'
+						? 'mt-3 min-h-64 flex-1 [&_img]:h-full [&_picture]:block [&_picture]:h-full'
+						: 'mt-2'
 				]}
-			/>
+			>
+				<!-- Decorative: the heading above already carries the card's meaning. -->
+				<enhanced:img
+					src={card.image}
+					alt=""
+					aria-hidden="true"
+					loading="lazy"
+					decoding="async"
+					sizes={gridSizes}
+					class={['w-full object-cover', size === 'compact' ? 'aspect-2/1' : 'h-full']}
+				/>
+			</div>
 		{/if}
 	</article>
 {:else if variant === 'feature'}
 	<article class={['overflow-hidden rounded-xl bg-card', className]}>
 		{#if card.image}
-			<img src={card.image} alt="" aria-hidden="true" class="aspect-video w-full object-cover" />
+			<enhanced:img
+				src={card.image}
+				alt=""
+				aria-hidden="true"
+				loading="lazy"
+				decoding="async"
+				sizes="100vw"
+				class="aspect-video w-full object-cover"
+			/>
 		{/if}
 		<div class="p-5">
 			{@render copy()}
@@ -91,7 +114,20 @@
 {:else}
 	<article class={['flex h-42 overflow-hidden rounded-xl bg-card', className]}>
 		{#if card.image}
-			<img src={card.image} alt="" aria-hidden="true" class="h-full w-33 shrink-0 object-cover" />
+			<!-- Keep the generated picture element inside a fixed media pane. Without this
+			     wrapper the picture itself remains a shrinkable flex item and collapses narrower
+			     than the 132px image used by the reference carousel. -->
+			<div class="h-full w-33 shrink-0 overflow-hidden [&_img]:h-full [&_picture]:h-full">
+				<enhanced:img
+					src={card.image}
+					alt=""
+					aria-hidden="true"
+					loading="lazy"
+					decoding="async"
+					sizes="132px"
+					class="h-full w-full object-cover"
+				/>
+			</div>
 		{/if}
 		<div class="flex min-w-0 flex-col justify-center p-4">
 			{@render copy()}

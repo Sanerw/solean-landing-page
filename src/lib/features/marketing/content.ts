@@ -6,24 +6,25 @@ import {
 	type ProjectionHorizon,
 	type ProjectionPoint
 } from '$lib/components/brand/projection';
-import careVisual from '$lib/assets/panels/care-visual.webp';
-import clinicalCarePanel from '$lib/assets/panels/clinical-care.webp';
-import deliveryPanel from '$lib/assets/panels/delivery.webp';
-import howItWorksPanel from '$lib/assets/panels/how-it-works.webp';
-import planPanel from '$lib/assets/panels/plan.webp';
-import supportPanel from '$lib/assets/panels/support.webp';
-import treatmentPanel from '$lib/assets/panels/treatment.webp';
+import careVisual from '$lib/assets/panels/care-visual-enhanced.webp?enhanced&quality=90';
+import clinicalCarePanel from '$lib/assets/panels/clinical-care-enhanced.webp?enhanced&quality=90';
+import deliveryPanel from '$lib/assets/panels/delivery-enhanced.webp?enhanced&quality=90';
+import howItWorksPanel from '$lib/assets/panels/how-it-works-enhanced.webp?enhanced&quality=90';
+import planPanel from '$lib/assets/panels/plan-enhanced.webp?enhanced&quality=90';
+import supportPanel from '$lib/assets/panels/support-enhanced.webp?enhanced&quality=90';
+import treatmentPanel from '$lib/assets/panels/treatment-card-enhanced.webp?enhanced&quality=90';
 import amexLogo from '$lib/assets/logos/american-express.png';
 import dhlLogo from '$lib/assets/logos/dhl.png';
 import euPharmacyBadge from '$lib/assets/logos/eu-pharmacy-badge.png';
 import klarnaLogo from '$lib/assets/logos/klarna.png';
 import mastercardLogo from '$lib/assets/logos/mastercard.png';
 import visaLogo from '$lib/assets/logos/visa.png';
-import danielPortrait from '$lib/assets/people/daniel-m.jpg';
-import eliasVossPortrait from '$lib/assets/people/elias-voss.webp';
-import gredelPortrait from '$lib/assets/people/gredel.webp';
-import jurajGalanPortrait from '$lib/assets/people/juraj-galan.webp';
-import storyPhoto from '$lib/assets/people/story-photo.jpg';
+import danielPortrait from '$lib/assets/people/daniel-m-enhanced.webp?enhanced&quality=90';
+import eliasVossPortrait from '$lib/assets/people/elias-voss-enhanced.webp?enhanced&quality=90';
+import gredelPortrait from '$lib/assets/people/gredel-enhanced.webp?enhanced&quality=90';
+import jurajGalanPortrait from '$lib/assets/people/juraj-galan-enhanced.webp?enhanced&quality=90';
+import storyPhoto from '$lib/assets/people/story-photo-enhanced.webp?enhanced&quality=90';
+import type { Picture } from '@sveltejs/enhanced-img';
 
 /**
  * Every cross-feature destination in one place. Features 6 and 7 make these real by
@@ -265,7 +266,7 @@ export interface BentoCard {
 	title: string;
 	body: string;
 	/** Set by the imagery step; a card without art still renders its copy. */
-	image?: string;
+	image?: Picture;
 }
 
 /**
@@ -456,7 +457,7 @@ export interface Testimonial {
 	treatmentId: string;
 	verified: boolean;
 	/** Present on the photo variant only. */
-	photo?: string;
+	photo?: Picture;
 }
 
 /**
@@ -525,7 +526,7 @@ export interface Clinician {
 	name: string;
 	role: string;
 	description: string;
-	portrait?: string;
+	portrait?: Picture;
 }
 
 export const JURAJ_GALAN: Clinician = {

@@ -15,10 +15,13 @@
 		     the height before the file loads, and squares up the three portraits, which are
 		     exported at slightly different sizes and would otherwise size the carousel cards
 		     unequally. -->
-		<img
+		<enhanced:img
 			src={clinician.portrait}
 			alt=""
 			aria-hidden="true"
+			loading="lazy"
+			decoding="async"
+			sizes="(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw"
 			class="aspect-3/2 w-full object-cover"
 		/>
 	{/if}

@@ -52,9 +52,12 @@
 
 				<div class="mt-8 flex items-center gap-3 text-sm text-muted-foreground">
 					{#if article.review.reviewer.portrait}
-						<img
+						<enhanced:img
 							src={article.review.reviewer.portrait}
 							alt=""
+							loading="lazy"
+							decoding="async"
+							sizes="40px"
 							aria-hidden="true"
 							class="size-10 rounded-full object-cover"
 							width="40"
