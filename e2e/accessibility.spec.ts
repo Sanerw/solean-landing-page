@@ -2,6 +2,7 @@ import AxeBuilder from '@axe-core/playwright';
 import { UI } from './ui-labels';
 import { expect, test, type Page } from '@playwright/test';
 import { walkAndSubmit, walkTo } from './answers';
+import { settledPage } from './motion';
 
 /**
  * One automated pass over every surface a visitor sees. Axe proves a subset of accessibility
@@ -31,6 +32,10 @@ test('the landing page has no serious accessibility violations', async ({ page }
 	await page.goto('/');
 	await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 
+	// Sections that enter on scroll start transparent, and axe reads a transparent element as
+	// unreadable text rather than as one nobody has looked at yet.
+	await settledPage(page);
+
 	expect(await violations(page)).toEqual([]);
 });
 
@@ -58,6 +63,8 @@ for (const step of QUESTION_STEPS) {
 test('the recommendation screen has no serious accessibility violations', async ({ page }) => {
 	await walkAndSubmit(page);
 	await expect(page.getByRole('tab', { name: UI.modeTreatment })).toBeVisible();
+	// The plan list fades in after the wait, so the scan waits with it.
+	await settledPage(page);
 
 	expect(await violations(page)).toEqual([]);
 

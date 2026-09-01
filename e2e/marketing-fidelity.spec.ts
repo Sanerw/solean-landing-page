@@ -4,6 +4,7 @@
  * English reference would be measuring the wrong page.
  */
 import { expect, test } from '@playwright/test';
+import { settledInView } from './motion';
 
 test('the announcement and reference hero asset render without narrow-screen overflow', async ({
 	page
@@ -217,6 +218,10 @@ test('keeps the bento hierarchy compact and aligned', async ({ page }) => {
 	const section = page.getByTestId('bento-grid');
 	const cards = section.locator('article');
 	await expect(cards).toHaveCount(5);
+
+	// The grid enters on scroll, and a card caught mid-entrance is still translated: the gaps
+	// below are the settled layout, not the animation's.
+	await settledInView(section);
 
 	await expect(cards.nth(0).getByRole('heading')).toHaveCSS('font-size', '30px');
 	await expect(cards.nth(1).getByRole('heading')).toHaveCSS('font-size', '18px');
