@@ -16,3 +16,38 @@ declare module '*?enhanced&imgSizes=100vw&quality=75' {
 	const value: Picture;
 	export default value;
 }
+
+declare module '*?enhanced&imgSizes=40px&w=40;80;120&quality=90' {
+	import type { Picture } from '@sveltejs/enhanced-img';
+
+	const value: Picture;
+	export default value;
+}
+
+declare module '*?enhanced&imgSizes=100vw&quality=90' {
+	import type { Picture } from '@sveltejs/enhanced-img';
+
+	const value: Picture;
+	export default value;
+}
+
+declare module '*?enhanced&imgSizes=100vw&w=400;540;768;1080;1366;1536&quality=90' {
+	import type { Picture } from '@sveltejs/enhanced-img';
+
+	const value: Picture;
+	export default value;
+}
+
+declare module '*?enhanced&imgSizes=100vw&w=400;540;768;1080;1315&quality=90' {
+	import type { Picture } from '@sveltejs/enhanced-img';
+
+	const value: Picture;
+	export default value;
+}
+
+declare module '*?enhanced&imgSizes=100vw&w=120;240;540;768;1080;1366&quality=90' {
+	import type { Picture } from '@sveltejs/enhanced-img';
+
+	const value: Picture;
+	export default value;
+}
