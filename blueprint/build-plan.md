@@ -366,8 +366,8 @@ claims are not approved production content.
 - [x] 15. **Mobile announcement bar and hero** - Refine the landing page's
   mobile announcement bar, hero imagery, navigation treatment, copy layout,
   CTA, and trust indicators to match
-  `design/mobile/prio_one_landing_page_men_mobile.html`, while preserving the
-  existing desktop experience.
+  `blueprint/reference/Solean landing page — mobile hero.png`, while preserving
+  the existing desktop experience.
 
 - [x] 16. **Mobile menu panel** - Give the opened mobile menu the reference's
   full-screen treatment: numbered navigation rows in display type under the

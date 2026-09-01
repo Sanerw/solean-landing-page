@@ -281,10 +281,11 @@ breakdown:
 
 ## UI/UX
 
-Desktop visual reference: `design/prio_one_landing_page_men_new.html`, a Pencil
-canvas export of 21 artboards. Feature 15's mobile reference is
-`design/mobile/prio_one_landing_page_men_mobile.html`. **References, not code to
-port.** Full token mapping in `blueprint/reference/design-system.md`.
+Desktop visual reference: `blueprint/reference/Solean landing page.png`, a capture
+of the Pencil canvas of 21 artboards. Feature 15's mobile reference is
+`blueprint/reference/Solean landing page — mobile hero.png`. The Pencil HTML
+exports these were taken from are no longer in the repository. **References, not
+code to port.** Full token mapping in `blueprint/reference/design-system.md`.
 
 **Two fonts only:** Inter Tight (`--font-display`) for headings, product names,
 prices, stats. DM Sans (`--font-sans`) for everything else.

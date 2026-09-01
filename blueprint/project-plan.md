@@ -324,12 +324,14 @@ product's business.
 
 ## 7. UI/UX - How should this look and feel?
 
-The visual reference is `design/prio_one_landing_page_men_new.html`, a Pencil
-canvas export with 21 artboards. Full token mapping lives in
-`blueprint/reference/design-system.md`.
+The visual reference is `blueprint/reference/Solean landing page.png`, a capture
+of a Pencil canvas with 21 artboards, alongside the per-screen artboards beside
+it. Full token mapping lives in `blueprint/reference/design-system.md`.
 
-**The export is a visual reference, not code to port.** Do not copy its absolute
-positioning, fixed canvas dimensions, or arbitrary classes one to one.
+**The reference is a picture of the intended design, not code to port.** The
+Pencil HTML export it was taken from is no longer in the repository, precisely
+because its absolute positioning, fixed canvas dimensions, and arbitrary classes
+were never meant to be copied one to one.
 
 ### Typography
 
