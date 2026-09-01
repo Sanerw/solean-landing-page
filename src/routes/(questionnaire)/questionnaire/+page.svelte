@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { goto } from '$app/navigation';
+	import { Spinner } from '$lib/components/ui/spinner';
 	import QuestionnaireShell from '$lib/features/questionnaire/QuestionnaireShell.svelte';
 	import { questionnaireSession } from '$lib/features/questionnaire/survey-state.svelte';
 	import { COMPLETION_STEP_ID, buildStepPlan } from '$lib/features/questionnaire/steps';
@@ -37,8 +38,14 @@
 </svelte:head>
 
 <QuestionnaireShell backHref={QUESTIONNAIRE_HOME_HREF}>
-	<h1 class="font-display text-4xl font-medium sm:text-5xl">Opening your questionnaire</h1>
-	<p role="status" class="mt-3 text-base text-muted-foreground md:text-lg">
-		Taking you to the first question.
-	</p>
+	<!--
+		A handoff, not a destination: the plan is resolved above and the browser leaves at once,
+		so this shows work in progress rather than a headline nobody has time to read. The live
+		region carries the sentence, because the spinner is hidden from the accessibility tree
+		and its own "Loading" would not say what is being loaded.
+	-->
+	<div role="status" class="flex justify-center py-16">
+		<Spinner aria-hidden="true" class="size-8 text-primary" />
+		<span class="sr-only">Taking you to the first question.</span>
+	</div>
 </QuestionnaireShell>

@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { goto } from '$app/navigation';
+	import { Spinner } from '$lib/components/ui/spinner';
 	import MotivationInterstitial from '$lib/features/questionnaire/MotivationInterstitial.svelte';
 	import ProjectionInterstitial from '$lib/features/questionnaire/ProjectionInterstitial.svelte';
 	import RecommendationScreen from '$lib/features/questionnaire/RecommendationScreen.svelte';
@@ -216,10 +217,11 @@
 	backLabel={isCompletion ? 'Home' : 'Back'}
 >
 	{#if redirecting}
-		<h1 class="font-display text-4xl font-medium sm:text-5xl">Opening your questionnaire</h1>
-		<p role="status" class="mt-3 text-base text-muted-foreground md:text-lg">
-			Taking you to where you left off.
-		</p>
+		<!-- The same handoff as the flow's entry page, and the same reasoning. -->
+		<div role="status" class="flex justify-center py-16">
+			<Spinner aria-hidden="true" class="size-8 text-primary" />
+			<span class="sr-only">Taking you to where you left off.</span>
+		</div>
 	{:else if isCompletion}
 		<!--
 			One screen, not two: the plan is chosen and ordered in the same press. A separate
