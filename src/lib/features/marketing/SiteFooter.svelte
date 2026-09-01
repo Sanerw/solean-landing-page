@@ -128,7 +128,9 @@
 					/>
 				</div>
 
-				<div class="lg:col-span-2">
+				<!-- The control is `w-fit`, so the column has to place it: the reference sets its
+				     right edge on the container's, with the tagline and the social row. -->
+				<div class="lg:col-span-2 lg:flex lg:justify-end">
 					<LanguageSelect variant="field" display="full" showIcon />
 				</div>
 			</div>

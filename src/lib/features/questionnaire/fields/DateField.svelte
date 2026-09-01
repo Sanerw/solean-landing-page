@@ -28,6 +28,6 @@
 	{initialValue}
 	{invalid}
 	{describedBy}
-	class="max-w-xs"
+	class="w-full sm:max-w-xs"
 	onchange={(next) => onchange(next)}
 />
