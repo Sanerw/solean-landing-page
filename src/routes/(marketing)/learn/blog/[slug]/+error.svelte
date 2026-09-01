@@ -1,11 +1,14 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
+	import { BLEED } from '$lib/features/marketing/container';
 	import SiteHeader from '$lib/features/marketing/SiteHeader.svelte';
 	import { CONTAINER } from '$lib/features/marketing/container';
 	import { FEATURED_ARTICLE_SLUG, ROUTES } from '$lib/features/marketing/content';
 </script>
 
-<SiteHeader />
+<div class={[BLEED, 'sm:py-3']}>
+	<SiteHeader />
+</div>
 
 <section class={[CONTAINER, 'py-20 text-center lg:py-32']} aria-labelledby="article-error-title">
 	<p class="text-xs font-semibold uppercase tracking-widest text-highlight-foreground">

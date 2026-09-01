@@ -1,6 +1,6 @@
 <script lang="ts">
 	import * as Breadcrumb from '$lib/components/ui/breadcrumb';
-	import { BLEED, CONTAINER } from '$lib/features/marketing/container';
+	import { BLEED, CONTAINER, PANEL_ROUND } from '$lib/features/marketing/container';
 	import { ROUTES } from '$lib/features/marketing/content';
 	import { formatArticleDate } from './format-article-date';
 	import type { Article } from './types';
@@ -14,7 +14,7 @@
 </script>
 
 <section class={BLEED} aria-labelledby="article-title">
-	<div class="rounded-xl bg-surface-warm">
+	<div class={['bg-surface-warm', PANEL_ROUND]}>
 		<div class={[CONTAINER, 'py-8 sm:py-10 lg:grid lg:grid-cols-2 lg:items-stretch lg:gap-12 lg:py-12']}>
 			<div class="flex flex-col justify-center">
 				<Breadcrumb.Root>
@@ -31,8 +31,8 @@
 							<Breadcrumb.Link href="/learn/blog">Blog</Breadcrumb.Link>
 						</Breadcrumb.Item>
 						<Breadcrumb.Separator />
-						<Breadcrumb.Item class="max-w-40 sm:max-w-64">
-							<Breadcrumb.Page class="block truncate">{article.title}</Breadcrumb.Page>
+						<Breadcrumb.Item>
+							<Breadcrumb.Page>{article.shortTitle}</Breadcrumb.Page>
 						</Breadcrumb.Item>
 					</Breadcrumb.List>
 				</Breadcrumb.Root>

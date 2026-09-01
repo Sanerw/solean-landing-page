@@ -50,7 +50,7 @@ export default defineConfig({
 				// The checkout handoff, pointed at the same fixture. Without this the endpoint
 				// would either refuse for want of configuration or, worse, create a cart in the
 				// real shop.
-				SHOPIFY_STORE_DOMAIN: FIXTURE_STORE_DOMAIN,
+				PUBLIC_SHOPIFY_STORE_DOMAIN: FIXTURE_STORE_DOMAIN,
 				SHOPIFY_VARIANT_ID: FIXTURE_VARIANT_ID,
 				// The recommendation, served by the same fixture. Without a shop identifier the
 				// call is not made at all and every plan would come from the fallback.

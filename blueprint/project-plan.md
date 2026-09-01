@@ -567,7 +567,7 @@ The host choice is settled; what it brings with it is env configuration:
 
 | Variable | Visibility | Purpose |
 | --- | --- | --- |
-| `SHOPIFY_STORE_DOMAIN` | server only | the shop the cart is created in |
+| `PUBLIC_SHOPIFY_STORE_DOMAIN` | public | the shop the cart is created in, the myshopify domain. Not the identifier below |
 | `SHOPIFY_VARIANT_ID` | server only | fallback only: the plan offered when RxScale recommends nothing |
 | `SHOPIFY_STOREFRONT_TOKEN` | server only, optional | sent when configured, see section 11 |
 | `SHOPIFY_STOREFRONT_API_VERSION` | server only, optional | defaults to `2025-01` |

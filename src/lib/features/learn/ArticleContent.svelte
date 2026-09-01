@@ -57,7 +57,10 @@
 				</caption>
 				<thead class="bg-foreground text-background">
 					<tr>
-						<th scope="col" class="px-5 py-4 font-semibold">Comparison</th>
+						<!-- Blank by design, as drawn: the row headers below name each attribute, so a
+						     column head here would label the labels. The caption carries the table's
+						     name for assistive tech. -->
+						<th scope="col" class="px-5 py-4 font-semibold"><span class="sr-only">Attribute</span></th>
 						{#each article.comparison.profiles as profile (profile.treatment.id)}
 							<th scope="col" class="px-5 py-4 font-semibold">{profile.treatment.name}</th>
 						{/each}

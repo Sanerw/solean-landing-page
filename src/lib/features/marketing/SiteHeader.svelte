@@ -32,8 +32,9 @@
 		class={[
 			CONTAINER,
 			'grid grid-cols-[auto_minmax(0,1fr)] items-center gap-4 py-3 min-[1200px]:grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)]',
-			// The taller overlay mark needs the reference's deeper top inset to sit right.
-			variant === 'overlay' && 'max-sm:py-4'
+			// The taller narrow-screen mark needs a deeper inset, in both variants, so the
+			// header keeps one height across the pages a phone moves between.
+			'max-sm:py-4'
 		]}
 	>
 		<!-- Desktop nav. Every top-level item is a NavigationMenu link, not a bare anchor,
@@ -97,12 +98,9 @@
 					: 'text-foreground focus-visible:ring-ring focus-visible:ring-offset-background'
 			]}
 		>
-			<!-- The overlay's narrow frame carries the mark at reference scale; every other
-			     header keeps the established size. -->
-			<SoleanLogo
-				size="default"
-				class={variant === 'overlay' ? 'max-sm:h-12 min-[1200px]:h-15' : 'min-[1200px]:h-15'}
-			/>
+			<!-- One narrow-screen size for both variants: the two headers appear on the same
+			     phone, so a mark that changed size between them would read as a bug. -->
+			<SoleanLogo size="default" class="max-sm:h-12 min-[1200px]:h-15" />
 		</a>
 
 		<div class="flex min-w-0 items-center justify-end gap-2">

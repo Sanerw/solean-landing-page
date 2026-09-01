@@ -41,6 +41,10 @@ export interface Article {
 	slug: string;
 	category: string;
 	title: string;
+	/** The breadcrumb's last crumb: the headline is a sentence and truncates there. */
+	shortTitle: string;
+	/** Names the evidence in prose before the list, as the artboard does. */
+	sourcesSummary: string;
 	summary: string;
 	hero: {
 		src: string | null;

@@ -203,10 +203,10 @@ nothing saved).
 
 Rules that bind every feature from 9 onward:
 
-- No secret is on the checkout path. `SHOPIFY_STORE_DOMAIN` and
-  `SHOPIFY_VARIANT_ID` are read through `$env/dynamic/private` and used only in
-  `+server.ts`, so the variant stays out of the client bundle and validation has
-  one home, not because they are private.
+- No secret is on the checkout path. `PUBLIC_SHOPIFY_STORE_DOMAIN` is public
+  because the checkout URL names the shop anyway, while `SHOPIFY_VARIANT_ID`
+  stays private and is used only in `+server.ts`, so the variant stays out of
+  the client bundle and validation has one home, not because it is a secret.
 - The model is the only source of question content. Nothing hardcoded, nothing
   hidden by a condition in our code. The submission is validated server-side
   against the current model, so hiding a required question guarantees a 400.
@@ -358,7 +358,7 @@ adapter part way through a build.
 
 | Variable | Visibility | Purpose |
 | --- | --- | --- |
-| `SHOPIFY_STORE_DOMAIN` | server only | the shop the cart is created in |
+| `PUBLIC_SHOPIFY_STORE_DOMAIN` | public | the shop the cart is created in, the myshopify domain. Not the identifier below |
 | `SHOPIFY_VARIANT_ID` | server only | fallback only: the plan offered when RxScale recommends nothing |
 | `SHOPIFY_STOREFRONT_TOKEN` | server only, optional | sent when configured |
 | `SHOPIFY_STOREFRONT_API_VERSION` | server only, optional | defaults to `2025-01` |

@@ -1,4 +1,5 @@
 import { env } from '$env/dynamic/private';
+import { env as publicEnv } from '$env/dynamic/public';
 import { ANAMNESIS_ATTRIBUTE_KEY, CHECKOUT_COUNTRY_CODE } from '$lib/config/checkout';
 import { fetchRecommendation } from '$lib/server/rxscale/recommendation';
 
@@ -228,7 +229,7 @@ export async function createCart(
 	email: string,
 	variantId: string
 ): Promise<CheckoutResult> {
-	const storeDomain = configured(env.SHOPIFY_STORE_DOMAIN);
+	const storeDomain = configured(publicEnv.PUBLIC_SHOPIFY_STORE_DOMAIN);
 	if (!storeDomain) return { ok: false, reason: 'not-configured' };
 	if (!anamnesisUid.trim()) return { ok: false, reason: 'missing-anamnesis' };
 

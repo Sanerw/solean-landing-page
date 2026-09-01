@@ -69,6 +69,9 @@ export const FEATURED_ARTICLE: Article = {
 	slug: FEATURED_ARTICLE_SLUG,
 	category: 'Treatment comparison',
 	title: `${mounjaro.name} vs ${wegovy.name}: differences, results and which may suit you`,
+	shortTitle: `${mounjaro.name} vs ${wegovy.name}`,
+	sourcesSummary:
+		`Key sources include the SURMOUNT-1 and STEP 1 clinical trials, European Medicines Agency product information, and prescribing information from ${mounjaroProfile.manufacturer} and ${wegovyProfile.manufacturer}. This article is educational and does not replace individual medical advice.`,
 	summary:
 		'An expert-reviewed prototype comparison of two weekly prescription treatments, including how they work, possible side effects, and questions to discuss with a clinician.',
 	hero: {
@@ -88,8 +91,8 @@ export const FEATURED_ARTICLE: Article = {
 		{ id: 'expected-results', label: 'Expected results' },
 		{ id: 'side-effects', label: 'Side effects' },
 		{ id: 'manufacturers', label: 'Makers and research' },
-		{ id: 'sources', label: 'Sources' },
-		{ id: 'faqs', label: 'FAQs' }
+		{ id: 'faqs', label: 'FAQs' },
+		{ id: 'sources', label: 'Sources' }
 	],
 	quickAnswer: [
 		'Both options are once-weekly prescription injections used alongside nutrition, movement, and clinical support.',

@@ -1,10 +1,7 @@
 <script lang="ts">
-	import * as Alert from '$lib/components/ui/alert';
 	import { Button } from '$lib/components/ui/button';
-	import ShieldCheckIcon from '@lucide/svelte/icons/shield-check';
 	import SparklesIcon from '@lucide/svelte/icons/sparkles';
 	import { ROUTES } from '$lib/features/marketing/content';
-	import { formatArticleDate } from './format-article-date';
 	import type { Article } from './types';
 
 	interface Props {
@@ -37,41 +34,15 @@
 		<Button href={ROUTES.questionnaire} class="mt-5 w-full">Check your eligibility</Button>
 	</section>
 
-	<section id="sources" class="scroll-mt-6 rounded-lg bg-secondary p-6" aria-labelledby="sources-title">
-		<h2 id="sources-title" class="font-display text-xl font-semibold">Sources and medical review</h2>
-		<ul class="mt-4 space-y-2 text-sm text-muted-foreground">
-			{#each article.sources as source (source.label)}
-				<li>
-					{#if source.href}
-						<a
-							href={source.href}
-							target="_blank"
-							rel="noopener noreferrer"
-							class="rounded-sm underline underline-offset-4 outline-none hover:text-foreground focus-visible:ring-2 focus-visible:ring-ring"
-						>
-							{source.label}
-						</a>
-					{:else}
-						<span>{source.label}</span>
-					{/if}
-				</li>
-			{/each}
-		</ul>
-
-		<Alert.Root class="mt-6">
-			<ShieldCheckIcon aria-hidden="true" />
-			<Alert.Title>Clinically reviewed for accuracy</Alert.Title>
-			<Alert.Description>
-				Reviewed by {article.review.reviewer.name}. Next review due
-				<time datetime={article.review.nextReviewAt}>
-					{formatArticleDate(article.review.nextReviewAt)}
-				</time>.
-			</Alert.Description>
-		</Alert.Root>
-
-		<p class="mt-5 text-xs leading-relaxed text-text-faint">
-			Prototype editorial content only. This page is not approved medical advice and does not
-			replace assessment by a qualified clinician.
+	<!-- The artboard's third card. The sources themselves close the article in the main
+	     column instead, so this states the standard rather than listing the evidence. -->
+	<section class="rounded-lg bg-secondary p-6" aria-labelledby="standards-title">
+		<h2 id="standards-title" class="font-display text-base font-semibold">
+			Our editorial standards
+		</h2>
+		<p class="mt-2 text-sm leading-relaxed text-muted-foreground">
+			Our health content is evidence-based, medically reviewed, and updated as guidance
+			changes.
 		</p>
 	</section>
 </aside>

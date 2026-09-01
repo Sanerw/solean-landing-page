@@ -459,3 +459,118 @@ test('the narrow landing sections follow the artboard', async ({ page }) => {
 	const panel = page.getByLabel('Care built in').locator('> div').first();
 	await expect(panel).toHaveCSS('border-top-left-radius', '28px');
 });
+
+test('the article header sits exactly where the landing header does', async ({
+	page
+}) => {
+	const logoBox = () => page.getByLabel('Solean, home').locator('svg').first().boundingBox();
+	const headerBox = () => page.locator('header').first().boundingBox();
+
+	// The header must not move when a reader switches pages, so the article's is compared
+	// against the landing page's rather than against numbers of its own.
+	for (const [width, height] of [
+		[390, 844],
+		[1200, 800],
+		[1440, 900]
+	] as const) {
+		await page.setViewportSize({ width, height });
+
+		await page.goto('/');
+		const home = { header: await headerBox(), logo: await logoBox() };
+
+		await page.goto('/learn/blog/mounjaro-vs-wegovy');
+		expect(await headerBox()).toMatchObject(home.header!);
+		expect(await logoBox()).toMatchObject(home.logo!);
+	}
+
+	// The menu trigger travels with it.
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto('/learn/blog/mounjaro-vs-wegovy');
+	const articleTrigger = await page.getByRole('button', { name: 'Open menu' }).boundingBox();
+	await page.goto('/');
+	expect(await page.getByRole('button', { name: 'Open menu' }).boundingBox()).toMatchObject(
+		articleTrigger!
+	);
+
+	// No social control in either header: the article artboard draws one, and it was
+	// rejected during review.
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await expect(page.locator('header').first().getByRole('link', { name: /Instagram/ })).toHaveCount(
+		0
+	);
+});
+
+test('the article follows its artboard below the hero', async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await page.goto('/learn/blog/mounjaro-vs-wegovy');
+
+	// The last crumb is a short name, not the truncated headline.
+	const crumb = page.locator('[data-slot="breadcrumb-page"]');
+	await expect(crumb).toHaveText('Mounjaro vs Wegovy');
+
+	// The comparison table opens on a blank corner: the row headers name the attributes.
+	// Blank to the eye, not to a screen reader, so the check is for drawn text alone.
+	const corner = page.locator('table thead th').first();
+	await expect(corner.locator('span.sr-only')).toHaveText('Attribute');
+	expect(
+		await corner.evaluate((el) =>
+			[...el.childNodes]
+				.filter((n) => n.nodeType === Node.TEXT_NODE)
+				.map((n) => n.textContent?.trim())
+				.join('')
+		)
+	).toBe('');
+
+	// Sources close the article in the main column, under the FAQ.
+	const sources = page.getByRole('heading', { name: 'Sources and medical review' });
+	await expect(sources).toHaveCount(1);
+	const faqTop = (await page.getByRole('heading', { name: 'Frequently asked questions' }).boundingBox())!.y;
+	expect((await sources.boundingBox())!.y).toBeGreaterThan(faqTop);
+
+	// The sidebar keeps the artboard's three cards, the third naming the standard.
+	const sidebar = page.getByLabel('Article summary and standards');
+	await expect(sidebar.getByRole('heading', { name: 'Key takeaways' })).toBeVisible();
+	await expect(sidebar.getByRole('heading', { name: 'Not sure which treatment fits?' })).toBeVisible();
+	await expect(sidebar.getByRole('heading', { name: 'Our editorial standards' })).toBeVisible();
+	await expect(sidebar.getByRole('heading', { name: 'Sources and medical review' })).toHaveCount(0);
+
+	// The related-guides band was dropped during review.
+	await expect(page.getByText('More expert guides')).toHaveCount(0);
+
+	// The contents list runs in document order, so Sources follows FAQs there too.
+	const tocLabels = await page
+		.getByLabel('On this page')
+		.getByRole('link')
+		.evaluateAll((els) => els.map((e) => e.textContent?.trim()));
+	expect(tocLabels.slice(-2)).toEqual(['FAQs', 'Sources']);
+
+	// The narrow artboard squares the hero panel.
+	await page.setViewportSize({ width: 390, height: 844 });
+	const panel = page.locator('section[aria-labelledby="article-title"] > div').first();
+	await expect(panel).toHaveCSS('border-top-left-radius', '0px');
+	expect((await panel.boundingBox())?.x).toBe(0);
+});
+
+test('no marketing image is drawn larger than it was exported', async ({ page }) => {
+	// Upscaling is what made these look soft: an image asked to fill more pixels than it
+	// carries. Anything at or above 1 has at least one source pixel per device pixel.
+	await page.setViewportSize({ width: 1920, height: 1080 });
+	await page.goto('/');
+	await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
+	await page.waitForLoadState('networkidle');
+
+	const soft = await page.evaluate(() =>
+		[...document.querySelectorAll('img')]
+			.filter((image) => image.getBoundingClientRect().width > 0 && image.naturalWidth > 0)
+			.map((image) => ({
+				src: image.currentSrc.split('/').pop()!,
+				density: image.naturalWidth / image.getBoundingClientRect().width
+			}))
+			.filter((entry) => entry.density < 1)
+			.map((entry) => `${entry.src} at ${entry.density.toFixed(2)}x`)
+	);
+
+	// The hero is the one exception: the reference ships it at 1376px and has nothing
+	// larger, so it cannot be raised without inventing pixels.
+	expect(soft.filter((entry) => !entry.startsWith('hero'))).toEqual([]);
+});

@@ -7,12 +7,12 @@ import {
 	type ProjectionPoint
 } from '$lib/components/brand/projection';
 import careVisual from '$lib/assets/panels/care-visual.webp';
-import clinicalCarePanel from '$lib/assets/panels/clinical-care.jpg';
-import deliveryPanel from '$lib/assets/panels/delivery.jpg';
-import howItWorksPanel from '$lib/assets/panels/how-it-works.jpg';
-import planPanel from '$lib/assets/panels/plan.jpg';
-import supportPanel from '$lib/assets/panels/support.jpg';
-import treatmentPanel from '$lib/assets/panels/treatment.jpg';
+import clinicalCarePanel from '$lib/assets/panels/clinical-care.webp';
+import deliveryPanel from '$lib/assets/panels/delivery.webp';
+import howItWorksPanel from '$lib/assets/panels/how-it-works.webp';
+import planPanel from '$lib/assets/panels/plan.webp';
+import supportPanel from '$lib/assets/panels/support.webp';
+import treatmentPanel from '$lib/assets/panels/treatment.webp';
 import amexLogo from '$lib/assets/logos/american-express.png';
 import dhlLogo from '$lib/assets/logos/dhl.png';
 import euPharmacyBadge from '$lib/assets/logos/eu-pharmacy-badge.png';
@@ -20,9 +20,9 @@ import klarnaLogo from '$lib/assets/logos/klarna.png';
 import mastercardLogo from '$lib/assets/logos/mastercard.png';
 import visaLogo from '$lib/assets/logos/visa.png';
 import danielPortrait from '$lib/assets/people/daniel-m.jpg';
-import eliasVossPortrait from '$lib/assets/people/elias-voss.jpg';
-import gredelPortrait from '$lib/assets/people/gredel.jpg';
-import jurajGalanPortrait from '$lib/assets/people/juraj-galan.jpg';
+import eliasVossPortrait from '$lib/assets/people/elias-voss.webp';
+import gredelPortrait from '$lib/assets/people/gredel.webp';
+import jurajGalanPortrait from '$lib/assets/people/juraj-galan.webp';
 import storyPhoto from '$lib/assets/people/story-photo.jpg';
 
 /**

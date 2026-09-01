@@ -1,4 +1,4 @@
-import { env } from '$env/dynamic/private';
+import { env } from '$env/dynamic/public';
 import { json } from '@sveltejs/kit';
 import { fetchRecommendation } from '$lib/server/rxscale/recommendation';
 import type { RequestHandler } from './$types';
@@ -16,7 +16,7 @@ export const GET: RequestHandler = async ({ url }) => {
 	const anamnesisUid = (url.searchParams.get('anamnesis') ?? '').trim();
 	if (!anamnesisUid) return json({ ok: false, reason: 'missing-anamnesis' }, { status: 400 });
 
-	const storeDomain = (env.SHOPIFY_STORE_DOMAIN ?? '').trim();
+	const storeDomain = (env.PUBLIC_SHOPIFY_STORE_DOMAIN ?? '').trim();
 	if (!storeDomain) return json({ ok: false, reason: 'not-configured' }, { status: 500 });
 
 	const result = await fetchRecommendation(anamnesisUid, storeDomain);

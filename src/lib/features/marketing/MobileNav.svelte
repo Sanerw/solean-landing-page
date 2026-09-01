@@ -29,14 +29,14 @@
 				size="icon"
 				{surface}
 				class={[
-					'min-[1200px]:hidden',
-					// On the narrow hero the trigger is a translucent disc on the photograph,
-					// which the solid headers have no scrim to sit on.
-					surface === 'dark' && 'max-sm:size-11 max-sm:bg-background/10'
+					'max-sm:size-11 min-[1200px]:hidden',
+					// The disc reads off the photograph on the hero and off a border on a solid
+					// header, which has no scrim to lift a translucent fill.
+					surface === 'dark' ? 'max-sm:bg-background/10' : 'max-sm:border-border'
 				]}
 				aria-label="Open menu"
 			>
-				<MenuIcon aria-hidden="true" class={surface === 'dark' ? 'size-4 max-sm:size-5' : undefined} />
+				<MenuIcon aria-hidden="true" class="size-4 max-sm:size-5" />
 			</Button>
 		{/snippet}
 	</Sheet.Trigger>
