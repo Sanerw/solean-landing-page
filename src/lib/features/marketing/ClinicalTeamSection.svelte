@@ -7,21 +7,24 @@
 </script>
 
 <section class={[CONTAINER, SECTION_Y]} aria-label={CLINICAL_TEAM.title}>
-	<Carousel.Root opts={{ align: 'start' }} class="w-full">
-		<div class="flex flex-wrap items-end justify-between gap-6">
+	<Carousel.Root opts={{ align: 'start' }} class="flex w-full flex-col">
+		<div class="flex flex-wrap items-end justify-between gap-6 max-sm:contents">
 			<div>
 				<h2 class={SECTION_HEADING}>
 					{CLINICAL_TEAM.title}
 				</h2>
 				<p class={SECTION_LEAD}>{CLINICAL_TEAM.lead}</p>
 			</div>
-			<div class="relative flex shrink-0 gap-2">
+			<!-- Below sm the controls move under the card and centre, as drawn. `contents`
+			     dissolves this row into the carousel's own column there, so one set of
+			     controls is reordered rather than a second set rendered and hidden. -->
+			<div class="relative flex shrink-0 gap-2 max-sm:order-3 max-sm:mt-8 max-sm:justify-center">
 				<Carousel.Previous class="static translate-y-0" aria-label="Previous clinician" variant="ghost" />
 				<Carousel.Next class="static translate-y-0" aria-label="Next clinician" variant="inverse" />
 			</div>
 		</div>
 
-		<Carousel.Content class="mt-10">
+		<Carousel.Content class="mt-10 max-sm:order-2">
 			{#each CLINICIANS as clinician (clinician.name)}
 				<Carousel.Item class="basis-full md:basis-1/2 lg:basis-1/3">
 					<ClinicianCard {clinician} />

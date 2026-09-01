@@ -6,7 +6,7 @@
 	import ClipboardCheckIcon from '@lucide/svelte/icons/clipboard-check';
 	import MessageCircleIcon from '@lucide/svelte/icons/message-circle';
 	import StethoscopeIcon from '@lucide/svelte/icons/stethoscope';
-	import { BLEED, CONTAINER, PANEL_GAP_Y, PANEL_Y } from './container';
+	import { BLEED, CONTAINER, PANEL_GAP_Y, PANEL_ROUND, PANEL_Y } from './container';
 	import { SECTION_HEADING, SECTION_LEAD } from './type';
 	import { RATING, RESULTS_BAND, ROUTES, type MiniBenefit } from './content';
 
@@ -22,9 +22,12 @@
 <!-- The rounded panel needs its own breathing room: BLEED carries only the horizontal
      gutter, so without this the card butts straight into the section above and below. -->
 <section class={[BLEED, PANEL_GAP_Y]} aria-label="Care built in">
-	<div class={['overflow-hidden rounded-xl bg-highlight', PANEL_Y]}>
+	<div class={['overflow-hidden bg-highlight', PANEL_ROUND, PANEL_Y]}>
 		<div class={CONTAINER}>
-			<ul class="grid gap-8 sm:grid-cols-3">
+			<!-- The narrow artboard opens this band on its heading. The three assurances are
+			     not dropped from the page, only from the top of this section, where they would
+			     stand between the band's ground and the heading that names it. -->
+			<ul class="grid gap-8 max-sm:hidden sm:grid-cols-3">
 				{#each RESULTS_BAND.benefits as benefit (benefit.title)}
 					{@const Icon = ICONS[benefit.icon]}
 					<li class="flex items-start gap-3">
@@ -40,16 +43,21 @@
 			<!-- 3:4:3 is the reference's 520:660:520 column allocation on stock columns. The
 			     two text columns start level and the artwork runs past them, so the row is
 			     top-aligned rather than centred. -->
-			<div class="mt-12 grid gap-8 lg:grid-cols-10">
+			<div class="grid gap-8 max-sm:mt-0 sm:mt-12 lg:grid-cols-10">
 				<div class="lg:col-span-3">
-					<h2 class={SECTION_HEADING}>
+					<p
+						class="text-[10px] font-bold uppercase tracking-[0.12em] text-highlight-foreground sm:hidden"
+					>
+						{RESULTS_BAND.eyebrow}
+					</p>
+					<h2 class={[SECTION_HEADING, 'max-sm:mt-2.5']}>
 						{RESULTS_BAND.title}
 					</h2>
 					<p class={SECTION_LEAD}>{RESULTS_BAND.lead}</p>
 					<Button
 						href={ROUTES.questionnaire}
 						variant="inverse"
-						class="mt-6 rounded-full"
+						class="mt-6 w-full rounded-full sm:w-auto"
 					>
 						{RESULTS_BAND.cta}
 						<ArrowRightIcon aria-hidden="true" class="size-5" />

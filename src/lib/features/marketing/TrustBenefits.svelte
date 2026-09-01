@@ -15,7 +15,8 @@
 	} satisfies Record<TrustBenefit['icon'], unknown>;
 </script>
 
-<section class={[CONTAINER, SECTION_Y]} aria-label="Why Solean">
+<!-- The narrow artboard has no trust band: the hero's rating badge already carries it. -->
+<section class={[CONTAINER, SECTION_Y, 'max-sm:hidden']} aria-label="Why Solean">
 	<ul class="grid gap-10 sm:grid-cols-2 lg:grid-cols-4">
 		{#each TRUST_BENEFITS as benefit (benefit.title)}
 			{@const Icon = ICONS[benefit.icon]}

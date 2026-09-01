@@ -187,7 +187,7 @@ test('keeps the bento hierarchy compact and aligned', async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 1000 });
 	await page.goto('/');
 
-	const section = page.getByLabel('What Solean gives you');
+	const section = page.getByTestId('bento-grid');
 	const cards = section.locator('article');
 	await expect(cards).toHaveCount(5);
 
@@ -376,4 +376,86 @@ test('the mobile menu opens as the reference full-screen panel', async ({ page }
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await expect(page.getByRole('button', { name: 'Open menu' })).toBeHidden();
 	await expect(page.getByRole('button', { name: 'Treatments' })).toBeVisible();
+});
+
+test('the narrow landing sections follow the artboard', async ({ page }) => {
+	const visible = (els: Element[]) =>
+		els.filter((e) => (e as HTMLElement).offsetParent !== null).length;
+
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto('/');
+
+	// The artboard has no trust band.
+	await expect(page.getByLabel('Why Solean')).toBeHidden();
+
+	// The bento becomes a carousel with its own heading and one dot per card.
+	const bento = page.getByLabel('What Solean gives you');
+	await expect(bento.getByRole('heading', { level: 2 })).toHaveText(
+		'Everything you need to move forward.'
+	);
+	// The artboard leads with one card outside the carousel, so four dots cover five cards.
+	// Scoped to the narrow branch: the wide grid renders the same five cards alongside it.
+	await expect(page.getByTestId('bento-carousel').locator('article')).toHaveCount(5);
+	const dots = bento.getByRole('tab');
+	await expect(dots).toHaveCount(4);
+	await expect(dots.first()).toHaveAttribute('aria-selected', 'true');
+	// Every dot is the same size: the artboard's stretched active dot was rejected, so
+	// colour alone carries the selected state.
+	const dotWidths = await dots.evaluateAll((els) =>
+		els.map((e) => e.getBoundingClientRect().width)
+	);
+	expect(new Set(dotWidths)).toEqual(new Set([6]));
+
+	// The bands meet: no strip of page ground between them.
+	const seam = await page.evaluate(() => {
+		const above = document
+			.querySelector('section[aria-label="What Solean gives you"]')!
+			.getBoundingClientRect();
+		const below = document.querySelector('section[aria-label="Care built in"]')!.getBoundingClientRect();
+		return Math.round(below.top - above.bottom);
+	});
+	expect(seam).toBe(0);
+
+	// The band opens on its own heading and closes that block with a full-width CTA.
+	const band = page.getByLabel('Care built in');
+	await expect(band.getByText('Care built in', { exact: true })).toBeVisible();
+	await expect(band.locator('ul').first()).toBeHidden();
+	const bandCta = band.getByRole('link', { name: /Check your eligibility/ });
+	expect((await bandCta.boundingBox())?.width).toBe(358);
+
+	// Panels meet both edges, square.
+	for (const label of ['Care built in', 'How it works']) {
+		const panel = page.getByLabel(label).locator('> div').first();
+		const box = await panel.boundingBox();
+		expect(box?.x).toBe(0);
+		expect(box?.width).toBe(390);
+		await expect(panel).toHaveCSS('border-top-left-radius', '0px');
+	}
+
+	// The projection drops its horizon tabs and its pair of CTAs.
+	const projection = page.getByLabel(/Projected progress/i);
+	expect(await projection.getByRole('link').evaluateAll(visible)).toBe(0);
+	expect(await projection.getByRole('tablist').evaluateAll(visible)).toBe(0);
+
+	// How it works offers one destination, the foot button rather than the row link.
+	const howItWorks = page.getByLabel('How it works');
+	const start = howItWorks.getByRole('link', { name: /Start questionnaire/ });
+	expect(await start.evaluateAll(visible)).toBe(1);
+
+	const widths = await page.evaluate(() => ({
+		client: document.documentElement.clientWidth,
+		scroll: document.documentElement.scrollWidth
+	}));
+	expect(widths.scroll).toBe(widths.client);
+
+	// Desktop keeps the band, the bento grid, the tabs, the CTAs and the row link.
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await expect(page.getByLabel('Why Solean')).toBeVisible();
+	await expect(bento.getByRole('tab')).toBeHidden();
+	await expect(page.getByTestId('bento-grid').locator('article')).toHaveCount(5);
+	expect(await projection.getByRole('link').evaluateAll(visible)).toBe(2);
+	expect(await projection.getByRole('tablist').evaluateAll(visible)).toBe(1);
+	expect(await start.evaluateAll(visible)).toBe(1);
+	const panel = page.getByLabel('Care built in').locator('> div').first();
+	await expect(panel).toHaveCSS('border-top-left-radius', '28px');
 });

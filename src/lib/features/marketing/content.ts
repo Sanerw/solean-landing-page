@@ -281,6 +281,12 @@ export const BENTO_GROUNDS: Record<BentoCard['category'], string> = {
 	delivery: 'bg-surface-delivery'
 };
 
+/** The narrow artboard gives this section a visible heading; the wide one does not. */
+export const BENTO_SECTION = {
+	eyebrow: 'The Solean approach',
+	title: 'Everything you need to move forward.'
+} as const;
+
 export const BENTO_CARDS: readonly BentoCard[] = [
 	{
 		category: 'treatment',
@@ -326,6 +332,8 @@ export interface MiniBenefit {
 }
 
 export const RESULTS_BAND = {
+	/** The narrow artboard names this block above its heading; the wide one does not. */
+	eyebrow: 'Care built in',
 	benefits: [
 		{
 			icon: 'stethoscope',

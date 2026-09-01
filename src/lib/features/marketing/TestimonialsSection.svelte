@@ -1,16 +1,16 @@
 <script lang="ts">
 	import * as Carousel from '$lib/components/ui/carousel';
-	import { BLEED, CONTAINER, PANEL_GAP_Y, PANEL_Y } from './container';
+	import { BLEED, CONTAINER, PANEL_GAP_Y, PANEL_ROUND, PANEL_Y } from './container';
 	import { SECTION_HEADING, SECTION_LEAD } from './type';
 	import { TESTIMONIALS, TESTIMONIALS_SECTION } from './content';
 	import TestimonialCard from './TestimonialCard.svelte';
 </script>
 
 <section class={[BLEED, PANEL_GAP_Y]} aria-label={TESTIMONIALS_SECTION.title}>
-	<div class={['rounded-xl bg-accent', PANEL_Y]}>
+	<div class={['bg-accent', PANEL_ROUND, PANEL_Y]}>
 		<div class={CONTAINER}>
-			<Carousel.Root opts={{ align: 'start' }} class="w-full">
-				<div class="flex flex-wrap items-end justify-between gap-6">
+			<Carousel.Root opts={{ align: 'start' }} class="flex w-full flex-col">
+				<div class="flex flex-wrap items-end justify-between gap-6 max-sm:contents">
 					<div>
 						<h2 class={SECTION_HEADING}>
 							{TESTIMONIALS_SECTION.title}
@@ -19,7 +19,12 @@
 					</div>
 					<!-- Controls sit inline with the heading, as drawn, rather than floating over the
 					     cards, so they never cover a story on a narrow screen. -->
-					<div class="relative flex shrink-0 gap-2">
+				<!-- Below sm the controls move under the card and centre, as drawn. `contents`
+			     dissolves this row into the carousel's own column there, so one set of
+			     controls is reordered rather than a second set rendered and hidden. -->
+				<div
+						class="relative flex shrink-0 gap-2 max-sm:order-3 max-sm:mt-8 max-sm:justify-center"
+					>
 						<Carousel.Previous
 							class="static translate-y-0"
 							aria-label="Previous story"
@@ -29,7 +34,7 @@
 					</div>
 				</div>
 
-				<Carousel.Content class="mt-10">
+				<Carousel.Content class="mt-10 max-sm:order-2">
 					{#each TESTIMONIALS as testimonial (testimonial.name)}
 						<Carousel.Item class="basis-full md:basis-1/2 lg:basis-1/3">
 							<TestimonialCard {testimonial} />

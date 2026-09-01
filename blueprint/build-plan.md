@@ -376,6 +376,14 @@ claims are not approved production content.
   during review: the viewport-minus-offer-bar height, a larger mobile headline,
   and a scrim that darkens the photograph instead of tinting it green.
 
+- [x] 17. **Mobile landing sections** - Carry the mobile refinement down the
+  rest of the landing page: the trust band hidden, the bento set as a lead card
+  plus a swipeable row, the results band opened on its own heading with a
+  full-width CTA, the projection reordered without its tabs or CTAs, the two
+  carousels' controls centred below their cards, the how-it-works button moved
+  to the foot, and every bleed panel meeting its neighbours and the viewport
+  edge.
+
 ## Testing
 
 **Decided, then deferred at 9a.** The plan was to run `/tests` before feature 9;

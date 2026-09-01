@@ -33,7 +33,10 @@
 		{/each}
 	</ul>
 
-	<div class="mt-8 flex flex-col gap-4 sm:flex-row">
+	<!-- The narrow artboard ends this block at the factor tags: the hero and the how-it-works
+	     section already carry the same two destinations, so repeating them here would be the
+	     third and fourth on one scroll. -->
+	<div class="mt-8 flex flex-col gap-4 max-sm:hidden sm:flex-row">
 		<Button href={ROUTES.questionnaire} class="rounded-full">
 			{MEDICAL_FRAMING.primaryCta}
 			<ArrowRightIcon aria-hidden="true" class="size-5" />

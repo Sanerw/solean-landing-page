@@ -19,7 +19,7 @@
 
 <section class={[CONTAINER, SECTION_Y]} aria-label={PROJECTION.title}>
 	<div class="grid gap-14 lg:grid-cols-2 lg:items-center lg:gap-16">
-		<div>
+		<div class="max-sm:order-2">
 			<h2 class={SUB_HEADING}>
 				{PROJECTION.title}
 			</h2>
@@ -46,7 +46,13 @@
 					</Tabs.Content>
 				{/each}
 
-				<Tabs.List aria-label={PROJECTION.tabsLabel} class="mt-8 flex w-full bg-surface-warm">
+				<!-- The narrow artboard shows one chart and no horizon control. Hidden rather
+				     than removed: the tab still owns the panel that is mounted, so hiding the
+				     list leaves the default horizon showing rather than nothing. -->
+				<Tabs.List
+					aria-label={PROJECTION.tabsLabel}
+					class="mt-8 flex w-full bg-surface-warm max-sm:hidden"
+				>
 					{#each PROJECTION_HORIZONS as option (option.month)}
 						<Tabs.Trigger value={String(option.month)}>{option.label}</Tabs.Trigger>
 					{/each}
@@ -56,6 +62,8 @@
 			<p class="mt-4 text-center text-xs text-text-tertiary">{PROJECTION.disclaimer}</p>
 		</div>
 
-		<MedicalFraming />
+		<div class="max-sm:order-1">
+			<MedicalFraming />
+		</div>
 	</div>
 </section>
