@@ -1,2 +1,12 @@
+# pnpm 10 blocks every dependency's postinstall unless it is named here.
+#
+# sharp compiles the libvips binaries @sveltejs/enhanced-img needs to generate the responsive
+# image candidates, and it was never approved. A machine with a warm pnpm store already has it
+# built and says nothing, which is why the gap only appeared on a cold CI install.
+#
+# The same list is repeated in package.json's `pnpm` field on purpose: this file is what pnpm
+# reads from 10.6 onward and wins locally, while older versions read only package.json. Which
+# one the build host runs is not ours to control, so both carry the approval.
 onlyBuiltDependencies:
   - esbuild
+  - sharp
