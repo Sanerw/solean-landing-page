@@ -206,7 +206,12 @@
 						oncomment={(next) => (question.comment = next)}
 					/>
 					{#if error}
-						<FieldError id="{id}-error">{error}</FieldError>
+						<FieldError
+							id="{id}-error"
+							class="starting:opacity-0 transition-opacity duration-150 ease-out-quint motion-reduce:transition-none"
+						>
+							{error}
+						</FieldError>
 					{/if}
 				</FieldSet>
 			{:else}
@@ -242,7 +247,12 @@
 						</FieldDescription>
 					{/if}
 					{#if error}
-						<FieldError id="{id}-error">{error}</FieldError>
+						<FieldError
+							id="{id}-error"
+							class="starting:opacity-0 transition-opacity duration-150 ease-out-quint motion-reduce:transition-none"
+						>
+							{error}
+						</FieldError>
 					{/if}
 				</Field>
 			{/if}
@@ -255,7 +265,12 @@
 			question. `assertive`, unlike a question's error: the person pressed a button and
 			nothing visible moved.
 		-->
-		<Alert.Root variant="destructive" class="mb-5" role="alert" aria-live="assertive">
+		<Alert.Root
+			variant="destructive"
+			class="mb-5 starting:translate-y-1 starting:opacity-0 transition-[opacity,translate] duration-150 ease-out-quint motion-reduce:transition-none"
+			role="alert"
+			aria-live="assertive"
+		>
 			<TriangleAlertIcon aria-hidden="true" />
 			<Alert.Title>
 				{submission.reason === 'rejected'

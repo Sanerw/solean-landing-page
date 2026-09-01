@@ -124,6 +124,19 @@
 		// `ordering` stays true: the button must not be pressable while the browser is leaving.
 		window.location.assign(result.checkoutUrl);
 	}
+
+	/**
+	 * Position on the flattened list, so the reveal cascades over cards rather than over plans:
+	 * one plan can carry several doses and they are separate rows on screen. Capped, because
+	 * past four steps the tail reads as a queue rather than as a cascade.
+	 */
+	function revealDelay(group: RecommendedPlan[], planIndex: number, optionIndex: number): number {
+		const row =
+			group.slice(0, planIndex).reduce((total, plan) => total + plan.options.length, 0) +
+			optionIndex;
+
+		return Math.min(row, 4) * 60;
+	}
 </script>
 
 {#snippet planList(group: RecommendedPlan[])}
@@ -132,69 +145,81 @@
 		aria-label={COPY.choiceLabel}
 		class="mt-4 gap-2"
 	>
-		{#each group as plan (plan.id)}
-			{#each plan.options as option (option.variantId)}
+		{#each group as plan, planIndex (plan.id)}
+			{#each plan.options as option, optionIndex (option.variantId)}
 				{@const days = plan.prescriptionOnly ? null : option.therapyDays}
 				{@const detail = [option.label, days ? COPY.durationFor(days) : '']
 					.filter(Boolean)
 					.join(' · ')}
 				<!--
-					The artboard's card at this screen's width. Its 900px content column scales to
-					our 672px by 0.747, which puts the card at 80px tall on a 12px radius: on this
-					project's radius scale `rounded-xl` is 28px and `rounded-2xl` 36px, either of
-					which turns the row into a lozenge.
+					The reveal sits on this wrapper rather than on the card itself. Both want to move
+					the card vertically, and sharing one element would mean the press inherits the
+					reveal's 300ms and its delay: the card would sink slowly under the finger and
+					float back up afterwards.
 				-->
-				<FieldLabel
-					for="plan-{option.variantId}"
-					class="has-[>[data-slot=field]]:rounded-sm *:data-[slot=field]:p-3"
+				<div
+					style="transition-delay: {revealDelay(group, planIndex, optionIndex)}ms"
+					class="starting:translate-y-4 transition-[translate] duration-300 ease-out-quint motion-reduce:transition-none"
 				>
-					<Field
-						orientation="horizontal"
-						class="relative min-h-14 gap-3 has-[>[data-slot=field-content]]:items-center"
+					<!--
+						The artboard's card at this screen's width. Its 900px content column scales to
+						our 672px by 0.747, which puts the card at 80px tall on a 12px radius: on this
+						project's radius scale `rounded-xl` is 28px and `rounded-2xl` 36px, either of
+						which turns the row into a lozenge.
+					-->
+					<FieldLabel
+						for="plan-{option.variantId}"
+						class="has-[>[data-slot=field]]:rounded-sm *:data-[slot=field]:p-3
+						       active:translate-y-px motion-reduce:active:translate-y-0"
 					>
-						{#if plan.image}
-							<img
-								src={plan.image}
-								alt=""
-								loading="lazy"
-								class="size-14 shrink-0 rounded-sm bg-secondary object-contain"
+						<Field
+							orientation="horizontal"
+							class="relative min-h-14 gap-3 has-[>[data-slot=field-content]]:items-center"
+						>
+							{#if plan.image}
+								<img
+									src={plan.image}
+									alt=""
+									loading="lazy"
+									class="size-14 shrink-0 rounded-sm bg-secondary object-contain"
+								/>
+							{/if}
+							<!--
+								The price leaves the name's line below `sm`: a product name long enough to wrap
+								would otherwise push it between the name and the dose, which reads as though
+								it belonged to neither.
+							-->
+							<FieldContent class="min-w-0 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
+								<div class="min-w-0">
+									<FieldTitle class="block w-full min-w-0 break-words font-display text-base font-semibold">
+										{plan.name}
+									</FieldTitle>
+									{#if detail}
+										<FieldDescription class="mt-0.5 text-xs">{detail}</FieldDescription>
+									{/if}
+								</div>
+								<span class="shrink-0 font-display text-base font-semibold">
+									{formatEur(option.price)}
+								</span>
+							</FieldContent>
+							<!--
+								The row itself is the control: the radio covers it, draws nothing, and lets
+								the card's own gold border and fill carry the choice. Kept as a real radio
+								rather than a click handler so the group stays arrow-navigable and a screen
+								reader still announces "radio, checked"; covering the card is also what puts
+								its focus ring around the whole row instead of around a circle.
+							-->
+							<RadioGroup.Item
+								id="plan-{option.variantId}"
+								value={option.variantId}
+								aria-label={[plan.name, option.label, formatEur(option.price)]
+									.filter(Boolean)
+									.join(' ')}
+								class="absolute inset-0 size-full rounded-sm border-0 bg-transparent after:inset-0 data-checked:bg-transparent [&_[data-slot=radio-group-indicator]]:hidden"
 							/>
-						{/if}
-						<!--
-							The price leaves the name's line below `sm`: a product name long enough to wrap
-							would otherwise push it between the name and the dose, which reads as though
-							it belonged to neither.
-						-->
-						<FieldContent class="min-w-0 sm:flex-row sm:items-center sm:justify-between sm:gap-4">
-							<div class="min-w-0">
-								<FieldTitle class="block w-full min-w-0 break-words font-display text-base font-semibold">
-									{plan.name}
-								</FieldTitle>
-								{#if detail}
-									<FieldDescription class="mt-0.5 text-xs">{detail}</FieldDescription>
-								{/if}
-							</div>
-							<span class="shrink-0 font-display text-base font-semibold">
-								{formatEur(option.price)}
-							</span>
-						</FieldContent>
-						<!--
-							The row itself is the control: the radio covers it, draws nothing, and lets
-							the card's own gold border and fill carry the choice. Kept as a real radio
-							rather than a click handler so the group stays arrow-navigable and a screen
-							reader still announces "radio, checked"; covering the card is also what puts
-							its focus ring around the whole row instead of around a circle.
-						-->
-						<RadioGroup.Item
-							id="plan-{option.variantId}"
-							value={option.variantId}
-							aria-label={[plan.name, option.label, formatEur(option.price)]
-								.filter(Boolean)
-								.join(' ')}
-							class="absolute inset-0 size-full rounded-sm border-0 bg-transparent after:inset-0 data-checked:bg-transparent [&_[data-slot=radio-group-indicator]]:hidden"
-						/>
-					</Field>
-				</FieldLabel>
+						</Field>
+					</FieldLabel>
+				</div>
 			{/each}
 		{/each}
 	</RadioGroup.Root>
@@ -207,63 +232,71 @@
 {#if loading}
 	<BuildingPlanScreen />
 {:else}
-	<p class="font-sans text-xs font-semibold tracking-widest text-highlight-foreground uppercase">
-		{COPY.eyebrow}
-	</p>
-	<h1 class="mt-2 font-display text-3xl font-medium sm:text-4xl">{COPY.choiceHeadline}</h1>
-	<p class="mt-2 max-w-xl text-sm text-muted-foreground sm:text-base">{COPY.choiceBody}</p>
+	<!--
+		The one moment in the product where somebody waits seconds for an answer about their own
+		treatment. The block fades in as a whole and the cards inside it rise in sequence; the
+		cards deliberately carry no opacity of their own, because two nested fades multiply and
+		the cascade turns muddy.
+	-->
+	<div class="starting:opacity-0 transition-opacity duration-300 ease-out-quint motion-reduce:transition-none">
+		<p class="font-sans text-xs font-semibold tracking-widest text-highlight-foreground uppercase">
+			{COPY.eyebrow}
+		</p>
+		<h1 class="mt-2 font-display text-3xl font-medium sm:text-4xl">{COPY.choiceHeadline}</h1>
+		<p class="mt-2 max-w-xl text-sm text-muted-foreground sm:text-base">{COPY.choiceBody}</p>
 
-	{#if plans.length > 0}
-		{#if bothOffered}
-			<Tabs.Root value={mode} onValueChange={switchTo} class="mt-6">
-				<Tabs.List class="w-full">
-					<Tabs.Trigger value="treatment">{COPY.modes.treatment}</Tabs.Trigger>
-					<Tabs.Trigger value="prescription">{COPY.modes.prescription}</Tabs.Trigger>
-				</Tabs.List>
-				<Tabs.Content value="treatment">
-					{@render planList(groups.treatment)}
-				</Tabs.Content>
-				<Tabs.Content value="prescription">
-					{@render planList(groups.prescription)}
-				</Tabs.Content>
-			</Tabs.Root>
+		{#if plans.length > 0}
+			{#if bothOffered}
+				<Tabs.Root value={mode} onValueChange={switchTo} class="mt-6">
+					<Tabs.List class="w-full">
+						<Tabs.Trigger value="treatment">{COPY.modes.treatment}</Tabs.Trigger>
+						<Tabs.Trigger value="prescription">{COPY.modes.prescription}</Tabs.Trigger>
+					</Tabs.List>
+					<Tabs.Content value="treatment">
+						{@render planList(groups.treatment)}
+					</Tabs.Content>
+					<Tabs.Content value="prescription">
+						{@render planList(groups.prescription)}
+					</Tabs.Content>
+				</Tabs.Root>
+			{:else}
+				<!-- One list, so there is nothing to switch between and no tab to name it. -->
+				{@render planList(shown)}
+			{/if}
+
+			<div class="mt-4 flex items-start gap-2 text-xs text-text-tertiary">
+				<InfoIcon aria-hidden="true" class="mt-px size-3.5 shrink-0" />
+				<p>{COPY.reviewNote}</p>
+			</div>
 		{:else}
-			<!-- One list, so there is nothing to switch between and no tab to name it. -->
-			{@render planList(shown)}
+			<Alert.Root class="mt-6">
+				<CircleCheckIcon aria-hidden="true" />
+				<Alert.Title>{COPY.noPlans.title}</Alert.Title>
+				<Alert.Description>{COPY.noPlans.body}</Alert.Description>
+			</Alert.Root>
 		{/if}
 
-		<div class="mt-4 flex items-start gap-2 text-xs text-text-tertiary">
-			<InfoIcon aria-hidden="true" class="mt-px size-3.5 shrink-0" />
-			<p>{COPY.reviewNote}</p>
-		</div>
-	{:else}
-		<Alert.Root class="mt-6">
-			<CircleCheckIcon aria-hidden="true" />
-			<Alert.Title>{COPY.noPlans.title}</Alert.Title>
-			<Alert.Description>{COPY.noPlans.body}</Alert.Description>
-		</Alert.Root>
-	{/if}
-
-	{#if failure}
-		<!-- `assertive`: the reason is the only thing that explains what just happened. -->
-		<Alert.Root variant="destructive" class="mt-6" role="alert" aria-live="assertive">
-			<TriangleAlertIcon aria-hidden="true" />
-			<Alert.Title>{CHECKOUT_FAILURES[failure].title}</Alert.Title>
-			<Alert.Description>{CHECKOUT_FAILURES[failure].body}</Alert.Description>
-		</Alert.Root>
-	{/if}
-
-	<Button
-		type="button"
-		class="relative mt-6 w-full"
-		disabled={!hydrated || ordering}
-		onclick={order}
-	>
-		{#if ordering}
-			{COPY.ordering}
-		{:else}
-			{failure ? m.q_try_again() : chosen ? COPY.actionFor(chosen) : COPY.action}
-			<ArrowRightIcon aria-hidden="true" class="absolute right-8" />
+		{#if failure}
+			<!-- `assertive`: the reason is the only thing that explains what just happened. -->
+			<Alert.Root variant="destructive" class="mt-6" role="alert" aria-live="assertive">
+				<TriangleAlertIcon aria-hidden="true" />
+				<Alert.Title>{CHECKOUT_FAILURES[failure].title}</Alert.Title>
+				<Alert.Description>{CHECKOUT_FAILURES[failure].body}</Alert.Description>
+			</Alert.Root>
 		{/if}
-	</Button>
+
+		<Button
+			type="button"
+			class="relative mt-6 w-full"
+			disabled={!hydrated || ordering}
+			onclick={order}
+		>
+			{#if ordering}
+				{COPY.ordering}
+			{:else}
+				{failure ? m.q_try_again() : chosen ? COPY.actionFor(chosen) : COPY.action}
+				<ArrowRightIcon aria-hidden="true" class="absolute right-8" />
+			{/if}
+		</Button>
+	</div>
 {/if}

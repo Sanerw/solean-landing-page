@@ -217,6 +217,26 @@
 	--radius-2xl: calc(var(--radius) * 1.8);
 	--radius-3xl: calc(var(--radius) * 2.2);
 	--radius-4xl: calc(var(--radius) * 2.6);
+
+	/* The one easing this project animates with. Every animation here is an entrance,
+	   and an entrance decelerates: it arrives and settles rather than launching. A
+	   second curve is not defined until something needs one. */
+	--ease-out-quint: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* The crossfade into the funnel. The browser already fades the root pair by default, so only
+   the timing is stated here; `+layout.svelte` decides which navigation gets one at all. */
+::view-transition-old(root),
+::view-transition-new(root) {
+	animation-duration: 200ms;
+	animation-timing-function: var(--ease-out-quint);
+}
+
+@media (prefers-reduced-motion: reduce) {
+	::view-transition-old(root),
+	::view-transition-new(root) {
+		animation: none;
+	}
 }
 
 @layer base {

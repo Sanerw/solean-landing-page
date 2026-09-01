@@ -200,21 +200,33 @@
 			<Spinner aria-hidden="true" class="size-8 text-primary" />
 			<span class="sr-only">{m.q_opening_resume()}</span>
 		</div>
-	{:else if isCompletion}
+	{:else}
 		<!--
-			One screen, not two: the plan is chosen and ordered in the same press. A separate
-			confirmation step only asked the visitor to agree with themselves.
+			Keyed on the step rather than on the survey page, so an interlude enters the same way
+			a question does: to the person pressing Continue they are the same gesture. The key
+			also still guarantees what the page-level one did, that a step gets a fresh component
+			rather than an old one handed new props, because a step id names exactly one page.
 		-->
-		<RecommendationScreen anamnesisUid={questionnaireSession.anamnesisUid} {email} />
-	{:else if planStep?.kind === 'interlude'}
-		{#if planStep.variant === 'motivation'}
-			<MotivationInterstitial oncontinue={advance} />
-		{:else if planStep.variant === 'projection'}
-			<ProjectionInterstitial {weightKg} weightStepHref={weightHref} oncontinue={advance} />
-		{/if}
-	{:else if page}
-		{#key page.name}
-			<SurveyStepScreen {page} onvalid={advance} {submitting} {submission} />
+		{#key data.stepId}
+			<div
+				class="starting:translate-y-2 starting:opacity-0 transition-[opacity,translate] duration-200 ease-out-quint motion-reduce:transition-none"
+			>
+				{#if isCompletion}
+					<!--
+						One screen, not two: the plan is chosen and ordered in the same press. A separate
+						confirmation step only asked the visitor to agree with themselves.
+					-->
+					<RecommendationScreen anamnesisUid={questionnaireSession.anamnesisUid} {email} />
+				{:else if planStep?.kind === 'interlude'}
+					{#if planStep.variant === 'motivation'}
+						<MotivationInterstitial oncontinue={advance} />
+					{:else if planStep.variant === 'projection'}
+						<ProjectionInterstitial {weightKg} weightStepHref={weightHref} oncontinue={advance} />
+					{/if}
+				{:else if page}
+					<SurveyStepScreen {page} onvalid={advance} {submitting} {submission} />
+				{/if}
+			</div>
 		{/key}
 	{/if}
 </QuestionnaireShell>

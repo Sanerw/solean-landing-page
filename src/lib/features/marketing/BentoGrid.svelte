@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { m } from '$lib/paraglide/messages';
 	import * as Carousel from '$lib/components/ui/carousel';
+	import { reveal } from '$lib/actions/reveal';
 	import BentoCard from './BentoCard.svelte';
 	import { bentoCards, bentoSection } from './content';
 	import { BLEED, CONTAINER } from './container';
@@ -11,6 +12,17 @@
 	const cards = $derived(bentoCards());
 	const tall = $derived(cards[0]);
 	const rest = $derived(cards.slice(1));
+
+	/**
+	 * The hidden half of this belongs to `data-reveal`, which the action sets and only the
+	 * action removes. Written this way round so the cards are visible to a browser that cannot
+	 * run the action at all, rather than depending on it to undo something the markup did.
+	 */
+	const REVEAL =
+		'transition-[opacity,translate] duration-400 ease-out-quint motion-reduce:transition-none data-reveal:translate-y-4 data-reveal:opacity-0';
+
+	/** The carousel is deliberately not revealed: it already costs frames on a phone. */
+	const REVEAL_STEP_MS = 50;
 </script>
 
 <!-- Bottom only: the trust row above already ends with its own padding. -->
@@ -50,12 +62,14 @@
 		</div>
 
 		<div data-testid="bento-grid" class="hidden grid-cols-1 gap-5 sm:grid lg:grid-cols-5">
-			<div class="lg:col-span-2">
+			<div class={['lg:col-span-2', REVEAL]} use:reveal={0}>
 				<BentoCard card={tall} size="tall" />
 			</div>
 			<div class="grid gap-5 sm:grid-cols-2 lg:col-span-3 lg:grid-rows-2">
-				{#each rest as card (card.category)}
-					<BentoCard {card} />
+				{#each rest as card, index (card.category)}
+					<div class={REVEAL} use:reveal={(index + 1) * REVEAL_STEP_MS}>
+						<BentoCard {card} />
+					</div>
 				{/each}
 			</div>
 		</div>
