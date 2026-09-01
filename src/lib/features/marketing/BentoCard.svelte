@@ -75,10 +75,11 @@
 			     nested img alone cannot consume the tall card's remaining height. -->
 			<div
 				class={[
-					'overflow-hidden rounded-lg',
-					size === 'tall'
-						? 'mt-3 min-h-64 flex-1 [&_img]:h-full [&_picture]:block [&_picture]:h-full'
-						: 'mt-2'
+					'overflow-hidden rounded-lg [&_img]:h-full [&_picture]:block [&_picture]:h-full',
+					// Both sizes flex to the card's foot. The row's height comes from the tall card
+					// beside them, not from their own copy, so an image at a fixed aspect ratio
+					// leaves a block of bare card ground below it whenever that card's body wraps.
+					size === 'tall' ? 'mt-3 min-h-64 flex-1' : 'mt-2 min-h-32 flex-1'
 				]}
 			>
 				<!-- Decorative: the heading above already carries the card's meaning. -->
@@ -89,7 +90,7 @@
 					loading="lazy"
 					decoding="async"
 					sizes={gridSizes}
-					class={['w-full object-cover', size === 'compact' ? 'aspect-2/1' : 'h-full']}
+					class="h-full w-full object-cover"
 				/>
 			</div>
 		{/if}
