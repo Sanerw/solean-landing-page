@@ -2,11 +2,19 @@
 	import heroImage from '$lib/assets/hero-enhanced.webp?enhanced&imgSizes=100vw&quality=75';
 	import { Button } from '$lib/components/ui/button';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
+	import type { Rating } from './reviews';
 	import { CONTAINER } from './container';
 	import { HERO, ROUTES } from './content';
 	import HeroArticleTeaser from './HeroArticleTeaser.svelte';
 	import HeroRatingBadge from './HeroRatingBadge.svelte';
 	import SiteHeader from './SiteHeader.svelte';
+
+	interface Props {
+		/** Read on the server; null when Reviews.io could not be reached. */
+		rating: Rating | null;
+	}
+
+	let { rating }: Props = $props();
 
 	const heroAvifSrcset = heroImage.sources.avif;
 	const heroPreloadHref =
@@ -122,7 +130,7 @@
 			</div>
 
 			<div class="flex flex-col items-start gap-6 pt-2 md:flex-row md:items-end md:justify-between">
-				<HeroRatingBadge />
+				<HeroRatingBadge {rating} />
 				<div class="hidden sm:block">
 					<HeroArticleTeaser />
 				</div>

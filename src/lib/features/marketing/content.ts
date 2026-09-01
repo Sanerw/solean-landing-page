@@ -150,17 +150,15 @@ export const HERO: HeroContent = {
 };
 
 /**
- * Fictional prototype figures. The reference attributes these to a named third-party
- * review platform; inventing numbers under a real company's name is not something the
- * prototype should ship, so the badge stands on its own.
+ * The figures shown when Reviews.io cannot be reached. They are the platform's own, read from
+ * the profile on 2026-09-01, not invented: the badge prints the platform's name, so a made-up
+ * fallback would attribute numbers to a company that reports different ones. The live figures
+ * come from the landing page's server load.
  */
 export const RATING = {
-	score: 4.7,
-	label: '4.7 - 1,200+ reviews',
-	href: 'https://www.reviews.io/company-reviews/store/www.solean.com',
-	/** The results band prints the score as a numeral, so its line carries the volume and the source. */
-	reviewCount: '1,200+ reviews on Reviews.io',
-	caption: 'Mock prototype rating'
+	platform: 'Reviews.io',
+	fallback: { score: 4.9, total: 104 },
+	href: 'https://www.reviews.io/company-reviews/store/www.solean.com'
 } as const;
 
 export const ARTICLE_TEASER = {

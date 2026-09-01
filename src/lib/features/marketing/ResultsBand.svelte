@@ -9,6 +9,16 @@
 	import { BLEED, CONTAINER, PANEL_GAP_Y, PANEL_ROUND, PANEL_Y } from './container';
 	import { SECTION_HEADING, SECTION_LEAD } from './type';
 	import { RATING, RESULTS_BAND, ROUTES, type MiniBenefit } from './content';
+	import { formatScore, type Rating } from './reviews';
+
+	interface Props {
+		/** Read on the server; null when Reviews.io could not be reached. */
+		rating: Rating | null;
+	}
+
+	let { rating }: Props = $props();
+
+	const shown = $derived(rating ?? RATING.fallback);
 
 	const ICONS = {
 		stethoscope: StethoscopeIcon,
@@ -98,11 +108,11 @@
 
 				<div class="lg:col-span-3">
 					<div class="flex items-center gap-3">
-						<p class="font-display text-4xl font-medium text-foreground">{RATING.score}</p>
+						<p class="font-display text-4xl font-medium text-foreground">{formatScore(shown.score)}</p>
 						<div>
-							<StarRating rating={RATING.score} treatment="outline" class="mt-1.5 text-foreground" />
+							<StarRating rating={shown.score} treatment="outline" class="mt-1.5 text-foreground" />
 							<p class="mt-1 text-xs font-semibold text-muted-foreground">
-								{RATING.reviewCount}
+								{shown.total.toLocaleString('en-GB')} reviews on {RATING.platform}
 							</p>
 						</div>
 					</div>

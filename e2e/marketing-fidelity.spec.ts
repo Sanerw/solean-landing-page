@@ -295,12 +295,12 @@ test('dissolves the care artwork into the band and restores the review column', 
 	// The reference panel is 1896 x 740 at this width.
 	expect(columns.panelHeight / columns.panelWidth).toBeCloseTo(740 / 1896, 1);
 
-	const stars = band.getByRole('img', { name: '4.7 out of 5 stars' });
+	const stars = band.getByRole('img', { name: /^[0-5](\.[0-9])? out of 5 stars$/ });
 	await expect(stars).toBeVisible();
 	await expect(stars.locator('svg')).toHaveCount(5);
 	await expect(stars.locator('svg').first()).toHaveCSS('fill', 'none');
 
-	await expect(band.getByText('1,200+ reviews')).toBeVisible();
+	await expect(band.getByText(/^[0-9,]+ reviews on Reviews\.io$/)).toBeVisible();
 	await expect(band.getByText('Verified Solean member')).toBeVisible();
 
 	const divider = band.locator('div[aria-hidden="true"]').last();

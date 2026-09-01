@@ -8,6 +8,9 @@
 	import ResultsBand from '$lib/features/marketing/ResultsBand.svelte';
 	import TestimonialsSection from '$lib/features/marketing/TestimonialsSection.svelte';
 	import TrustBenefits from '$lib/features/marketing/TrustBenefits.svelte';
+	import type { PageProps } from './$types';
+
+	let { data }: PageProps = $props();
 </script>
 
 <svelte:head>
@@ -19,10 +22,10 @@
 </svelte:head>
 
 <div class="pb-3">
-	<HeroSection />
+	<HeroSection rating={data.rating} />
 	<TrustBenefits />
 	<BentoGrid />
-	<ResultsBand />
+	<ResultsBand rating={data.rating} />
 	<ProjectionSection />
 	<TestimonialsSection />
 	<ClinicalTeamSection />
