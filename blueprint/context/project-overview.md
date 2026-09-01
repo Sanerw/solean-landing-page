@@ -37,8 +37,7 @@ happens inside RxScale, not on a Solean screen.
 
 ## Features
 
-Fifteen in build-plan order. Features 1 to 14 are complete. Feature 15 is the
-current post-MVP mobile landing-page refinement.
+Eighteen in build-plan order. All eighteen are complete.
 
 1. **Design system and core UI components** (done) - semantic tokens, two fonts,
    radii, brand foundations, thirteen adapted shadcn primitives on a showcase at
@@ -79,9 +78,16 @@ current post-MVP mobile landing-page refinement.
     proved unusable.
 14. **End-to-end hardening** (done) - the whole path, states, sweeps, browser tests,
     verification.
-15. **Mobile announcement bar and hero** - match the supplied mobile HTML
-    reference for the landing page's announcement bar, hero imagery, navigation
-    treatment, copy layout, CTA, and trust indicators without regressing desktop.
+15. **Mobile announcement bar and hero** (done) - the landing page's mobile
+    announcement bar, hero imagery, navigation treatment, copy layout, CTA and
+    trust indicators, without regressing desktop.
+16. **Mobile menu panel** (done) - the opened menu as the reference's full-screen
+    treatment, with three hero refinements agreed during review.
+17. **Mobile landing sections** (done) - the mobile refinement carried down the
+    rest of the landing page.
+18. **Legal pages and real contact details** (done) - the four German policy documents
+    Solean already publishes, served on their own routes and linked from the
+    footer, plus the real support address, telephone number and service hours.
 
 Dropped to the deferred backlog with this plan change: Solean's own checkout
 (account, shipping, payment), the pricing engine, add-on selection, and the
@@ -318,6 +324,7 @@ the intended halo. It is the one recorded exception, not a precedent.
 | --- | --- |
 | `/` | Landing page: hero, product story, social proof, FAQ, footer |
 | `/learn/blog/[slug]` | Learn article with ToC, comparison, related content |
+| `/privacy`, `/terms`, `/returns`, `/legal-notice` | The four policy documents, in German, copied from what Solean publishes |
 | `/questionnaire/[step]` | Every survey page, interlude, and the two completion screens: the plan choice, then the order |
 | `GET /api/recommendation` | Server endpoint: what RxScale recommends for one anamnesis, trimmed for the screen |
 | `POST /api/checkout` | Server endpoint: checks the chosen variant against the recommendation, creates the Shopify cart, returns the URL to redirect to |

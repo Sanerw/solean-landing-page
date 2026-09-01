@@ -222,13 +222,15 @@ export const FOOTER_COLUMNS: readonly FooterColumn[] = [
 	}
 ];
 
+/** The real support details and hours, as the Impressum and the contact page state them. */
 export const CONTACT = {
 	title: 'Contact our care team',
-	email: 'contact@solean.com',
-	phone: '+49 111 111 111',
+	email: 'support@solean.com',
+	phone: '+49 40 87709420',
 	hoursTitle: 'Service hours.',
 	hours: [
-		{ days: 'Monday–Friday', time: '09:00–18:00' },
+		{ days: 'Monday–Thursday', time: '09:00–17:00' },
+		{ days: 'Friday', time: '09:00–16:00' },
 		{ days: 'Saturday–Sunday', time: 'Closed' }
 	]
 } as const;
@@ -260,10 +262,15 @@ export const FOOTER_BRAND = {
 		alt: 'Registered EU pharmacy verification badge'
 	},
 	copyright: '© 2026 Solean',
+	/**
+	 * The four documents Solean publishes, in German. `Accessibility` is gone: there was no
+	 * such document behind it, and a label with nothing behind it is worse than no label.
+	 */
 	legal: [
-		{ label: 'Privacy', href: '/privacy', inert: true },
-		{ label: 'Terms', href: '/terms', inert: true },
-		{ label: 'Accessibility', href: '/accessibility', inert: true }
+		{ label: 'Legal notice', href: '/legal-notice' },
+		{ label: 'Privacy', href: '/privacy' },
+		{ label: 'Terms', href: '/terms' },
+		{ label: 'Cancellation', href: '/returns' }
 	] satisfies NavItem[],
 	social: [
 		{ icon: 'instagram', label: 'Solean on Instagram', href: 'https://instagram.com' },

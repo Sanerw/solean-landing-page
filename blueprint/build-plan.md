@@ -384,6 +384,13 @@ claims are not approved production content.
   to the foot, and every bleed panel meeting its neighbours and the viewport
   edge.
 
+- [x] 18. **Legal pages and real contact details** - the four German policy
+  documents Solean already publishes (privacy, terms, cancellation, legal
+  notice) served on their own routes and linked from the footer, replacing the
+  three inert labels there. Copied verbatim from solean.com rather than
+  rewritten: legal text is not ours to paraphrase. Carries the real support
+  address, telephone number and service hours.
+
 ## Testing
 
 **Decided, then deferred at 9a.** The plan was to run `/tests` before feature 9;
@@ -417,7 +424,7 @@ Not in scope. Listed without checkboxes so `/feature` never selects them.
 - Querying the Shopify catalogue ourselves, and computing a recommendation here
 - Authentication and a member account area
 - German language and `/de` routing
-- Undesigned routes: treatments index, product pages, about, contact, legal,
+- Undesigned routes: treatments index, product pages, about, contact,
   clinician profile pages
 - Dark mode
 - Clinician-facing tooling

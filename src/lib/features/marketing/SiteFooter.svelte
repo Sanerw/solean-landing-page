@@ -141,7 +141,12 @@
 				<div class="flex flex-wrap items-center gap-x-6 gap-y-2">
 					<p class="text-xs text-text-tertiary">{FOOTER_BRAND.copyright}</p>
 					{#each FOOTER_BRAND.legal as link (link.label)}
-						<span class="text-xs text-muted-foreground">{link.label}</span>
+						<a
+							href={link.href}
+							class={[LINK, 'text-xs text-muted-foreground hover:text-foreground']}
+						>
+							{link.label}
+						</a>
 					{/each}
 				</div>
 				<ul class="flex gap-3">
