@@ -9,10 +9,6 @@
 	import { questionnaireSession } from '$lib/features/questionnaire/survey-state.svelte';
 	import { readEmail, readWeightKg, weightStepId } from '$lib/features/questionnaire/answers';
 	import { submitAnamnesis, type AnamnesisSubmission } from '$lib/features/questionnaire/anamnesis-client';
-	import {
-		fetchRecommendation,
-		type RecommendationFetch
-	} from '$lib/features/questionnaire/recommendation-client';
 	import { questionnaireUid } from '$lib/config/rxscale';
 	import {
 		COMPLETION_STEP_ID,
@@ -133,21 +129,7 @@
 	});
 
 	let submitting = $state(false);
-	/**
-	 * The recommendation read that follows a successful submission. Its own state, because it
-	 * takes seconds against the live service and the button has to say which of the two it is
-	 * waiting on rather than leaving the press looking stuck.
-	 */
-	let preparing = $state(false);
 	let submission = $state<Extract<AnamnesisSubmission, { ok: false }> | null>(null);
-
-	/**
-	 * The read the completion screen needs, done before the navigation rather than on arrival.
-	 * The press already says it is working, so the wait belongs there: landing on the choice
-	 * screen and only then showing "Preparing your plan." spends the same seconds twice as
-	 * visibly.
-	 */
-	let recommendation = $state<RecommendationFetch | null>(null);
 
 	/**
 	 * The end of the plan is where the answers leave the browser. Anywhere else, continuing is
@@ -175,7 +157,7 @@
 	 * left to do is go to it.
 	 */
 	async function send(): Promise<void> {
-		if (!survey || submitting || preparing) return;
+		if (!survey || submitting) return;
 		if (questionnaireSession.anamnesisUid !== null) {
 			await goto(questionnaireStepHref(COMPLETION_STEP_ID));
 			return;
@@ -192,17 +174,12 @@
 			return;
 		}
 
-		// Read before the session is told about the anamnesis, and that order is the whole of
-		// it: recording the uid makes every step resolve forward to the completion screen, so
-		// the route's own effect navigates there immediately and the read this was meant to
-		// wait for finishes on the next screen instead. The uid comes off the result either way.
+		// The recommendation is read on the screen that shows the wait, not here. Recording the
+		// uid is what makes every step resolve forward, so the route's own effect would navigate
+		// during an await anyway; leaving at once is the honest version of that.
 		submitting = false;
-		preparing = true;
-		recommendation = await fetchRecommendation(fetch, result.uid);
-
 		questionnaireSession.recordSubmission(result.uid);
 		await goto(questionnaireStepHref(COMPLETION_STEP_ID));
-		preparing = false;
 	}
 </script>
 
@@ -227,11 +204,7 @@
 			One screen, not two: the plan is chosen and ordered in the same press. A separate
 			confirmation step only asked the visitor to agree with themselves.
 		-->
-		<RecommendationScreen
-			anamnesisUid={questionnaireSession.anamnesisUid}
-			{email}
-			prefetched={recommendation}
-		/>
+		<RecommendationScreen anamnesisUid={questionnaireSession.anamnesisUid} {email} />
 	{:else if planStep?.kind === 'interlude'}
 		{#if planStep.variant === 'motivation'}
 			<MotivationInterstitial oncontinue={advance} />
@@ -240,7 +213,7 @@
 		{/if}
 	{:else if page}
 		{#key page.name}
-			<SurveyStepScreen {page} onvalid={advance} {submitting} {preparing} {submission} />
+			<SurveyStepScreen {page} onvalid={advance} {submitting} {submission} />
 		{/key}
 	{/if}
 </QuestionnaireShell>

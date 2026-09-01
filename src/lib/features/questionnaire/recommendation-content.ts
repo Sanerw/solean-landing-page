@@ -9,7 +9,19 @@ import type { CheckoutFailure } from './checkout-client';
 export const RECOMMENDATION = {
 	choiceHeadline: 'Choose your treatment',
 	choiceBody: 'Select the treatment or prescription you want to continue with.',
-	loading: 'Preparing your plan.',
+	/**
+	 * The screen that covers the recommendation read. The reference's second item reads
+	 * "Checking your eligibility", which this funnel must not claim: the questionnaire never
+	 * judges, and approval happens in RxScale's doctor review. These two name the two waits
+	 * that are actually happening.
+	 */
+	building: {
+		headline: "We're building your plan",
+		steps: [
+			{ label: 'Your answers are with our clinical team', done: true },
+			{ label: 'Matching treatments to your profile', done: false }
+		]
+	},
 	choiceLabel: 'Your plan',
 	/**
 	 * The two purchases, as the switch above the list names them. They are separated rather

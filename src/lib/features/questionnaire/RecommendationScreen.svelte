@@ -15,6 +15,7 @@
 	import CircleCheckIcon from '@lucide/svelte/icons/circle-check';
 	import InfoIcon from '@lucide/svelte/icons/info';
 	import TriangleAlertIcon from '@lucide/svelte/icons/triangle-alert';
+	import BuildingPlanScreen from './BuildingPlanScreen.svelte';
 	import { CHECKOUT_FAILURES, RECOMMENDATION as COPY } from './recommendation-content';
 	import { requestCheckout, type CheckoutFailure } from './checkout-client';
 	import {
@@ -31,45 +32,32 @@
 		anamnesisUid: string | null;
 		/** Read from the answers by configured name, and null when the question was skipped. */
 		email: string | null;
-		/**
-		 * Read before this screen was navigated to, so it opens with its plans already in hand
-		 * and nobody watches a second wait for something the last press already fetched. Null
-		 * only when the screen was reached without that read, which is when it asks itself.
-		 */
-		prefetched?: RecommendationFetch | null;
 	}
 
-	let { anamnesisUid, email, prefetched = null }: Props = $props();
+	let { anamnesisUid, email }: Props = $props();
 
 	let hydrated = $state(false);
 	$effect(() => {
 		hydrated = true;
 	});
 
-	/** Only ever filled by the fetch below, for a screen that arrived without a prefetch. */
-	let fetched = $state<RecommendationFetch | null>(null);
-
-	/**
-	 * Derived from the prop rather than copied into state during setup. Copying raced: the
-	 * screen sometimes drew its first frame before the prop had settled, and showed the
-	 * loading line for a recommendation it had already been handed.
-	 */
-	const source = $derived(prefetched ?? fetched);
+	/** Null until the read below returns, which is what the building screen covers. */
+	let source = $state<RecommendationFetch | null>(null);
 
 	const loading = $derived(source === null);
 	const plans = $derived<RecommendedPlan[]>(source?.ok ? source.plans : []);
 
 	/**
-	 * Only for a screen that arrived without a recommendation. It is a read and creates
-	 * nothing, so asking again is safe, and it is the difference between a wait and a dead end.
+	 * The wait this screen exists to cover. It is a read and creates nothing, so arriving here
+	 * twice is safe; the submission that made the record happened on the previous screen.
 	 */
 	$effect(() => {
-		if (!hydrated || prefetched) return;
+		if (!hydrated) return;
 
 		let current = true;
 		void (async () => {
 			const result = await fetchRecommendation(fetch, anamnesisUid);
-			if (current) fetched = result;
+			if (current) source = result;
 		})();
 
 		return () => {
@@ -207,64 +195,70 @@
 	</RadioGroup.Root>
 {/snippet}
 
-<p class="font-sans text-xs font-semibold tracking-widest text-highlight-foreground uppercase">
-	Your recommendation
-</p>
-<h1 class="mt-2 font-display text-3xl font-medium sm:text-4xl">{COPY.choiceHeadline}</h1>
-<p class="mt-2 max-w-xl text-sm text-muted-foreground sm:text-base">{COPY.choiceBody}</p>
-
+<!--
+	The heading belongs to the choice, so it waits for one. Printed above the loading state it
+	asked the visitor to choose from a list that was not there yet.
+-->
 {#if loading}
-	<p role="status" class="mt-8 text-sm text-muted-foreground">{COPY.loading}</p>
-{:else if plans.length > 0}
-	{#if bothOffered}
-		<Tabs.Root value={mode} onValueChange={switchTo} class="mt-6">
-			<Tabs.List class="w-full">
-				<Tabs.Trigger value="treatment">{COPY.modes.treatment}</Tabs.Trigger>
-				<Tabs.Trigger value="prescription">{COPY.modes.prescription}</Tabs.Trigger>
-			</Tabs.List>
-			<Tabs.Content value="treatment">
-				{@render planList(groups.treatment)}
-			</Tabs.Content>
-			<Tabs.Content value="prescription">
-				{@render planList(groups.prescription)}
-			</Tabs.Content>
-		</Tabs.Root>
-	{:else}
-		<!-- One list, so there is nothing to switch between and no tab to name it. -->
-		{@render planList(shown)}
-	{/if}
-
-	<div class="mt-4 flex items-start gap-2 text-xs text-text-tertiary">
-		<InfoIcon aria-hidden="true" class="mt-px size-3.5 shrink-0" />
-		<p>{COPY.reviewNote}</p>
-	</div>
+	<BuildingPlanScreen />
 {:else}
-	<Alert.Root class="mt-6">
-		<CircleCheckIcon aria-hidden="true" />
-		<Alert.Title>{COPY.noPlans.title}</Alert.Title>
-		<Alert.Description>{COPY.noPlans.body}</Alert.Description>
-	</Alert.Root>
-{/if}
+	<p class="font-sans text-xs font-semibold tracking-widest text-highlight-foreground uppercase">
+		Your recommendation
+	</p>
+	<h1 class="mt-2 font-display text-3xl font-medium sm:text-4xl">{COPY.choiceHeadline}</h1>
+	<p class="mt-2 max-w-xl text-sm text-muted-foreground sm:text-base">{COPY.choiceBody}</p>
 
-{#if failure}
-	<!-- `assertive`: the reason is the only thing that explains what just happened. -->
-	<Alert.Root variant="destructive" class="mt-6" role="alert" aria-live="assertive">
-		<TriangleAlertIcon aria-hidden="true" />
-		<Alert.Title>{CHECKOUT_FAILURES[failure].title}</Alert.Title>
-		<Alert.Description>{CHECKOUT_FAILURES[failure].body}</Alert.Description>
-	</Alert.Root>
-{/if}
+	{#if plans.length > 0}
+		{#if bothOffered}
+			<Tabs.Root value={mode} onValueChange={switchTo} class="mt-6">
+				<Tabs.List class="w-full">
+					<Tabs.Trigger value="treatment">{COPY.modes.treatment}</Tabs.Trigger>
+					<Tabs.Trigger value="prescription">{COPY.modes.prescription}</Tabs.Trigger>
+				</Tabs.List>
+				<Tabs.Content value="treatment">
+					{@render planList(groups.treatment)}
+				</Tabs.Content>
+				<Tabs.Content value="prescription">
+					{@render planList(groups.prescription)}
+				</Tabs.Content>
+			</Tabs.Root>
+		{:else}
+			<!-- One list, so there is nothing to switch between and no tab to name it. -->
+			{@render planList(shown)}
+		{/if}
 
-<Button
-	type="button"
-	class="relative mt-6 w-full"
-	disabled={!hydrated || loading || ordering}
-	onclick={order}
->
-	{#if ordering}
-		{COPY.ordering}
+		<div class="mt-4 flex items-start gap-2 text-xs text-text-tertiary">
+			<InfoIcon aria-hidden="true" class="mt-px size-3.5 shrink-0" />
+			<p>{COPY.reviewNote}</p>
+		</div>
 	{:else}
-		{failure ? 'Try again' : chosen ? COPY.actionFor(chosen) : COPY.action}
-		<ArrowRightIcon aria-hidden="true" class="absolute right-8" />
+		<Alert.Root class="mt-6">
+			<CircleCheckIcon aria-hidden="true" />
+			<Alert.Title>{COPY.noPlans.title}</Alert.Title>
+			<Alert.Description>{COPY.noPlans.body}</Alert.Description>
+		</Alert.Root>
 	{/if}
-</Button>
+
+	{#if failure}
+		<!-- `assertive`: the reason is the only thing that explains what just happened. -->
+		<Alert.Root variant="destructive" class="mt-6" role="alert" aria-live="assertive">
+			<TriangleAlertIcon aria-hidden="true" />
+			<Alert.Title>{CHECKOUT_FAILURES[failure].title}</Alert.Title>
+			<Alert.Description>{CHECKOUT_FAILURES[failure].body}</Alert.Description>
+		</Alert.Root>
+	{/if}
+
+	<Button
+		type="button"
+		class="relative mt-6 w-full"
+		disabled={!hydrated || ordering}
+		onclick={order}
+	>
+		{#if ordering}
+			{COPY.ordering}
+		{:else}
+			{failure ? 'Try again' : chosen ? COPY.actionFor(chosen) : COPY.action}
+			<ArrowRightIcon aria-hidden="true" class="absolute right-8" />
+		{/if}
+	</Button>
+{/if}

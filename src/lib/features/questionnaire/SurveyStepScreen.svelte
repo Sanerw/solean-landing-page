@@ -34,7 +34,6 @@
 		 * while it waits for something else reads as a page that has hung.
 		 */
 		submitting?: boolean;
-		preparing?: boolean;
 		submission?: SubmissionFailure | null;
 	}
 
@@ -42,11 +41,10 @@
 		page,
 		onvalid,
 		submitting = false,
-		preparing = false,
 		submission = null
 	}: Props = $props();
 
-	const busy = $derived(submitting || preparing);
+	const busy = $derived(submitting);
 
 	/**
 	 * Nothing here works without JavaScript: validation, branching and navigation all live in
@@ -300,9 +298,7 @@
 		class="w-full"
 		disabled={!hydrated || unrenderable || busy}
 	>
-		{#if preparing}
-			Preparing your plan
-		{:else if submitting}
+		{#if submitting}
 			Sending your answers
 		{:else}
 			{submission ? 'Try again' : 'Continue'}
