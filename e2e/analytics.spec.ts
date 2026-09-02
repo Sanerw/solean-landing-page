@@ -48,35 +48,38 @@ function decode(body: string | null): Captured[] {
 }
 
 /**
- * Every host the feature reaches. Events and replay data both go to `api-eu.mixpanel.com` but
- * to different routes, `track/` and `record/`; `cdn.mxpnl.com` is covered too, because the
- * SDK reaches it for remote settings and would otherwise be a real fetch during a run.
+ * Mixpanel's own hosts. Events and replay data both go to `api-eu.mixpanel.com`, on the
+ * `track/` and `record/` routes; `mxpnl.com` is covered so a run cannot reach the CDN either.
+ * The recorder bundle is deliberately not among these: it is served from our own origin.
  */
 const MIXPANEL_HOSTS = ['**://*.mixpanel.com/**', '**://*.mxpnl.com/**'];
 
 interface Traffic {
 	events: Captured[];
-	/** The recorder bundle the SDK appends once recording starts. */
+	/**
+	 * Successful loads of the recorder bundle. The status matters: the SDK's default source is
+	 * a 404 on Mixpanel's CDN, which Chrome then blocks, and a spec that only counted the
+	 * request would pass while nothing was ever recorded.
+	 */
 	recorder: string[];
 	/** Posts to `record/`, which is session replay data and nothing else. */
 	replay: string[];
 }
 
-/** Intercepts both hosts and sorts what the app tried to send by the route it used. */
+/** Intercepts Mixpanel's hosts, and watches our own origin for the recorder. */
 async function captureMixpanel(page: Page): Promise<Traffic> {
 	const traffic: Traffic = { events: [], recorder: [], replay: [] };
+
+	page.on('response', (response) => {
+		const url = response.url();
+		if (url.includes('mixpanel-recorder') && response.status() === 200) {
+			traffic.recorder.push(url);
+		}
+	});
 
 	for (const pattern of MIXPANEL_HOSTS) {
 		await page.route(pattern, async (route) => {
 			const url = route.request().url();
-
-			if (url.includes('mxpnl.com')) {
-				traffic.recorder.push(url);
-				// Stubbed empty: the spec proves that recording was started, not that rrweb
-				// works, and running the real recorder against the fixture buys nothing.
-				await route.fulfill({ status: 200, contentType: 'application/javascript', body: '' });
-				return;
-			}
 
 			if (url.includes('/record')) {
 				traffic.replay.push(url);
@@ -131,8 +134,8 @@ test('declining is remembered, and stays silent across a navigation', async ({ p
 	await page.waitForTimeout(500);
 
 	expect(traffic.events).toEqual([]);
-	// A refusal has to reach the recorder too, not only the events. Its bundle is a separate
-	// script from a separate host, and a declined visitor must not fetch it either.
+	// A refusal has to reach the recorder too, not only the events: a declined visitor must
+	// not even fetch its bundle.
 	expect(traffic.recorder).toEqual([]);
 	expect(traffic.replay).toEqual([]);
 	await expect(page.getByRole('button', { name: 'Ablehnen' })).toBeHidden();
@@ -161,9 +164,14 @@ test('accepting starts the session recording, and only then', async ({ page }) =
 
 	await page.getByRole('button', { name: 'Einverstanden' }).click();
 
-	// The SDK appends the recorder script only at the moment recording begins, so the request
-	// for it is the observable proof that it did. The default `mixpanel-browser` entry point
-	// cannot load it at all, which is why this assertion is worth having.
+	/**
+	 * The recorder bundle, loaded and answered 200, which is the proof that recording began.
+	 *
+	 * Asserting on the successful response rather than on the request is the whole point.
+	 * Mixpanel's SDK asks its own CDN for a file that is a 404, Chrome blocks the HTML error
+	 * page as ERR_BLOCKED_BY_ORB, and recording silently never starts. A spec that counted
+	 * requests passed against exactly that, so this one counts responses.
+	 */
 	await expect.poll(() => traffic.recorder.length, FLUSH).toBeGreaterThan(0);
 });
 

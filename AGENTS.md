@@ -250,6 +250,13 @@ Three mechanics worth knowing before touching this code:
 - **The build matters.** The default `mixpanel-browser` entry point cannot record: its
   `load_extra_bundle` throws "not available in this build", so recording fails to start with
   no error. Only `mixpanel-with-async-recorder` ships a loader.
+- **The recorder is self-hosted, and has to be.** The SDK asks its own CDN for
+  `mixpanel-recorder-BbPxtaqp.js`, and that URL is a **404 serving an HTML error page**, so
+  Chrome rejects it as `ERR_BLOCKED_BY_ORB` and nothing is ever recorded. `client.ts` imports
+  the copy inside the package with `?url` and passes it as `recorder_src`, which also keeps
+  the feature free of any third-party script. The hash in that filename belongs to the
+  installed version: a `mixpanel-browser` upgrade breaks the import at build time, and that
+  is the failure worth having.
 - **Recording is started by name.** The SDK's auto-start runs once inside `init`, behind its
   own opt-out check, and this client is opted out at that moment by design. Nothing re-runs it
   afterwards except `reset`, which an app without accounts never calls.
@@ -284,9 +291,10 @@ and does not mention Mixpanel; that document is Solean's to amend.
 
 `src/lib/analytics/*.test.ts` covers the consent rule, the questionnaire path rule, the
 one-shot gate, the property shapes, and the replay share and sampling. `e2e/analytics.spec.ts`
-proves the gate and the funnel in a browser with every Mixpanel request intercepted, on both
-hosts: events go to `api-eu.mixpanel.com`, the recorder bundle comes from `cdn.mxpnl.com`, and
-a run must fetch neither before consent. The browser suite runs with analytics
+proves the gate and the funnel in a browser with every Mixpanel request intercepted, and
+asserts the recorder bundle **answers 200** rather than merely being requested. That
+distinction is the bug above: a request was made, Chrome blocked the response, and a spec
+counting requests passed while nothing recorded. The browser suite runs with analytics
 declined (`CONSENT_DENIED_STATE` in `playwright.config.ts`), because the banner is fixed to the
 bottom of the viewport and would sit over the Continue button the other specs press.
 

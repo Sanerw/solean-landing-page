@@ -1,4 +1,17 @@
 import { browser, dev } from '$app/environment';
+/**
+ * The recorder, served from our own origin instead of Mixpanel's CDN, and this is a fix
+ * rather than a preference. The SDK asks for
+ * `https://cdn.mxpnl.com/libs/mixpanel-recorder-BbPxtaqp.js`, and that URL is a 404 that
+ * answers with an HTML error page, so Chrome rejects it as ERR_BLOCKED_BY_ORB and recording
+ * never starts. The file itself ships inside the package; `?url` emits it as an asset and
+ * hands us a same-origin address for it.
+ *
+ * The hash in the name is the installed version's. On a `mixpanel-browser` upgrade this
+ * import fails the build, which is the failure worth having: the alternative is a silent
+ * 404 at runtime that nobody notices until the replays are missing.
+ */
+import recorderSrc from 'mixpanel-browser/dist/async-modules/mixpanel-recorder-BbPxtaqp.js?url';
 import { getLocale } from '$lib/paraglide/runtime';
 import {
 	mixpanelApiHost,
@@ -95,6 +108,10 @@ async function load(): Promise<Mixpanel | null> {
 		 * restricted, retention short, and named in the privacy policy.
 		 */
 		record_sessions_percent: replaySessionsPercent(),
+
+		// Same-origin, for the 404 the import above describes. It also means the feature adds
+		// no third-party script to a page.
+		recorder_src: recorderSrc,
 
 		/**
 		 * Stated rather than inherited, and that is deliberate. Both masks default to true in
