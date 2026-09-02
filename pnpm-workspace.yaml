@@ -15,3 +15,11 @@ onlyBuiltDependencies:
 allowBuilds:
   esbuild: true
   sharp: true
+
+# Temporary, to unblock a Vercel deploy. pnpm 11 defaults minimumReleaseAge to 1440 minutes and
+# re-applies that threshold to every lockfile entry on install, so the build rejected fifteen
+# Sanity packages published on 2026-09-01, ten minutes younger than its cutoff. The local pnpm 10
+# uses a threshold of 0, which is why the lockfile was written without a warning.
+# The real fix is to pin packageManager to pnpm 11 and drop this key, so the threshold binds where
+# the lockfile is created rather than only where it is read.
+minimumReleaseAge: 0
