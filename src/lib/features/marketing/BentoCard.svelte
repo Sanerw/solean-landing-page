@@ -83,8 +83,11 @@
 				]}
 			>
 				<!-- Decorative: the heading above already carries the card's meaning. -->
-				<enhanced:img
-					src={card.image}
+				<img
+					src={card.image.src}
+					srcset={card.image.srcset}
+					width={card.image.width}
+					height={card.image.height}
 					alt=""
 					aria-hidden="true"
 					loading="lazy"
@@ -98,8 +101,11 @@
 {:else if variant === 'feature'}
 	<article class={['overflow-hidden rounded-xl bg-card', className]}>
 		{#if card.image}
-			<enhanced:img
-				src={card.image}
+			<img
+				src={card.image.src}
+					srcset={card.image.srcset}
+					width={card.image.width}
+					height={card.image.height}
 				alt=""
 				aria-hidden="true"
 				loading="lazy"
@@ -119,8 +125,11 @@
 			     wrapper the picture itself remains a shrinkable flex item and collapses narrower
 			     than the 132px image used by the reference carousel. -->
 			<div class="h-full w-33 shrink-0 overflow-hidden [&_img]:h-full [&_picture]:h-full">
-				<enhanced:img
-					src={card.image}
+				<img
+					src={card.image.src}
+					srcset={card.image.srcset}
+					width={card.image.width}
+					height={card.image.height}
 					alt=""
 					aria-hidden="true"
 					loading="lazy"

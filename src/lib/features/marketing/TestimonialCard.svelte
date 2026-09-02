@@ -1,13 +1,13 @@
 <script lang="ts">
+	import { m } from '$lib/paraglide/messages';
 	import StarRating from '$lib/components/brand/StarRating.svelte';
 	import { findTreatment } from '$lib/domain';
 	import BadgeCheckIcon from '@lucide/svelte/icons/badge-check';
 	import PillIcon from '@lucide/svelte/icons/pill';
 	import SyringeIcon from '@lucide/svelte/icons/syringe';
-	import { testimonialsSection, type Testimonial } from './content';
+	import type { Testimonial } from './content';
 
 	// Read during render so the copy follows the active locale.
-	const TESTIMONIALS_SECTION = $derived(testimonialsSection());
 
 	interface Props {
 		testimonial: Testimonial;
@@ -28,8 +28,11 @@
 	]}
 >
 	{#if testimonial.photo}
-		<enhanced:img
-			src={testimonial.photo}
+		<img
+			src={testimonial.photo.src}
+					srcset={testimonial.photo.srcset}
+					width={testimonial.photo.width}
+					height={testimonial.photo.height}
 			alt=""
 			aria-hidden="true"
 			loading="lazy"
@@ -47,7 +50,7 @@
 
 	<p class="font-display text-4xl font-medium md:text-5xl">{testimonial.kgLost} kg</p>
 	<p class={['mt-1 text-sm', onPhoto ? 'text-background/80' : 'text-muted-foreground']}>
-		{TESTIMONIALS_SECTION.weightLostLabel}
+		{m.stories_weight_lost()}
 	</p>
 
 	<figure class="mt-6 flex flex-1 flex-col">
@@ -93,7 +96,7 @@
 							]}
 						>
 							<BadgeCheckIcon aria-hidden="true" class="size-3.5" />
-							{TESTIMONIALS_SECTION.verifiedLabel}
+							{m.stories_verified()}
 						</span>
 					{/if}
 				</div>

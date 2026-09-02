@@ -30,22 +30,26 @@ test('the announcement and reference hero asset render without narrow-screen ove
 	await expect(heroImage).toHaveAttribute('fetchpriority', 'high');
 	const heroPreload = page.locator('head link[rel="preload"][as="image"]');
 	await expect(heroPreload).toHaveCount(1);
-	await expect(heroPreload).toHaveAttribute('type', 'image/avif');
+	// No `type` any more: the hero is served from Sanity's CDN with `auto=format`, so the format
+	// is decided by content negotiation at request time rather than chosen by the build. The
+	// browser still receives AVIF where it accepts it; the page simply cannot promise which.
+	await expect(heroPreload).not.toHaveAttribute('type', 'image/avif');
 	// The preload is only reused, rather than doubling the download, when it resolves to the
-	// same candidate the picture will. Assert the two agree instead of a fixed string, so the
-	// pair cannot drift apart silently.
-	const heroSourceSizes = await page
-		.locator('section[aria-labelledby="hero-heading"] source[type="image/avif"]')
-		.first()
-		.getAttribute('sizes');
-	expect(heroSourceSizes).toBe('(min-width: 1024px) 100vw, 1684px');
-	await expect(heroPreload).toHaveAttribute('imagesizes', heroSourceSizes!);
-	await expect(heroPreload).toHaveAttribute('imagesrcset', /hero-enhanced.*\.avif/);
+	// same candidate the image will. Assert the two agree instead of a fixed string, so the pair
+	// cannot drift apart silently. Read off the `img` rather than a `<source>`: the photograph
+	// comes from Sanity's CDN now, as one element with a `w`-descriptor srcset, so there is no
+	// generated `<picture>` and no per-format source to inspect.
+	const heroSizes = await heroImage.getAttribute('sizes');
+	expect(heroSizes).toBe('(min-width: 1024px) 100vw, 1684px');
+	await expect(heroPreload).toHaveAttribute('imagesizes', heroSizes!);
+	await expect(heroPreload).toHaveAttribute('imagesrcset', await heroImage.getAttribute('srcset') ?? '');
 	await expect(heroImage).toHaveAttribute('width', '1684');
 	await expect(heroImage).toHaveAttribute('height', '934');
+	// The extension now sits before the query string, because the CDN takes its instructions
+	// there and answers with whichever modern format the browser accepted.
 	await expect
 		.poll(() => heroImage.evaluate((image: HTMLImageElement) => image.currentSrc))
-		.toMatch(/\.(?:avif|webp|jpe?g)$/);
+		.toMatch(/\.(?:avif|webp|jpe?g)(?:\?|$)/);
 	const loadedHeroUrl = await heroImage.evaluate((image: HTMLImageElement) => image.currentSrc);
 	await expect
 		.poll(() =>
@@ -281,8 +285,10 @@ test('dissolves the care artwork into the band and restores the review column', 
 	await expect(visual).toHaveAttribute('height', '1178');
 	await expect(visual).toHaveCSS('mix-blend-mode', 'multiply');
 
-	// The colour wash plus one blend per edge, which is what makes the artwork unboxed.
-	const overlays = visual.locator('xpath=..').locator('~ div[aria-hidden="true"]');
+	// The colour wash plus one blend per edge, which is what makes the artwork unboxed. The
+	// siblings are the image's own now: `enhanced:img` used to wrap it in a `<picture>`, so the
+	// overlays sat one level above it.
+	const overlays = visual.locator('~ div[aria-hidden="true"]');
 	await expect(overlays).toHaveCount(5);
 
 	const columns = await band.evaluate((section) => {
@@ -597,19 +603,43 @@ test('no marketing image is drawn larger than the pixels it carries', async ({ p
 	// Two things a width-only ratio cannot see, and both hid a soft hero once. naturalWidth is
 	// normalised by the candidate's density descriptor, so a stretched image still reports 1x;
 	// and object-cover scales to whichever edge is short, which for a frame taller than the
-	// photograph is the height. Decode the file the browser actually chose and measure the way
-	// the compositor does.
+	// photograph is the height. Measure the file the browser actually chose, the way the
+	// compositor does.
+	//
+	// The decoded size is read off the URL rather than the bytes. The marketing photographs come
+	// from Sanity's CDN now, which sends no `Access-Control-Allow-Origin`, so `fetch` and
+	// `createImageBitmap` are refused; and `naturalWidth` cannot stand in for them, because the
+	// browser normalises it by the candidate's effective density for `w` descriptors exactly as
+	// it does for `x` ones. A Sanity URL states both facts outright: the asset's own dimensions
+	// sit in the filename (`-1757x895.webp`) and the width served sits in `?w=`, so the decoded
+	// height follows from the two. Local images keep `naturalWidth`, which is exact for them.
 	const measure = async () => {
 		const images = [...document.querySelectorAll('img')].filter((image) => {
 			const box = image.getBoundingClientRect();
 			return box.width > 0 && box.height > 0 && image.currentSrc;
 		});
 
+		const decoded = (src: string, image: HTMLImageElement) => {
+			const source = src.match(/-(\d+)x(\d+)\.\w+/);
+			const asked = src.match(/[?&]w=(\d+)/);
+			if (!source || !asked) return { width: image.naturalWidth, height: image.naturalHeight };
+
+			const width = Number(asked[1]);
+			const cropped = src.match(/[?&]h=(\d+)/);
+			return {
+				width,
+				height: cropped
+					? Number(cropped[1])
+					: Math.round(width * (Number(source[2]) / Number(source[1])))
+			};
+		};
+
 		const dpr = window.devicePixelRatio;
 		const measured: { src: string; density: number }[] = [];
 		for (const image of images) {
 			const box = image.getBoundingClientRect();
-			const file = await createImageBitmap(await (await fetch(image.currentSrc)).blob());
+			const file = decoded(image.currentSrc, image);
+			if (!file.width) continue;
 			const width = box.width * dpr;
 			const height = box.height * dpr;
 			const scale =

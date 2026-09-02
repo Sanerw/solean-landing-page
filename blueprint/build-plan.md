@@ -415,6 +415,15 @@ claims are not approved production content.
     redirects from the interim paths. Last, because every surface must already
     exist in both languages before the bare path changes what it serves.
 
+- [x] 21. **Landing page from Sanity** - every section of the home page reads
+  its copy and its photographs from the Content Lake, in both languages, so an
+  editor changes the page without a deploy. Carries the images too: they were
+  `@sveltejs/enhanced-img` imports with hand-tuned width ladders, and moving them
+  to the CDN meant rebuilding that tuning as `w`-descriptor srcsets and teaching
+  the image-density browser test to measure a cross-origin file it cannot fetch.
+  Payment and carrier logos stay in the repository: they are chrome across every
+  page, not home page content.
+
 - [x] 20. **Learn article from Sanity** - the Mounjaro vs Wegovy page reads its
   content from the Content Lake instead of `src/lib/features/learn/content.ts`,
   in both languages, so an editor can publish a second article without a deploy.

@@ -123,11 +123,16 @@ What lives where:
 | Questionnaire uid, store domain, variant id, question names | Config | One module, see section 5 |
 | Order, payment, prescription, delivery | RxScale and Shopify | Not modelled here |
 
-**Editorial content moves to Sanity, one surface at a time.** From feature 20 the
-Learn article and the clinician who reviewed it are documents in the Content
-Lake, so a second article can be published without a deploy. The marketing
-homepage keeps its fixtures until it is migrated separately. Sanity holds only
-published editorial copy: no answers, nothing personal, nothing from the funnel.
+**Editorial content lives in Sanity.** From feature 20 the Learn article and its
+reviewer are documents in the Content Lake; from feature 21 so is every section of
+the landing page, copy and photographs alike. Sanity holds only published
+editorial content: no answers, nothing personal, nothing from the funnel.
+
+**A missing section is not an error.** The page is composed of optional fields, so
+each section is guarded on its own content and a page that loses one renders
+shorter rather than failing. This is not defensive habit: publishing a draft
+written before a field existed removed one, and an unguarded page answered the
+whole site with a 500.
 
 | Entity | Owner | Holds |
 | --- | --- | --- |
@@ -135,8 +140,8 @@ published editorial copy: no answers, nothing personal, nothing from the funnel.
 | `Treatment` | fixture | id, name, form (injection/tablet), dose, price, claim copy. Stays a fixture: it is commerce data keyed to Shopify variants, not editorial copy |
 | `article` | Sanity | the Learn article, one document per language, linked as translations |
 | `clinician` | Sanity | name, role, description, portrait. Referenced as an article's reviewer |
-| `homePage`, `testimonial` | Sanity, not yet read | seeded and editable, but no route renders them until the homepage migrates |
-| `Testimonial`, `FaqItem` | fixture | marketing content, until the homepage migrates |
+| `homePage` | Sanity | localized singleton per locale: announcement, hero, teaser, trust band, bento, results band, projection wording, medical framing, stories, team, FAQ |
+| `testimonial` | Sanity | the stories the landing page carries, and the one the questionnaire's motivation screen borrows |
 
 Editorial content is queried by `language`, because translations are separate
 documents rather than fields on one. The locale list stays in

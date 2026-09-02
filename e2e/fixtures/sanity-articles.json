@@ -263,5 +263,973 @@
 				}
 			]
 		}
+	},
+	"homePages": {
+		"de": {
+			"articleTeaser": {
+				"body": "Vergleiche Ergebnisse, Nebenwirkungen und die Wirkweise beider wöchentlicher Behandlungen in unserem aktuellen, fachlich geprüften Ratgeber.",
+				"cta": "Zum Artikel",
+				"eyebrow": "Neu im Wissensbereich",
+				"title": "Mounjaro vs. Wegovy."
+			},
+			"bento": {
+				"cards": [
+					{
+						"_key": "treatment",
+						"body": "Ärztlich geprüfte Optionen, abgestimmt auf deine Gesundheit und deine Ziele.",
+						"category": "treatment",
+						"eyebrow": "Behandlung",
+						"image": {
+							"_type": "image",
+							"alt": "Eine dunkelgrüne Behandlungspackung und ein Injektionspen auf weichem Stoff",
+							"asset": {
+								"_ref": "image-60103e1a0c1ea806ed8f83c9a2624c6517c193a2-1315x1196-webp",
+								"_type": "reference"
+							}
+						},
+						"title": "Eine Behandlung, für dich ausgewählt."
+					},
+					{
+						"_key": "care",
+						"body": "Persönliche Begleitung ab der ersten Beratung.",
+						"category": "clinical-care",
+						"eyebrow": "Ärztliche Betreuung",
+						"image": {
+							"_type": "image",
+							"alt": "Eine Ärztin lächelt an ihrem Schreibtisch vor einem Bildschirm",
+							"asset": {
+								"_ref": "image-bdb991b038fb2df8e7b77739fc523ecd2938f589-1757x895-webp",
+								"_type": "reference"
+							}
+						},
+						"title": "Ärzt:innen, die jede Entscheidung begleiten."
+					},
+					{
+						"_key": "plan",
+						"body": "Verfolge deinen Fortschritt, Schritt für Schritt.",
+						"category": "plan",
+						"eyebrow": "Dein Plan",
+						"image": {
+							"_type": "image",
+							"alt": "Eine Hand hält ein Telefon, das den Behandlungsfortschritt zeigt",
+							"asset": {
+								"_ref": "image-3fb6e63fdf895c0ae4b75dbea3be7a56e0201c3a-1756x895-webp",
+								"_type": "reference"
+							}
+						},
+						"title": "Alles an einem übersichtlichen Ort."
+					},
+					{
+						"_key": "support",
+						"body": "Fragen, Nebenwirkungen und praktische Unterstützung.",
+						"category": "support",
+						"eyebrow": "Laufende Unterstützung",
+						"image": {
+							"_type": "image",
+							"alt": "Ein Betreuer mit Headset arbeitet an einem Schreibtisch",
+							"asset": {
+								"_ref": "image-681bd57bf6af0dbe55d8bfa641c2e8ebcf3ac373-1758x895-webp",
+								"_type": "reference"
+							}
+						},
+						"title": "Hilfe auf deinem gesamten Weg."
+					},
+					{
+						"_key": "delivery",
+						"body": "Sichere Zustellung deiner Behandlung bis an die Tür.",
+						"category": "delivery",
+						"eyebrow": "Lieferung",
+						"image": {
+							"_type": "image",
+							"alt": "Ein Paket wird an der Haustür übergeben",
+							"asset": {
+								"_ref": "image-ac6b77f4ead7e94ccab4d5a2edcfe3116242fd4c-1757x895-webp",
+								"_type": "reference"
+							}
+						},
+						"title": "Diskrete Lieferung, direkt zu dir."
+					}
+				],
+				"eyebrow": "Der Solean-Ansatz",
+				"title": "Alles, was du für den nächsten Schritt brauchst."
+			},
+			"clinicalTeam": {
+				"carouselLabel": "Ärzteteam",
+				"clinicians": [
+					{
+						"_id": "GNi82xCo1eRS3egKAh1fEI",
+						"description": "Führt ärztliche Beratungen durch, prüft dein Gesundheitsprofil und hilft, einen sicheren und passenden Behandlungsplan festzulegen.",
+						"name": "Dr. Juraj Galan",
+						"portrait": {
+							"_type": "image",
+							"alt": "Dr. Juraj Galan",
+							"asset": {
+								"_ref": "image-8d838266e3e7894551beae2d65d8cd22d2cba69d-1521x1034-webp",
+								"_type": "reference"
+							}
+						},
+						"role": "Beratender Arzt"
+					},
+					{
+						"_id": "k5SsXVtg04B1Uu1ldd6AQC",
+						"description": "Bietet praktisches Einzelcoaching, damit du nachhaltige Gewohnheiten aufbaust und auf deinem Weg dranbleibst.",
+						"name": "Gredel",
+						"portrait": {
+							"_type": "image",
+							"alt": "Gredel",
+							"asset": {
+								"_ref": "image-f9c9b399e5608478ee86b817116ef45c7deb5056-1526x1030-webp",
+								"_type": "reference"
+							}
+						},
+						"role": "Abnehm-Coach"
+					},
+					{
+						"_id": "k5SsXVtg04B1Uu1ldd6AUd",
+						"description": "Prüft den Behandlungsverlauf, beantwortet Fragen zur Medikation und passt deine Betreuung an, wenn es medizinisch sinnvoll ist.",
+						"name": "Dr. Elias Voss",
+						"portrait": {
+							"_type": "image",
+							"alt": "Dr. Elias Voss",
+							"asset": {
+								"_ref": "image-e89cb86b059317b30201b0990a2df76e10252a6f-1526x1030-webp",
+								"_type": "reference"
+							}
+						},
+						"role": "Verschreibende:r Ärzt:in"
+					}
+				],
+				"lead": "Deine Ärztin oder dein Arzt hilft dir, die passende Behandlung zu finden, und unterstützt dich in jeder Phase deines Plans.",
+				"learnMore": "Mehr erfahren",
+				"title": "Ärzt:innen, die dich begleiten."
+			},
+			"faq": {
+				"items": [
+					{
+						"_key": "safety",
+						"answer": "Medikamente zur Gewichtsabnahme sind klinisch geprüft und werden nur verschrieben, wenn eine Ärztin oder ein Arzt sie für dich als geeignet einstuft. Häufige Nebenwirkungen sind Übelkeit, Verstopfung, Durchfall oder verminderter Appetit; sie bessern sich oft, sobald sich der Körper anpasst. Deine Ärztin oder dein Arzt erklärt dir die Risiken, beobachtet deinen Verlauf und berät dich, wenn Beschwerden anhalten oder stark sind.",
+						"question": "Sind sie sicher, und mit welchen Nebenwirkungen muss ich rechnen?"
+					},
+					{
+						"_key": "regain",
+						"answer": "Eine gewisse Gewichtszunahme nach dem Absetzen ist häufig. Deshalb wird die Behandlung mit Coaching und Unterstützung beim Aufbau von Gewohnheiten kombiniert. Deine Ärztin oder dein Arzt bespricht mit dir das Ausschleichen und was dich erwartet, bevor du dich entscheidest.",
+						"question": "Nehme ich wieder zu, wenn ich das Medikament absetze?"
+					},
+					{
+						"_key": "eligible",
+						"answer": "Ob eine Behandlung infrage kommt, hängt von deinem Gesundheitsprofil, deiner Krankengeschichte und deinen aktuellen Messwerten ab. Der Online-Fragebogen erfasst, was ärztlich benötigt wird, und die Ärztin oder der Arzt bestätigt, ob eine Behandlung für dich geeignet ist.",
+						"question": "Bin ich geeignet?"
+					},
+					{
+						"_key": "privacy",
+						"answer": "Ja. Die Beratung findet online statt, deine Daten werden nach DSGVO verarbeitet, und das Medikament kommt in diskreter, neutraler Verpackung.",
+						"question": "Ich möchte nicht, dass jemand von meiner Behandlung erfährt. Bleibt das privat?"
+					},
+					{
+						"_key": "price",
+						"answer": "Dein Plan umfasst die Behandlung selbst, die ärztliche Prüfung und die laufende Unterstützung durch das Care-Team. Optionale Zusatzleistungen wie Coaching oder eine smarte Waage werden separat berechnet und immer vor dem Bezahlen angezeigt.",
+						"question": "Was ist im Preis enthalten?"
+					},
+					{
+						"_key": "results",
+						"answer": "Die meisten Menschen bemerken in den ersten Monaten Veränderungen, das Tempo hängt jedoch von Behandlung, Dosis, Therapietreue und individuellen Gesundheitsfaktoren ab. Deine Ärztin oder dein Arzt setzt zu Beginn realistische Erwartungen.",
+						"question": "Wie schnell sehe ich Ergebnisse?"
+					},
+					{
+						"_key": "appetite",
+						"answer": "Diese Behandlungen dämpfen den Appetit, sie nehmen ihn nicht weg. Die meisten Menschen essen kleinere Portionen und sind schneller satt, genießen ihre Mahlzeiten aber weiterhin.",
+						"question": "Verliere ich meinen Appetit vollständig oder kann ich weiterhin genießen?"
+					}
+				],
+				"lead": "Klare Antworten zu Behandlung, Eignung, Lieferung und laufender Unterstützung.",
+				"title": "Häufige Fragen."
+			},
+			"hero": {
+				"eyebrow": "Ärztlich begleitete Gewichtsabnahme für Männer",
+				"headlineLead": "Dein Weg zu dauerhaftem",
+				"headlineStruck": "perfekter Figur",
+				"headlineTail": "Wohlbefinden.",
+				"image": {
+					"_type": "image",
+					"alt": "Zwei Männer sitzen lachend an Cafétischen in einer sonnigen Altstadtgasse",
+					"asset": {
+						"_ref": "image-6a4ebc79ac578abaa5f7e51b0b22c481d7c94134-1684x934-webp",
+						"_type": "reference"
+					}
+				},
+				"lead": "Persönliche, ärztlich begleitete Gewichtsabnahme, die Männern hilft, sich gesünder und selbstbewusster zu fühlen und langfristig unterstützt zu werden.",
+				"mobileEyebrow": "Ärztlich begleitete Gewichtsabnahme",
+				"mobileHeadline": "Fühl dich gesünder. Leb selbstbewusster.",
+				"mobileLead": "Persönliche, ärztlich begleitete Gewichtsabnahme für dauerhaften Fortschritt.",
+				"primaryCta": "Eignung prüfen",
+				"secondaryCta": "Behandlungen entdecken"
+			},
+			"howItWorks": {
+				"caption": "Von der Beratung bis zur Lieferung, komplett online.",
+				"captionEyebrow": "Ärztlich begleitete Betreuung",
+				"image": {
+					"_type": "image",
+					"alt": "Eine Ärztin im Gespräch während einer Videoberatung",
+					"asset": {
+						"_ref": "image-42cdebf72103b4c68fc0164aaf49e98a43f7c5af-1623x969-webp",
+						"_type": "reference"
+					}
+				},
+				"lead": "Drei einfache Schritte, von der kurzen Online-Beratung bis zur diskreten Lieferung nach Hause.",
+				"steps": [
+					{
+						"_key": "step1",
+						"body": "Fülle den Online-Fragebogen aus, ohne Termin bei Arztpraxis oder Apotheke.",
+						"href": "/questionnaire",
+						"linkLabel": "Fragebogen starten",
+						"title": "Beantworte ein paar kurze Fragen."
+					},
+					{
+						"_key": "step2",
+						"body": "Unsere Ärzt:innen prüfen deine Krankengeschichte und finden die passende Behandlung für dich.",
+						"href": null,
+						"linkLabel": null,
+						"title": "Erhalte deine verschriebene Behandlung."
+					},
+					{
+						"_key": "step3",
+						"body": "Deine Behandlung kommt diskret verpackt direkt zu dir nach Hause.",
+						"href": null,
+						"linkLabel": null,
+						"title": "Deine Behandlung wird geliefert."
+					}
+				],
+				"title": "So funktioniert es."
+			},
+			"medicalFraming": {
+				"body": "Medikamentöses Abnehmen ist kein „Schummeln“. Stress, Hormone und Genetik können dein Gewicht beeinflussen. Solean gleicht die Ausgangslage aus.",
+				"factors": [
+					{
+						"_key": "stress",
+						"icon": "brain",
+						"label": "Stress"
+					},
+					{
+						"_key": "hormones",
+						"icon": "activity",
+						"label": "Hormone"
+					},
+					{
+						"_key": "genetics",
+						"icon": "dna",
+						"label": "Genetik"
+					}
+				],
+				"primaryCta": "Eignung prüfen",
+				"secondaryCta": "Behandlungen entdecken",
+				"title": "Abnehmen ist keine Frage der Motivation, sondern eine medizinische."
+			},
+			"projection": {
+				"comparisonLabel": "Nur Lebensstil",
+				"disclaimer": "Nur eine beispielhafte Prognose. Die tatsächlichen Ergebnisse hängen von Behandlung, Dosis, Therapietreue und individuellen Gesundheitsfaktoren ab.",
+				"lead": "Beispielhafte Gewichtsveränderung, wenn die Behandlung mit ärztlicher Begleitung kombiniert wird.",
+				"seriesLabel": "Mit Solean",
+				"tableCaption": "Modelliertes Gewicht zu jedem Zeitpunkt",
+				"tabsLabel": "Zeitraum der Prognose",
+				"title": "Voraussichtlicher Fortschritt mit Solean."
+			},
+			"resultsBand": {
+				"author": "Daniel M.",
+				"authorAvatar": {
+					"_type": "image",
+					"alt": "Daniel M.",
+					"asset": {
+						"_ref": "image-24dd7127bab31df1c3668264d5ae71de10565876-1254x1254-webp",
+						"_type": "reference"
+					}
+				},
+				"authorRole": "Verifiziertes Solean-Mitglied",
+				"benefits": [
+					{
+						"_key": "doctors",
+						"body": "Ärztliche Beurteilung und Verschreibung von zu Hause aus.",
+						"icon": "stethoscope",
+						"title": "Approbierte Ärzt:innen."
+					},
+					{
+						"_key": "plan",
+						"body": "Behandlung und Beratung, abgestimmt auf deine Gesundheit.",
+						"icon": "clipboard-check",
+						"title": "Ein Plan, der zu dir passt."
+					},
+					{
+						"_key": "support",
+						"body": "Fortlaufende medizinische und begleitende Unterstützung.",
+						"icon": "message-circle",
+						"title": "Unterstützung, die bleibt."
+					}
+				],
+				"cta": "Eignung prüfen",
+				"eyebrow": "Betreuung inklusive",
+				"image": {
+					"_type": "image",
+					"alt": "Eine Person in Sportkleidung macht eine Pause im Freien",
+					"asset": {
+						"_ref": "image-0325055aadccf2c1aa7b5cef0f5157867dd23a34-1335x1178-webp",
+						"_type": "reference"
+					}
+				},
+				"lead": "Ärztlich begleitete Behandlung, persönliche Beratung und fortlaufende Unterstützung für Fortschritte, die bleiben.",
+				"quote": "Zum ersten Mal fühlt sich Abnehmen strukturiert und machbar an, nicht wie noch eine Diät, die ich allein durchziehen muss.",
+				"reviewCta": "Bewertung schreiben",
+				"title": "Abnehmen, mit Betreuung von Anfang an."
+			},
+			"testimonialsSection": {
+				"lead": "Echte Erfahrungen von Mitgliedern, die Solean begleitet hat.",
+				"testimonials": [
+					{
+						"_id": "0Kx6dhY4cG5xUskekTruKt",
+						"kgLost": 22,
+						"memberLabel": "Solean-Mitglied",
+						"name": "Amy R.",
+						"photo": null,
+						"quote": "Endlich habe ich das Gefühl, meine Gesundheit im Griff zu haben. Die Unterstützung war persönlich, klar und auf den Alltag abgestimmt.",
+						"rating": 5,
+						"treatmentId": "wegovy",
+						"verified": true
+					},
+					{
+						"_id": "0Kx6dhY4cG5xUskekTruYB",
+						"kgLost": 17,
+						"memberLabel": "Solean-Mitglied",
+						"name": "Maya R.",
+						"photo": {
+							"_type": "image",
+							"alt": "Maya R.",
+							"asset": {
+								"_ref": "image-606e76f798227bb07686e3dd1205682a62b684a1-1185x1327-webp",
+								"_type": "reference"
+							}
+						},
+						"quote": "Dass sich eine Ärztin wirklich meine Vorgeschichte angesehen hat, hat mein Gefühl zum Start völlig verändert.",
+						"rating": 5,
+						"treatmentId": "mounjaro",
+						"verified": true
+					},
+					{
+						"_id": "GNi82xCo1eRS3egKAhKluf",
+						"kgLost": 14,
+						"memberLabel": "Solean-Mitglied",
+						"name": "Sarah T.",
+						"photo": null,
+						"quote": "Der Plan wirkte vom ersten Tag an machbar. Ich habe mehr Energie, mehr Selbstvertrauen und Unterstützung, wenn ich sie brauche.",
+						"rating": 5,
+						"treatmentId": "wegovy-pill",
+						"verified": true
+					},
+					{
+						"_id": "k5SsXVtg04B1Uu1ldd6B5t",
+						"kgLost": 19,
+						"memberLabel": "Solean-Mitglied",
+						"name": "Tom B.",
+						"photo": null,
+						"quote": "Dem Care-Team zwischen den Terminen schreiben zu können, hat mich durch den ersten Monat getragen.",
+						"rating": 5,
+						"treatmentId": "mounjaro",
+						"verified": true
+					},
+					{
+						"_id": "k5SsXVtg04B1Uu1ldd6BDs",
+						"kgLost": 11,
+						"memberLabel": "Solean-Mitglied",
+						"name": "Priya N.",
+						"photo": null,
+						"quote": "Keine Schlange in der Apotheke, keine unangenehmen Gespräche. Es kam diskret an und die Check-ins waren wirklich hilfreich.",
+						"rating": 4,
+						"treatmentId": "wegovy",
+						"verified": true
+					}
+				],
+				"title": "Echte Geschichten. Echte Ergebnisse."
+			},
+			"trustBenefits": [
+				{
+					"_key": "physicians",
+					"body": "Berate dich mit approbierten Mediziner:innen mit Erfahrung in der Männergesundheit.",
+					"icon": "stethoscope",
+					"title": "Approbierte Ärzt:innen."
+				},
+				{
+					"_key": "gdpr",
+					"body": "Deine persönlichen Daten und deine Behandlung bleiben in jeder Phase vertraulich.",
+					"icon": "shield-check",
+					"title": "DSGVO-konform & diskret."
+				},
+				{
+					"_key": "delivery",
+					"body": "Nach Verschreibung wird das Medikament von einer Partnerapotheke abgegeben und diskret geliefert.",
+					"icon": "package-check",
+					"title": "Diskreter Apothekenversand."
+				},
+				{
+					"_key": "digital",
+					"body": "Von der Beratung bis zur Nachsorge läuft der gesamte Prozess sicher online ab.",
+					"icon": "lock",
+					"title": "100 % digital & sicher."
+				}
+			]
+		},
+		"en": {
+			"articleTeaser": {
+				"body": "Compare results, side effects and how each weekly treatment works in our latest expert-reviewed guide.",
+				"cta": "Read the article",
+				"eyebrow": "Latest from Learn",
+				"title": "Mounjaro vs Wegovy."
+			},
+			"bento": {
+				"cards": [
+					{
+						"_key": "treatment",
+						"body": "Doctor-reviewed options tailored to your health and goals.",
+						"category": "treatment",
+						"eyebrow": "Treatment",
+						"image": {
+							"_type": "image",
+							"alt": "A dark green treatment box and an injection pen on soft fabric",
+							"asset": {
+								"_ref": "image-60103e1a0c1ea806ed8f83c9a2624c6517c193a2-1315x1196-webp",
+								"_type": "reference"
+							}
+						},
+						"title": "Treatment, chosen for you."
+					},
+					{
+						"_key": "care",
+						"body": "Personal guidance from consultation onward.",
+						"category": "clinical-care",
+						"eyebrow": "Clinical care",
+						"image": {
+							"_type": "image",
+							"alt": "A doctor smiling at her desk in front of a screen",
+							"asset": {
+								"_ref": "image-bdb991b038fb2df8e7b77739fc523ecd2938f589-1757x895-webp",
+								"_type": "reference"
+							}
+						},
+						"title": "Doctors who guide every decision."
+					},
+					{
+						"_key": "plan",
+						"body": "Track progress and stay on top of each step.",
+						"category": "plan",
+						"eyebrow": "Your plan",
+						"image": {
+							"_type": "image",
+							"alt": "A hand holding a phone showing treatment progress",
+							"asset": {
+								"_ref": "image-3fb6e63fdf895c0ae4b75dbea3be7a56e0201c3a-1756x895-webp",
+								"_type": "reference"
+							}
+						},
+						"title": "Everything in one clear place."
+					},
+					{
+						"_key": "support",
+						"body": "Questions, side effects and practical support.",
+						"category": "support",
+						"eyebrow": "Ongoing support",
+						"image": {
+							"_type": "image",
+							"alt": "A support worker wearing a headset at a desk",
+							"asset": {
+								"_ref": "image-681bd57bf6af0dbe55d8bfa641c2e8ebcf3ac373-1758x895-webp",
+								"_type": "reference"
+							}
+						},
+						"title": "Help throughout your journey."
+					},
+					{
+						"_key": "delivery",
+						"body": "Secure treatment delivery to your door.",
+						"category": "delivery",
+						"eyebrow": "Delivery",
+						"image": {
+							"_type": "image",
+							"alt": "A parcel being handed over at a front door",
+							"asset": {
+								"_ref": "image-ac6b77f4ead7e94ccab4d5a2edcfe3116242fd4c-1757x895-webp",
+								"_type": "reference"
+							}
+						},
+						"title": "Discreet delivery, direct to you."
+					}
+				],
+				"eyebrow": "The Solean approach",
+				"title": "Everything you need to move forward."
+			},
+			"clinicalTeam": {
+				"carouselLabel": "Clinical team",
+				"clinicians": [
+					{
+						"_id": "k5SsXVtg04B1Uu1ldczhdj",
+						"description": "Provides medical consultations, reviews your health profile and helps determine a safe, appropriate treatment plan.",
+						"name": "Dr. Juraj Galan",
+						"portrait": {
+							"_type": "image",
+							"alt": "Dr. Juraj Galan",
+							"asset": {
+								"_ref": "image-8d838266e3e7894551beae2d65d8cd22d2cba69d-1521x1034-webp",
+								"_type": "reference"
+							}
+						},
+						"role": "Consulting physician"
+					},
+					{
+						"_id": "0Kx6dhY4cG5xUskekTrtc2",
+						"description": "Offers practical, one-to-one coaching to help you build sustainable habits and stay on track throughout your journey.",
+						"name": "Gredel",
+						"portrait": {
+							"_type": "image",
+							"alt": "Gredel",
+							"asset": {
+								"_ref": "image-f9c9b399e5608478ee86b817116ef45c7deb5056-1526x1030-webp",
+								"_type": "reference"
+							}
+						},
+						"role": "Weight-loss coach"
+					},
+					{
+						"_id": "k5SsXVtg04B1Uu1ldd6AZ4",
+						"description": "Reviews treatment progress, answers medication questions and adjusts your care when clinically appropriate.",
+						"name": "Dr. Elias Voss",
+						"portrait": {
+							"_type": "image",
+							"alt": "Dr. Elias Voss",
+							"asset": {
+								"_ref": "image-e89cb86b059317b30201b0990a2df76e10252a6f-1526x1030-webp",
+								"_type": "reference"
+							}
+						},
+						"role": "Prescribing clinician"
+					}
+				],
+				"lead": "Your doctor helps identify the right treatment and supports you through every stage of your plan.",
+				"learnMore": "Learn more",
+				"title": "Doctors who stay with you."
+			},
+			"faq": {
+				"items": [
+					{
+						"_key": "safety",
+						"answer": "Weight-loss medicines are clinically tested and prescribed only when a doctor considers them suitable for you. Common side effects can include nausea, constipation, diarrhoea or reduced appetite, and they often improve as your body adjusts. Your clinician will explain the risks, monitor your progress and advise you if symptoms persist or feel severe.",
+						"question": "Are they safe, and what side effects should I expect?"
+					},
+					{
+						"_key": "regain",
+						"answer": "Some weight regain is common after stopping, which is why treatment is paired with coaching and habit support. Your clinician will discuss how to taper and what to expect before you make that decision.",
+						"question": "Will I regain weight if I stop taking it?"
+					},
+					{
+						"_key": "eligible",
+						"answer": "Eligibility depends on your health profile, your medical history and your current measurements. The online questionnaire collects what a clinician needs, and they confirm whether treatment is appropriate for you.",
+						"question": "Am I eligible?"
+					},
+					{
+						"_key": "privacy",
+						"answer": "Yes. Consultations happen online, your data is handled under GDPR, and medication arrives in discreet, unbranded packaging.",
+						"question": "I don’t want anyone to know I’m receiving weight-loss treatment. Can I keep it private?"
+					},
+					{
+						"_key": "price",
+						"answer": "Your plan covers the treatment itself, clinical review, and ongoing support from the care team. Optional extras such as coaching or a smart scale are priced separately and always shown before you pay.",
+						"question": "What’s included in the price?"
+					},
+					{
+						"_key": "results",
+						"answer": "Most people notice changes within the first few months, though the pace varies by treatment, dose, adherence and individual health factors. Your clinician sets realistic expectations at the start.",
+						"question": "How quickly will I see results?"
+					},
+					{
+						"_key": "appetite",
+						"answer": "These treatments reduce appetite rather than remove it. Most people eat smaller portions and feel full sooner, while still enjoying meals normally.",
+						"question": "Will I lose my appetite completely, or still be able to enjoy food?"
+					}
+				],
+				"lead": "Clear answers about treatment, eligibility, delivery and ongoing support.",
+				"title": "Frequently asked questions."
+			},
+			"hero": {
+				"eyebrow": "Doctor-led weight loss for men",
+				"headlineLead": "Your pathway to lasting",
+				"headlineStruck": "perfect shape",
+				"headlineTail": "happiness.",
+				"image": {
+					"_type": "image",
+					"alt": "Two men sitting and laughing at cafe tables in a sunny old-town street",
+					"asset": {
+						"_ref": "image-6a4ebc79ac578abaa5f7e51b0b22c481d7c94134-1684x934-webp",
+						"_type": "reference"
+					}
+				},
+				"lead": "Personalised, doctor-led weight-loss care designed to help men feel healthier, more confident and supported for the long term.",
+				"mobileEyebrow": "Doctor-led weight loss",
+				"mobileHeadline": "Feel healthier. Live more confidently.",
+				"mobileLead": "Personalised, doctor-led weight-loss care designed to support lasting progress.",
+				"primaryCta": "Check your eligibility",
+				"secondaryCta": "Explore treatments"
+			},
+			"howItWorks": {
+				"caption": "From consultation to delivery, entirely online.",
+				"captionEyebrow": "Doctor-led care",
+				"image": {
+					"_type": "image",
+					"alt": "A doctor talking during a video consultation",
+					"asset": {
+						"_ref": "image-42cdebf72103b4c68fc0164aaf49e98a43f7c5af-1623x969-webp",
+						"_type": "reference"
+					}
+				},
+				"lead": "Three simple steps, from a quick online consultation to treatment delivered discreetly to your door.",
+				"steps": [
+					{
+						"_key": "step1",
+						"body": "Take the online quiz, no GP or pharmacy visits required.",
+						"href": "/questionnaire",
+						"linkLabel": "Start questionnaire",
+						"title": "Answer quick questions."
+					},
+					{
+						"_key": "step2",
+						"body": "Our clinicians review your medical history and find the right treatment for you.",
+						"href": null,
+						"linkLabel": null,
+						"title": "Get prescribed treatment."
+					},
+					{
+						"_key": "step3",
+						"body": "Your treatment arrives in discreet packaging, direct to your door.",
+						"href": null,
+						"linkLabel": null,
+						"title": "Your treatment is delivered."
+					}
+				],
+				"title": "How it works."
+			},
+			"medicalFraming": {
+				"body": "Medicated weight loss isn’t ‘cheating’. Stress, hormones and genetics can all influence your weight. Solean evens the playing field.",
+				"factors": [
+					{
+						"_key": "stress",
+						"icon": "brain",
+						"label": "Stress"
+					},
+					{
+						"_key": "hormones",
+						"icon": "activity",
+						"label": "Hormones"
+					},
+					{
+						"_key": "genetics",
+						"icon": "dna",
+						"label": "Genetics"
+					}
+				],
+				"primaryCta": "Check your eligibility",
+				"secondaryCta": "Explore treatments",
+				"title": "Weight loss isn’t a motivational issue, it’s a medical one."
+			},
+			"projection": {
+				"comparisonLabel": "Lifestyle alone",
+				"disclaimer": "Illustrative projection only. Actual outcomes vary by treatment, dose, adherence and individual health factors.",
+				"lead": "Illustrative weight change when treatment is combined with clinical support.",
+				"seriesLabel": "With Solean",
+				"tableCaption": "Modelled weight at each milestone",
+				"tabsLabel": "Projection horizon",
+				"title": "Projected progress with Solean."
+			},
+			"resultsBand": {
+				"author": "Daniel M.",
+				"authorAvatar": {
+					"_type": "image",
+					"alt": "Daniel M.",
+					"asset": {
+						"_ref": "image-24dd7127bab31df1c3668264d5ae71de10565876-1254x1254-webp",
+						"_type": "reference"
+					}
+				},
+				"authorRole": "Verified Solean member",
+				"benefits": [
+					{
+						"_key": "doctors",
+						"body": "Clinical assessment and prescribing from home.",
+						"icon": "stethoscope",
+						"title": "Licensed doctors."
+					},
+					{
+						"_key": "plan",
+						"body": "Treatment and guidance tailored to your health.",
+						"icon": "clipboard-check",
+						"title": "A plan built around you."
+					},
+					{
+						"_key": "support",
+						"body": "Ongoing clinical and coaching support.",
+						"icon": "message-circle",
+						"title": "Support that stays with you."
+					}
+				],
+				"cta": "Check your eligibility",
+				"eyebrow": "Care built in",
+				"image": {
+					"_type": "image",
+					"alt": "A person in sportswear resting outdoors",
+					"asset": {
+						"_ref": "image-0325055aadccf2c1aa7b5cef0f5157867dd23a34-1335x1178-webp",
+						"_type": "reference"
+					}
+				},
+				"lead": "Doctor-led treatment, tailored guidance and ongoing support to help you make progress that lasts.",
+				"quote": "For the first time, weight loss feels structured and manageable, not like another diet I have to do alone.",
+				"reviewCta": "Leave a review",
+				"title": "Weight loss, with care built in."
+			},
+			"testimonialsSection": {
+				"lead": "Real experiences from members supported by Solean.",
+				"testimonials": [
+					{
+						"_id": "0Kx6dhY4cG5xUskekTruRX",
+						"kgLost": 22,
+						"memberLabel": "Solean member",
+						"name": "Amy R.",
+						"photo": null,
+						"quote": "I finally feel in control of my health. The support was personal, clear and built around real life.",
+						"rating": 5,
+						"treatmentId": "wegovy",
+						"verified": true
+					},
+					{
+						"_id": "k5SsXVtg04B1Uu1ldd6AvF",
+						"kgLost": 17,
+						"memberLabel": "Solean member",
+						"name": "Maya R.",
+						"photo": {
+							"_type": "image",
+							"alt": "Maya R.",
+							"asset": {
+								"_ref": "image-606e76f798227bb07686e3dd1205682a62b684a1-1185x1327-webp",
+								"_type": "reference"
+							}
+						},
+						"quote": "Having a clinician actually read my history changed how I felt about starting at all.",
+						"rating": 5,
+						"treatmentId": "mounjaro",
+						"verified": true
+					},
+					{
+						"_id": "k5SsXVtg04B1Uu1ldd6Ayn",
+						"kgLost": 14,
+						"memberLabel": "Solean member",
+						"name": "Sarah T.",
+						"photo": null,
+						"quote": "The plan felt achievable from day one. I have more energy, more confidence and support when I need it.",
+						"rating": 5,
+						"treatmentId": "wegovy-pill",
+						"verified": true
+					},
+					{
+						"_id": "0Kx6dhY4cG5xUskekTruqS",
+						"kgLost": 19,
+						"memberLabel": "Solean member",
+						"name": "Tom B.",
+						"photo": null,
+						"quote": "Being able to message the care team between reviews is what kept me going through the first month.",
+						"rating": 5,
+						"treatmentId": "mounjaro",
+						"verified": true
+					},
+					{
+						"_id": "0Kx6dhY4cG5xUskekTrv3k",
+						"kgLost": 11,
+						"memberLabel": "Solean member",
+						"name": "Priya N.",
+						"photo": null,
+						"quote": "No pharmacy queues, no awkward conversations. It arrived discreetly and the check-ins were genuinely useful.",
+						"rating": 4,
+						"treatmentId": "wegovy",
+						"verified": true
+					}
+				],
+				"title": "Real stories. Real results."
+			},
+			"trustBenefits": [
+				{
+					"_key": "physicians",
+					"body": "Consult with licensed medical professionals experienced in men’s health.",
+					"icon": "stethoscope",
+					"title": "Licensed physicians."
+				},
+				{
+					"_key": "gdpr",
+					"body": "Your personal data and treatment remain private at every stage of care.",
+					"icon": "shield-check",
+					"title": "GDPR compliant & discreet."
+				},
+				{
+					"_key": "delivery",
+					"body": "When prescribed, medication is dispensed by a trusted partner pharmacy and delivered discreetly.",
+					"icon": "package-check",
+					"title": "Discreet pharmacy delivery."
+				},
+				{
+					"_key": "digital",
+					"body": "From consultation to follow-up, the entire process happens securely online.",
+					"icon": "lock",
+					"title": "100% digital & secure."
+				}
+			]
+		}
+	},
+	"announcements": {
+		"de": {
+			"amount": "50 € Geschenk",
+			"mobileDetail": "Heute bestellen + 50 € Geschenk erhalten",
+			"mobileTitle": "WEGOVY PILLE — JETZT VERFÜGBAR",
+			"prefix": "Bestelle heute und erhalte ein kostenloses",
+			"suffix": ".",
+			"title": "WEGOVY PILLE JETZT VERFÜGBAR"
+		},
+		"en": {
+			"amount": "€50 gift",
+			"mobileDetail": "Order today + get a free €50 gift",
+			"mobileTitle": "WEGOVY PILL — NOW AVAILABLE",
+			"prefix": "Order today and get a free",
+			"suffix": ".",
+			"title": "WEGOVY PILL NOW AVAILABLE"
+		}
+	},
+	"testimonials": {
+		"de": [
+			{
+				"_id": "0Kx6dhY4cG5xUskekTruKt",
+				"kgLost": 22,
+				"memberLabel": "Solean-Mitglied",
+				"name": "Amy R.",
+				"photo": null,
+				"quote": "Endlich habe ich das Gefühl, meine Gesundheit im Griff zu haben. Die Unterstützung war persönlich, klar und auf den Alltag abgestimmt.",
+				"rating": 5,
+				"treatmentId": "wegovy",
+				"verified": true
+			},
+			{
+				"_id": "0Kx6dhY4cG5xUskekTruYB",
+				"kgLost": 17,
+				"memberLabel": "Solean-Mitglied",
+				"name": "Maya R.",
+				"photo": {
+					"_type": "image",
+					"alt": "Maya R.",
+					"asset": {
+						"_ref": "image-606e76f798227bb07686e3dd1205682a62b684a1-1185x1327-webp",
+						"_type": "reference"
+					}
+				},
+				"quote": "Dass sich eine Ärztin wirklich meine Vorgeschichte angesehen hat, hat mein Gefühl zum Start völlig verändert.",
+				"rating": 5,
+				"treatmentId": "mounjaro",
+				"verified": true
+			},
+			{
+				"_id": "GNi82xCo1eRS3egKAhKluf",
+				"kgLost": 14,
+				"memberLabel": "Solean-Mitglied",
+				"name": "Sarah T.",
+				"photo": null,
+				"quote": "Der Plan wirkte vom ersten Tag an machbar. Ich habe mehr Energie, mehr Selbstvertrauen und Unterstützung, wenn ich sie brauche.",
+				"rating": 5,
+				"treatmentId": "wegovy-pill",
+				"verified": true
+			},
+			{
+				"_id": "k5SsXVtg04B1Uu1ldd6B5t",
+				"kgLost": 19,
+				"memberLabel": "Solean-Mitglied",
+				"name": "Tom B.",
+				"photo": null,
+				"quote": "Dem Care-Team zwischen den Terminen schreiben zu können, hat mich durch den ersten Monat getragen.",
+				"rating": 5,
+				"treatmentId": "mounjaro",
+				"verified": true
+			},
+			{
+				"_id": "k5SsXVtg04B1Uu1ldd6BDs",
+				"kgLost": 11,
+				"memberLabel": "Solean-Mitglied",
+				"name": "Priya N.",
+				"photo": null,
+				"quote": "Keine Schlange in der Apotheke, keine unangenehmen Gespräche. Es kam diskret an und die Check-ins waren wirklich hilfreich.",
+				"rating": 4,
+				"treatmentId": "wegovy",
+				"verified": true
+			}
+		],
+		"en": [
+			{
+				"_id": "0Kx6dhY4cG5xUskekTruRX",
+				"kgLost": 22,
+				"memberLabel": "Solean member",
+				"name": "Amy R.",
+				"photo": null,
+				"quote": "I finally feel in control of my health. The support was personal, clear and built around real life.",
+				"rating": 5,
+				"treatmentId": "wegovy",
+				"verified": true
+			},
+			{
+				"_id": "0Kx6dhY4cG5xUskekTruqS",
+				"kgLost": 19,
+				"memberLabel": "Solean member",
+				"name": "Tom B.",
+				"photo": null,
+				"quote": "Being able to message the care team between reviews is what kept me going through the first month.",
+				"rating": 5,
+				"treatmentId": "mounjaro",
+				"verified": true
+			},
+			{
+				"_id": "0Kx6dhY4cG5xUskekTrv3k",
+				"kgLost": 11,
+				"memberLabel": "Solean member",
+				"name": "Priya N.",
+				"photo": null,
+				"quote": "No pharmacy queues, no awkward conversations. It arrived discreetly and the check-ins were genuinely useful.",
+				"rating": 4,
+				"treatmentId": "wegovy",
+				"verified": true
+			},
+			{
+				"_id": "k5SsXVtg04B1Uu1ldd6AvF",
+				"kgLost": 17,
+				"memberLabel": "Solean member",
+				"name": "Maya R.",
+				"photo": {
+					"_type": "image",
+					"alt": "Maya R.",
+					"asset": {
+						"_ref": "image-606e76f798227bb07686e3dd1205682a62b684a1-1185x1327-webp",
+						"_type": "reference"
+					}
+				},
+				"quote": "Having a clinician actually read my history changed how I felt about starting at all.",
+				"rating": 5,
+				"treatmentId": "mounjaro",
+				"verified": true
+			},
+			{
+				"_id": "k5SsXVtg04B1Uu1ldd6Ayn",
+				"kgLost": 14,
+				"memberLabel": "Solean member",
+				"name": "Sarah T.",
+				"photo": null,
+				"quote": "The plan felt achievable from day one. I have more energy, more confidence and support when I need it.",
+				"rating": 5,
+				"treatmentId": "wegovy-pill",
+				"verified": true
+			}
+		]
 	}
 }

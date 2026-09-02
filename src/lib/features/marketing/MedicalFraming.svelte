@@ -5,17 +5,19 @@
 	import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
 	import BrainIcon from '@lucide/svelte/icons/brain';
 	import DnaIcon from '@lucide/svelte/icons/dna';
-	import { medicalFraming, ROUTES, type MedicalFactor } from './content';
+	import { ROUTES } from './content';
+	import type { medicalFramingFrom } from './from-sanity';
 	import { SECTION_HEADING, SECTION_LEAD } from './type';
 
-	// Read during render so the copy follows the active locale.
-	const MEDICAL_FRAMING = $derived(medicalFraming());
+	const { framing }: { framing: ReturnType<typeof medicalFramingFrom> } = $props();
+
+	const MEDICAL_FRAMING = $derived(framing);
 
 	const ICONS = {
 		brain: BrainIcon,
 		activity: ActivityIcon,
 		dna: DnaIcon
-	} satisfies Record<MedicalFactor['icon'], unknown>;
+	};
 </script>
 
 <div>
@@ -26,7 +28,7 @@
 
 	<ul class="mt-7 flex flex-wrap gap-x-8 gap-y-4">
 		{#each MEDICAL_FRAMING.factors as factor (factor.label)}
-			{@const Icon = ICONS[factor.icon]}
+			{@const Icon = ICONS[factor.icon as keyof typeof ICONS]}
 			<li class="flex items-center gap-3">
 				<span class="flex size-9 items-center justify-center rounded-full bg-accent">
 					<Icon aria-hidden="true" class="size-4 text-foreground" />

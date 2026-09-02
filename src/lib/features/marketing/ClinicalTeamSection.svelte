@@ -4,13 +4,16 @@
 	import ClinicianCard from './ClinicianCard.svelte';
 	import { CONTAINER, SECTION_Y } from './container';
 	import { SECTION_HEADING, SECTION_LEAD } from './type';
-	import { clinicalTeam, clinicians } from './content';
+	import type { Clinician } from './content';
+	import type { HomePage } from '$lib/sanity/queries';
 
 	// Read during render so the copy follows the active locale.
-	const CLINICIANS = $derived(clinicians());
+	const { section, team }: { section: NonNullable<HomePage['clinicalTeam']>; team: readonly Clinician[] } = $props();
+
+	const CLINICIANS = $derived(team);
 
 	// Read during render so the copy follows the active locale.
-	const CLINICAL_TEAM = $derived(clinicalTeam());
+	const CLINICAL_TEAM = $derived(section);
 </script>
 
 <section class={[CONTAINER, SECTION_Y]} aria-label={CLINICAL_TEAM.title}>
@@ -34,7 +37,7 @@
 		<Carousel.Content class="mt-10 max-sm:order-2">
 			{#each CLINICIANS as clinician (clinician.name)}
 				<Carousel.Item class="basis-full md:basis-1/2 lg:basis-1/3">
-					<ClinicianCard {clinician} />
+					<ClinicianCard {clinician} learnMore={CLINICAL_TEAM.learnMore} />
 				</Carousel.Item>
 			{/each}
 		</Carousel.Content>

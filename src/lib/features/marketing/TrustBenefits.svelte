@@ -6,10 +6,11 @@
 	import StethoscopeIcon from '@lucide/svelte/icons/stethoscope';
 	import { CONTAINER, SECTION_Y } from './container';
 	import { CARD_HEADING } from './type';
-	import { trustBenefits, type TrustBenefit } from './content';
+	import type { TrustBenefit } from './content';
 
-	// Read during render so the copy follows the active locale.
-	const TRUST_BENEFITS = $derived(trustBenefits());
+	const { benefits }: { benefits: readonly TrustBenefit[] } = $props();
+
+	const TRUST_BENEFITS = $derived(benefits);
 
 	const ICONS = {
 		stethoscope: StethoscopeIcon,

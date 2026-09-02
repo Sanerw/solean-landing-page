@@ -4,7 +4,7 @@
 	import { Button } from '$lib/components/ui/button';
 	import * as NavigationMenu from '$lib/components/ui/navigation-menu';
 	import { CONTAINER } from './container';
-	import { hero, navItems, ROUTES } from './content';
+	import { navItems, ROUTES } from './content';
 
 	// Read during render so the labels follow the active locale.
 	const NAV_ITEMS = $derived(navItems());
@@ -16,7 +16,6 @@
 	import SyringeIcon from '@lucide/svelte/icons/syringe';
 
 	// Read during render so the copy follows the active locale.
-	const HERO = $derived(hero());
 
 	interface Props {
 		/** `overlay` sits inside the hero card on the scrim; `solid` is every other page. */
@@ -118,7 +117,7 @@
 				size="sm"
 				class="hidden rounded-full sm:inline-flex"
 			>
-				{HERO.primaryCta}
+				{m.hero_primary_cta()}
 			</Button>
 			<MobileNav {surface} />
 		</div>

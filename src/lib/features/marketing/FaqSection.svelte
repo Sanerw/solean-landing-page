@@ -2,10 +2,11 @@
 	import * as Accordion from '$lib/components/ui/accordion';
 	import { CONTAINER, SECTION_Y } from './container';
 	import { SECTION_HEADING, SECTION_LEAD } from './type';
-	import { faq } from './content';
+	import type { HomePage } from '$lib/sanity/queries';
 
-	// Read during render so the copy follows the active locale.
-	const FAQ = $derived(faq());
+	const { faq }: { faq: NonNullable<HomePage['faq']> } = $props();
+
+	const FAQ = $derived(faq);
 </script>
 
 <section class={[CONTAINER, SECTION_Y]} aria-label={FAQ.title}>

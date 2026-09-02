@@ -1,10 +1,15 @@
 <script lang="ts">
 	import { Button } from '$lib/components/ui/button';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
-	import { articleTeaser } from './content';
+	import { ROUTES } from './content';
+	import { localizeHref } from '$lib/paraglide/runtime';
+	import type { HomePage } from '$lib/sanity/queries';
 
 	// Read during render so the copy follows the active locale.
-	const ARTICLE_TEASER = $derived(articleTeaser());
+	const { teaser }: { teaser: NonNullable<HomePage['articleTeaser']> } = $props();
+
+	// `/learn` resolves the newest article from Sanity, so a rename cannot orphan this card.
+	const ARTICLE_TEASER = $derived({ ...teaser, href: localizeHref(ROUTES.learn) });
 </script>
 
 <div data-testid="hero-article-teaser" class="w-full max-w-80">

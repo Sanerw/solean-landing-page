@@ -10,19 +10,20 @@
 	import StethoscopeIcon from '@lucide/svelte/icons/stethoscope';
 	import { BLEED, CONTAINER, PANEL_GAP_Y, PANEL_ROUND, PANEL_Y } from './container';
 	import { SECTION_HEADING, SECTION_LEAD } from './type';
-	import { RATING, resultsBand, ROUTES, type MiniBenefit } from './content';
+	import { RATING, ROUTES, type MiniBenefit } from './content';
+	import type { resultsBandFrom } from './from-sanity';
 	import { formatScore, type Rating } from './reviews';
 
 	interface Props {
+		band: ReturnType<typeof resultsBandFrom>;
 		/** Read on the server; null when Reviews.io could not be reached. */
 		rating: Rating | null;
 	}
 
-	let { rating }: Props = $props();
+	let { rating, band }: Props = $props();
 
 	const shown = $derived(rating ?? RATING.fallback);
-	// Read during render so the copy follows the active locale.
-	const RESULTS_BAND = $derived(resultsBand());
+	const RESULTS_BAND = $derived(band);
 
 	const ICONS = {
 		stethoscope: StethoscopeIcon,
@@ -82,15 +83,20 @@
 				     and dissolves on all four edges, so the negative margin lets it run into the
 				     panel's own padding instead of stopping on a card edge. -->
 				<div class="relative lg:col-span-4 lg:-mt-6 lg:-mb-16">
-					<enhanced:img
-						src={RESULTS_BAND.image}
-						alt=""
-						aria-hidden="true"
-						loading="lazy"
-						decoding="async"
-						sizes="(min-width: 1024px) 40vw, 100vw"
-						class="w-full mix-blend-multiply"
-					/>
+					{#if RESULTS_BAND.image}
+						<img
+							src={RESULTS_BAND.image.src}
+							srcset={RESULTS_BAND.image.srcset}
+							width={RESULTS_BAND.image.width}
+							height={RESULTS_BAND.image.height}
+							alt=""
+							aria-hidden="true"
+							loading="lazy"
+							decoding="async"
+							sizes="(min-width: 1024px) 40vw, 100vw"
+							class="w-full mix-blend-multiply"
+						/>
+					{/if}
 					<div aria-hidden="true" class="absolute inset-0 bg-highlight/10"></div>
 					<div
 						aria-hidden="true"
@@ -133,15 +139,20 @@
 							<p>&ldquo;{RESULTS_BAND.quote}&rdquo;</p>
 						</blockquote>
 						<figcaption class="mt-5 flex items-center gap-3">
-							<enhanced:img
-								src={RESULTS_BAND.authorAvatar}
-								alt=""
-								aria-hidden="true"
-								loading="lazy"
-								decoding="async"
-								sizes="40px"
-								class="size-10 shrink-0 rounded-full object-cover"
-							/>
+							{#if RESULTS_BAND.authorAvatar}
+								<img
+									src={RESULTS_BAND.authorAvatar.src}
+									srcset={RESULTS_BAND.authorAvatar.srcset}
+									width={RESULTS_BAND.authorAvatar.width}
+									height={RESULTS_BAND.authorAvatar.height}
+									alt=""
+									aria-hidden="true"
+									loading="lazy"
+									decoding="async"
+									sizes="40px"
+									class="size-10 shrink-0 rounded-full object-cover"
+								/>
+							{/if}
 							<span class="text-sm">
 								<span class="block font-semibold text-foreground">{RESULTS_BAND.author}</span>
 								<span class="block text-xs text-muted-foreground">{RESULTS_BAND.authorRole}</span>

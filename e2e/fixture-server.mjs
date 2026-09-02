@@ -203,15 +203,30 @@ async function sanityQuery(url) {
 		}
 	};
 
-	const { slug, articles } = JSON.parse(await readFile(SANITY_FIXTURE_PATH, 'utf8'));
-	const article = articles[param('$language')] ?? null;
+	const fixture = JSON.parse(await readFile(SANITY_FIXTURE_PATH, 'utf8'));
+	const language = param('$language');
+
+	// The announcement bar and the landing page both address the home page by its fixed id, so
+	// the narrower projection has to be recognised first.
+	if (query.includes('.announcement')) {
+		return fixture.announcements[language] ?? null;
+	}
+	if (query.includes('homePage-')) {
+		return fixture.homePages[language] ?? null;
+	}
+
+	if (query.includes('_type == "testimonial"')) {
+		return fixture.testimonials[language] ?? [];
+	}
+
+	const article = fixture.articles[language] ?? null;
 
 	// The `/learn` redirects ask only for the newest article's slug.
 	if (query.includes('[0].slug.current')) {
-		return article ? slug : null;
+		return article ? fixture.slug : null;
 	}
 
-	return article && param('$slug') === slug ? article : null;
+	return article && param('$slug') === fixture.slug ? article : null;
 }
 
 const server = createServer(async (request, response) => {

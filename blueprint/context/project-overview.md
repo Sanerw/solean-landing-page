@@ -1,6 +1,6 @@
 # Solean - Project Overview
 
-<!-- blueprint:source-hash 8496017ddec6630f5549694a15fc51599873d054459dd0adb10181b500ba2abd -->
+<!-- blueprint:source-hash 6048be744071f09b3a4f41634973f68fae4368f6595e5df686ac3a79db477adf -->
 
 > The Solean front end: a marketing site and a doctor-led GLP-1 funnel that runs
 > on RxScale's Anamnesis API and hands the order to Shopify by creating a cart
@@ -37,7 +37,7 @@ happens inside RxScale, not on a Solean screen.
 
 ## Features
 
-Twenty in build-plan order. Nineteen are complete; 20 is in progress.
+Twenty-one in build-plan order. All twenty-one are complete.
 
 1. **Design system and core UI components** (done) - semantic tokens, two fonts,
    radii, brand foundations, thirteen adapted shadcn primitives on a showcase at
@@ -94,12 +94,17 @@ Twenty in build-plan order. Nineteen are complete; 20 is in progress.
     to the bare path. The questionnaire's own questions stay RxScale's and stay
     German, so an English visitor reaches a German funnel by decision.
 
-20. **Learn article from Sanity** (in progress) - the Mounjaro vs Wegovy page
+20. **Learn article from Sanity** (done) - the Mounjaro vs Wegovy page
     reads its content from the Content Lake instead of
     `src/lib/features/learn/content.ts`, in both languages, so an editor can
     publish a second article without a deploy. The hero becomes a Sanity-hosted
-    image served through the CDN. The related-guides block stays a fixture, and
-    the marketing homepage keeps its fixtures entirely.
+    image served through the CDN. The related-guides block stays a fixture.
+21. **Landing page from Sanity** (done) - every section reads its copy and its
+    photographs from the Content Lake, in both languages. The images moved too,
+    which meant rebuilding the `enhanced:img` width ladders as `w`-descriptor CDN
+    srcsets and teaching the image-density test to measure a cross-origin file it
+    cannot fetch. Payment and carrier logos stay in the repository: chrome, not
+    home page content.
 
 Dropped to the deferred backlog with this plan change: Solean's own checkout
 (account, shipping, payment), the pricing engine, add-on selection, and the
@@ -172,8 +177,8 @@ Paraglide compiles the message catalogues from it at build time.
 | --- | --- | --- |
 | `article` | `language`, `title`, `shortTitle`, `slug`, `category`, `summary`, `hero` (image + alt), `reviewer` (ref to `clinician`), `reviewedAt`, `nextReviewAt`, `readTimeMinutes`, `quickAnswer[]`, `keyTakeaways[]`, `treatmentProfiles[]`, `howTheyWork[]`, `expectedResults[]`, `sideEffects{intro, items[]}`, `faqs[]`, `sourcesSummary`, `sources[]`, `related[]`, SEO overrides | `/learn/blog/[slug]` |
 | `clinician` | `language`, `name`, `role`, `description`, `portrait` | as an article's reviewer |
-| `homePage` | localized singleton at `homePage-de` / `homePage-en`: announcement, hero, article teaser, FAQ | nothing yet |
-| `testimonial` | `language`, `name`, `memberLabel`, `quote`, `kgLost`, `rating`, `treatmentId`, `verified`, `photo` | nothing yet |
+| `homePage` | localized singleton at `homePage-de` / `homePage-en`: announcement, hero, article teaser, trust band, bento, results band, projection wording, medical framing, stories, team, FAQ, and every photograph | `/` |
+| `testimonial` | `language`, `name`, `memberLabel`, `quote`, `kgLost`, `rating`, `treatmentId`, `verified`, `photo` | `/` and the questionnaire's motivation screen |
 
 `treatmentProfile` is an object inside an article, not a document: it names a
 treatment by the catalogue id (`mounjaro`, `wegovy`, `wegovy-pill`) and adds the
@@ -181,11 +186,31 @@ article's own framing (active ingredient, manufacturer, frequency, main action,
 manufacturer note). Treatments themselves stay in `src/lib/domain`, because they
 are commerce data keyed to Shopify variants.
 
-### Content fixtures (static)
+### What stays in the repository
 
-`Testimonial`, `FaqItem` and the marketing content module stay typed fixtures,
-imported directly by the landing page's components, until the homepage migrates.
+Not everything on a page is editorial content, and three things stay in code on
+purpose.
+
+- **The chart's figures.** `projection` in Sanity carries the section's wording
+  only; the reference weights and horizons are geometry.
+- **Payment and carrier logos.** Brand marks in the footer, on every page.
+- **The treatment catalogue.** Commerce data keyed to Shopify variants, in
+  `src/lib/domain`. Editorial content names a treatment by its id.
+
 The Learn article's related-guides block also stays a fixture for now.
+
+### Two rules the Sanity boundary imposes
+
+- **Clean every string used as logic.** Preview mode embeds invisible source
+  markers in all content so the Presentation tool can offer click-to-edit. They
+  are harmless in prose and fatal in a lookup key: an icon name, a bento
+  category, a catalogue id, an href. `$lib/sanity/plain` strips them, and the
+  mappers apply it at the boundary so no component has to remember. Skipping it
+  once cost the previewed page every photograph and every card colour.
+- **Guard every section.** Sections are optional fields, so the page renders each
+  one only when its content is there. An editor who empties a section, or
+  publishes a draft written before a field existed, loses that section and
+  nothing else.
 
 ### Removed in feature 9
 

@@ -1,17 +1,3 @@
-/*
- * `imgSizes` is what switches an import from `x` descriptors to `w` descriptors, which is
- * what makes each component's own `sizes` attribute mean anything. The plugin never reads
- * the value (see `get_widths` in @sveltejs/enhanced-img), only whether it is set, so `100vw`
- * is written here as the honest widest slot each of these images fills rather than as a
- * restatement of the breakpoint list its component already declares.
- *
- * An explicit `w` list replaces the plugin's device ladder, which starts at 540 and would
- * still hand a 132px bento row card or a 40px avatar something several times too wide. Each
- * list therefore carries a small step and stops near its own source width, because the
- * plugin only appends that width when it is choosing the ladder itself. A value above the
- * source is dropped rather than upscaled, so a re-exported asset degrades to the next
- * candidate down instead of breaking.
- */
 import { m } from '$lib/paraglide/messages';
 import { localizeHref } from '$lib/paraglide/runtime';
 import { TREATMENTS } from '$lib/domain';
@@ -22,25 +8,13 @@ import {
 	type ProjectionHorizon,
 	type ProjectionPoint
 } from '$lib/components/brand/projection';
-import careVisual from '$lib/assets/panels/care-visual-enhanced.webp?enhanced&imgSizes=100vw&quality=90';
-import clinicalCarePanel from '$lib/assets/panels/clinical-care-enhanced.webp?enhanced&imgSizes=100vw&w=400;540;768;1080;1366;1536&quality=90';
-import deliveryPanel from '$lib/assets/panels/delivery-enhanced.webp?enhanced&imgSizes=100vw&w=400;540;768;1080;1366;1536&quality=90';
-import howItWorksPanel from '$lib/assets/panels/how-it-works-enhanced.webp?enhanced&imgSizes=100vw&quality=90';
-import planPanel from '$lib/assets/panels/plan-enhanced.webp?enhanced&imgSizes=100vw&w=400;540;768;1080;1366;1536&quality=90';
-import supportPanel from '$lib/assets/panels/support-enhanced.webp?enhanced&imgSizes=100vw&w=400;540;768;1080;1366;1536&quality=90';
-import treatmentPanel from '$lib/assets/panels/treatment-card-enhanced.webp?enhanced&imgSizes=100vw&w=400;540;768;1080;1315&quality=90';
 import amexLogo from '$lib/assets/logos/american-express.png';
 import dhlLogo from '$lib/assets/logos/dhl.png';
 import euPharmacyBadge from '$lib/assets/logos/eu-pharmacy-badge.png';
 import klarnaLogo from '$lib/assets/logos/klarna.png';
 import mastercardLogo from '$lib/assets/logos/mastercard.png';
 import visaLogo from '$lib/assets/logos/visa.png';
-import danielPortrait from '$lib/assets/people/daniel-m-enhanced.webp?enhanced&imgSizes=40px&w=40;80;120&quality=90';
-import eliasVossPortrait from '$lib/assets/people/elias-voss-enhanced.webp?enhanced&imgSizes=100vw&quality=90';
-import gredelPortrait from '$lib/assets/people/gredel-enhanced.webp?enhanced&imgSizes=100vw&quality=90';
-import jurajGalanPortrait from '$lib/assets/people/juraj-galan-enhanced.webp?enhanced&imgSizes=100vw&w=120;240;540;768;1080;1366&quality=90';
-import storyPhoto from '$lib/assets/people/story-photo-enhanced.webp?enhanced&imgSizes=100vw&quality=90';
-import type { Picture } from '@sveltejs/enhanced-img';
+import type { SanityPicture } from '$lib/sanity/image';
 
 /**
  * Every cross-feature destination in one place. Features 6 and 7 make these real by
@@ -118,53 +92,6 @@ export interface AnnouncementContent {
 	mobile: { title: string; detail: string };
 }
 
-export function announcement(): AnnouncementContent {
-	return {
-		title: m.announcement_title(),
-		prefix: m.announcement_prefix(),
-		amount: m.announcement_amount(),
-		suffix: m.announcement_suffix(),
-		mobile: {
-			title: m.announcement_mobile_title(),
-			detail: m.announcement_mobile_detail()
-		}
-	};
-}
-
-export interface MobileHeroContent {
-	eyebrow: string;
-	headline: string;
-	lead: string;
-}
-
-export interface HeroContent {
-	eyebrow: string;
-	headlineLead: string;
-	headlineStruck: string;
-	headlineTail: string;
-	lead: string;
-	primaryCta: string;
-	secondaryCta: string;
-	mobile: MobileHeroContent;
-}
-
-export function hero(): HeroContent {
-	return {
-		eyebrow: m.hero_eyebrow(),
-		headlineLead: m.hero_headline_lead(),
-		headlineStruck: m.hero_headline_struck(),
-		headlineTail: m.hero_headline_tail(),
-		lead: m.hero_lead(),
-		primaryCta: m.hero_primary_cta(),
-		secondaryCta: m.hero_secondary_cta(),
-		mobile: {
-			eyebrow: m.hero_mobile_eyebrow(),
-			headline: m.hero_mobile_headline(),
-			lead: m.hero_mobile_lead()
-		}
-	};
-}
-
 /**
  * The figures shown when Reviews.io cannot be reached. They are the platform's own, read from
  * the profile on 2026-09-01, not invented: the badge prints the platform's name, so a made-up
@@ -177,32 +104,10 @@ export const RATING = {
 	href: 'https://www.reviews.io/company-reviews/store/www.solean.com'
 } as const;
 
-export function articleTeaser() {
-	return {
-		eyebrow: m.teaser_eyebrow(),
-		title: m.teaser_title(),
-		body: m.teaser_body(),
-		cta: m.teaser_cta(),
-		// `/learn` rather than a slug: it resolves the newest article from Sanity, so renaming an
-		// article in the Studio cannot leave this card pointing at a 404. Localised for the same
-		// reason the nav entry is.
-		href: localizeHref(ROUTES.learn)
-	};
-}
-
 export interface TrustBenefit {
 	icon: 'stethoscope' | 'shield-check' | 'package-check' | 'lock';
 	title: string;
 	body: string;
-}
-
-export function trustBenefits(): readonly TrustBenefit[] {
-	return [
-		{ icon: 'stethoscope', title: m.trust_physicians_title(), body: m.trust_physicians_body() },
-		{ icon: 'shield-check', title: m.trust_gdpr_title(), body: m.trust_gdpr_body() },
-		{ icon: 'package-check', title: m.trust_delivery_title(), body: m.trust_delivery_body() },
-		{ icon: 'lock', title: m.trust_digital_title(), body: m.trust_digital_body() }
-	];
 }
 
 export interface FooterColumn {
@@ -304,7 +209,7 @@ export interface BentoCard {
 	title: string;
 	body: string;
 	/** Set by the imagery step; a card without art still renders its copy. */
-	image?: Picture;
+	image?: SanityPicture;
 }
 
 /**
@@ -320,78 +225,10 @@ export const BENTO_GROUNDS: Record<BentoCard['category'], string> = {
 	delivery: 'bg-surface-delivery'
 };
 
-/** The narrow artboard gives this section a visible heading; the wide one does not. */
-export function bentoSection() {
-	return { eyebrow: m.bento_section_eyebrow(), title: m.bento_section_title() };
-}
-
-export function bentoCards(): readonly BentoCard[] {
-	return [
-		{
-			category: 'treatment',
-			eyebrow: m.bento_treatment_eyebrow(),
-			title: m.bento_treatment_title(),
-			body: m.bento_treatment_body(),
-			image: treatmentPanel
-		},
-		{
-			category: 'clinical-care',
-			eyebrow: m.bento_care_eyebrow(),
-			title: m.bento_care_title(),
-			body: m.bento_care_body(),
-			image: clinicalCarePanel
-		},
-		{
-			category: 'plan',
-			eyebrow: m.bento_plan_eyebrow(),
-			title: m.bento_plan_title(),
-			body: m.bento_plan_body(),
-			image: planPanel
-		},
-		{
-			category: 'support',
-			eyebrow: m.bento_support_eyebrow(),
-			title: m.bento_support_title(),
-			body: m.bento_support_body(),
-			image: supportPanel
-		},
-		{
-			category: 'delivery',
-			eyebrow: m.bento_delivery_eyebrow(),
-			title: m.bento_delivery_title(),
-			body: m.bento_delivery_body(),
-			image: deliveryPanel
-		}
-	];
-}
-
 export interface MiniBenefit {
 	icon: 'stethoscope' | 'clipboard-check' | 'message-circle';
 	title: string;
 	body: string;
-}
-
-export function resultsBand() {
-	return {
-		/** The narrow artboard names this block above its heading; the wide one does not. */
-		eyebrow: m.results_eyebrow(),
-		benefits: [
-			{ icon: 'stethoscope', title: m.results_doctors_title(), body: m.results_doctors_body() },
-			{ icon: 'clipboard-check', title: m.results_plan_title(), body: m.results_plan_body() },
-			{ icon: 'message-circle', title: m.results_support_title(), body: m.results_support_body() }
-		] satisfies MiniBenefit[],
-		title: m.results_title(),
-		lead: m.results_lead(),
-		cta: m.results_cta(),
-		quote: m.results_quote(),
-		// A person's name, not a word: the same in both languages.
-		author: 'Daniel M.',
-		authorRole: m.results_author_role(),
-		authorAvatar: danielPortrait,
-		/** No destination exists until a review platform is chosen, so this stays inert. */
-		reviewCta: m.results_review_cta(),
-		image: careVisual
-	};
 }
 
 export interface HowItWorksStep {
@@ -400,27 +237,6 @@ export interface HowItWorksStep {
 	/** Only the first step links onward; the rest are descriptive. */
 	href?: string;
 	linkLabel?: string;
-}
-
-export function howItWorks() {
-	return {
-		title: m.how_title(),
-		lead: m.how_lead(),
-		image: howItWorksPanel,
-		captionEyebrow: m.how_caption_eyebrow(),
-		caption: m.how_caption(),
-		// Numbering is the list index at render time, so a step cannot carry a stale numeral.
-		steps: [
-			{
-				title: m.how_step1_title(),
-				body: m.how_step1_body(),
-				href: ROUTES.questionnaire,
-				linkLabel: m.how_step1_link()
-			},
-			{ title: m.how_step2_title(), body: m.how_step2_body() },
-			{ title: m.how_step3_title(), body: m.how_step3_body() }
-		] satisfies HowItWorksStep[]
-	};
 }
 
 /**
@@ -440,38 +256,6 @@ export const PROJECTION_HORIZONS: readonly ProjectionHorizon[] = PROJECTION_HORI
 
 export const DEFAULT_HORIZON_MONTH = 6;
 
-export function projection() {
-	return {
-		title: m.projection_title(),
-		lead: m.projection_lead(),
-		seriesLabel: m.projection_series_label(),
-		comparisonLabel: m.projection_comparison_label(),
-		tabsLabel: m.projection_tabs_label(),
-		disclaimer: m.projection_disclaimer(),
-		tableCaption: m.projection_table_caption()
-	};
-}
-
-export interface MedicalFactor {
-	icon: 'brain' | 'activity' | 'dna';
-	label: string;
-}
-
-export function medicalFraming() {
-	return {
-		title: m.framing_title(),
-		// The artboard credits a competitor here; project-plan.md section 9 rules that
-		// competitor names become Solean.
-		body: m.framing_body(),
-		factors: [
-			{ icon: 'brain', label: m.framing_factor_stress() },
-			{ icon: 'activity', label: m.framing_factor_hormones() },
-			{ icon: 'dna', label: m.framing_factor_genetics() }
-		] satisfies MedicalFactor[],
-		primaryCta: m.framing_primary_cta(),
-		secondaryCta: m.framing_secondary_cta()
-	};
-}
 
 export interface Testimonial {
 	name: string;
@@ -483,118 +267,14 @@ export interface Testimonial {
 	treatmentId: string;
 	verified: boolean;
 	/** Present on the photo variant only. */
-	photo?: Picture;
-}
-
-/**
- * The artboard gives all three people the same 22 kg and repeats one treatment across
- * two of them. project-plan.md section 9 rules that duplication out, so each story here
- * carries its own figure and the treatments span the catalogue.
- */
-/** Names are people, not words: they read the same in both languages. */
-export function testimonials(): readonly Testimonial[] {
-	return [
-		{
-			name: 'Amy R.',
-			memberLabel: m.member_label(),
-			kgLost: 22,
-			quote: m.testimonial_amy(),
-			rating: 5,
-			treatmentId: 'wegovy',
-			verified: true
-		},
-		{
-			name: 'Maya R.',
-			memberLabel: m.member_label(),
-			kgLost: 17,
-			quote: m.testimonial_maya(),
-			rating: 5,
-			treatmentId: 'mounjaro',
-			verified: true,
-			photo: storyPhoto
-		},
-		{
-			name: 'Sarah T.',
-			memberLabel: m.member_label(),
-			kgLost: 14,
-			quote: m.testimonial_sarah(),
-			rating: 5,
-			treatmentId: 'wegovy-pill',
-			verified: true
-		},
-		{
-			name: 'Tom B.',
-			memberLabel: m.member_label(),
-			kgLost: 19,
-			quote: m.testimonial_tom(),
-			rating: 5,
-			treatmentId: 'mounjaro',
-			verified: true
-		},
-		{
-			name: 'Priya N.',
-			memberLabel: m.member_label(),
-			kgLost: 11,
-			quote: m.testimonial_priya(),
-			rating: 4,
-			treatmentId: 'wegovy',
-			verified: true
-		}
-	];
-}
-
-export function testimonialsSection() {
-	return {
-		title: m.stories_title(),
-		lead: m.stories_lead(),
-		carouselLabel: m.stories_carousel_label(),
-		weightLostLabel: m.stories_weight_lost(),
-		verifiedLabel: m.stories_verified()
-	};
+	photo?: SanityPicture;
 }
 
 export interface Clinician {
 	name: string;
 	role: string;
 	description: string;
-	portrait?: Picture;
-}
-
-/** The reviewer the Learn article credits, so it is named once and reused. */
-export function jurajGalan(): Clinician {
-	return {
-		name: 'Dr. Juraj Galan',
-		role: m.clinician_galan_role(),
-		description: m.clinician_galan_description(),
-		portrait: jurajGalanPortrait
-	};
-}
-
-export function clinicians(): readonly Clinician[] {
-	return [
-		jurajGalan(),
-		{
-			name: 'Gredel',
-			role: m.clinician_gredel_role(),
-			description: m.clinician_gredel_description(),
-			portrait: gredelPortrait
-		},
-		{
-			name: 'Dr. Elias Voss',
-			role: m.clinician_voss_role(),
-			description: m.clinician_voss_description(),
-			portrait: eliasVossPortrait
-		}
-	];
-}
-
-export function clinicalTeam() {
-	return {
-		title: m.team_title(),
-		lead: m.team_lead(),
-		carouselLabel: m.team_carousel_label(),
-		learnMore: m.team_learn_more()
-	};
+	portrait?: SanityPicture;
 }
 
 export interface FaqItem {
@@ -602,18 +282,3 @@ export interface FaqItem {
 	answer: string;
 }
 
-export function faq() {
-	return {
-		title: m.faq_title(),
-		lead: m.faq_lead(),
-		items: [
-			{ question: m.faq_safety_q(), answer: m.faq_safety_a() },
-			{ question: m.faq_regain_q(), answer: m.faq_regain_a() },
-			{ question: m.faq_eligible_q(), answer: m.faq_eligible_a() },
-			{ question: m.faq_privacy_q(), answer: m.faq_privacy_a() },
-			{ question: m.faq_price_q(), answer: m.faq_price_a() },
-			{ question: m.faq_results_q(), answer: m.faq_results_a() },
-			{ question: m.faq_appetite_q(), answer: m.faq_appetite_a() }
-		] satisfies FaqItem[]
-	};
-}

@@ -6,10 +6,12 @@
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 	import { BLEED, CONTAINER, PANEL_GAP_Y, PANEL_ROUND, PANEL_Y } from './container';
 	import { CARD_HEADING, SECTION_HEADING, SECTION_LEAD } from './type';
-	import { howItWorks } from './content';
+	import type { howItWorksFrom } from './from-sanity';
 
 	// Read during render so the copy follows the active locale.
-	const HOW_IT_WORKS = $derived(howItWorks());
+	const { howItWorks }: { howItWorks: ReturnType<typeof howItWorksFrom> } = $props();
+
+	const HOW_IT_WORKS = $derived(howItWorks);
 
 	/** The artboard's foot button is the step's own link, not a second destination. */
 	const primaryStep = $derived(HOW_IT_WORKS.steps.find((step) => step.href && step.linkLabel));
@@ -20,15 +22,20 @@
 		<div class={CONTAINER}>
 			<div class="grid gap-10 lg:grid-cols-2 lg:items-center">
 				<div class="relative">
-					<enhanced:img
-						src={HOW_IT_WORKS.image}
-						alt=""
-						aria-hidden="true"
-						loading="lazy"
-						decoding="async"
-						sizes="(min-width: 1024px) 50vw, 100vw"
-						class="w-full rounded-xl object-cover"
-					/>
+					{#if HOW_IT_WORKS.image}
+						<img
+							src={HOW_IT_WORKS.image.src}
+							srcset={HOW_IT_WORKS.image.srcset}
+							width={HOW_IT_WORKS.image.width}
+							height={HOW_IT_WORKS.image.height}
+							alt=""
+							aria-hidden="true"
+							loading="lazy"
+							decoding="async"
+							sizes="(min-width: 1024px) 50vw, 100vw"
+							class="w-full rounded-xl object-cover"
+						/>
+					{/if}
 					<!-- Caption chip sits on the card ground, not on the artwork, so its contrast does
 					     not depend on whichever image ends up behind it. -->
 					<div class="mt-4 flex items-start gap-3 rounded-lg bg-card p-4 sm:absolute sm:inset-x-4 sm:bottom-4 sm:mt-0">

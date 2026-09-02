@@ -4,20 +4,25 @@
 	import { SUB_HEADING } from './type';
 	import {
 		DEFAULT_HORIZON_MONTH,
-		projection,
 		PROJECTION_COMPARISON,
 		PROJECTION_HORIZONS,
 		PROJECTION_SERIES
 	} from './content';
 	import MedicalFraming from './MedicalFraming.svelte';
+	import type { HomePage } from '$lib/sanity/queries';
+	import type { medicalFramingFrom } from './from-sanity';
 	import ProjectionChart from '$lib/components/brand/ProjectionChart.svelte';
-
-	// Read during render so the copy follows the active locale.
-	const PROJECTION = $derived(projection());
 
 	// The one piece of state in the section. Everything the chart draws is derived from it
 	// through the geometry module, so there is no second copy to fall out of step.
 	let horizon = $state(String(DEFAULT_HORIZON_MONTH));
+
+	const {
+		projection,
+		framing
+	}: { projection: NonNullable<HomePage['projection']>; framing: ReturnType<typeof medicalFramingFrom> } = $props();
+
+	const PROJECTION = $derived(projection);
 </script>
 
 <section class={[CONTAINER, SECTION_Y]} aria-label={PROJECTION.title}>
@@ -66,7 +71,7 @@
 		</div>
 
 		<div class="max-sm:order-1">
-			<MedicalFraming />
+			<MedicalFraming {framing} />
 		</div>
 	</div>
 </section>

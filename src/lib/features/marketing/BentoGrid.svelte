@@ -3,13 +3,17 @@
 	import * as Carousel from '$lib/components/ui/carousel';
 	import { reveal } from '$lib/actions/reveal';
 	import BentoCard from './BentoCard.svelte';
-	import { bentoCards, bentoSection } from './content';
+	import type { BentoCard as BentoCardContent } from './content';
+	import type { HomePage } from '$lib/sanity/queries';
 	import { BLEED, CONTAINER } from './container';
 	import { SUB_HEADING } from './type';
 
 	// Read during render so the copy follows the active locale.
-	const BENTO_SECTION = $derived(bentoSection());
-	const cards = $derived(bentoCards());
+	const { section, bentoCards }: { section: NonNullable<HomePage['bento']>; bentoCards: readonly BentoCardContent[] } =
+		$props();
+
+	const BENTO_SECTION = $derived(section);
+	const cards = $derived(bentoCards);
 	const tall = $derived(cards[0]);
 	const rest = $derived(cards.slice(1));
 

@@ -11,8 +11,10 @@ import type { LayoutLoad } from './$types';
  * handled by the boundary above it, which would take the whole app's error page instead of
  * the questionnaire's own screen.
  */
-export const load: LayoutLoad = async ({ fetch, depends }) => {
+export const load: LayoutLoad = async ({ fetch, depends, data }) => {
 	depends('rxscale:questionnaire');
 
-	return { questionnaire: await fetchQuestionnaire(fetch, questionnaireUid()) };
+	// `data` is the server load's, and a universal load replaces rather than merges it, so the
+	// stories have to be carried through by hand.
+	return { ...data, questionnaire: await fetchQuestionnaire(fetch, questionnaireUid()) };
 };

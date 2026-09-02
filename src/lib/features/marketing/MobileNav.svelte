@@ -7,14 +7,13 @@
 	import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
 	import MenuIcon from '@lucide/svelte/icons/menu';
 	import XIcon from '@lucide/svelte/icons/x';
-	import { hero, navItems, ROUTES } from './content';
+	import { navItems, ROUTES } from './content';
 
 	// Read during render so the labels follow the active locale.
 	const NAV_ITEMS = $derived(navItems());
 	import LanguageSelect from './LanguageSelect.svelte';
 
 	// Read during render so the copy follows the active locale.
-	const HERO = $derived(hero());
 
 	interface Props {
 		surface?: 'default' | 'dark';
@@ -132,7 +131,7 @@
 				class="w-full rounded-full"
 				onclick={() => (open = false)}
 			>
-				{HERO.primaryCta}
+				{m.hero_primary_cta()}
 				<ArrowRightIcon aria-hidden="true" class="size-4" />
 			</Button>
 			<LanguageSelect display="full" showIcon surface="dark" class="self-start" />

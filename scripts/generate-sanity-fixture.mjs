@@ -23,33 +23,52 @@ const projectId = env.PUBLIC_SANITY_PROJECT_ID;
 const dataset = env.PUBLIC_SANITY_DATASET;
 const apiVersion = env.PUBLIC_SANITY_API_VERSION;
 
-// Read the query out of the app rather than restating it, so the fixture cannot drift from the
-// projection the page actually asks for.
+// Read the queries out of the app rather than restating them, so the fixture cannot drift from
+// the projections the pages actually ask for.
 const queries = readFileSync(resolve(root, 'src/lib/sanity/queries.ts'), 'utf8');
-const match = queries.match(/export const articleQuery = defineQuery\(`([\s\S]*?)`\);/);
-if (!match) throw new Error('Could not find articleQuery in src/lib/sanity/queries.ts');
-const articleQuery = match[1];
+function query(name) {
+	const match = queries.match(new RegExp(`export const ${name} = defineQuery\\(\\s*\`([\\s\\S]*?)\`\\s*\\);`));
+	if (!match) throw new Error(`Could not find ${name} in src/lib/sanity/queries.ts`);
+	return match[1];
+}
 
+const articleQuery = query('articleQuery');
 const SLUG = 'mounjaro-vs-wegovy';
 
-async function run(language) {
+async function run(groq, params) {
 	const url = new URL(`https://${projectId}.api.sanity.io/v${apiVersion}/data/query/${dataset}`);
-	url.searchParams.set('query', articleQuery);
-	url.searchParams.set('$slug', JSON.stringify(SLUG));
-	url.searchParams.set('$language', JSON.stringify(language));
+	url.searchParams.set('query', groq);
+	for (const [name, value] of Object.entries(params)) {
+		url.searchParams.set(`$${name}`, JSON.stringify(value));
+	}
 
 	const response = await fetch(url);
-	if (!response.ok) throw new Error(`${language}: ${response.status} ${await response.text()}`);
-
-	const { result } = await response.json();
-	if (!result) throw new Error(`${language}: no article at "${SLUG}"`);
-	return result;
+	if (!response.ok) throw new Error(`${response.status} ${await response.text()}`);
+	return (await response.json()).result;
 }
 
 const articles = {};
-for (const language of ['de', 'en']) articles[language] = await run(language);
+const homePages = {};
+const testimonials = {};
+const announcements = {};
+
+for (const language of ['de', 'en']) {
+	articles[language] = await run(articleQuery, { slug: SLUG, language });
+	if (!articles[language]) throw new Error(`${language}: no article at "${SLUG}"`);
+
+	homePages[language] = await run(query('homePageQuery'), { language });
+	if (!homePages[language]) throw new Error(`${language}: no home page`);
+
+	// Projected by its own query, because the bar renders above every marketing page.
+	announcements[language] = await run(query('announcementQuery'), { language });
+
+	testimonials[language] = await run(query('testimonialsQuery'), { language });
+}
 
 const out = resolve(root, 'e2e/fixtures/sanity-articles.json');
 mkdirSync(dirname(out), { recursive: true });
-writeFileSync(out, JSON.stringify({ slug: SLUG, articles }, null, '\t') + '\n');
-console.log(`wrote ${out} (de + en)`);
+writeFileSync(
+	out,
+	JSON.stringify({ slug: SLUG, articles, homePages, announcements, testimonials }, null, '\t') + '\n'
+);
+console.log(`wrote ${out} (article, home page and testimonials, de + en)`);

@@ -3,22 +3,22 @@
 	import StarRating from '$lib/components/brand/StarRating.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
-	// Reused rather than restated: duplicated testimonials are a recorded reference defect,
-	// and the learn feature already sets the precedent for reading marketing content fixtures.
-	import { testimonials } from '$lib/features/marketing/content';
+	import { storiesFrom } from '$lib/features/marketing/from-sanity';
+	import type { SanityTestimonial } from '$lib/sanity/queries';
 	import { motivationInterstitial } from './interstitial-content';
 
 	// Read during render so the copy follows the active locale.
 	const COPY = $derived(motivationInterstitial());
 
-	// Read during render so the copy follows the active locale.
-	const TESTIMONIALS = $derived(testimonials());
-
 	interface Props {
 		oncontinue: () => void;
+		/** Reused rather than restated: duplicated testimonials are a recorded reference defect. */
+		stories: readonly SanityTestimonial[];
 	}
 
-	let { oncontinue }: Props = $props();
+	let { oncontinue, stories }: Props = $props();
+
+	const TESTIMONIALS = $derived(storiesFrom(stories));
 
 	// Continuing is a client-side navigation, so before hydration this button would do nothing
 	// at all. Disabled until it works, like every other action in the questionnaire.
@@ -49,8 +49,9 @@
 -->
 <article class="mt-4 flex flex-col gap-3 rounded-lg bg-surface-warm p-4 sm:flex-row sm:items-center">
 	{#if story.photo}
-		<enhanced:img
-			src={story.photo}
+		<img
+			src={story.photo.src}
+			srcset={story.photo.srcset}
 			alt=""
 			decoding="async"
 			sizes="80px"

@@ -1,46 +1,51 @@
 <script lang="ts">
-	import heroImage from '$lib/assets/hero-enhanced.webp?enhanced&imgSizes=100vw&quality=75';
 	import { Button } from '$lib/components/ui/button';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 	import type { Rating } from './reviews';
 	import { CONTAINER } from './container';
-	import { hero, ROUTES } from './content';
+	import { ROUTES } from './content';
+	import type { HomePage } from '$lib/sanity/queries';
+	import type { SanityPicture } from '$lib/sanity/image';
 	import HeroArticleTeaser from './HeroArticleTeaser.svelte';
 	import HeroRatingBadge from './HeroRatingBadge.svelte';
 	import SiteHeader from './SiteHeader.svelte';
 
-	// Read during render so the copy follows the active locale.
-	const HERO = $derived(hero());
-
 	interface Props {
+		hero: NonNullable<HomePage['hero']>;
+		/** The hero photograph, already resolved to a Sanity CDN srcset. */
+		image: SanityPicture | undefined;
+		articleTeaser: HomePage['articleTeaser'];
 		/** Read on the server; null when Reviews.io could not be reached. */
 		rating: Rating | null;
 	}
 
-	let { rating }: Props = $props();
+	let { rating, hero, articleTeaser, image }: Props = $props();
 
-	const heroAvifSrcset = heroImage.sources.avif;
-	const heroPreloadHref =
-		heroAvifSrcset.split(',').at(-1)?.trim().split(/\s+/)[0] ?? heroImage.img.src;
+	const HERO = $derived(hero);
+
 	// Below lg the frame is taller than the photograph, so object-cover scales the asset up
 	// until it covers the height and crops the overhanging width away. A width-shaped 100vw
 	// there buys a candidate about a third of what the frame actually draws, which is what
 	// made the narrow hero soft: ask for the whole asset and let the crop discard the rest.
-	const heroSizes = `(min-width: 1024px) 100vw, ${heroImage.img.w}px`;
+	const heroSizes = $derived(`(min-width: 1024px) 100vw, ${image?.width ?? 0}px`);
+	const heroPreloadHref = $derived(image?.src);
 </script>
 
 <svelte:head>
-	<!-- Match the picture's preferred format, candidates and sizes so this request is reused
-	     when the hero markup is parsed instead of causing a second image download. -->
-	<link
-		rel="preload"
-		as="image"
-		href={heroPreloadHref}
-		imagesrcset={heroAvifSrcset}
-		imagesizes={heroSizes}
-		type="image/avif"
-		fetchpriority="high"
-	/>
+	{#if image}
+		<!-- Match the picture's candidates and sizes so this request is reused when the hero
+		     markup is parsed instead of causing a second image download. No `type` any more:
+		     the CDN picks AVIF or WebP by content negotiation, so the format is not known here
+		     the way it was when the build produced the candidates. -->
+		<link
+			rel="preload"
+			as="image"
+			href={heroPreloadHref}
+			imagesrcset={image.srcset}
+			imagesizes={heroSizes}
+			fetchpriority="high"
+		/>
+	{/if}
 </svelte:head>
 
 <!-- The narrow reference runs the photograph to the viewport edge; the card gutter and
@@ -52,14 +57,19 @@
 	>
 		<!-- One asset, cropped by object-position rather than a second source: the narrow
 		     frame keeps the right of the photograph, which is where the subject sits. -->
-		<enhanced:img
-			src={heroImage}
-			alt=""
-			aria-hidden="true"
-			sizes={heroSizes}
-			fetchpriority="high"
-			class="absolute inset-0 -z-10 size-full object-cover object-[86%_center] sm:object-center"
-		/>
+		{#if image}
+			<img
+				src={image.src}
+				srcset={image.srcset}
+				width={image.width}
+				height={image.height}
+				alt=""
+				aria-hidden="true"
+				sizes={heroSizes}
+				fetchpriority="high"
+				class="absolute inset-0 -z-10 size-full object-cover object-[86%_center] sm:object-center"
+			/>
+		{/if}
 
 		<!-- Each artboard darkens differently, so each is followed rather than averaged. The
 		     wide one lays a flat wash under a 28-to-72 percent scrim; the narrow one carries
@@ -82,7 +92,7 @@
 				<p
 					class="inline-block rounded-full border border-background/30 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-background sm:px-4 sm:py-1.5"
 				>
-					<span class="sm:hidden">{HERO.mobile.eyebrow}</span>
+					<span class="sm:hidden">{HERO.mobileEyebrow}</span>
 					<span class="hidden sm:inline">{HERO.eyebrow}</span>
 				</p>
 
@@ -92,7 +102,7 @@
 				>
 					<!-- The narrow frame drops the struck phrase: at this measure the rule breaks
 					     across lines and reads as two struck words rather than one struck idea. -->
-					<span class="sm:hidden">{HERO.mobile.headline}</span>
+					<span class="sm:hidden">{HERO.mobileHeadline}</span>
 					<span class="hidden sm:inline">
 						{HERO.headlineLead}
 						<!-- A real <s>, so the "not this, but that" meaning survives without the styling. -->
@@ -106,7 +116,7 @@
 				</h1>
 
 				<p class="mt-4 max-w-2xl text-base text-background/85 sm:mx-auto md:text-lg">
-					<span class="sm:hidden">{HERO.mobile.lead}</span>
+					<span class="sm:hidden">{HERO.mobileLead}</span>
 					<span class="hidden sm:inline">{HERO.lead}</span>
 				</p>
 
@@ -135,7 +145,9 @@
 			<div class="flex flex-col items-start gap-6 pt-2 md:flex-row md:items-end md:justify-between">
 				<HeroRatingBadge {rating} />
 				<div class="hidden sm:block">
-					<HeroArticleTeaser />
+					{#if articleTeaser}
+						<HeroArticleTeaser teaser={articleTeaser} />
+					{/if}
 				</div>
 			</div>
 		</div>

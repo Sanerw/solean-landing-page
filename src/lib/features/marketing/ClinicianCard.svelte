@@ -1,15 +1,14 @@
 <script lang="ts">
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
-	import { clinicalTeam, type Clinician } from './content';
-
-	// Read during render so the copy follows the active locale.
-	const CLINICAL_TEAM = $derived(clinicalTeam());
+	import type { Clinician } from './content';
 
 	interface Props {
 		clinician: Clinician;
+		/** The section's own label, passed down so the card does not reach for page content. */
+		learnMore: string;
 	}
 
-	let { clinician }: Props = $props();
+	let { clinician, learnMore }: Props = $props();
 </script>
 
 <article class="flex h-full flex-col overflow-hidden rounded-xl bg-surface-warm">
@@ -18,8 +17,11 @@
 		     the height before the file loads, and squares up the three portraits, which are
 		     exported at slightly different sizes and would otherwise size the carousel cards
 		     unequally. -->
-		<enhanced:img
-			src={clinician.portrait}
+		<img
+			src={clinician.portrait.src}
+					srcset={clinician.portrait.srcset}
+					width={clinician.portrait.width}
+					height={clinician.portrait.height}
 			alt=""
 			aria-hidden="true"
 			loading="lazy"
@@ -35,7 +37,7 @@
 		<!-- Individual profile pages are not designed, so this is inert text rather than a
 		     link that would promise a page that does not exist. -->
 		<span class="mt-auto inline-flex items-center gap-1 pt-6 text-sm font-semibold text-text-tertiary">
-			{CLINICAL_TEAM.learnMore}
+			{learnMore}
 			<ArrowRightIcon aria-hidden="true" class="size-4" />
 		</span>
 	</div>

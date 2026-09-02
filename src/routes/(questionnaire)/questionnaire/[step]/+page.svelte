@@ -219,7 +219,7 @@
 					<RecommendationScreen anamnesisUid={questionnaireSession.anamnesisUid} {email} />
 				{:else if planStep?.kind === 'interlude'}
 					{#if planStep.variant === 'motivation'}
-						<MotivationInterstitial oncontinue={advance} />
+						<MotivationInterstitial oncontinue={advance} stories={data.stories} />
 					{:else if planStep.variant === 'projection'}
 						<ProjectionInterstitial {weightKg} weightStepHref={weightHref} oncontinue={advance} />
 					{/if}
