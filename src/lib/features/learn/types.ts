@@ -1,5 +1,5 @@
 import type { Treatment } from '$lib/domain';
-import type { Clinician, FaqItem } from '$lib/features/marketing/content';
+import type { FaqItem } from '$lib/features/marketing/content';
 
 export type ArticleSectionId =
 	| 'quick-answer'
@@ -26,14 +26,19 @@ export interface ArticleTreatmentProfile {
 	manufacturerBody: string;
 }
 
-export interface ArticleSource {
-	label: string;
-	href?: string;
+/**
+ * The doctor credited on an article. Deliberately not the marketing `Clinician`: that one
+ * carries an `enhanced:img` import object built at compile time, and an article's reviewer
+ * arrives from Sanity as a URL. The clinical-team carousel keeps its optimised images.
+ */
+export interface ArticleReviewer {
+	name: string;
+	role: string;
+	portraitUrl: string | null;
 }
 
-export interface RelatedArticlePreview {
-	category: string;
-	title: string;
+export interface ArticleSource {
+	label: string;
 	href?: string;
 }
 
@@ -51,7 +56,7 @@ export interface Article {
 		alt: string;
 	};
 	review: {
-		reviewer: Clinician;
+		reviewer: ArticleReviewer;
 		updatedAt: string;
 		nextReviewAt: string;
 		readTimeMinutes: number;
@@ -71,5 +76,4 @@ export interface Article {
 	manufacturers: readonly [ArticleTreatmentProfile, ArticleTreatmentProfile];
 	faqs: readonly FaqItem[];
 	sources: readonly ArticleSource[];
-	related: readonly RelatedArticlePreview[];
 }

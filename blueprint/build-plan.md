@@ -415,6 +415,14 @@ claims are not approved production content.
     redirects from the interim paths. Last, because every surface must already
     exist in both languages before the bare path changes what it serves.
 
+- [x] 20. **Learn article from Sanity** - the Mounjaro vs Wegovy page reads its
+  content from the Content Lake instead of `src/lib/features/learn/content.ts`,
+  in both languages, so an editor can publish a second article without a deploy.
+  The hero becomes a Sanity-hosted image served through the CDN, which is the
+  trade that makes a new article possible without a build. The related-guides
+  block stays on its fixture for now, and the marketing homepage keeps its
+  fixtures entirely; it moves separately.
+
 ## Testing
 
 **Decided, then deferred at 9a.** The plan was to run `/tests` before feature 9;

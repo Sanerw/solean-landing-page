@@ -2,6 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 import {
 	FIXTURE_PORT,
 	FIXTURE_PRESCRIPTION_VARIANT_ID,
+	FIXTURE_SANITY_API_HOST,
 	FIXTURE_SHOP_IDENTIFIER,
 	FIXTURE_STORE_DOMAIN,
 	FIXTURE_UID,
@@ -54,7 +55,10 @@ export default defineConfig({
 				SHOPIFY_VARIANT_ID: FIXTURE_VARIANT_ID,
 				// The recommendation, served by the same fixture. Without a shop identifier the
 				// call is not made at all and every plan would come from the fallback.
-				PUBLIC_RXSCALE_SHOP_IDENTIFIER: FIXTURE_SHOP_IDENTIFIER
+				PUBLIC_RXSCALE_SHOP_IDENTIFIER: FIXTURE_SHOP_IDENTIFIER,
+				// The Learn article's content. Without this the run would read the live Content
+				// Lake, and an editorial change in the Studio could turn the suite red.
+				PUBLIC_SANITY_API_HOST: FIXTURE_SANITY_API_HOST
 			}
 		}
 	]

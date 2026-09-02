@@ -4,7 +4,8 @@
 	import { BLEED } from '$lib/features/marketing/container';
 	import SiteHeader from '$lib/features/marketing/SiteHeader.svelte';
 	import { CONTAINER } from '$lib/features/marketing/container';
-	import { FEATURED_ARTICLE_SLUG, ROUTES } from '$lib/features/marketing/content';
+	import { ROUTES } from '$lib/features/marketing/content';
+	import { localizeHref } from '$lib/paraglide/runtime';
 </script>
 
 <div class={[BLEED, 'sm:py-3']}>
@@ -22,7 +23,12 @@
 		{m.learn_error_body()}
 	</p>
 	<div class="mt-8 flex flex-wrap justify-center gap-3">
-		<Button href={ROUTES.learnArticle(FEATURED_ARTICLE_SLUG)}>{m.learn_error_cta()}</Button>
-		<Button href={ROUTES.home} variant="outline">Return home</Button>
+		<!--
+			Points at `/learn`, which resolves the newest article from Sanity, rather than at a
+			slug this page would have to hardcode. A renamed article used to send the reader from
+			one 404 to another.
+		-->
+		<Button href={localizeHref(ROUTES.learn)}>{m.learn_error_cta()}</Button>
+		<Button href={localizeHref(ROUTES.home)} variant="outline">Return home</Button>
 	</div>
 </section>

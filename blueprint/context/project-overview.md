@@ -1,6 +1,6 @@
 # Solean - Project Overview
 
-<!-- blueprint:source-hash 407529267d49df1d4ab4087a54b3ca0503ced3583816d752884f3d8a9e61fa4e -->
+<!-- blueprint:source-hash 8496017ddec6630f5549694a15fc51599873d054459dd0adb10181b500ba2abd -->
 
 > The Solean front end: a marketing site and a doctor-led GLP-1 funnel that runs
 > on RxScale's Anamnesis API and hands the order to Shopify by creating a cart
@@ -37,7 +37,7 @@ happens inside RxScale, not on a Solean screen.
 
 ## Features
 
-Nineteen in build-plan order. All nineteen are complete.
+Twenty in build-plan order. Nineteen are complete; 20 is in progress.
 
 1. **Design system and core UI components** (done) - semantic tokens, two fonts,
    radii, brand foundations, thirteen adapted shadcn primitives on a showcase at
@@ -94,6 +94,13 @@ Nineteen in build-plan order. All nineteen are complete.
     to the bare path. The questionnaire's own questions stay RxScale's and stay
     German, so an English visitor reaches a German funnel by decision.
 
+20. **Learn article from Sanity** (in progress) - the Mounjaro vs Wegovy page
+    reads its content from the Content Lake instead of
+    `src/lib/features/learn/content.ts`, in both languages, so an editor can
+    publish a second article without a deploy. The hero becomes a Sanity-hosted
+    image served through the CDN. The related-guides block stays a fixture, and
+    the marketing homepage keeps its fixtures entirely.
+
 Dropped to the deferred backlog with this plan change: Solean's own checkout
 (account, shipping, payment), the pricing engine, add-on selection, and the
 doctor review and order status screens.
@@ -125,6 +132,7 @@ and medical answers to RxScale, who own storage, retention, and clinical review.
 | Recommendation | RxScale | Which treatments and doses the answers allow, with the Shopify variant and price of each. Read on the screen and again on the order, never cached |
 | Questionnaire uid, store domain, variant id, question names | Config | One module per concern. Nothing on the checkout path is a secret |
 | Order, payment, prescription, delivery | Shopify, then RxScale by webhook | Not modelled here. RxScale is never told about the order by us |
+| Learn article and its reviewer | Sanity | Published editorial copy, one document per language. Read at request time, never cached past the response |
 
 ### steps[] (Solean)
 
@@ -149,10 +157,35 @@ Display only. Shopify owns the amount charged.
 - Read by the landing page bento and the learn comparison table. No longer
   selected by the user: the recommendation is one configured SKU.
 
+### Editorial content (Sanity, from feature 20)
+
+Project `tzq5b2my`, dataset `production`. The Studio is standalone in
+`../studio-solean`, never embedded in a route. Sanity holds published editorial
+copy only: no answers, nothing personal, nothing from the funnel.
+
+Document-level i18n via `@sanity/document-internationalization`: one document per
+language, linked by a `translation.metadata` document, so every query filters on
+`language`. The locale list stays in `project.inlang/settings.json`, because
+Paraglide compiles the message catalogues from it at build time.
+
+| Type | Fields | Read by |
+| --- | --- | --- |
+| `article` | `language`, `title`, `shortTitle`, `slug`, `category`, `summary`, `hero` (image + alt), `reviewer` (ref to `clinician`), `reviewedAt`, `nextReviewAt`, `readTimeMinutes`, `quickAnswer[]`, `keyTakeaways[]`, `treatmentProfiles[]`, `howTheyWork[]`, `expectedResults[]`, `sideEffects{intro, items[]}`, `faqs[]`, `sourcesSummary`, `sources[]`, `related[]`, SEO overrides | `/learn/blog/[slug]` |
+| `clinician` | `language`, `name`, `role`, `description`, `portrait` | as an article's reviewer |
+| `homePage` | localized singleton at `homePage-de` / `homePage-en`: announcement, hero, article teaser, FAQ | nothing yet |
+| `testimonial` | `language`, `name`, `memberLabel`, `quote`, `kgLost`, `rating`, `treatmentId`, `verified`, `photo` | nothing yet |
+
+`treatmentProfile` is an object inside an article, not a document: it names a
+treatment by the catalogue id (`mounjaro`, `wegovy`, `wegovy-pill`) and adds the
+article's own framing (active ingredient, manufacturer, frequency, main action,
+manufacturer note). Treatments themselves stay in `src/lib/domain`, because they
+are commerce data keyed to Shopify variants.
+
 ### Content fixtures (static)
 
-`Clinician`, `Testimonial`, `FaqItem`, `Article` - typed, imported directly by
-marketing and editorial components.
+`Testimonial`, `FaqItem` and the marketing content module stay typed fixtures,
+imported directly by the landing page's components, until the homepage migrates.
+The Learn article's related-guides block also stays a fixture for now.
 
 ### Removed in feature 9
 
@@ -172,8 +205,22 @@ the checkout and order status Solean no longer builds.
 | **shadcn-svelte** (`luma`) | Behavior and accessibility layer, all primitives adapted |
 | **survey-core** | Headless questionnaire engine: branching, validation, the `data` shape. No SurveyJS renderer, no SurveyJS theme |
 | **RxScale API** | Anamnesis v4 and Public API v2. Docs at `https://docs.rxscale.com`, also an MCP server |
+| **Sanity** | Editorial content. Standalone Studio in `../studio-solean`; `@sanity/sveltekit` here for the client, preview mode and Visual Editing |
 | **Lucide** | Icons |
 | **pnpm** | Package manager |
+
+**Two rules bind every Sanity import.** `@sanity/sveltekit` has a single entry
+point that also carries Sanity UI's stylesheet, and that stylesheet declares a
+`sui` cascade layer plus a `:where(html, body, button)` reset.
+
+- Nothing that renders on an ordinary page may import it eagerly. Pages read
+  Sanity data through `$lib/sanity/LiveQuery.svelte`, which renders the server
+  load's data and only reaches for `useQuery` behind a dynamic import when
+  preview is on. The root layout loads the preview providers the same way.
+- `layout.css` declares `@layer sui, sui.global` above the Tailwind import.
+  Layers rank by first declaration, so without that line Sanity's layer is
+  declared last, outranks every Tailwind utility, and strips the padding, gaps
+  and radii off the page.
 
 ### Architecture
 
@@ -377,6 +424,11 @@ adapter part way through a build.
 | `SHOPIFY_STOREFRONT_API_VERSION` | server only, optional | defaults to `2025-01` |
 | `PUBLIC_RXSCALE_QUESTIONNAIRE_UID` | public | the questionnaire to fetch |
 | `PUBLIC_RXSCALE_SHOP_IDENTIFIER` | public | the shop the recommendation is keyed by. The storefront hostname (`solean.com`), not the myshopify domain, which is refused |
+| `PUBLIC_SANITY_PROJECT_ID` | public | the Content Lake project, `tzq5b2my` |
+| `PUBLIC_SANITY_DATASET` | public | `production` |
+| `PUBLIC_SANITY_API_VERSION` | public | pinned, not floating |
+| `PUBLIC_SANITY_STUDIO_URL` | public | where the Presentation tool lives, for the click-to-edit overlays |
+| `SANITY_API_READ_TOKEN` | server only | reads drafts. Without it the site serves published content and preview stays off, which is not an error |
 
 > TODO: set the variables in the Vercel project and run a deploy. Handle it
 > through `/release vercel`.

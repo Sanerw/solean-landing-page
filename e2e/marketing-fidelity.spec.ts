@@ -390,7 +390,11 @@ test('the mobile menu opens as the reference full-screen panel', async ({ page }
 
 	// Destinations and inert state are unchanged: Treatments and About Us promise nothing.
 	await expect(home).toHaveAttribute('href', '/');
-	await expect(panel.getByRole('link', { name: /Learn/ })).toHaveAttribute('href', '/learn');
+	// Prefixed where the others are not, and deliberately: `/learn` is a server redirect that
+	// resolves the newest article from Sanity, and it reads the language off the path. An
+	// unprefixed link would land an English reader on the German article. The rest stay bare
+	// because they render in whatever locale the client already holds.
+	await expect(panel.getByRole('link', { name: /Learn/ })).toHaveAttribute('href', '/en/learn');
 	await expect(panel.getByRole('link', { name: /Treatments/ })).toHaveCount(0);
 	await expect(panel.getByRole('link', { name: /About Us/ })).toHaveCount(0);
 

@@ -52,13 +52,18 @@
 				</p>
 
 				<div class="mt-8 flex items-center gap-3 text-sm text-muted-foreground">
-					{#if article.review.reviewer.portrait}
-						<enhanced:img
-							src={article.review.reviewer.portrait}
+					{#if article.review.reviewer.portraitUrl}
+						<!--
+							A plain img, not enhanced:img: the portrait comes from Sanity's CDN as a URL,
+							and enhanced:img needs an asset it can import at build time. The CDN sizes it
+							instead, and 2x covers the retina case the sizes attribute used to.
+						-->
+						<img
+							src={article.review.reviewer.portraitUrl}
+							srcset="{article.review.reviewer.portraitUrl}&dpr=2 2x"
 							alt=""
 							loading="lazy"
 							decoding="async"
-							sizes="40px"
 							aria-hidden="true"
 							class="size-10 rounded-full object-cover"
 							width="40"

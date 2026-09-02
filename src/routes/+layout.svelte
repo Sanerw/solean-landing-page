@@ -10,8 +10,26 @@
 	import { page } from '$app/state';
 	import { alternatesFor } from '$lib/i18n/alternates';
 	import { entersQuestionnaire } from '$lib/navigation/view-transition';
+	import type { LayoutProps } from './$types';
 
-	let { children } = $props();
+	let { children, data }: LayoutProps = $props();
+
+	// Destructured once at setup: the value only changes on a full load, because enabling
+	// preview is a redirect through `/preview/enable` rather than a client-side transition.
+	// svelte-ignore state_referenced_locally
+	const { previewEnabled } = data;
+
+	/**
+	 * Loaded only once preview is on, never at module scope, and that includes the client, whose
+	 * module imports the same entry point. `@sanity/sveltekit` has a single entry point that also
+	 * carries the Visual Editing overlay and Sanity UI's stylesheet, whose rules are unlayered and
+	 * so outrank every Tailwind utility. The production build tree-shakes it away for ordinary
+	 * visitors; the dev server does not, so a static import here would strip the layout off every
+	 * page under `pnpm dev`.
+	 */
+	const preview = previewEnabled
+		? Promise.all([import('@sanity/sveltekit'), import('$lib/sanity/client')])
+		: null;
 
 	/**
 	 * One crossfade, for the one navigation that is a hard cut: a photographic marketing page
@@ -44,4 +62,17 @@
 	{/each}
 	<link rel="alternate" hreflang="x-default" href={links.canonical} />
 </svelte:head>
-{@render children()}
+
+{#if preview}
+	{#await preview then [{ PreviewMode, VisualEditing, QueryLoader }, { client }]}
+		<PreviewMode enabled>
+			<VisualEditing enabled>
+				<QueryLoader enabled {client}>
+					{@render children()}
+				</QueryLoader>
+			</VisualEditing>
+		</PreviewMode>
+	{/await}
+{:else}
+	{@render children()}
+{/if}

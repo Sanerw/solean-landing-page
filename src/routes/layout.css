@@ -1,3 +1,11 @@
+/* Sanity UI ships its rules in a `sui` layer, including a `:where(html, body, button)` reset,
+   and it reaches the page whenever Visual Editing loads: in preview here, and on any route that
+   imports from `@sanity/sveltekit`. Cascade layers rank by order of first declaration, so
+   without this line `sui` would be declared after Tailwind's layers and outrank every utility,
+   which strips the padding, gaps and radii off the previewed page. Naming the layers first puts
+   them at the bottom of the order. Must stay above the Tailwind import. */
+@layer sui, sui.global;
+
 @import 'tailwindcss' source(none);
 @import "tw-animate-css";
 @import "shadcn-svelte/tailwind.css";

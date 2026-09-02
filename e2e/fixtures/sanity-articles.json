@@ -1,0 +1,267 @@
+{
+	"slug": "mounjaro-vs-wegovy",
+	"articles": {
+		"de": {
+			"_id": "GNi82xCo1eRS3egKAh1fX9",
+			"category": "Behandlungsvergleich",
+			"expectedResults": [
+				"Klinische Studien berichten über deutliche durchschnittliche Gewichtsabnahmen, wenn die Behandlung mit Unterstützung beim Lebensstil kombiniert wird. Die Studien unterscheiden sich im Aufbau und sind kein direkter Vergleich.",
+				"Das individuelle Ansprechen hängt von Dosis, Therapietreue, Vorerkrankungen und der laufenden ärztlichen Begleitung ab."
+			],
+			"faqs": [
+				{
+					"_key": "stronger",
+					"answer": "Veröffentlichte Studien berichten unterschiedliche Durchschnittswerte, sie sind jedoch kein Versprechen für ein individuelles Ergebnis. Ärztinnen und Ärzte betrachten Eignung, Verträglichkeit, Verfügbarkeit und Krankengeschichte zusammen.",
+					"question": "Ist Mounjaro stärker als Wegovy?"
+				},
+				{
+					"_key": "switch",
+					"answer": "Jeder Wechsel der Behandlung erfordert eine ärztliche Prüfung. Zeitpunkt, Dosis, Nebenwirkungen und der Grund für den Wechsel beeinflussen die ärztliche Empfehlung.",
+					"question": "Kann man zwischen den Behandlungen wechseln?"
+				},
+				{
+					"_key": "speed",
+					"answer": "Die Ergebnisse sind individuell und hängen von Dosis, Therapietreue und Gesundheitsfaktoren ab. Ärztinnen und Ärzte sollten Erwartungen setzen und den Verlauf regelmäßig prüfen.",
+					"question": "Wie schnell zeigen sich Ergebnisse?"
+				},
+				{
+					"_key": "otc",
+					"answer": "Nein. Es handelt sich um verschreibungspflichtige Behandlungen, die erst angewendet werden sollten, wenn eine qualifizierte Ärztin oder ein qualifizierter Arzt ihre Eignung bestätigt hat.",
+					"question": "Sind diese Medikamente ohne Rezept erhältlich?"
+				}
+			],
+			"hero": {
+				"_type": "image",
+				"alt": "Eine Hand hält mehrere Injektionsspritzen mit Schutzkappe",
+				"asset": {
+					"_ref": "image-a8482b95d0c74bad03a462077339a8ef5ea74335-805x650-jpg",
+					"_type": "reference"
+				}
+			},
+			"howTheyWork": [
+				"Beide Medikamente ahmen Darmhormone nach, die an Appetit und Blutzuckerregulierung beteiligt sind. Sie können dafür sorgen, dass man länger satt bleibt und weniger an Essen denkt.",
+				"Ihre Hormonziele unterscheiden sich, doch dieser Unterschied allein macht keine Option für jede Person richtig."
+			],
+			"keyTakeaways": [
+				"Beide sind wöchentliche verschreibungspflichtige Injektionen.",
+				"Sie enthalten unterschiedliche Wirkstoffe.",
+				"Durchschnittswerte aus Studien sagen kein individuelles Ergebnis voraus.",
+				"Über die Eignung sollte ärztlich entschieden werden."
+			],
+			"nextReviewAt": "2027-02-14",
+			"quickAnswer": [
+				"Beide Optionen sind verschreibungspflichtige Injektionen, die einmal wöchentlich angewendet und mit Ernährung, Bewegung und ärztlicher Begleitung kombiniert werden.",
+				"Sie wirken auf verwandte Appetitmechanismen, enthalten jedoch unterschiedliche Wirkstoffe. Die Eignung hängt von Krankengeschichte, Zielen, Nebenwirkungsrisiko und Verfügbarkeit ab."
+			],
+			"readTimeMinutes": 8,
+			"related": null,
+			"reviewedAt": "2026-08-14",
+			"reviewer": {
+				"_id": "GNi82xCo1eRS3egKAh1fEI",
+				"description": "Führt ärztliche Beratungen durch, prüft dein Gesundheitsprofil und hilft, einen sicheren und passenden Behandlungsplan festzulegen.",
+				"name": "Dr. Juraj Galan",
+				"portrait": {
+					"_type": "image",
+					"alt": "Dr. Juraj Galan",
+					"asset": {
+						"_ref": "image-8d838266e3e7894551beae2d65d8cd22d2cba69d-1521x1034-webp",
+						"_type": "reference"
+					}
+				},
+				"role": "Beratender Arzt"
+			},
+			"seoDescription": null,
+			"seoTitle": null,
+			"shortTitle": "Mounjaro vs Wegovy",
+			"sideEffects": {
+				"intro": "Häufige Nebenwirkungen betreffen oft den Magen-Darm-Trakt und können bei einer Dosissteigerung stärker auffallen. Vorerkrankungen und aktuelle Medikamente sollten vorab ärztlich geprüft werden.",
+				"items": [
+					"Übelkeit, Durchfall oder Verstopfung",
+					"Erbrechen, Reflux oder Magenbeschwerden",
+					"Verminderter Appetit und Müdigkeit",
+					"Seltene, aber ernste Beschwerden, die sofortige ärztliche Hilfe erfordern"
+				]
+			},
+			"slug": {
+				"_type": "slug",
+				"current": "mounjaro-vs-wegovy"
+			},
+			"sources": [
+				{
+					"_key": "learn_source_surmount",
+					"href": null,
+					"label": "Klinische Studie SURMOUNT-1"
+				},
+				{
+					"_key": "learn_source_step",
+					"href": null,
+					"label": "Klinische Studie STEP 1"
+				},
+				{
+					"_key": "learn_source_ema",
+					"href": null,
+					"label": "Produktinformationen der Europäischen Arzneimittel-Agentur"
+				},
+				{
+					"_key": "learn_source_manufacturers",
+					"href": null,
+					"label": "Fachinformationen der Hersteller"
+				}
+			],
+			"sourcesSummary": "Zu den wichtigsten Quellen zählen die klinischen Studien SURMOUNT-1 und STEP 1, die Produktinformationen der Europäischen Arzneimittel-Agentur sowie die Fachinformationen von Eli Lilly und Novo Nordisk. Dieser Artikel dient der Information und ersetzt keine individuelle ärztliche Beratung.",
+			"summary": "Ein fachlich geprüfter Vergleich zweier wöchentlicher verschreibungspflichtiger Behandlungen: wie sie wirken, welche Nebenwirkungen möglich sind und welche Fragen du ärztlich klären solltest.",
+			"title": "Mounjaro vs. Wegovy: Unterschiede, Ergebnisse und was zu dir passen könnte",
+			"treatmentProfiles": [
+				{
+					"_key": "mounjaro",
+					"activeIngredient": "Tirzepatide",
+					"frequency": "Einmal wöchentlich",
+					"mainAction": "GIP und GLP-1",
+					"manufacturer": "Eli Lilly",
+					"manufacturerNote": "Ein Pharmaunternehmen, das Tirzepatid entwickelt hat und zu Medikamenten für Diabetes und Adipositas forscht.",
+					"treatmentId": "mounjaro"
+				},
+				{
+					"_key": "wegovy",
+					"activeIngredient": "Semaglutide",
+					"frequency": "Einmal wöchentlich",
+					"mainAction": "GLP-1",
+					"manufacturer": "Novo Nordisk",
+					"manufacturerNote": "Ein Gesundheitsunternehmen mit jahrzehntelanger Forschung zu Diabetes und Adipositas und Entwickler von Semaglutid.",
+					"treatmentId": "wegovy"
+				}
+			]
+		},
+		"en": {
+			"_id": "GNi82xCo1eRS3egKAh1fkc",
+			"category": "Treatment comparison",
+			"expectedResults": [
+				"Clinical studies report meaningful average weight loss when treatment is used alongside lifestyle support. Studies vary in design and should not be treated as a direct head-to-head promise.",
+				"Individual response depends on dose, adherence, health conditions, and ongoing clinical support."
+			],
+			"faqs": [
+				{
+					"_key": "stronger",
+					"answer": "Published studies report different average outcomes, but they are not a direct promise of an individual result. A clinician considers suitability, tolerability, availability, and health history together.",
+					"question": "Is Mounjaro stronger than Wegovy?"
+				},
+				{
+					"_key": "switch",
+					"answer": "Any treatment change needs clinical review. Timing, dose, side effects, and the reason for switching all affect the advice a prescriber gives.",
+					"question": "Can you switch between the treatments?"
+				},
+				{
+					"_key": "speed",
+					"answer": "Results vary by person, dose, adherence, and health factors. A clinician should set expectations and review progress over time.",
+					"question": "How quickly do results appear?"
+				},
+				{
+					"_key": "otc",
+					"answer": "No. These are prescription treatments and should only be used after a qualified clinician confirms that they are appropriate.",
+					"question": "Are these medicines available without a prescription?"
+				}
+			],
+			"hero": {
+				"_type": "image",
+				"alt": "A hand holding several capped injection syringes",
+				"asset": {
+					"_ref": "image-a8482b95d0c74bad03a462077339a8ef5ea74335-805x650-jpg",
+					"_type": "reference"
+				}
+			},
+			"howTheyWork": [
+				"Both medicines mimic gut hormones involved in appetite and blood-sugar regulation. They can help people feel fuller for longer and reduce food noise.",
+				"Their hormone targets differ, but that difference alone does not make one option right for every person."
+			],
+			"keyTakeaways": [
+				"Both are weekly prescription injections.",
+				"They contain different active ingredients.",
+				"Average study outcomes do not predict an individual result.",
+				"A clinician should decide suitability."
+			],
+			"nextReviewAt": "2027-02-14",
+			"quickAnswer": [
+				"Both options are once-weekly prescription injections used alongside nutrition, movement, and clinical support.",
+				"They act on related appetite pathways but contain different active ingredients. Suitability depends on medical history, goals, side-effect risk, and availability."
+			],
+			"readTimeMinutes": 8,
+			"related": null,
+			"reviewedAt": "2026-08-14",
+			"reviewer": {
+				"_id": "k5SsXVtg04B1Uu1ldczhdj",
+				"description": "Provides medical consultations, reviews your health profile and helps determine a safe, appropriate treatment plan.",
+				"name": "Dr. Juraj Galan",
+				"portrait": {
+					"_type": "image",
+					"alt": "Dr. Juraj Galan",
+					"asset": {
+						"_ref": "image-8d838266e3e7894551beae2d65d8cd22d2cba69d-1521x1034-webp",
+						"_type": "reference"
+					}
+				},
+				"role": "Consulting physician"
+			},
+			"seoDescription": null,
+			"seoTitle": null,
+			"shortTitle": "Mounjaro vs Wegovy",
+			"sideEffects": {
+				"intro": "Common effects are often gastrointestinal and may be more noticeable while a dose is increasing. A prescriber should review medical history and current medicines first.",
+				"items": [
+					"Nausea, diarrhoea, or constipation",
+					"Vomiting, reflux, or stomach discomfort",
+					"Reduced appetite and fatigue",
+					"Rare but serious symptoms that need urgent medical advice"
+				]
+			},
+			"slug": {
+				"_type": "slug",
+				"current": "mounjaro-vs-wegovy"
+			},
+			"sources": [
+				{
+					"_key": "learn_source_surmount",
+					"href": null,
+					"label": "SURMOUNT-1 clinical trial"
+				},
+				{
+					"_key": "learn_source_step",
+					"href": null,
+					"label": "STEP 1 clinical trial"
+				},
+				{
+					"_key": "learn_source_ema",
+					"href": null,
+					"label": "European Medicines Agency product information"
+				},
+				{
+					"_key": "learn_source_manufacturers",
+					"href": null,
+					"label": "Product information from the manufacturers"
+				}
+			],
+			"sourcesSummary": "Key sources include the SURMOUNT-1 and STEP 1 clinical trials, European Medicines Agency product information, and prescribing information from Eli Lilly and Novo Nordisk. This article is educational and does not replace individual medical advice.",
+			"summary": "An expert-reviewed prototype comparison of two weekly prescription treatments, including how they work, possible side effects, and questions to discuss with a clinician.",
+			"title": "Mounjaro vs Wegovy: differences, results and which may suit you",
+			"treatmentProfiles": [
+				{
+					"_key": "mounjaro",
+					"activeIngredient": "Tirzepatide",
+					"frequency": "Once weekly",
+					"mainAction": "GIP and GLP-1",
+					"manufacturer": "Eli Lilly",
+					"manufacturerNote": "A pharmaceutical company that developed tirzepatide and researches medicines for diabetes and obesity.",
+					"treatmentId": "mounjaro"
+				},
+				{
+					"_key": "wegovy",
+					"activeIngredient": "Semaglutide",
+					"frequency": "Once weekly",
+					"mainAction": "GLP-1",
+					"manufacturer": "Novo Nordisk",
+					"manufacturerNote": "A healthcare company with decades of research in diabetes and obesity and the developer of semaglutide.",
+					"treatmentId": "wegovy"
+				}
+			]
+		}
+	}
+}

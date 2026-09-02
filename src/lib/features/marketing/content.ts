@@ -13,6 +13,7 @@
  * candidate down instead of breaking.
  */
 import { m } from '$lib/paraglide/messages';
+import { localizeHref } from '$lib/paraglide/runtime';
 import { TREATMENTS } from '$lib/domain';
 import {
 	buildWeightProjection,
@@ -51,8 +52,6 @@ export const ROUTES = {
 	learn: '/learn',
 	learnArticle: (slug: string) => `/learn/blog/${slug}`
 } as const;
-
-export const FEATURED_ARTICLE_SLUG = 'mounjaro-vs-wegovy';
 
 export type { ProjectionHorizon, ProjectionPoint };
 
@@ -98,7 +97,9 @@ export function navItems(): readonly NavItem[] {
 		},
 		{ label: m.nav_about(), href: '/about', inert: true },
 		{ label: m.nav_faq(), href: '/#faq' },
-		{ label: m.nav_learn(), href: ROUTES.learn }
+		// Localised: `/learn` is a server redirect now, and it resolves the language from the
+		// path, so an unprefixed link would send an English reader to the German article.
+		{ label: m.nav_learn(), href: localizeHref(ROUTES.learn) }
 	];
 }
 
@@ -182,7 +183,10 @@ export function articleTeaser() {
 		title: m.teaser_title(),
 		body: m.teaser_body(),
 		cta: m.teaser_cta(),
-		href: ROUTES.learnArticle(FEATURED_ARTICLE_SLUG)
+		// `/learn` rather than a slug: it resolves the newest article from Sanity, so renaming an
+		// article in the Studio cannot leave this card pointing at a 404. Localised for the same
+		// reason the nav entry is.
+		href: localizeHref(ROUTES.learn)
 	};
 }
 

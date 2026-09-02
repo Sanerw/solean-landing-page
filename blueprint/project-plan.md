@@ -123,15 +123,26 @@ What lives where:
 | Questionnaire uid, store domain, variant id, question names | Config | One module, see section 5 |
 | Order, payment, prescription, delivery | RxScale and Shopify | Not modelled here |
 
-Still typed fixtures, unchanged, because marketing and editorial content is not
-part of the integration:
+**Editorial content moves to Sanity, one surface at a time.** From feature 20 the
+Learn article and the clinician who reviewed it are documents in the Content
+Lake, so a second article can be published without a deploy. The marketing
+homepage keeps its fixtures until it is migrated separately. Sanity holds only
+published editorial copy: no answers, nothing personal, nothing from the funnel.
 
-| Entity | Holds |
-| --- | --- |
-| `Money` | amount as integer minor units (cents), currency fixed to EUR |
-| `Treatment` | id, name, form (injection/tablet), dose, price, claim copy |
-| `Clinician` | name, role, bio, portrait |
-| `Testimonial`, `FaqItem`, `Article` | marketing content |
+| Entity | Owner | Holds |
+| --- | --- | --- |
+| `Money` | fixture | amount as integer minor units (cents), currency fixed to EUR |
+| `Treatment` | fixture | id, name, form (injection/tablet), dose, price, claim copy. Stays a fixture: it is commerce data keyed to Shopify variants, not editorial copy |
+| `article` | Sanity | the Learn article, one document per language, linked as translations |
+| `clinician` | Sanity | name, role, description, portrait. Referenced as an article's reviewer |
+| `homePage`, `testimonial` | Sanity, not yet read | seeded and editable, but no route renders them until the homepage migrates |
+| `Testimonial`, `FaqItem` | fixture | marketing content, until the homepage migrates |
+
+Editorial content is queried by `language`, because translations are separate
+documents rather than fields on one. The locale list stays in
+`project.inlang/settings.json`: Paraglide compiles the message catalogues from it
+at build time, so a language Sanity did not know about is a missing translation,
+while a language Paraglide did not know about is a broken build.
 
 `AddOn`, `PatientProfile`, `ShippingAddress`, `Order`, `PricingBreakdown`, and
 `OrderStatus` modelled the checkout Solean no longer builds. They are removed
@@ -153,6 +164,22 @@ Already scaffolded and in use:
 - shadcn-svelte, `luma` style, `neutral` base
 - Lucide icons
 - pnpm
+
+Added for editorial content:
+
+- **Sanity** as the CMS. The Studio is standalone, in `../studio-solean` beside
+  this app, deliberately not embedded in a route: the funnel and the Studio have
+  nothing to share, and embedding would put the whole Studio bundle in this
+  app's dependency graph.
+- `@sanity/sveltekit` in the app, for the client, preview mode and Visual
+  Editing. It has a single entry point that also carries Sanity UI's stylesheet,
+  so nothing that renders on an ordinary page may import it eagerly. Two rules
+  follow: pages read Sanity data through `$lib/sanity/LiveQuery.svelte`, which
+  only reaches for `useQuery` in preview, and `layout.css` declares
+  `@layer sui, sui.global` before Tailwind so Sanity's rules can never outrank a
+  utility class.
+- `@sanity/document-internationalization` for German and English, document-level:
+  one document per language, linked by translation metadata.
 
 Follow `blueprint/context/coding-standards.md` throughout.
 
@@ -575,6 +602,11 @@ The host choice is settled; what it brings with it is env configuration:
 | `SHOPIFY_STOREFRONT_API_VERSION` | server only, optional | defaults to `2025-01` |
 | `PUBLIC_RXSCALE_QUESTIONNAIRE_UID` | public | the questionnaire to fetch |
 | `PUBLIC_RXSCALE_SHOP_IDENTIFIER` | public | the shop the recommendation is keyed by, the storefront hostname |
+| `PUBLIC_SANITY_PROJECT_ID` | public | the Content Lake project, `tzq5b2my` |
+| `PUBLIC_SANITY_DATASET` | public | `production` |
+| `PUBLIC_SANITY_API_VERSION` | public | pinned, not floating, so a query cannot change behaviour without a code change |
+| `PUBLIC_SANITY_STUDIO_URL` | public | where the Presentation tool lives, for the click-to-edit overlays |
+| `SANITY_API_READ_TOKEN` | server only | reads drafts. Without it the site serves published content and preview stays off, which is not an error |
 
 > TODO: set the variables in the Vercel project and run a deploy. Handle it
 > through `/release vercel`.

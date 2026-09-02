@@ -20,3 +20,10 @@ export const FIXTURE_PRESCRIPTION_VARIANT_ID = '48233241215309';
  * myshopify domain, which is what the live service accepts; here it is the fixture itself.
  */
 export const FIXTURE_SHOP_IDENTIFIER = `localhost:${FIXTURE_PORT}`;
+
+/**
+ * The app reads Sanity through the fixture during a browser run, so the suite is deterministic
+ * and puts no traffic on the Content Lake. Regenerate the response with
+ * `node scripts/generate-sanity-fixture.mjs` when the article query or the article changes.
+ */
+export const FIXTURE_SANITY_API_HOST = `http://localhost:${FIXTURE_PORT}`;

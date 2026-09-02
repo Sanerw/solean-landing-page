@@ -15,6 +15,10 @@ const FIXTURE_VARIANT_ID = process.env.FIXTURE_VARIANT_ID ?? '49703576666445';
 const FIXTURE_PRESCRIPTION_VARIANT_ID = process.env.FIXTURE_PRESCRIPTION_VARIANT_ID ?? '48233241215309';
 const FIXTURE_UID = process.env.FIXTURE_QUESTIONNAIRE_UID ?? 'fixture-questionnaire';
 const FIXTURE_PATH = join(dirname(fileURLToPath(import.meta.url)), 'fixtures/questionnaire-model.json');
+const SANITY_FIXTURE_PATH = join(dirname(fileURLToPath(import.meta.url)), 'fixtures/sanity-articles.json');
+
+/** Sanity's read endpoint, which the app is pointed at through PUBLIC_SANITY_API_HOST. */
+const SANITY_QUERY = /^\/v[\d-]+\/data\/query\/[^/]+$/;
 
 const PREFIXES = ['/api/v2/anamnesis', '/api/v3-1/anamnesis', '/v4/anamnesis'];
 
@@ -183,10 +187,43 @@ function send(response, status, body) {
 	response.end(payload);
 }
 
+/**
+ * Answers the two GROQ queries the Learn article makes, off a response the real dataset
+ * produced. Matching on the shape of the query rather than parsing GROQ: there are two of them,
+ * and a parser here would be a second implementation of Sanity to keep correct.
+ */
+async function sanityQuery(url) {
+	const query = url.searchParams.get('query') ?? '';
+	const param = (name) => {
+		const raw = url.searchParams.get(name);
+		try {
+			return raw === null ? null : JSON.parse(raw);
+		} catch {
+			return raw;
+		}
+	};
+
+	const { slug, articles } = JSON.parse(await readFile(SANITY_FIXTURE_PATH, 'utf8'));
+	const article = articles[param('$language')] ?? null;
+
+	// The `/learn` redirects ask only for the newest article's slug.
+	if (query.includes('[0].slug.current')) {
+		return article ? slug : null;
+	}
+
+	return article && param('$slug') === slug ? article : null;
+}
+
 const server = createServer(async (request, response) => {
 	const { pathname } = new URL(request.url ?? '/', `http://localhost:${PORT}`);
 	const uid = questionnaireUid(pathname);
 	console.log(`${request.method} ${pathname}`);
+
+	if (request.method === 'GET' && SANITY_QUERY.test(pathname)) {
+		const url = new URL(request.url ?? '/', `http://localhost:${PORT}`);
+		send(response, 200, { result: await sanityQuery(url), ms: 0, query: '' });
+		return;
+	}
 
 	// A cross-origin POST with a JSON body is preflighted.
 	if (request.method === 'OPTIONS') {
