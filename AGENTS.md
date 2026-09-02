@@ -180,10 +180,11 @@ settles.
 | Detail | Value |
 | --- | --- |
 | Platform | SvelteKit 2, Svelte 5 runes, browser only |
-| SDK | `mixpanel-browser`, imported dynamically, never at module scope |
+| SDK | `mixpanel-browser`, the **`mixpanel-with-async-recorder`** build, imported dynamically, never at module scope |
 | Tracking method | client-side |
 | CDP | none |
-| Consent required | **yes**, DSGVO. Nothing is sent before an explicit accept |
+| Consent required | **yes**, DSGVO. Nothing is sent or recorded before an explicit accept |
+| Session replay | **on, every page including the questionnaire**, share set by `PUBLIC_MIXPANEL_REPLAY_PERCENT` |
 | Data residency | EU, `https://api-eu.mixpanel.com` |
 | Token | `PUBLIC_MIXPANEL_TOKEN`. Absent means this deployment does not measure, which is a valid state |
 
@@ -220,12 +221,45 @@ analytics. No event property may carry:
 
 Two consequences that are easy to undo by accident:
 
-- **`autocapture` and `record_sessions_percent` are off in `client.ts` and must stay off.**
-  Autocapture reports the text of clicked elements, which on a questionnaire step is the
-  wording of a medical question and the answer chosen.
+- **`autocapture` is off in `client.ts` and must stay off.** It reports the text of clicked
+  elements, which on a questionnaire step is the wording of a medical question and the answer
+  chosen, in clear.
 - **No page view is sent for a `/questionnaire` path.** The model branches on `visibleIf`, so
   which steps a person sees is derived from what they answered: the path is the answer.
   `isTrackablePath` enforces this and is unit tested.
+
+### Session replay
+
+Recording is **on for every page, the questionnaire included**. That was decided deliberately
+on 2026-09-03, against the recommendation recorded here, and the masking is what it rests on.
+
+`record_mask_all_text` and `record_mask_all_inputs` are set to `true` explicitly rather than
+left to the defaults. Do not remove them: the SDK flips `maskAll` to `false` the moment a
+masking *selector* is configured without them (`getPrivacyConfig`, the migration branch), so
+a later "unmask just the headings" would silently unmask the whole page. `record_console`,
+`record_network` and `record_canvas` are off, and `img, video, audio` are blocked.
+
+**What the masking does not cover.** The questionnaire model is public and identical for every
+visitor, fetched by uid without authentication. A recording keeps the structure, the option
+positions and the click, so those plus the model reconstruct the answers even with every label
+masked. Treat funnel replays as medical records: restrict access, keep retention short, and
+make sure the privacy policy says recording happens.
+
+Three mechanics worth knowing before touching this code:
+
+- **The build matters.** The default `mixpanel-browser` entry point cannot record: its
+  `load_extra_bundle` throws "not available in this build", so recording fails to start with
+  no error. Only `mixpanel-with-async-recorder` ships a loader.
+- **Recording is started by name.** The SDK's auto-start runs once inside `init`, behind its
+  own opt-out check, and this client is opted out at that moment by design. Nothing re-runs it
+  afterwards except `reset`, which an app without accounts never calls.
+- **Sampling is ours.** `start_session_recording` forces a recording and ignores
+  `record_sessions_percent`, so `shouldRecordSession` applies the share before the call. Both
+  it and `clampReplayPercent` are unit tested.
+
+Withdrawing consent calls `stop_session_recording` explicitly. `opt_out_tracking` does not
+stop rrweb, so without it a session already being recorded would go on being recorded after
+the person withdrew.
 
 ### Consent
 
@@ -249,8 +283,10 @@ and does not mention Mixpanel; that document is Solean's to amend.
 ### Testing
 
 `src/lib/analytics/*.test.ts` covers the consent rule, the questionnaire path rule, the
-one-shot gate, and the property shapes. `e2e/analytics.spec.ts` proves the gate and the funnel
-in a browser with every Mixpanel request intercepted. The browser suite runs with analytics
+one-shot gate, the property shapes, and the replay share and sampling. `e2e/analytics.spec.ts`
+proves the gate and the funnel in a browser with every Mixpanel request intercepted, on both
+hosts: events go to `api-eu.mixpanel.com`, the recorder bundle comes from `cdn.mxpnl.com`, and
+a run must fetch neither before consent. The browser suite runs with analytics
 declined (`CONSENT_DENIED_STATE` in `playwright.config.ts`), because the banner is fixed to the
 bottom of the viewport and would sit over the Continue button the other specs press.
 

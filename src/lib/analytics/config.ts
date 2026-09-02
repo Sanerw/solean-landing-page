@@ -34,3 +34,36 @@ export function analyticsConfigured(): boolean {
 export function mixpanelApiHost(): string {
 	return configured(env.PUBLIC_MIXPANEL_API_HOST) ?? DEFAULT_API_HOST;
 }
+
+/** Recording every consented session is the configured intent; the rest is quota. */
+const DEFAULT_REPLAY_PERCENT = 100;
+
+/**
+ * Session replay is metered separately from events, so the share of sessions recorded has to
+ * be tunable without a deploy: a month that runs into the plan's cap is turned down here
+ * rather than in a release. A malformed value reads as an absent one, the same way every
+ * other setting in this project treats a blank env var.
+ */
+export function clampReplayPercent(value: string | undefined): number {
+	const trimmed = value?.trim();
+	if (!trimmed) return DEFAULT_REPLAY_PERCENT;
+
+	const parsed = Number(trimmed);
+	if (!Number.isFinite(parsed)) return DEFAULT_REPLAY_PERCENT;
+
+	return Math.min(100, Math.max(0, parsed));
+}
+
+export function replaySessionsPercent(): number {
+	return clampReplayPercent(env.PUBLIC_MIXPANEL_REPLAY_PERCENT);
+}
+
+/**
+ * Whether this session is one of the recorded ones. The SDK samples internally, but recording
+ * has to be started by name here (see `client.ts`), and `start_session_recording` forces a
+ * recording regardless of the configured share. Sampling therefore happens on this side, by
+ * the same rule the SDK uses, so turning the percentage down actually turns recording down.
+ */
+export function shouldRecordSession(percent: number, roll: number = Math.random()): boolean {
+	return percent > 0 && roll * 100 <= percent;
+}

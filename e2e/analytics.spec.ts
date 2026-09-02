@@ -47,16 +47,48 @@ function decode(body: string | null): Captured[] {
 	}));
 }
 
-/** Intercepts the ingestion host and collects every event the app tried to send. */
-async function captureMixpanel(page: Page): Promise<Captured[]> {
-	const captured: Captured[] = [];
+/**
+ * Every host the feature reaches. Events and replay data both go to `api-eu.mixpanel.com` but
+ * to different routes, `track/` and `record/`; `cdn.mxpnl.com` is covered too, because the
+ * SDK reaches it for remote settings and would otherwise be a real fetch during a run.
+ */
+const MIXPANEL_HOSTS = ['**://*.mixpanel.com/**', '**://*.mxpnl.com/**'];
 
-	await page.route('**://*.mixpanel.com/**', async (route) => {
-		captured.push(...decode(route.request().postData()));
-		await route.fulfill({ status: 200, contentType: 'text/plain', body: '1' });
-	});
+interface Traffic {
+	events: Captured[];
+	/** The recorder bundle the SDK appends once recording starts. */
+	recorder: string[];
+	/** Posts to `record/`, which is session replay data and nothing else. */
+	replay: string[];
+}
 
-	return captured;
+/** Intercepts both hosts and sorts what the app tried to send by the route it used. */
+async function captureMixpanel(page: Page): Promise<Traffic> {
+	const traffic: Traffic = { events: [], recorder: [], replay: [] };
+
+	for (const pattern of MIXPANEL_HOSTS) {
+		await page.route(pattern, async (route) => {
+			const url = route.request().url();
+
+			if (url.includes('mxpnl.com')) {
+				traffic.recorder.push(url);
+				// Stubbed empty: the spec proves that recording was started, not that rrweb
+				// works, and running the real recorder against the fixture buys nothing.
+				await route.fulfill({ status: 200, contentType: 'application/javascript', body: '' });
+				return;
+			}
+
+			if (url.includes('/record')) {
+				traffic.replay.push(url);
+			} else if (url.includes('/track')) {
+				traffic.events.push(...decode(route.request().postData()));
+			}
+
+			await route.fulfill({ status: 200, contentType: 'text/plain', body: '1' });
+		});
+	}
+
+	return traffic;
 }
 
 const names = (captured: Captured[]) => captured.map((entry) => entry.event);
@@ -68,12 +100,12 @@ const names = (captured: Captured[]) => captured.map((entry) => entry.event);
  */
 const FLUSH = { timeout: 15_000 };
 
-function awaitEvent(captured: Captured[], event: string) {
-	return expect.poll(() => names(captured), FLUSH).toContain(event);
+function awaitEvent(traffic: Traffic, event: string) {
+	return expect.poll(() => names(traffic.events), FLUSH).toContain(event);
 }
 
 test('nothing reaches Mixpanel before the visitor has answered the banner', async ({ page }) => {
-	const captured = await captureMixpanel(page);
+	const traffic = await captureMixpanel(page);
 
 	await page.goto('/');
 	await expect(page.getByRole('button', { name: 'Einverstanden' })).toBeVisible();
@@ -83,11 +115,13 @@ test('nothing reaches Mixpanel before the visitor has answered the banner', asyn
 	await page.goto('/learn');
 	await page.waitForTimeout(500);
 
-	expect(captured).toEqual([]);
+	expect(traffic.events).toEqual([]);
+	expect(traffic.recorder).toEqual([]);
+	expect(traffic.replay).toEqual([]);
 });
 
 test('declining is remembered, and stays silent across a navigation', async ({ page }) => {
-	const captured = await captureMixpanel(page);
+	const traffic = await captureMixpanel(page);
 
 	await page.goto('/');
 	await expect(page.getByRole('button', { name: 'Ablehnen' })).toBeEnabled();
@@ -96,12 +130,16 @@ test('declining is remembered, and stays silent across a navigation', async ({ p
 	await page.goto('/learn');
 	await page.waitForTimeout(500);
 
-	expect(captured).toEqual([]);
+	expect(traffic.events).toEqual([]);
+	// A refusal has to reach the recorder too, not only the events. Its bundle is a separate
+	// script from a separate host, and a declined visitor must not fetch it either.
+	expect(traffic.recorder).toEqual([]);
+	expect(traffic.replay).toEqual([]);
 	await expect(page.getByRole('button', { name: 'Ablehnen' })).toBeHidden();
 });
 
 test('accepting sends the page view for the page the banner was answered on', async ({ page }) => {
-	const captured = await captureMixpanel(page);
+	const traffic = await captureMixpanel(page);
 
 	await page.goto('/');
 	// Enabled only once hydrated, so this is also the wait for the handler to exist.
@@ -109,19 +147,34 @@ test('accepting sends the page view for the page the banner was answered on', as
 	await page.getByRole('button', { name: 'Einverstanden' }).click();
 
 	// The arrival itself, which is the view that is lost if consent is not what re-triggers it.
-	await awaitEvent(captured, 'page_viewed');
-	expect(captured.find((entry) => entry.event === 'page_viewed')?.properties.path).toBe('/');
+	await awaitEvent(traffic, 'page_viewed');
+	expect(traffic.events.find((e) => e.event === 'page_viewed')?.properties.path).toBe('/');
 	await expect(page.getByRole('button', { name: 'Einverstanden' })).toBeHidden();
 });
 
+test('accepting starts the session recording, and only then', async ({ page }) => {
+	const traffic = await captureMixpanel(page);
+
+	await page.goto('/');
+	await expect(page.getByRole('button', { name: 'Einverstanden' })).toBeEnabled();
+	expect(traffic.recorder).toEqual([]);
+
+	await page.getByRole('button', { name: 'Einverstanden' }).click();
+
+	// The SDK appends the recorder script only at the moment recording begins, so the request
+	// for it is the observable proof that it did. The default `mixpanel-browser` entry point
+	// cannot load it at all, which is why this assertion is worth having.
+	await expect.poll(() => traffic.recorder.length, FLUSH).toBeGreaterThan(0);
+});
+
 test('a questionnaire step is never sent as a page view', async ({ page }) => {
-	const captured = await captureMixpanel(page);
+	const traffic = await captureMixpanel(page);
 
 	await page.goto('/');
 	// Enabled only once hydrated, so this is also the wait for the handler to exist.
 	await expect(page.getByRole('button', { name: 'Einverstanden' })).toBeEnabled();
 	await page.getByRole('button', { name: 'Einverstanden' }).click();
-	await awaitEvent(captured, 'page_viewed');
+	await awaitEvent(traffic, 'page_viewed');
 
 	await page.goto('/questionnaire');
 	await expect(page).toHaveURL(/\/questionnaire\/page\d+/);
@@ -129,7 +182,7 @@ test('a questionnaire step is never sent as a page view', async ({ page }) => {
 
 	// Which steps a person is shown is decided by the model's branching, so a step path is
 	// derived from their answers. No `page_viewed` may name one.
-	const paths = captured
+	const paths = traffic.events
 		.filter((entry) => entry.event === 'page_viewed')
 		.map((entry) => String(entry.properties.path));
 
@@ -137,33 +190,33 @@ test('a questionnaire step is never sent as a page view', async ({ page }) => {
 });
 
 test('the funnel sends its three events, carrying nothing about the person', async ({ page }) => {
-	const captured = await captureMixpanel(page);
+	const traffic = await captureMixpanel(page);
 
 	await page.goto('/');
 	// Enabled only once hydrated, so this is also the wait for the handler to exist.
 	await expect(page.getByRole('button', { name: 'Einverstanden' })).toBeEnabled();
 	await page.getByRole('button', { name: 'Einverstanden' }).click();
-	await awaitEvent(captured, 'page_viewed');
+	await awaitEvent(traffic, 'page_viewed');
 
 	await walkAndSubmit(page);
 	await expect(page).toHaveURL('/questionnaire/complete');
-	await awaitEvent(captured, 'anamnesis_submitted');
+	await awaitEvent(traffic, 'anamnesis_submitted');
 
 	await orderPlan(page, { mode: 'prescription' });
-	await awaitEvent(captured, 'checkout_started');
+	await awaitEvent(traffic, 'checkout_started');
 
-	expect(names(captured)).toContain('questionnaire_started');
+	expect(names(traffic.events)).toContain('questionnaire_started');
 
-	const submitted = captured.find((entry) => entry.event === 'anamnesis_submitted');
+	const submitted = traffic.events.find((entry) => entry.event === 'anamnesis_submitted');
 	expect(submitted?.properties.survey_step_count).toBeGreaterThan(0);
 
-	const checkout = captured.find((entry) => entry.event === 'checkout_started');
+	const checkout = traffic.events.find((entry) => entry.event === 'checkout_started');
 	expect(checkout?.properties.plan_mode).toBe('prescription');
 	expect(checkout?.properties.has_recommendation).toBe(true);
 
 	// The privacy boundary, asserted against what actually left the browser rather than
 	// against the module that built it. The answers, the address and the uid stay here.
-	const payload = JSON.stringify(captured).toLowerCase();
+	const payload = JSON.stringify(traffic.events).toLowerCase();
 	for (const leak of ['jonas@example.com', 'anamnesis_uid', 'anam-', 'variant']) {
 		expect(payload).not.toContain(leak);
 	}
