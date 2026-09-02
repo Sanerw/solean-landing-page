@@ -1,6 +1,5 @@
 import { redirect, type Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
-import { env } from '$env/dynamic/private';
 import { handlePreviewMode, handleQueryLoader, setServerClient } from '@sanity/sveltekit';
 import { paraglideMiddleware } from '$lib/paraglide/server';
 import { legacyGermanPath } from '$lib/i18n/legacy-paths';
@@ -36,24 +35,9 @@ const handleLocale: Handle = ({ event, resolve }) => {
 	});
 };
 
-/**
- * `/preview/enable` writes this value into the preview cookie and every later request compares
- * the cookie against it again. Left unset, `handlePreviewMode` invents one per process: harmless
- * under `pnpm dev`, where the process that wrote the cookie is the one that reads it, and fatal
- * on Vercel, where the instance answering the page is almost never the instance that answered
- * `/preview/enable`. The comparison fails, `previewEnabled` stays false, and Presentation shows
- * published content with no visual editing. One value every instance shares is what makes the
- * cookie mean the same thing twice.
- *
- * Absent it falls back to that per-process value, which is the tokenless deployment: preview is
- * unreachable there anyway, so a missing variable is not an error. Dynamic for the same reason
- * the read token is, in `client.server.ts`.
- */
-const previewSecret = env.SANITY_PREVIEW_SECRET || undefined;
-
 // Locale first, so the Sanity handles and everything they resolve run with it already set.
 export const handle = sequence(
 	handleLocale,
-	handlePreviewMode({ client: serverClient, preview: { redirect, secret: previewSecret } }),
+	handlePreviewMode({ client: serverClient, preview: { redirect } }),
 	handleQueryLoader()
 );
