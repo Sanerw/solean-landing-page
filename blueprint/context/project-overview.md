@@ -454,6 +454,7 @@ adapter part way through a build.
 | `PUBLIC_SANITY_API_VERSION` | public | pinned, not floating |
 | `PUBLIC_SANITY_STUDIO_URL` | public | where the Presentation tool lives, for the click-to-edit overlays |
 | `SANITY_API_READ_TOKEN` | server only | reads drafts. Without it the site serves published content and preview stays off, which is not an error |
+| `SANITY_PREVIEW_SECRET` | server only | what the preview cookie is checked against. One value per deployment: without it every serverless instance invents its own and Presentation falls back to published content |
 
 > TODO: set the variables in the Vercel project and run a deploy. Handle it
 > through `/release vercel`.
