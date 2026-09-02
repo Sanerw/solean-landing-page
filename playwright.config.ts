@@ -1,5 +1,7 @@
 import { defineConfig, devices } from '@playwright/test';
 import {
+	CONSENT_DENIED_STATE,
+	FIXTURE_MIXPANEL_TOKEN,
 	FIXTURE_PORT,
 	FIXTURE_PRESCRIPTION_VARIANT_ID,
 	FIXTURE_SANITY_API_HOST,
@@ -18,6 +20,7 @@ export default defineConfig({
 	reporter: 'list',
 	use: {
 		baseURL: `http://localhost:${PORT}`,
+		storageState: CONSENT_DENIED_STATE,
 		// Kept for a failure only: a trace per passing run is a lot of disk for no information.
 		trace: 'retain-on-failure'
 	},
@@ -58,7 +61,10 @@ export default defineConfig({
 				PUBLIC_RXSCALE_SHOP_IDENTIFIER: FIXTURE_SHOP_IDENTIFIER,
 				// The Learn article's content. Without this the run would read the live Content
 				// Lake, and an editorial change in the Studio could turn the suite red.
-				PUBLIC_SANITY_API_HOST: FIXTURE_SANITY_API_HOST
+				PUBLIC_SANITY_API_HOST: FIXTURE_SANITY_API_HOST,
+				// A fixture token, so the consent banner exists to be tested. Nothing reaches
+				// Mixpanel: the suite runs declined and the analytics spec intercepts the host.
+				PUBLIC_MIXPANEL_TOKEN: FIXTURE_MIXPANEL_TOKEN
 			}
 		}
 	]

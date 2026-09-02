@@ -206,5 +206,10 @@
 	"framing_secondary_cta": "Explore treatments",
 	"framing_factor_stress": "Stress",
 	"framing_factor_hormones": "Hormones",
-	"framing_factor_genetics": "Genetics"
+	"framing_factor_genetics": "Genetics",
+	"consent_title": "Cookies and usage analytics",
+	"consent_body": "We use cookies and analytics tools to understand how this site is used. Your answers from the medical questionnaire are never sent. Nothing is measured without your consent. More in our",
+	"consent_privacy_link": "privacy policy.",
+	"consent_accept": "Accept",
+	"consent_decline": "Decline"
 }

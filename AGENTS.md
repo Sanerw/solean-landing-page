@@ -171,6 +171,89 @@ put secrets, raw logs, prompts, or user content in this file. Activity tracking
 must not change a command's approval boundaries or turn a reporting failure into
 a workflow failure.
 
+## Analytics: Mixpanel
+
+Mixpanel is the only analytics tool in this project. Do not add a second one, and do not add
+a tag manager, a session recorder, or a heatmap tool: each would reopen decisions this section
+settles.
+
+| Detail | Value |
+| --- | --- |
+| Platform | SvelteKit 2, Svelte 5 runes, browser only |
+| SDK | `mixpanel-browser`, imported dynamically, never at module scope |
+| Tracking method | client-side |
+| CDP | none |
+| Consent required | **yes**, DSGVO. Nothing is sent before an explicit accept |
+| Data residency | EU, `https://api-eu.mixpanel.com` |
+| Token | `PUBLIC_MIXPANEL_TOKEN`. Absent means this deployment does not measure, which is a valid state |
+
+Everything lives in `src/lib/analytics/`:
+
+| File | What it owns |
+| --- | --- |
+| `config.ts` | the token and the ingestion host, read from `$env/dynamic/public` |
+| `consent.ts` | the cookie, and `mayTrack`, the rule that only an explicit yes tracks |
+| `consent.svelte.ts` | the decision as rune state, seeded from the server's read of the cookie |
+| `client.ts` | the single Mixpanel instance, its config, and `track` |
+| `events.ts` | **every event name and property in the app** |
+| `ConsentBanner.svelte` | the banner, rendered from the root layout |
+
+### Adding an event
+
+Add a function to `events.ts` and call that. Never call `track` from a component, and never
+build an event name from a variable: Mixpanel is case-sensitive and treats a typo as a new
+event forever. Names are `snake_case`, and one name means one thing.
+
+Current events: `page_viewed`, `questionnaire_started`, `anamnesis_submitted`,
+`checkout_started` (the value moment). Super properties `platform` and `locale` are registered
+at init, so no event repeats them.
+
+### What may never be sent
+
+This is a medical funnel, and `project-overview.md` states that the answers never reach
+analytics. No event property may carry:
+
+- an answer value, or anything derived from one
+- the visitor's e-mail, name, or telephone number
+- the anamnesis uid
+- the medication, the dose, or the Shopify variant
+
+Two consequences that are easy to undo by accident:
+
+- **`autocapture` and `record_sessions_percent` are off in `client.ts` and must stay off.**
+  Autocapture reports the text of clicked elements, which on a questionnaire step is the
+  wording of a medical question and the answer chosen.
+- **No page view is sent for a `/questionnaire` path.** The model branches on `visibleIf`, so
+  which steps a person sees is derived from what they answered: the path is the answer.
+  `isTrackablePath` enforces this and is unit tested.
+
+### Consent
+
+`opt_out_tracking_by_default` is on, and the SDK is behind a dynamic import, so a visitor who
+declines never downloads the vendor's code at all. Consent is a first-party cookie read by
+`src/routes/+layout.server.ts`, so the banner is server-rendered and never flashes at someone
+who already answered.
+
+Anything that depends on consent must also depend on the decision as a reactive dependency:
+the banner is answered on the page the visitor is standing on, and an effect that only watches
+the path will have already run and been dropped. `track` returns whether the event was
+accepted for exactly this reason, so a one-shot event is not spent on a gate that refused it.
+
+There is no `identify()` or `reset()` anywhere, and there should not be: this app has no
+accounts, no login, and no logout. Every visitor is an anonymous `distinct_id`.
+
+Adding Mixpanel to a page that a person reaches means the privacy policy has to say so.
+`src/lib/features/legal/content/privacy.ts` currently names Google Analytics and Google Ads
+and does not mention Mixpanel; that document is Solean's to amend.
+
+### Testing
+
+`src/lib/analytics/*.test.ts` covers the consent rule, the questionnaire path rule, the
+one-shot gate, and the property shapes. `e2e/analytics.spec.ts` proves the gate and the funnel
+in a browser with every Mixpanel request intercepted. The browser suite runs with analytics
+declined (`CONSENT_DENIED_STATE` in `playwright.config.ts`), because the banner is fixed to the
+bottom of the viewport and would sit over the Continue button the other specs press.
+
 ## Automatic verification
 
 Automatic GitHub checks are a separate explicit setup. `/onboard` and `/adopt`

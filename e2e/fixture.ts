@@ -27,3 +27,32 @@ export const FIXTURE_SHOP_IDENTIFIER = `localhost:${FIXTURE_PORT}`;
  * `node scripts/generate-sanity-fixture.mjs` when the article query or the article changes.
  */
 export const FIXTURE_SANITY_API_HOST = `http://localhost:${FIXTURE_PORT}`;
+
+/**
+ * Analytics during a browser run. The token is a fixture one and every request to Mixpanel is
+ * intercepted by `analytics.spec.ts`, so a run sends nothing to the real service, but the app
+ * still has to believe it is configured or the consent banner would never render.
+ */
+export const FIXTURE_MIXPANEL_TOKEN = 'fixture-mixpanel-token';
+
+/**
+ * The whole suite runs with analytics already declined. The consent banner is fixed to the
+ * bottom of the viewport and would sit over the Continue button every other spec presses, and
+ * a declined visitor is also the one state in which no spec can accidentally reach Mixpanel.
+ * `analytics.spec.ts` clears this for itself, because the banner is what it is about.
+ */
+export const CONSENT_DENIED_STATE = {
+	cookies: [
+		{
+			name: 'solean_analytics_consent',
+			value: 'denied',
+			domain: 'localhost',
+			path: '/',
+			expires: -1,
+			httpOnly: false,
+			secure: false,
+			sameSite: 'Lax' as const
+		}
+	],
+	origins: []
+};

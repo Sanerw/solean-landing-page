@@ -8,6 +8,8 @@
 	import QuestionnaireShell from '$lib/features/questionnaire/QuestionnaireShell.svelte';
 	import SurveyStepScreen from '$lib/features/questionnaire/SurveyStepScreen.svelte';
 	import { questionnaireSession } from '$lib/features/questionnaire/survey-state.svelte';
+	import { analyticsConsent } from '$lib/analytics/consent.svelte';
+	import { trackAnamnesisSubmitted, trackQuestionnaireStarted } from '$lib/analytics/events';
 	import { readEmail, readWeightKg, weightStepId } from '$lib/features/questionnaire/answers';
 	import { submitAnamnesis, type AnamnesisSubmission } from '$lib/features/questionnaire/anamnesis-client';
 	import { questionnaireUid } from '$lib/config/rxscale';
@@ -96,6 +98,19 @@
 		}
 	});
 
+	/**
+	 * The funnel's entry. Guarded once per page load inside the event module, so walking the
+	 * steps does not re-send it and a reload legitimately starts a new session. Deferred to
+	 * hydration because the server neither has the answers nor the consent decision applied.
+	 *
+	 * Depends on the consent decision too: an advert can land someone here directly, and the
+	 * banner they then answer is the one standing between this event and being sent.
+	 */
+	$effect(() => {
+		analyticsConsent.state;
+		if (hydrated && !redirecting) trackQuestionnaireStarted(data.stepId);
+	});
+
 	const isCompletion = $derived(data.stepId === COMPLETION_STEP_ID);
 	const page = $derived(
 		survey?.pages.find((candidate) => stepIdForPage(candidate.name) === data.stepId) ?? null
@@ -179,6 +194,9 @@
 		// uid is what makes every step resolve forward, so the route's own effect would navigate
 		// during an await anyway; leaving at once is the honest version of that.
 		submitting = false;
+		// The count is the shape of the questionnaire the branching produced, never the answers
+		// that produced it. The uid itself is deliberately not sent.
+		trackAnamnesisSubmitted(plan?.steps.filter((step) => step.kind === 'survey').length ?? 0);
 		questionnaireSession.recordSubmission(result.uid);
 		await goto(questionnaireStepHref(COMPLETION_STEP_ID));
 	}

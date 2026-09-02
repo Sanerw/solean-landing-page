@@ -206,5 +206,10 @@
 	"framing_secondary_cta": "Behandlungen entdecken",
 	"framing_factor_stress": "Stress",
 	"framing_factor_hormones": "Hormone",
-	"framing_factor_genetics": "Genetik"
+	"framing_factor_genetics": "Genetik",
+	"consent_title": "Cookies und Nutzungsanalyse",
+	"consent_body": "Wir verwenden Cookies und Analysewerkzeuge, um zu verstehen, wie diese Seite genutzt wird. Deine Antworten aus dem Anamnesebogen werden dabei niemals übertragen. Ohne deine Einwilligung wird nichts gemessen. Mehr dazu in unserer",
+	"consent_privacy_link": "Datenschutzerklärung.",
+	"consent_accept": "Einverstanden",
+	"consent_decline": "Ablehnen"
 }

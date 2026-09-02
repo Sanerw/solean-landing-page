@@ -19,6 +19,7 @@
 	import BuildingPlanScreen from './BuildingPlanScreen.svelte';
 	import { checkoutFailures, recommendation as recommendationCopy } from './recommendation-content';
 	import { requestCheckout, type CheckoutFailure } from './checkout-client';
+	import { trackCheckoutStarted } from '$lib/analytics/events';
 	import {
 		chosenPlanName,
 		defaultVariant,
@@ -119,6 +120,11 @@
 			failure = result.reason;
 			return;
 		}
+
+		// Sent before the navigation and with `sendBeacon`, because a batched event queued a
+		// tick before `location.assign` never leaves the browser. The mode is the commerce
+		// distinction the screen makes; the product, the dose and the uid are not sent.
+		trackCheckoutStarted(mode, plans.length > 0);
 
 		// Exactly as returned, and a full navigation because it leaves this app for Shopify.
 		// `ordering` stays true: the button must not be pressable while the browser is leaving.

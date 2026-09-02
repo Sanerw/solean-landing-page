@@ -8,6 +8,9 @@
 	import interTight from '@fontsource-variable/inter-tight/files/inter-tight-latin-wght-normal.woff2?url';
 	import { onNavigate } from '$app/navigation';
 	import { page } from '$app/state';
+	import ConsentBanner from '$lib/analytics/ConsentBanner.svelte';
+	import { analyticsConsent } from '$lib/analytics/consent.svelte';
+	import { trackPageView } from '$lib/analytics/events';
 	import { alternatesFor } from '$lib/i18n/alternates';
 	import { entersQuestionnaire } from '$lib/navigation/view-transition';
 	import type { LayoutProps } from './$types';
@@ -18,6 +21,14 @@
 	// preview is a redirect through `/preview/enable` rather than a client-side transition.
 	// svelte-ignore state_referenced_locally
 	const { previewEnabled } = data;
+
+	/**
+	 * Seeded before anything can be tracked, and only ever from the server's read of the
+	 * cookie. Done at setup rather than in an effect so the banner's first render already
+	 * knows the answer and a returning visitor never sees it appear and vanish.
+	 */
+	// svelte-ignore state_referenced_locally
+	analyticsConsent.hydrate(data.analyticsConsent);
 
 	/**
 	 * Loaded only once preview is on, never at module scope, and that includes the client, whose
@@ -49,6 +60,21 @@
 		});
 	});
 
+	/**
+	 * The page view, sent from here because SvelteKit navigates on the client: the SDK's own
+	 * listener would only ever see the first load. Questionnaire steps are excluded by
+	 * `trackPageView` itself, since their paths are derived from the answers.
+	 *
+	 * It depends on the consent decision as well as the path, and that is not incidental. The
+	 * banner is answered on the page the visitor landed on, by which time this effect has
+	 * already run and been dropped for want of consent; without the decision as a dependency
+	 * the first page view, the arrival itself, is the one view never recorded.
+	 */
+	$effect(() => {
+		analyticsConsent.state;
+		trackPageView(page.url.pathname);
+	});
+
 	// One alternate per locale for the page being viewed, plus x-default.
 	const links = $derived(alternatesFor(page.url.pathname));
 </script>
@@ -76,3 +102,5 @@
 {:else}
 	{@render children()}
 {/if}
+
+<ConsentBanner />
