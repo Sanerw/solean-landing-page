@@ -6,8 +6,9 @@
 # which is why the gap only appeared on a cold CI install.
 #
 # `onlyBuiltDependencies` is what pnpm 10 reads. pnpm 11 replaced it with `allowBuilds` and
-# fails the install outright, which is what Vercel runs by default on this project. pnpm 10
-# ignores the key it does not know, and pnpm 11 ignores the one it superseded.
+# fails the install outright. `packageManager` now pins pnpm 11 everywhere, so only the second
+# spelling is read in practice; the first stays because pnpm 11 ignores the key it superseded and
+# it costs nothing to keep an install with an older pnpm working.
 onlyBuiltDependencies:
   - esbuild
   - sharp
@@ -16,10 +17,13 @@ allowBuilds:
   esbuild: true
   sharp: true
 
-# Temporary, to unblock a Vercel deploy. pnpm 11 defaults minimumReleaseAge to 1440 minutes and
-# re-applies that threshold to every lockfile entry on install, so the build rejected fifteen
-# Sanity packages published on 2026-09-01, ten minutes younger than its cutoff. The local pnpm 10
-# uses a threshold of 0, which is why the lockfile was written without a warning.
-# The real fix is to pin packageManager to pnpm 11 and drop this key, so the threshold binds where
-# the lockfile is created rather than only where it is read.
-minimumReleaseAge: 0
+# pnpm 11 holds a package back for a day after it is published, which is what broke the Vercel
+# install: the lockfile carried Sanity releases minutes younger than that window. The threshold is
+# left at its default so it binds here, where the lockfile is written, rather than only on the
+# build machine that reads it.
+#
+# pnpm wrote this exclusion itself during the fresh resolution: a peer range left no older
+# @sanity/types to fall back to. It is pinned to that one version, so a later release is held back
+# again like everything else.
+minimumReleaseAgeExclude:
+  - '@sanity/types@6.12.0'

@@ -195,7 +195,10 @@ checks do not make the Blueprint unusable.
 
 ## Commands
 
-Package manager: **pnpm**.
+Package manager: **pnpm**, pinned to 11.25.0 by `package.json#packageManager` so the version that
+writes the lockfile is the version Vercel installs with. pnpm 11 refuses a lockfile entry published
+less than a day ago, and that check runs against the committed lockfile, not just fresh resolution,
+so an older pnpm resolving without the rule produces a lockfile the deploy rejects.
 
 - Dev server: `pnpm dev` (http://localhost:5173)
 - Build: `pnpm build`
