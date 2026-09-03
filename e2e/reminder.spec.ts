@@ -5,14 +5,20 @@ import { UI } from './ui-labels';
 /**
  * The abandoned-questionnaire reminder, asserted on what the browser actually sends.
  *
- * The harness runs with `BREVO_API_KEY` blank (`playwright.config.ts`), so `/api/reminder`
- * answers as an unconfigured deployment and no request reaches Brevo. That is the point:
- * these specs prove the two signals leave at the right moments carrying the right thing,
- * without enrolling anybody on the real account.
+ * The harness runs with both Customer.io credentials blank (`playwright.config.ts`), so
+ * `/api/reminder` answers as an unconfigured deployment and no request reaches the vendor.
+ * That is the point: these specs prove the two signals leave at the right moments carrying the
+ * right thing, without enrolling anybody on the real workspace.
  *
  * Requests are observed rather than intercepted, so the endpoint really runs and really
- * answers. Asserting against Brevo's own state would be wrong anyway: contact creation there
- * is asynchronous and took up to eighteen seconds when it was measured.
+ * answers. Asserting against the vendor's own state would be wrong anyway: profile creation
+ * there is asynchronous.
+ *
+ * **The guard itself cannot be proven from here, and do not try.** The outbound call is made by
+ * the server, in the `webServer` process, so `page.on('request')` never sees it: an assertion
+ * that no request reached `customer.io` would pass whether the guard worked or not. What proves
+ * it is `client.test.ts`, which asserts that an unconfigured pair makes no call at all, plus the
+ * blanked variables in `playwright.config.ts`.
  */
 
 interface Signal {

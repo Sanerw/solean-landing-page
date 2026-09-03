@@ -66,11 +66,13 @@ export default defineConfig({
 				// Mixpanel: the suite runs declined and the analytics spec intercepts the host.
 				PUBLIC_MIXPANEL_TOKEN: FIXTURE_MIXPANEL_TOKEN,
 				// Blank on purpose, and load-bearing. `.env` is still read for anything this block
-				// does not override, so without this line every run would enrol its walked-through
-				// addresses as real contacts on the real Brevo account and burn its sending
-				// credits. An empty key means the endpoint answers as an unconfigured deployment,
-				// which is what the reminder spec asserts against.
-				BREVO_API_KEY: ''
+				// does not override, so without these lines every run would enrol its walked-through
+				// addresses as real people on the real Customer.io workspace. Both have to be
+				// blanked: the client treats a half-configured pair as unconfigured, but leaving one
+				// set would make that an accident rather than the intent. An unconfigured deployment
+				// is what the reminder spec asserts against.
+				CUSTOMERIO_SITE_ID: '',
+				CUSTOMERIO_TRACK_API_KEY: ''
 			}
 		}
 	]

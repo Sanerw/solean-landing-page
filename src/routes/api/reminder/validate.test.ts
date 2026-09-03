@@ -13,7 +13,7 @@ describe('readReminderRequest', () => {
 		expect(readReminderRequest({ stage: 'submitted', email: EMAIL }).ok).toBe(true);
 	});
 
-	it('refuses a stage that names a Brevo event instead', () => {
+	it('refuses a stage that names a Customer.io event instead', () => {
 		// Otherwise the caller, not this app, would decide which automation fires.
 		expect(readReminderRequest({ stage: 'anamnesis_submitted', email: EMAIL })).toEqual({
 			ok: false,

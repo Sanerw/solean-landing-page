@@ -444,6 +444,19 @@ claims are not approved production content.
   to the start of the questionnaire, not to the step they left; resuming where
   they stopped stays in the deferred backlog.
 
+- [x] 23. **Customer.io reminder, replacing Brevo** - the same abandoned-questionnaire
+  reminder, moved onto Customer.io and off Brevo entirely. The seam feature 22 drew
+  stays: `POST /api/reminder` still takes a stage and an address, the browser half is
+  untouched, and the two event names, `questionnaire_email_captured` and
+  `anamnesis_submitted`, keep their spelling, because a person types them into the new
+  panel exactly as they typed them into the old one. What changes is the vendor behind
+  it: the EU region, HTTP Basic with a Site ID and a Track API Key instead of one
+  `api-key` header, and the e-mail as the person identifier, because this app persists
+  nothing it could key on instead. `src/lib/server/brevo/` and `BREVO_API_KEY` are
+  deleted in the same feature, so the app is never wired to two mail vendors at once.
+  The campaign, its timing and its exit condition move to the Customer.io panel, and
+  the Brevo automation is switched off by hand.
+
 ## Testing
 
 **Decided, then deferred at 9a.** The plan was to run `/tests` before feature 9;

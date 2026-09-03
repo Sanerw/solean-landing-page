@@ -206,7 +206,7 @@
 		// The count is the shape of the questionnaire the branching produced, never the answers
 		// that produced it. The uid itself is deliberately not sent.
 		trackAnamnesisSubmitted(plan?.steps.filter((step) => step.kind === 'survey').length ?? 0);
-		// The record exists, so no reminder is owed. Brevo's exit condition reads this event.
+		// The record exists, so no reminder is owed. The campaign's exit condition reads this event.
 		endReminderWatch(survey.data);
 		questionnaireSession.recordSubmission(result.uid);
 		await goto(questionnaireStepHref(COMPLETION_STEP_ID));

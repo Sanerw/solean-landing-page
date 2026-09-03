@@ -2,7 +2,7 @@ import { readEmail, type AnswerData } from './answers';
 
 /**
  * The browser half of the abandoned-questionnaire reminder. It asks Solean's own endpoint,
- * never Brevo directly: `BREVO_API_KEY` is a real credential and stays on the server.
+ * never Customer.io directly: those are real credentials and they stay on the server.
  *
  * **Nothing here may be able to affect the questionnaire.** Every call is fire and forget, no
  * caller awaits one, and a rejected request is swallowed. The reminder is marketing and the
@@ -10,7 +10,7 @@ import { readEmail, type AnswerData } from './answers';
  * submission, or put an error in front of somebody answering questions about their health.
  *
  * Only the address travels, and only because the answers live in the browser. The stage
- * travels as a stage, never as a Brevo event name, so the server keeps the choice of which
+ * travels as a stage, never as a vendor event name, so the server keeps the choice of which
  * automation a signal belongs to.
  */
 
@@ -61,7 +61,7 @@ export function startReminderWatch(data: AnswerData): void {
 /**
  * The anamnesis exists, so the reminder is owed to nobody. This is the automation's exit
  * condition, and it also sets `QUESTIONNAIRE_COMPLETED` on the contact as a second line of
- * defence inside Brevo.
+ * defence inside Customer.io.
  */
 export function endReminderWatch(data: AnswerData): void {
 	const email = readEmail(data);

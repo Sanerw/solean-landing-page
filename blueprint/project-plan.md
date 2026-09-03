@@ -111,17 +111,23 @@ clinical review. Two rules follow, neither negotiable:
   analytics, or an error report in production.
 - Nothing about the answers is persisted or forwarded anywhere except the
   anamnesis submission and, for the e-mail alone, the checkout call and the
-  Brevo reminder.
+  Customer.io reminder.
 
-**The Brevo exception, decided 2026-09-03.** Feature 22 forwards the visitor's
-e-mail to Brevo at the moment the question is answered, which is *before* any
-submission, so a reminder can be sent to someone who walked away. That is a
-personal identifier leaving an unfinished medical questionnaire for a marketing
-processor, and it is a deliberate widening of the rule above rather than an
-oversight. What may travel is the e-mail and a stage marker, nothing else: no
-answer, no anamnesis uid, no medication or dose, no name, no telephone number.
-The user also decided that typing the e-mail and continuing is the whole
-consent step: there is no separate marketing opt-in checkbox.
+**The reminder exception, decided 2026-09-03.** The visitor's e-mail is forwarded
+to a marketing processor at the moment the question is answered, which is *before*
+any submission, so a reminder can be sent to someone who walked away. That is a
+personal identifier leaving an unfinished medical questionnaire, and it is a
+deliberate widening of the rule above rather than an oversight. What may travel is
+the e-mail and a stage marker, nothing else: no answer, no anamnesis uid, no
+medication or dose, no name, no telephone number. The user also decided that typing
+the e-mail and continuing is the whole consent step: there is no separate marketing
+opt-in checkbox.
+
+**The processor changed, the decision did not.** Feature 22 sent this to Brevo;
+feature 23 moved it to Customer.io, EU region. The rule above is written against
+whichever processor is configured, and only one ever is. What may travel, and the
+fact that typing the address and continuing is the whole consent step, were not
+re-opened.
 
 What lives where:
 
@@ -132,7 +138,7 @@ What lives where:
 | `steps[]` | Solean | Survey pages interleaved with Solean interludes. The single source of truth for position, progress, and routing |
 | Anamnesis uid | Browser session | Returned by the submission, required by the checkout call |
 | Questionnaire uid, store domain, variant id, question names | Config | One module, see section 5 |
-| Visitor e-mail, once typed | Brevo | Forwarded when the question is answered, before any submission, so a reminder can be sent. The e-mail and a stage marker, nothing else: no answer, no uid, no name, no telephone number |
+| Visitor e-mail, once typed | Customer.io, EU region | Forwarded when the question is answered, before any submission, so a reminder can be sent. The e-mail and a stage marker, nothing else: no answer, no uid, no name, no telephone number |
 | Order, payment, prescription, delivery | RxScale and Shopify | Not modelled here |
 
 **Editorial content lives in Sanity.** From feature 20 the Learn article and its
@@ -246,7 +252,7 @@ Three services. The first three calls hold no secret; the fourth does.
 | Fetch the questionnaire | `GET https://api.rxscale.com/v4/anamnesis/questionnaires/{uid}` | public |
 | Submit answers | `POST https://api.rxscale.com/v4/anamnesis/questionnaires/{uid}/submissions` | public |
 | Create the cart | `POST https://{store}/api/{version}/graphql.json`, `cartCreate` | Storefront token when configured |
-| Signal the funnel stage | `POST https://api.brevo.com/v3/events` | `BREVO_API_KEY`, server only |
+| Signal the funnel stage | `POST https://track-eu.customer.io/api/v2/entity` | `CUSTOMERIO_SITE_ID` and `CUSTOMERIO_TRACK_API_KEY` as HTTP Basic, server only |
 
 **RxScale is not called to place the order.** They import it from Shopify by
 webhook and read the anamnesis off the cart. This replaced
@@ -256,13 +262,14 @@ which RxScale recommended against on 2026-08-31 in favour of the cart.
 
 Rules:
 
-- **No secret is on the checkout path.** That claim is now scoped: the Brevo
-  call carries a real credential, `BREVO_API_KEY`, and is the one boundary here
-  that does. It never reaches the browser, and no reminder is sent from client
-  code. The Shopify variables stay server-side so the
-  variant does not ship in the client bundle and validation has one home, not
-  because they are private. `PUBLIC_RXSCALE_QUESTIONNAIRE_UID` may be public,
-  because the anamnesis endpoints are. A Storefront token is sent when
+- **No secret is on the checkout path.** That claim is now scoped: the
+  Customer.io call carries real credentials, `CUSTOMERIO_SITE_ID` and
+  `CUSTOMERIO_TRACK_API_KEY`, and is the one boundary here that does. Neither
+  reaches the browser, and no reminder is sent from client code. The Shopify
+  variables stay server-side so the variant does not ship in the client bundle
+  and validation has one home, not because they are private.
+  `PUBLIC_RXSCALE_QUESTIONNAIRE_UID` may be public, because the anamnesis
+  endpoints are. A Storefront token is sent when
   configured; the shop answers without one today, which is undocumented
   behaviour rather than a foundation.
 - **The model is the only source of question content.** Text, options, order,
@@ -628,7 +635,8 @@ The host choice is settled; what it brings with it is env configuration:
 | `PUBLIC_SANITY_API_VERSION` | public | pinned, not floating, so a query cannot change behaviour without a code change |
 | `PUBLIC_SANITY_STUDIO_URL` | public | where the Presentation tool lives, for the click-to-edit overlays |
 | `SANITY_API_READ_TOKEN` | server only | reads drafts. Without it the site serves published content and preview stays off, which is not an error |
-| `BREVO_API_KEY` | server only | the reminder events. Absent means this deployment sends no reminders, which is a valid state |
+| `CUSTOMERIO_SITE_ID` | server only | the Customer.io workspace the reminder events are written into |
+| `CUSTOMERIO_TRACK_API_KEY` | server only | the other half of the Basic credential. Either one absent means this deployment sends no reminders, which is a valid state |
 
 > TODO: set the variables in the Vercel project and run a deploy. Handle it
 > through `/release vercel`.

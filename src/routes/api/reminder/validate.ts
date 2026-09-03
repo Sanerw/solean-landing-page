@@ -1,4 +1,4 @@
-import { isReminderStage, type ReminderStage } from '$lib/server/brevo/payload';
+import { isReminderStage, type ReminderStage } from '$lib/server/customerio/payload';
 
 /**
  * What the browser is allowed to say, and the whole of it. Separated from the route so the
@@ -12,7 +12,7 @@ const MAX_EMAIL_LENGTH = 254;
 /**
  * Shape, not correctness. Nothing here can tell a real mailbox from an invented one, and
  * pretending otherwise with a longer pattern would only reject unusual but valid addresses.
- * Brevo is the one that finds out whether it delivers.
+ * Customer.io is the one that finds out whether it delivers.
  */
 const EMAIL_SHAPE = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/;
 
@@ -25,7 +25,7 @@ export type ValidationResult =
 export function readReminderRequest(body: unknown): ValidationResult {
 	const source = typeof body === 'object' && body !== null ? (body as Record<string, unknown>) : {};
 
-	// The stage, never the Brevo event name. A caller that could name the event could choose
+	// The stage, never the Customer.io event name. A caller that could name the event could choose
 	// which automation fires; the mapping stays on this side.
 	if (!isReminderStage(source.stage)) return { ok: false, reason: 'bad-stage' };
 

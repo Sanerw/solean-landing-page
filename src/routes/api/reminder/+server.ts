@@ -1,14 +1,15 @@
-import { sendReminderEvent } from '$lib/server/brevo/client';
+import { sendReminderEvent } from '$lib/server/customerio/client';
 import { readReminderRequest } from './validate';
 import type { RequestHandler } from './$types';
 
 /**
- * The reminder signal. This endpoint exists to keep `BREVO_API_KEY` out of the browser: it is
- * the first real credential on an external boundary in this project, and the questionnaire
- * must never hold it.
+ * The reminder signal. This endpoint exists to keep the Customer.io credentials out of the
+ * browser: they are the first real credential pair on an external boundary in this project, and
+ * the questionnaire must never hold them.
  *
  * **It answers 204 for everything except malformed input, and that is the design.** A
- * deployment with no key configured, and a Brevo that refuses or times out, are both answered
+ * deployment with no credentials configured, and a Customer.io that refuses or times out, are
+ * both answered
  * the same as a success. The reminder is marketing; the questionnaire is medical. Nothing
  * about a mail that failed to send may reach the person filling in the form, and nothing here
  * may give the browser a reason to retry, block, or show an error.
@@ -36,7 +37,8 @@ export const POST: RequestHandler = async ({ request }) => {
 	// Content-free on purpose. The address is personal data from a medical funnel, and a log
 	// line is exactly the kind of place it must not end up. The stage is safe: it says which
 	// call failed and nothing about who was on the other end of it.
-	if (result === 'failed') console.error(`[reminder] Brevo refused the ${parsed.stage} event`);
+	if (result === 'failed')
+		console.error(`[reminder] Customer.io refused the ${parsed.stage} event`);
 
 	return new Response(null, { status: 204 });
 };

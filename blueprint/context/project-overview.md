@@ -1,6 +1,6 @@
 # Solean - Project Overview
 
-<!-- blueprint:source-hash 7c01776655b9b8b17d31da0f389c0d6feab94c98f0db8b3883c2aab4d3c2454d -->
+<!-- blueprint:source-hash 689a30c915f90409a1afb8b73da15a4987c483095e1a17c55dcffd9543067c98 -->
 
 > The Solean front end: a marketing site and a doctor-led GLP-1 funnel that runs
 > on RxScale's Anamnesis API and hands the order to Shopify by creating a cart
@@ -37,7 +37,8 @@ happens inside RxScale, not on a Solean screen.
 
 ## Features
 
-Twenty-two in build-plan order. The first twenty-one are complete; 22 is next.
+Twenty-three in build-plan order. The first twenty-two are complete; 23 is
+next.
 
 1. **Design system and core UI components** (done) - semantic tokens, two fonts,
    radii, brand foundations, thirteen adapted shadcn primitives on a showcase at
@@ -106,13 +107,24 @@ Twenty-two in build-plan order. The first twenty-one are complete; 22 is next.
     cannot fetch. Payment and carrier logos stay in the repository: chrome, not
     home page content.
 
-22. **Brevo abandoned-questionnaire reminder** (next) - a visitor who types their
-    e-mail and does not submit gets a reminder from Brevo; one who submits stops
-    getting them. Two server-sent events carry it, `questionnaire_email_captured`
-    and `anamnesis_submitted`; the campaign, its timing and its exit condition
-    live in the Brevo panel, not here. Nothing medical travels. Because nothing
-    is persisted, the reminder returns someone to the start of the questionnaire,
-    not to the step they left.
+22. **Brevo abandoned-questionnaire reminder** (done) - a visitor who types their
+    e-mail and does not submit gets a reminder; one who submits stops getting
+    them. Two server-sent events carry it, `questionnaire_email_captured` and
+    `anamnesis_submitted`; the campaign, its timing and its exit condition live
+    in the vendor's panel, not here. Nothing medical travels. Because nothing is
+    persisted, the reminder returns someone to the start of the questionnaire,
+    not to the step they left. Feature 23 replaces Brevo with Customer.io.
+
+23. **Customer.io reminder, replacing Brevo** (next) - the same reminder, moved
+    onto Customer.io and off Brevo entirely. The seam feature 22 drew stays:
+    `POST /api/reminder` takes a stage and an address, the browser half is
+    untouched, and both event names keep their spelling, because a person types
+    them into the new panel exactly as they typed them into the old one. What
+    changes is the vendor: the EU region, HTTP Basic with a Site ID and a Track
+    API Key instead of one `api-key` header, and the e-mail as the person
+    identifier, because this app persists nothing it could key on instead.
+    `src/lib/server/brevo/` and `BREVO_API_KEY` are deleted in the same feature,
+    so the app is never wired to two mail vendors at once.
 
 Dropped to the deferred backlog with this plan change: Solean's own checkout
 (account, shipping, payment), the pricing engine, add-on selection, and the
@@ -133,15 +145,19 @@ and medical answers to RxScale, who own storage, retention, and clinical review.
   analytics, or an error report in production.
 - Nothing about the answers is persisted or forwarded anywhere except the
   anamnesis submission and, for the e-mail alone, the checkout call and the
-  Brevo reminder.
+  Customer.io reminder.
 
-**The Brevo exception, decided 2026-09-03.** Feature 22 forwards the visitor's
-e-mail to Brevo when the question is answered, which is *before* any submission,
-so a reminder can reach someone who walked away. A personal identifier leaves an
-unfinished medical questionnaire for a marketing processor, deliberately. What
-may travel is the e-mail and a stage marker: no answer, no anamnesis uid, no
+**The reminder exception, decided 2026-09-03.** The visitor's e-mail is forwarded
+to a marketing processor when the question is answered, which is *before* any
+submission, so a reminder can reach someone who walked away. A personal
+identifier leaves an unfinished medical questionnaire, deliberately. What may
+travel is the e-mail and a stage marker: no answer, no anamnesis uid, no
 medication or dose, no name, no telephone number. Typing the e-mail and
 continuing is the whole consent step; there is no separate marketing opt-in.
+
+**The processor changed, the decision did not.** Feature 22 sent this to Brevo;
+feature 23 moves it to Customer.io, EU region. Only one processor is ever
+configured, and what may travel was not re-opened.
 
 ### Ownership
 
@@ -155,7 +171,7 @@ continuing is the whole consent step; there is no separate marketing opt-in.
 | Questionnaire uid, store domain, variant id, question names | Config | One module per concern. Nothing on the checkout path is a secret |
 | Order, payment, prescription, delivery | Shopify, then RxScale by webhook | Not modelled here. RxScale is never told about the order by us |
 | Learn article and its reviewer | Sanity | Published editorial copy, one document per language. Read at request time, never cached past the response |
-| Visitor e-mail, once typed | Brevo | Forwarded when the question is answered, before any submission, so a reminder can be sent. The e-mail and a stage marker, nothing else |
+| Visitor e-mail, once typed | Customer.io, EU region | Forwarded when the question is answered, before any submission, so a reminder can be sent. The e-mail and a stage marker, nothing else |
 
 ### steps[] (Solean)
 
@@ -249,7 +265,7 @@ the checkout and order status Solean no longer builds.
 | **survey-core** | Headless questionnaire engine: branching, validation, the `data` shape. No SurveyJS renderer, no SurveyJS theme |
 | **RxScale API** | Anamnesis v4 and Public API v2. Docs at `https://docs.rxscale.com`, also an MCP server |
 | **Sanity** | Editorial content. Standalone Studio in `../studio-solean`; `@sanity/sveltekit` here for the client, preview mode and Visual Editing |
-| **Brevo** | The abandoned-questionnaire reminder, from feature 22. Server-side REST only: no tracker, no browser script |
+| **Customer.io** | The abandoned-questionnaire reminder, from feature 23, EU region. Server-side REST only: no tracker, no browser script |
 | **Lucide** | Icons |
 | **pnpm** | Package manager |
 
@@ -290,7 +306,7 @@ service interface per screen. No abstraction is built before something calls it.
 | Submit answers | `POST https://api.rxscale.com/api/v3-1/anamnesis/questionnaires/{uid}/submissions` | public |
 | Read the recommendation | `GET https://api.rxscale.com/api/v2/anamnesis/{anamnesisUid}/recommendation` | public |
 | Create the cart | `POST https://{store}/api/{version}/graphql.json`, `cartCreate` | Storefront token when configured |
-| Signal the funnel stage | `POST https://api.brevo.com/v3/events` | `BREVO_API_KEY`, server only |
+| Signal the funnel stage | `POST https://track-eu.customer.io/api/v2/entity` | `CUSTOMERIO_SITE_ID` and `CUSTOMERIO_TRACK_API_KEY` as HTTP Basic, server only |
 
 **RxScale is not called to place the order.** They import it from Shopify by
 webhook and read the anamnesis off the cart attribute. Their treatment checkout
@@ -474,7 +490,8 @@ adapter part way through a build.
 | `PUBLIC_SANITY_API_VERSION` | public | pinned, not floating |
 | `PUBLIC_SANITY_STUDIO_URL` | public | where the Presentation tool lives, for the click-to-edit overlays |
 | `SANITY_API_READ_TOKEN` | server only | reads drafts. Without it the site serves published content and preview stays off, which is not an error |
-| `BREVO_API_KEY` | server only | the reminder events. Absent means this deployment sends no reminders, which is a valid state |
+| `CUSTOMERIO_SITE_ID` | server only | the Customer.io workspace the reminder events are written into |
+| `CUSTOMERIO_TRACK_API_KEY` | server only | the other half of the Basic credential. Either one absent means this deployment sends no reminders, which is a valid state |
 
 > TODO: set the variables in the Vercel project and run a deploy. Handle it
 > through `/release vercel`.

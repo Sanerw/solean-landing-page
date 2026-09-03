@@ -69,7 +69,7 @@ describe('reminder client', () => {
 		]);
 	});
 
-	it('sends the stage, never a Brevo event name', async () => {
+	it('sends the stage, never a vendor event name', async () => {
 		// The server owns which automation a signal belongs to. A body naming the event would
 		// hand that choice to whoever can reach the endpoint.
 		const { endReminderWatch } = await freshClient();
