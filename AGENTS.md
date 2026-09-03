@@ -173,9 +173,10 @@ a workflow failure.
 
 ## Analytics: Mixpanel
 
-Mixpanel is the only analytics tool in this project. Do not add a second one, and do not add
-a tag manager, a session recorder, or a heatmap tool: each would reopen decisions this section
-settles.
+Mixpanel is the only analytics tool in this project, and it covers events, session replay and
+heatmaps. Do not add a second analytics tool, a tag manager, or a separate session recorder or
+heatmap vendor: each would reopen decisions this section settles. Mixpanel's own heatmap is
+not a second tool and is on, under the rules below.
 
 | Detail | Value |
 | --- | --- |
@@ -185,6 +186,7 @@ settles.
 | CDP | none |
 | Consent required | **yes**, DSGVO. Nothing is sent or recorded before an explicit accept |
 | Session replay | **on, every page including the questionnaire**, share set by `PUBLIC_MIXPANEL_REPLAY_PERCENT` |
+| Heatmaps | **on, every page including the questionnaire**, `record_heatmap_data`. Rides on the replay: no recording means no heatmap |
 | Data residency | EU, `https://api-eu.mixpanel.com` |
 | Token | `PUBLIC_MIXPANEL_TOKEN`. Absent means this deployment does not measure, which is a valid state |
 
@@ -219,14 +221,21 @@ analytics. No event property may carry:
 - the anamnesis uid
 - the medication, the dose, or the Shopify variant
 
-Two consequences that are easy to undo by accident:
+Three consequences that are easy to undo by accident:
 
 - **`autocapture` is off in `client.ts` and must stay off.** It reports the text of clicked
   elements, which on a questionnaire step is the wording of a medical question and the answer
-  chosen, in clear.
-- **No page view is sent for a `/questionnaire` path.** The model branches on `visibleIf`, so
-  which steps a person sees is derived from what they answered: the path is the answer.
-  `isTrackablePath` enforces this and is unit tested.
+  chosen, in clear. Heatmaps do not need it, and leaving it off is what keeps them safe:
+  `capture_text_content` lives in the autocapture config, and `Autocapture.getFullConfig()`
+  returns `{}` while `autocapture` is `false`, so `$el_text` is unreachable rather than merely
+  defaulted off. `client.test.ts` fails if this moves.
+- **Our own `page_viewed` is never sent for a `/questionnaire` path.** The model branches on
+  `visibleIf`, so which steps a person sees is derived from what they answered: the path is
+  the answer. `isTrackablePath` enforces this and is unit tested. It no longer means no
+  questionnaire path reaches Mixpanel at all; the heatmap's `$mp_web_page_view` carries the
+  full URL, which the Heatmaps section below explains and which was accepted with it.
+- **Every questionnaire surface carries `mp-sensitive`.** See Heatmaps below. Without it a
+  click sends the answer's own wording as an event property.
 
 ### Session replay
 
@@ -268,6 +277,44 @@ Withdrawing consent calls `stop_session_recording` explicitly. `opt_out_tracking
 stop rrweb, so without it a session already being recorded would go on being recorded after
 the person withdrew.
 
+### Heatmaps
+
+On for every page, the questionnaire included, decided on 2026-09-03 alongside the replay and
+resting on the same reasoning. `record_heatmap_data: true` in `client.ts` is the switch, and
+`autocapture` stays `false`.
+
+Clicks are only collected while a replay is live (`is_recording_heatmap_data()` is
+`getSessionReplayId() && record_heatmap_data`), so `PUBLIC_MIXPANEL_REPLAY_PERCENT` turns
+heatmaps down with it and `0` turns both off. The events it adds, `$mp_click`,
+`$mp_dead_click`, `$mp_rage_click` and `$mp_web_page_view`, are exempt from event billing.
+They are not exempt from the rules above.
+
+Three mechanics, each one a way to get this wrong quietly.
+
+- **`mp-sensitive` is what makes it safe, and it does not reach portals.** A heatmap click
+  reports `$elements`, one entry per ancestor, each carrying the SDK's `TRACKED_ATTRS`:
+  `aria-label`, `aria-labelledby`, `aria-describedby`, `href`, `name`, `role`, `title`, `type`.
+  This app puts answers in `aria-label` on purpose, so a screen reader can name a control:
+  the choice fields label each option with its own text, and the calendar labels its cells with
+  the date. `QuestionnaireShell` carries the class, and so does the date picker's
+  `Popover.Content`, because `bits-ui` portals that to `document.body` and a browser run caught
+  the date of birth leaving that way. **A class on `<body>` does not work**:
+  `shouldTrackElementDetails` walks `curEl.parentNode && !isTag(curEl, 'body')` and never reads
+  the body's own classes. Any new questionnaire surface that portals, a dialog, a sheet, a
+  select, needs its own copy. Never `mp-no-track`: `isElementBlocked` reads that one and would
+  discard the click, leaving no heatmap at all.
+- **The entry page needs a second call.** `autocapture.init()` runs synchronously inside
+  `mixpanel.init()`, before the recorder has loaded and assigned a replay id, so the
+  `$mp_web_page_view` that anchors a heatmap to a page is skipped on the page the visitor
+  arrived on. Later client-side navigations send one. `anchorHeatmapToRecording` re-applies the
+  flag with `set_config` once `start_session_recording()` resolves, which re-runs
+  `autocapture.init()` with a replay id in hand. Remove it and the landing page has clicks and
+  no page, silently.
+- **Questionnaire paths now reach Mixpanel.** `$mp_web_page_view` carries the full URL and
+  `$mp_click` carries `$pathname`, so `isTrackablePath` governs `page_viewed` only. This is the
+  replay trade rather than a new one: the branching model is public, so the steps a person was
+  shown are derived from what they answered either way. Accepted knowingly with the replay.
+
 ### Consent
 
 `opt_out_tracking_by_default` is on, and the SDK is behind a dynamic import, so a visitor who
@@ -283,20 +330,41 @@ accepted for exactly this reason, so a one-shot event is not spent on a gate tha
 There is no `identify()` or `reset()` anywhere, and there should not be: this app has no
 accounts, no login, and no logout. Every visitor is an anonymous `distinct_id`.
 
-Adding Mixpanel to a page that a person reaches means the privacy policy has to say so.
-`src/lib/features/legal/content/privacy.ts` currently names Google Analytics and Google Ads
-and does not mention Mixpanel; that document is Solean's to amend.
+**The privacy policy does not yet say any of this, and that gap is open on purpose.**
+`src/lib/features/legal/content/privacy.ts` names Google Analytics, Google Ads and Google Tag
+Manager, and mentions neither Mixpanel, nor session replay, nor heatmaps. The site records
+sessions on a medical questionnaire and describes that nowhere.
+
+It is not fixed here because that file is a verbatim mirror and says so in its own header:
+copied from `https://solean.com/policies/privacy-policy`, not ours to edit. The controller is
+DTC Healthtech Solution Limited, with heyData GmbH as data protection officer. Amending the
+mirror alone would put two different privacy policies live for one controller, which is worse
+than the gap. The document is Solean's to amend at the source; re-import afterwards.
+
+Reviewed and deliberately deferred on 2026-09-03. Do not close it with a local edit.
 
 ### Testing
 
 `src/lib/analytics/*.test.ts` covers the consent rule, the questionnaire path rule, the
-one-shot gate, the property shapes, and the replay share and sampling. `e2e/analytics.spec.ts`
-proves the gate and the funnel in a browser with every Mixpanel request intercepted, and
-asserts the recorder bundle **answers 200** rather than merely being requested. That
-distinction is the bug above: a request was made, Chrome blocked the response, and a spec
-counting requests passed while nothing recorded. The browser suite runs with analytics
-declined (`CONSENT_DENIED_STATE` in `playwright.config.ts`), because the banner is fixed to the
-bottom of the viewport and would sit over the Continue button the other specs press.
+one-shot gate, the property shapes, the replay share and sampling, and the shape of the SDK
+configuration itself: `client.test.ts` asserts every privacy-bearing flag, so switching
+`autocapture` on or dropping a mask fails the suite instead of leaking quietly.
+
+`e2e/analytics.spec.ts` proves the gate and the funnel in a browser with every Mixpanel request
+intercepted, and asserts the recorder bundle **answers 200** rather than merely being
+requested. That distinction is the bug above: a request was made, Chrome blocked the response,
+and a spec counting requests passed while nothing recorded.
+
+It also walks the questionnaire with consent granted and asserts that no `$mp_click` from a
+questionnaire path carries any `$attr-` key, and that the payload contains neither the
+diagnosis clicked nor the year of birth entered. **That test is the reason `mp-sensitive` sits
+on the date picker as well as the shell**, and it is the guard to run before touching either.
+Reading the SDK source did not find the portal; the browser run did.
+
+The browser suite otherwise runs with analytics declined (`CONSENT_DENIED_STATE` in
+`playwright.config.ts`), because the banner is fixed to the bottom of the viewport and would
+sit over the Continue button the other specs press. `analytics.spec.ts` overrides that with its
+own `test.use`.
 
 ## Automatic verification
 

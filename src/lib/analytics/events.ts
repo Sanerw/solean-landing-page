@@ -18,6 +18,13 @@ import { track } from './client';
  * they answered: a view of `/questionnaire/diabetes-followup` reports the reply that
  * unlocked it as surely as the reply itself would. The funnel is measured by the three
  * events below instead, which say where someone reached without saying what they said.
+ *
+ * **This governs `page_viewed` and nothing else.** Since heatmaps were turned on, Mixpanel's
+ * own `$mp_web_page_view` carries the full URL and `$mp_click` carries `$pathname`, so
+ * questionnaire paths do reach the project. That was accepted with the replay on 2026-09-03
+ * and rests on the same reasoning; what still may not travel is the wording of an answer,
+ * which `mp-sensitive` keeps out of the click properties. This rule is the one that keeps our
+ * own funnel events free of the path, and it stays.
  */
 export function isTrackablePath(path: string): boolean {
 	return path !== '/questionnaire' && !path.startsWith('/questionnaire/');

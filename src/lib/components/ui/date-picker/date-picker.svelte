@@ -218,8 +218,17 @@
 			{/snippet}
 		</Popover.Trigger>
 
+		<!--
+			`mp-sensitive` because this content is portalled to `document.body`, which puts it
+			outside `QuestionnaireShell` and outside the class the shell carries for exactly this
+			purpose. Mixpanel's heatmap reports the tracked attributes of every ancestor of a
+			click, and the calendar labels its grid and its cells with the date they name, so
+			without this a click here sends the visitor's date of birth in clear. A browser run
+			caught precisely that. The class is on the content rather than the trigger because
+			the walk goes upward from the element clicked.
+		-->
 		<Popover.Content
-			class="w-auto overflow-hidden rounded-lg border border-border bg-card p-0 shadow-none ring-0"
+			class="mp-sensitive w-auto overflow-hidden rounded-lg border border-border bg-card p-0 shadow-none ring-0"
 			align="start"
 		>
 			<Calendar

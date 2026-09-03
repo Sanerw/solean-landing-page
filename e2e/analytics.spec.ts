@@ -1,5 +1,5 @@
 import { expect, test, type Page } from '@playwright/test';
-import { walkAndSubmit } from './answers';
+import { walkAndSubmit, walkTo } from './answers';
 import { orderPlan } from './recommendation';
 
 /**
@@ -228,4 +228,51 @@ test('the funnel sends its three events, carrying nothing about the person', asy
 	for (const leak of ['jonas@example.com', 'anamnesis_uid', 'anam-', 'variant']) {
 		expect(payload).not.toContain(leak);
 	}
+});
+
+test('a heatmap click on a medical question carries no answer wording', async ({ page }) => {
+	const traffic = await captureMixpanel(page);
+
+	await page.goto('/');
+	await expect(page.getByRole('button', { name: 'Einverstanden' })).toBeEnabled();
+	await page.getByRole('button', { name: 'Einverstanden' }).click();
+	await awaitEvent(traffic, 'page_viewed');
+
+	// `walkTo` opens `/questionnaire` with a full load, so the recorder starts again there.
+	// Counted from this point, because heatmap clicks exist only while a replay is live and a
+	// click landing before one would simply not be sent. The walk passes the date picker,
+	// which is the portalled surface a class on the shell alone did not cover.
+	const recorded = traffic.recorder.length;
+	await walkTo(page, 'page1');
+	await expect.poll(() => traffic.recorder.length, FLUSH).toBeGreaterThan(recorded);
+
+	// A checkbox whose label is a diagnosis, which is the worst case rather than a typical one.
+	await page.getByRole('checkbox', { name: 'Knie- oder H\u00fcftarthrose' }).click();
+	await awaitEvent(traffic, '$mp_click');
+
+	const onQuestionnaire = traffic.events.filter((entry) =>
+		String(entry.properties.$current_url ?? '').includes('/questionnaire')
+	);
+
+	// The heatmap has to actually run here: "everywhere" was the decision, so a questionnaire
+	// that quietly reported nothing would pass every assertion below for the wrong reason.
+	expect(onQuestionnaire.some((entry) => entry.event === '$mp_click')).toBe(true);
+
+	/**
+	 * The guarantee `mp-sensitive` exists for, asserted against what left the browser rather
+	 * than against the class in the markup, because the class only matters if the SDK honours
+	 * it. Every tracked attribute is checked, not `aria-label` alone: `name` and `title` are on
+	 * the same list and a later question type could put an answer in either.
+	 */
+	for (const entry of onQuestionnaire) {
+		const elements = (entry.properties.$elements ?? []) as Record<string, unknown>[];
+		const attrs = elements.flatMap((el) => Object.keys(el).filter((k) => k.startsWith('$attr-')));
+
+		expect(attrs, `${entry.event} reported element attributes`).toEqual([]);
+	}
+
+	// The two answers this walk actually gave, in the wording the DOM carries them.
+	const payload = JSON.stringify(traffic.events).toLowerCase();
+	expect(payload).not.toContain('h\u00fcftarthrose');
+	expect(payload).not.toContain('1990');
 });
