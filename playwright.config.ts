@@ -64,7 +64,13 @@ export default defineConfig({
 				PUBLIC_SANITY_API_HOST: FIXTURE_SANITY_API_HOST,
 				// A fixture token, so the consent banner exists to be tested. Nothing reaches
 				// Mixpanel: the suite runs declined and the analytics spec intercepts the host.
-				PUBLIC_MIXPANEL_TOKEN: FIXTURE_MIXPANEL_TOKEN
+				PUBLIC_MIXPANEL_TOKEN: FIXTURE_MIXPANEL_TOKEN,
+				// Blank on purpose, and load-bearing. `.env` is still read for anything this block
+				// does not override, so without this line every run would enrol its walked-through
+				// addresses as real contacts on the real Brevo account and burn its sending
+				// credits. An empty key means the endpoint answers as an unconfigured deployment,
+				// which is what the reminder spec asserts against.
+				BREVO_API_KEY: ''
 			}
 		}
 	]

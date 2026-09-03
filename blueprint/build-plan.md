@@ -432,6 +432,18 @@ claims are not approved production content.
   block stays on its fixture for now, and the marketing homepage keeps its
   fixtures entirely; it moves separately.
 
+- [x] 22. **Brevo abandoned-questionnaire reminder** - a visitor who types their
+  e-mail into the questionnaire and does not submit gets a reminder from Brevo;
+  one who submits stops getting them. Two server-sent events carry the whole
+  feature, `questionnaire_email_captured` and `anamnesis_submitted`, and the
+  campaign itself, its timing and its exit condition, live in the Brevo panel
+  rather than in this repository. Nothing medical travels: the e-mail and a stage
+  marker, enforced by an allow-list. Purely server-side, with no Brevo tracker
+  and no third-party script, because a second analytics tool or tag manager is
+  ruled out. Because nothing is persisted, the reminder can only return someone
+  to the start of the questionnaire, not to the step they left; resuming where
+  they stopped stays in the deferred backlog.
+
 ## Testing
 
 **Decided, then deferred at 9a.** The plan was to run `/tests` before feature 9;

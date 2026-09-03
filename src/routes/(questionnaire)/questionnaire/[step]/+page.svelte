@@ -12,6 +12,10 @@
 	import { trackAnamnesisSubmitted, trackQuestionnaireStarted } from '$lib/analytics/events';
 	import { readEmail, readWeightKg, weightStepId } from '$lib/features/questionnaire/answers';
 	import { submitAnamnesis, type AnamnesisSubmission } from '$lib/features/questionnaire/anamnesis-client';
+	import {
+		endReminderWatch,
+		startReminderWatch
+	} from '$lib/features/questionnaire/reminder-client';
 	import { questionnaireUid } from '$lib/config/rxscale';
 	import {
 		COMPLETION_STEP_ID,
@@ -156,6 +160,11 @@
 		// question skipped by pressing Continue has to count.
 		questionnaireSession.markStarted();
 
+		// The step just validated may have been the one asking for the e-mail, so this is the
+		// earliest the address can exist. Guarded to fire once per session, and deliberately not
+		// awaited: a reminder must never hold up the walk.
+		if (survey) startReminderWatch(survey.data);
+
 		const next = neighbourHref(1);
 
 		if (next) {
@@ -197,6 +206,8 @@
 		// The count is the shape of the questionnaire the branching produced, never the answers
 		// that produced it. The uid itself is deliberately not sent.
 		trackAnamnesisSubmitted(plan?.steps.filter((step) => step.kind === 'survey').length ?? 0);
+		// The record exists, so no reminder is owed. Brevo's exit condition reads this event.
+		endReminderWatch(survey.data);
 		questionnaireSession.recordSubmission(result.uid);
 		await goto(questionnaireStepHref(COMPLETION_STEP_ID));
 	}

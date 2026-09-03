@@ -366,6 +366,99 @@ The browser suite otherwise runs with analytics declined (`CONSENT_DENIED_STATE`
 sit over the Continue button the other specs press. `analytics.spec.ts` overrides that with its
 own `test.use`.
 
+## Lifecycle e-mail: Brevo
+
+Brevo sends one thing: a reminder to somebody who typed their e-mail into the questionnaire
+and did not submit it. It is not an analytics tool, it holds no answers, and it has no browser
+presence. Do not add its tracker, `brevo.track()`, or any other third-party script: the
+Analytics section above rules out a second measurement tool and a tag manager, and this
+integration is server-side REST or nothing.
+
+| Detail | Value |
+| --- | --- |
+| Endpoint | `POST https://api.brevo.com/v3/events`, header `api-key` |
+| Key | `BREVO_API_KEY`, server only, standard v3 (`xkeysib-`). Absent means this deployment sends no reminders |
+| Our endpoint | `POST /api/reminder`, `{ stage, email }` |
+| What may travel | the e-mail and a stage marker. Nothing else, ever |
+
+### The three strings a person types into the Brevo panel
+
+The campaign lives in Brevo, not here: how many mails, how far apart, what they say, and the
+condition that stops them are all panel configuration, so they change without a deploy. This
+repository guarantees only that two events arrive, named exactly:
+
+| Role in the automation | String |
+| --- | --- |
+| Entry trigger | `questionnaire_email_captured` |
+| Exit condition | `anamnesis_submitted` |
+| Contact attribute, checked before each send | `QUESTIONNAIRE_COMPLETED` |
+
+Brevo compares these literally and a mismatch raises nothing: it silently leaves the
+automation unarmed. They are one constant each in `src/lib/server/brevo/payload.ts`, never
+assembled from parts, the same rule `ANAMNESIS_ATTRIBUTE_KEY` follows.
+
+**The automation must not be keyed on list membership.** `POST /v3/events` creates the contact
+with `listIds: []`, so a trigger of "contact added to list" never fires. Use the event trigger.
+
+**Both event names must have been received once before the panel will offer them.** The new
+automation editor's `Custom event` trigger picks from events Brevo has already seen; it does
+not accept a name typed in. Both were sent from a test address on 2026-09-03 for exactly this
+reason, so they are selectable now. A third event name added later needs the same treatment
+before it can be wired into an automation.
+
+**`contact_properties` is silently dropped unless the attribute already exists.** Verified on
+2026-09-03: with no `QUESTIONNAIRE_COMPLETED` attribute on the account, the event answered 204
+and the contact came back with `attributes: {}`. No error, no warning, and an if/else in the
+panel would simply never match. The attribute was created as `normal` / `boolean`, after which
+the same event populated it. **A new contact property therefore has to be created in Brevo
+before the code starts sending it**, under Contacts > Settings > Contact attributes, or with
+`POST /v3/contacts/attributes/normal/{NAME}`.
+
+### Things proven against the live account on 2026-09-03
+
+- **`/v3/events` creates the contact itself.** There is no `POST /v3/contacts` on this path.
+- **Creation is asynchronous**, taking up to eighteen seconds. Nothing may assert on Brevo's
+  own state to decide whether a call worked; the browser spec asserts on the request this app
+  makes instead. A check three seconds in reported "not created" and would have written a
+  permanent extra call into every request.
+- **Authorized IPs has to stay off for the account.** It answers 401 to an unrecognised
+  address, and Vercel functions egress from a dynamic IP range, so there is nothing to
+  authorize. Fixed egress is a paid Vercel add-on.
+
+### What may never be sent
+
+No answer value, no anamnesis uid, no medication or dose, no name, no telephone number. The
+builder takes a stage and an address as two scalars rather than an object, so there is no bag
+of properties for a caller to widen, and `payload.test.ts` asserts the **exact** key set at
+every depth rather than the absence of known-bad keys: a field added later fails the test
+instead of travelling.
+
+### Two guards that look optional and are not
+
+- **`BREVO_API_KEY: ''` in `playwright.config.ts`.** Vite still reads `.env` for anything that
+  `webServer.env` does not override, so without that line every browser run enrols its
+  walked-through addresses as real contacts and burns the account's sending credits.
+- **`/api/reminder` answers 204 to everything except malformed input**, including an
+  unconfigured key and a Brevo that refuses. The reminder is marketing and the questionnaire
+  is medical: a failed mail may not delay a navigation, block a submission, or put an error in
+  front of somebody answering questions about their health. The browser never awaits these
+  calls and swallows rejections.
+
+### Known and accepted
+
+`/api/reminder` is public, so anyone can enrol any address, the same property every newsletter
+sign-up has. A real double opt-in was priced first: Brevo's panel setting covers its own forms
+only, so an API integration needs `POST /v3/contacts/doubleOptinConfirmation` with a template
+id, a list id and a redirection page, and the trigger would move to list membership. It also
+means only somebody who clicks a confirmation mail is ever reminded, and a person who just
+abandoned a medical questionnaire rarely does. The user weighed that on 2026-09-03 and chose
+reach. A script can therefore enrol third parties and exhaust the daily sending credits.
+Revisit through `/fix` if it is ever abused.
+
+**There is no consent gate on the reminder**, deliberately, and it is unrelated to the
+analytics banner. Typing the e-mail and pressing Continue is the whole consent step, decided
+by the user on 2026-09-03.
+
 ## Automatic verification
 
 Automatic GitHub checks are a separate explicit setup. `/onboard` and `/adopt`
