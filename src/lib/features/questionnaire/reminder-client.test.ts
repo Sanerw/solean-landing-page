@@ -31,7 +31,9 @@ describe('reminder client', () => {
 		// Continue is pressed on every step, and this runs on each one.
 		for (let i = 0; i < 5; i++) startReminderWatch(data);
 
-		expect(bodies()).toEqual([{ stage: 'email_captured', email: 'jonas@example.com' }]);
+		expect(bodies()).toEqual([
+			{ stage: 'email_captured', email: 'jonas@example.com', language: 'de' }
+		]);
 	});
 
 	it('says nothing until the address exists', async () => {
@@ -44,7 +46,9 @@ describe('reminder client', () => {
 		// The e-mail question can sit anywhere in the model, so the watch has to survive the
 		// steps walked before it and still start on the one that answers it.
 		startReminderWatch({ EMail: 'jonas@example.com' });
-		expect(bodies()).toEqual([{ stage: 'email_captured', email: 'jonas@example.com' }]);
+		expect(bodies()).toEqual([
+			{ stage: 'email_captured', email: 'jonas@example.com', language: 'de' }
+		]);
 	});
 
 	it('a session without an address is never reminded and never retried', async () => {
@@ -64,8 +68,8 @@ describe('reminder client', () => {
 		endReminderWatch(data);
 
 		expect(bodies()).toEqual([
-			{ stage: 'email_captured', email: 'jonas@example.com' },
-			{ stage: 'submitted', email: 'jonas@example.com' }
+			{ stage: 'email_captured', email: 'jonas@example.com', language: 'de' },
+			{ stage: 'submitted', email: 'jonas@example.com', language: 'de' }
 		]);
 	});
 

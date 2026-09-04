@@ -79,12 +79,13 @@ export type ReminderResult = 'sent' | 'not-configured' | 'failed';
 
 export async function sendReminderEvent(
 	stage: ReminderStage,
-	email: string
+	email: string,
+	language: string
 ): Promise<ReminderResult> {
 	const auth = authorization();
 	if (!auth) return 'not-configured';
 
-	const { path, body } = buildReminderRequest(stage, email);
+	const { path, body } = buildReminderRequest(stage, email, language);
 
 	try {
 		const response = await fetch(HOST + path, {

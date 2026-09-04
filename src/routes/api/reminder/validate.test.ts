@@ -5,12 +5,13 @@ const EMAIL = 'jonas@example.com';
 
 describe('readReminderRequest', () => {
 	it('accepts the two stages the questionnaire sends', () => {
-		expect(readReminderRequest({ stage: 'email_captured', email: EMAIL })).toEqual({
+		expect(readReminderRequest({ stage: 'email_captured', email: EMAIL, language: 'en' })).toEqual({
 			ok: true,
 			stage: 'email_captured',
-			email: EMAIL
+			email: EMAIL,
+			language: 'en'
 		});
-		expect(readReminderRequest({ stage: 'submitted', email: EMAIL }).ok).toBe(true);
+		expect(readReminderRequest({ stage: 'submitted', email: EMAIL, language: 'de' }).ok).toBe(true);
 	});
 
 	it('refuses a stage that names a Customer.io event instead', () => {
@@ -28,11 +29,18 @@ describe('readReminderRequest', () => {
 	});
 
 	it('trims an address before using it', () => {
-		expect(readReminderRequest({ stage: 'submitted', email: `  ${EMAIL}  ` })).toEqual({
-			ok: true,
-			stage: 'submitted',
-			email: EMAIL
-		});
+		expect(readReminderRequest({ stage: 'submitted', email: `  ${EMAIL}  `, language: 'de' })).toEqual(
+			{ ok: true, stage: 'submitted', email: EMAIL, language: 'de' }
+		);
+	});
+
+	it('falls back to the base locale rather than refusing an unusable language', () => {
+		// A rejection would cost the reminder itself, and only a locale this site is built with
+		// can leave the app either way, so nothing hostile travels by being lenient here.
+		for (const language of [undefined, '', 'fr', 'DE', 'de-DE', 42, null, {}, '<script>']) {
+			const parsed = readReminderRequest({ stage: 'submitted', email: EMAIL, language });
+			expect(parsed, String(language)).toMatchObject({ ok: true, language: 'de' });
+		}
 	});
 
 	it('refuses anything that is not shaped like an address', () => {

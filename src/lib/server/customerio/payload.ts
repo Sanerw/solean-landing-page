@@ -8,9 +8,10 @@
  * name, no telephone number. The builder takes two arguments rather than an object for exactly
  * that reason: there is no bag of extra properties for a caller to widen later.
  *
- * The two stages are deliberately not the same shape. An event's `attributes` are the
- * *event's* attributes and never reach the profile, proven against the live workspace on
- * 2026-09-03, so the completion marker needs an `identify` that a lone event cannot carry.
+ * Both stages are a batch of an identify and an event, for the same reason: an event's
+ * `attributes` are the *event's* and never reach the profile, proven against the live workspace
+ * on 2026-09-03, so anything the campaign reads off a person needs an `identify`. The capture
+ * carries the language; the submission carries the language and the completion marker.
  */
 
 export const REMINDER_STAGES = ['email_captured', 'submitted'] as const;
@@ -38,7 +39,12 @@ const EVENT_NAMES: Record<ReminderStage, string> = {
 /** The person attribute the campaign checks before each send, as a second line of defence. */
 export const COMPLETED_ATTRIBUTE = 'questionnaire_completed';
 
-const ENTITY_PATH = '/api/v2/entity';
+/**
+ * The person attribute the campaign branches on to pick the German or the English mail. A UI
+ * locale, read from the path the visitor was on, never from an answer.
+ */
+export const LANGUAGE_ATTRIBUTE = 'language';
+
 const BATCH_PATH = '/api/v2/batch';
 
 interface PersonEvent {
@@ -52,12 +58,12 @@ interface PersonIdentify {
 	type: 'person';
 	identifiers: { email: string };
 	action: 'identify';
-	attributes: Record<string, boolean>;
+	attributes: Record<string, string | boolean>;
 }
 
 export interface ReminderRequest {
-	path: typeof ENTITY_PATH | typeof BATCH_PATH;
-	body: PersonEvent | { batch: (PersonIdentify | PersonEvent)[] };
+	path: typeof BATCH_PATH;
+	body: { batch: (PersonIdentify | PersonEvent)[] };
 }
 
 function personEvent(stage: ReminderStage, email: string): PersonEvent {
@@ -69,33 +75,36 @@ function personEvent(stage: ReminderStage, email: string): PersonEvent {
 	};
 }
 
-export function buildReminderRequest(stage: ReminderStage, email: string): ReminderRequest {
-	if (stage === 'email_captured') {
-		// One call is enough on the way in: the event creates the profile by itself, so there is
-		// nothing to identify first.
-		return { path: ENTITY_PATH, body: personEvent(stage, email) };
-	}
+export function buildReminderRequest(
+	stage: ReminderStage,
+	email: string,
+	language: string
+): ReminderRequest {
+	/**
+	 * Both stages carry the language rather than only the capture. The two calls are
+	 * independent, so a capture whose request was lost must not leave the profile without the
+	 * attribute the campaign branches on.
+	 */
+	const attributes: Record<string, string | boolean> = { [LANGUAGE_ATTRIBUTE]: language };
+
+	/**
+	 * Only on the way out. The campaign's exit condition already removes the person when this
+	 * event arrives, so the marker is redundant on the happy path and is set anyway: an exit
+	 * condition is one mechanism, and a reminder mailed to somebody who already finished is the
+	 * failure worth spending one field to prevent.
+	 */
+	if (stage === 'submitted') attributes[COMPLETED_ATTRIBUTE] = true;
 
 	return {
 		path: BATCH_PATH,
 		body: {
 			/**
-			 * The identify comes first so the attribute is already true when the event that
-			 * triggers the campaign's exit arrives. The reverse order leaves a window in which a
-			 * send could be evaluated against a profile that has not been marked yet.
-			 *
-			 * The attribute is redundant on the happy path, since the exit condition already
-			 * removes the person when the event arrives. It is sent anyway: an exit condition is
-			 * one mechanism, and a reminder mailed to somebody who already finished is the failure
-			 * worth spending one field to prevent.
+			 * The identify comes first, so the attributes are already set when the event is
+			 * evaluated. The reverse order leaves a window in which a send could be picked against
+			 * a profile that has no language yet, or an exit against one not yet marked.
 			 */
 			batch: [
-				{
-					type: 'person',
-					identifiers: { email },
-					action: 'identify',
-					attributes: { [COMPLETED_ATTRIBUTE]: true }
-				},
+				{ type: 'person', identifiers: { email }, action: 'identify', attributes },
 				personEvent(stage, email)
 			]
 		}

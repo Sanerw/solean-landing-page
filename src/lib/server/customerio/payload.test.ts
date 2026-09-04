@@ -1,12 +1,14 @@
 import { describe, expect, it } from 'vitest';
 import {
 	COMPLETED_ATTRIBUTE,
+	LANGUAGE_ATTRIBUTE,
 	buildReminderRequest,
 	isReminderStage,
 	type ReminderRequest
 } from './payload';
 
 const EMAIL = 'jonas@example.com';
+const LANGUAGE = 'de';
 
 /**
  * Every key that may ever leave this app, at every depth and through arrays.
@@ -38,42 +40,54 @@ describe('buildReminderRequest', () => {
 	it('names the campaign entry trigger on capture', () => {
 		// Typed by hand into the Customer.io panel and compared literally there. A rename here
 		// without a rename there leaves the campaign armed for an event that never arrives.
-		expect(buildReminderRequest('email_captured', EMAIL).body).toMatchObject({
-			name: 'questionnaire_email_captured'
+		expect(buildReminderRequest('email_captured', EMAIL, LANGUAGE).body).toMatchObject({
+			batch: [{ action: 'identify' }, { name: 'questionnaire_email_captured' }]
 		});
 	});
 
 	it('names the campaign exit condition on submission', () => {
-		const { body } = buildReminderRequest('submitted', EMAIL);
+		const { body } = buildReminderRequest('submitted', EMAIL, LANGUAGE);
 		expect(body).toMatchObject({ batch: [{ action: 'identify' }, { name: 'anamnesis_submitted' }] });
 	});
 
-	it('sends the capture to the entity endpoint and the submission to the batch endpoint', () => {
-		// The two stages are different shapes because an event cannot carry a person attribute,
-		// so the path is part of what the builder decides rather than a caller's guess.
-		expect(buildReminderRequest('email_captured', EMAIL).path).toBe('/api/v2/entity');
-		expect(buildReminderRequest('submitted', EMAIL).path).toBe('/api/v2/batch');
+	it('sends both stages to the batch endpoint', () => {
+		// Both are a batch now: an event cannot carry a person attribute, and the campaign reads
+		// the language off the person, so each stage needs an identify beside its event.
+		expect(buildReminderRequest('email_captured', EMAIL, LANGUAGE).path).toBe('/api/v2/batch');
+		expect(buildReminderRequest('submitted', EMAIL, LANGUAGE).path).toBe('/api/v2/batch');
+	});
+
+	it('sets the language the campaign branches on, on both stages', () => {
+		// Both, not only the capture: the two calls are independent, so a lost capture must not
+		// leave the profile without the attribute that picks German or English.
+		for (const stage of ['email_captured', 'submitted'] as const) {
+			const { body } = buildReminderRequest(stage, EMAIL, LANGUAGE);
+			expect(body.batch[0]).toMatchObject({
+				action: 'identify',
+				attributes: { [LANGUAGE_ATTRIBUTE]: LANGUAGE }
+			});
+		}
 	});
 
 	it('identifies the person by the address alone', () => {
-		expect(buildReminderRequest('email_captured', EMAIL).body).toMatchObject({
-			identifiers: { email: EMAIL }
-		});
+		const { body } = buildReminderRequest('email_captured', EMAIL, LANGUAGE);
+		for (const entry of body.batch) expect(entry.identifiers).toEqual({ email: EMAIL });
 	});
 
 	it('marks the person completed only on the way out', () => {
-		const { body } = buildReminderRequest('submitted', EMAIL);
-		const identify = 'batch' in body ? body.batch[0] : undefined;
-
-		expect(identify).toMatchObject({ attributes: { [COMPLETED_ATTRIBUTE]: true } });
-		expect(bodyKeys(buildReminderRequest('email_captured', EMAIL))).not.toContain('attributes');
+		expect(buildReminderRequest('submitted', EMAIL, LANGUAGE).body.batch[0]).toMatchObject({
+			attributes: { [COMPLETED_ATTRIBUTE]: true }
+		});
+		expect(bodyKeys(buildReminderRequest('email_captured', EMAIL, LANGUAGE))).not.toContain(
+			`batch[0].attributes.${COMPLETED_ATTRIBUTE}`
+		);
 	});
 
-	it('identifies before it fires the event, so the marker is set when the exit is evaluated', () => {
-		const { body } = buildReminderRequest('submitted', EMAIL);
-		const actions = 'batch' in body ? body.batch.map((entry) => entry.action) : [];
-
-		expect(actions).toEqual(['identify', 'event']);
+	it('identifies before it fires the event, so the attributes are set when it is evaluated', () => {
+		for (const stage of ['email_captured', 'submitted'] as const) {
+			const { body } = buildReminderRequest(stage, EMAIL, LANGUAGE);
+			expect(body.batch.map((entry) => entry.action)).toEqual(['identify', 'event']);
+		}
 	});
 
 	/**
@@ -82,24 +96,36 @@ describe('buildReminderRequest', () => {
 	 * no anamnesis uid, no medication or dose, no name, no telephone number may reach the
 	 * reminder processor.
 	 */
-	it('sends the capture with exactly four keys and nothing else', () => {
-		expect(bodyKeys(buildReminderRequest('email_captured', EMAIL))).toEqual([
-			'action',
-			'identifiers',
-			'identifiers.email',
-			'name',
-			'type'
-		]);
+	it('sends the capture with exactly the identify and the event, and nothing else', () => {
+		expect(bodyKeys(buildReminderRequest('email_captured', EMAIL, LANGUAGE))).toEqual(
+			[
+				'batch',
+				'batch[0]',
+				'batch[0].action',
+				'batch[0].attributes',
+				`batch[0].attributes.${LANGUAGE_ATTRIBUTE}`,
+				'batch[0].identifiers',
+				'batch[0].identifiers.email',
+				'batch[0].type',
+				'batch[1]',
+				'batch[1].action',
+				'batch[1].identifiers',
+				'batch[1].identifiers.email',
+				'batch[1].name',
+				'batch[1].type'
+			].sort()
+		);
 	});
 
 	it('sends the submission with exactly the identify and the event, and nothing else', () => {
-		expect(bodyKeys(buildReminderRequest('submitted', EMAIL))).toEqual(
+		expect(bodyKeys(buildReminderRequest('submitted', EMAIL, LANGUAGE))).toEqual(
 			[
 				'batch',
 				'batch[0]',
 				'batch[0].action',
 				'batch[0].attributes',
 				`batch[0].attributes.${COMPLETED_ATTRIBUTE}`,
+				`batch[0].attributes.${LANGUAGE_ATTRIBUTE}`,
 				'batch[0].identifiers',
 				'batch[0].identifiers.email',
 				'batch[0].type',

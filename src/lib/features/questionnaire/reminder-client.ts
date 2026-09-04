@@ -1,3 +1,4 @@
+import { getLocale } from '$lib/paraglide/runtime';
 import { readEmail, type AnswerData } from './answers';
 
 /**
@@ -33,7 +34,9 @@ function signal(stage: Stage, email: string): void {
 	void fetch('/api/reminder', {
 		method: 'POST',
 		headers: { 'content-type': 'application/json' },
-		body: JSON.stringify({ stage, email })
+		// The language the campaign picks its mail by. Read here rather than on the server,
+		// because the locale lives in the path the visitor is on, not in the request body.
+		body: JSON.stringify({ stage, email, language: getLocale() })
 	}).catch(() => {
 		// Deliberately empty. There is nothing a visitor could do with this, and nothing this
 		// app should do either: the endpoint already answers 204 to its own upstream failures,

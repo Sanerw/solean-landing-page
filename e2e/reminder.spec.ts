@@ -24,6 +24,7 @@ import { UI } from './ui-labels';
 interface Signal {
 	stage?: unknown;
 	email?: unknown;
+	language?: unknown;
 }
 
 function captureReminders(page: Page): Signal[] {
@@ -65,7 +66,9 @@ test('the watch starts on the step that answers the e-mail, once', async ({ page
 	await page.getByRole('button', { name: UI.continue }).click();
 	await stepIsInteractive(page);
 
-	expect(signals).toEqual([{ stage: 'email_captured', email: 'jonas@example.com' }]);
+	expect(signals).toEqual([
+		{ stage: 'email_captured', email: 'jonas@example.com', language: 'de' }
+	]);
 });
 
 test('submitting ends the watch', async ({ page }) => {
@@ -76,8 +79,8 @@ test('submitting ends the watch', async ({ page }) => {
 	await expect.poll(() => signals.length).toBe(2);
 
 	expect(signals).toEqual([
-		{ stage: 'email_captured', email: 'jonas@example.com' },
-		{ stage: 'submitted', email: 'jonas@example.com' }
+		{ stage: 'email_captured', email: 'jonas@example.com', language: 'de' },
+		{ stage: 'submitted', email: 'jonas@example.com', language: 'de' }
 	]);
 });
 
@@ -94,7 +97,7 @@ test('the signals carry the stage and the address, and nothing else', async ({ p
 	// Exact keys rather than an absence check, so a field added later fails here instead of
 	// travelling to a marketing processor unnoticed.
 	for (const signal of signals) {
-		expect(Object.keys(signal).sort()).toEqual(['email', 'stage']);
+		expect(Object.keys(signal).sort()).toEqual(['email', 'language', 'stage']);
 	}
 
 	/**

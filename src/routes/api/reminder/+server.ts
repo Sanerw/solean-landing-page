@@ -32,7 +32,7 @@ export const POST: RequestHandler = async ({ request }) => {
 	const parsed = readReminderRequest(body);
 	if (!parsed.ok) return new Response(null, { status: 400 });
 
-	const result = await sendReminderEvent(parsed.stage, parsed.email);
+	const result = await sendReminderEvent(parsed.stage, parsed.email, parsed.language);
 
 	// Content-free on purpose. The address is personal data from a medical funnel, and a log
 	// line is exactly the kind of place it must not end up. The stage is safe: it says which

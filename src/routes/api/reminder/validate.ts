@@ -1,4 +1,5 @@
 import { isReminderStage, type ReminderStage } from '$lib/server/customerio/payload';
+import { baseLocale, isLocale } from '$lib/paraglide/runtime';
 
 /**
  * What the browser is allowed to say, and the whole of it. Separated from the route so the
@@ -19,8 +20,21 @@ const EMAIL_SHAPE = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/;
 export type ValidationFailure = 'bad-stage' | 'bad-email';
 
 export type ValidationResult =
-	| { ok: true; stage: ReminderStage; email: string }
+	| { ok: true; stage: ReminderStage; email: string; language: string }
 	| { ok: false; reason: ValidationFailure };
+
+/**
+ * The language the campaign picks its mail by, narrowed to a locale this app actually has.
+ * Paraglide's own `isLocale` is the check, so the list cannot drift from the one the site is
+ * built with.
+ *
+ * **An unusable value falls back rather than failing.** Only `de` or `en` can leave this app
+ * either way, so nothing hostile travels; what a rejection would cost is the reminder itself,
+ * and sending the base locale to somebody who walked away beats sending nothing.
+ */
+function readLanguage(value: unknown): string {
+	return typeof value === 'string' && isLocale(value) ? value : baseLocale;
+}
 
 export function readReminderRequest(body: unknown): ValidationResult {
 	const source = typeof body === 'object' && body !== null ? (body as Record<string, unknown>) : {};
@@ -34,5 +48,5 @@ export function readReminderRequest(body: unknown): ValidationResult {
 		return { ok: false, reason: 'bad-email' };
 	}
 
-	return { ok: true, stage: source.stage, email };
+	return { ok: true, stage: source.stage, email, language: readLanguage(source.language) };
 }

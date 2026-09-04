@@ -78,22 +78,34 @@ describe('reminderConfigured', () => {
 });
 
 describe('sendReminderEvent', () => {
-	it('sends the capture to the EU entity endpoint with the Basic header', async () => {
+	it('sends the capture to the EU batch endpoint with the Basic header', async () => {
 		const fetchMock = answerWith(200, '{}');
 		vi.stubGlobal('fetch', fetchMock);
 
-		await expect(sendReminderEvent('email_captured', 'jonas@example.com')).resolves.toBe('sent');
+		await expect(sendReminderEvent('email_captured', 'jonas@example.com', 'de')).resolves.toBe(
+			'sent'
+		);
 
 		const [url, init] = fetchMock.mock.calls[0];
-		expect(url).toBe('https://track-eu.customer.io/api/v2/entity');
+		expect(url).toBe('https://track-eu.customer.io/api/v2/batch');
 		expect(init.headers.authorization).toBe(EXPECTED_HEADER);
+	});
+
+	it('carries the language the campaign branches on', async () => {
+		const fetchMock = answerWith(200, '{}');
+		vi.stubGlobal('fetch', fetchMock);
+
+		await sendReminderEvent('email_captured', 'jonas@example.com', 'en');
+
+		const sent = JSON.parse(fetchMock.mock.calls[0][1].body);
+		expect(sent.batch[0].attributes).toEqual({ language: 'en' });
 	});
 
 	it('sends the submission to the batch endpoint', async () => {
 		const fetchMock = answerWith(200, '{}');
 		vi.stubGlobal('fetch', fetchMock);
 
-		await expect(sendReminderEvent('submitted', 'jonas@example.com')).resolves.toBe('sent');
+		await expect(sendReminderEvent('submitted', 'jonas@example.com', 'de')).resolves.toBe('sent');
 		expect(fetchMock.mock.calls[0][0]).toBe('https://track-eu.customer.io/api/v2/batch');
 	});
 
@@ -102,7 +114,7 @@ describe('sendReminderEvent', () => {
 		const fetchMock = answerWith(200, '{}');
 		vi.stubGlobal('fetch', fetchMock);
 
-		await expect(sendReminderEvent('email_captured', 'jonas@example.com')).resolves.toBe(
+		await expect(sendReminderEvent('email_captured', 'jonas@example.com', 'de')).resolves.toBe(
 			'not-configured'
 		);
 		expect(fetchMock).not.toHaveBeenCalled();
@@ -111,13 +123,13 @@ describe('sendReminderEvent', () => {
 	it('reports a refusal as failed', async () => {
 		vi.stubGlobal('fetch', answerWith(400, '{"errors":[{"reason":"bad"}]}'));
 
-		await expect(sendReminderEvent('email_captured', 'jonas@example.com')).resolves.toBe('failed');
+		await expect(sendReminderEvent('email_captured', 'jonas@example.com', 'de')).resolves.toBe('failed');
 	});
 
 	it('reports a network that went away as failed rather than throwing', async () => {
 		// The caller answers 204 to a visitor either way, so this must resolve, never reject.
 		vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('ECONNRESET')));
 
-		await expect(sendReminderEvent('email_captured', 'jonas@example.com')).resolves.toBe('failed');
+		await expect(sendReminderEvent('email_captured', 'jonas@example.com', 'de')).resolves.toBe('failed');
 	});
 });
