@@ -293,7 +293,6 @@
 	"qn_preg_pregnant": "I am currently pregnant",
 	"qn_preg_breastfeeding": "I am breastfeeding",
 	"qn_preg_planning": "I am planning a pregnancy in the next 2 months",
-	"qn_preg_none": "None of these",
 	"qn_past_medication_label": "Are you already being treated for excess weight and/or type 2 diabetes?",
 	"qn_past_medication_description": "With Wegovy, Saxenda or Mounjaro, for example.",
 	"qn_med_never": "No, I am not taking any of these",
@@ -330,5 +329,12 @@
 	"qn_duration_label": "How long have you been taking it at that dose?",
 	"qn_duration_description": "Please give the duration as precisely as you can, in weeks.",
 	"qn_last_dose_label": "When was your last dose?",
-	"qn_last_dose_description": "Please give the date as precisely as you can."
+	"qn_last_dose_description": "Please give the date as precisely as you can.",
+	"qv_required": "This answer is required.",
+	"qv_out_of_range": "Please check what you entered.",
+	"qv_invalid_email": "Please enter a valid e-mail address.",
+	"qv_invalid_date": "Please enter a valid date.",
+	"qv_none_with_others": "\"None of the above\" cannot be combined with another answer.",
+	"qv_other_text_missing": "Please describe what you mean by \"Other\".",
+	"qv_screen_has_errors": "Please check the highlighted answers."
 }

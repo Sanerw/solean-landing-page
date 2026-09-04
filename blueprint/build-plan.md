@@ -491,10 +491,19 @@ claims are not approved production content.
     `survey-core` that applies their `visibleIf` and `validators` locally, the
     completeness guard, and the contract test that fails on live drift. Still
     additive.
-  - [ ] 24c. **The flow switches over** - the route, screens, progress, branching and
-    submission all read the local definition; the runtime model fetch and its entry
-    failure states are removed. Every screen renders, the added ones included.
-  - [ ] 24d. **The added screens and the design pass** - the seven answers the export
+  - [x] 24c. **The renderers read our definition** - the question registry is keyed by
+    our own kind instead of RxScale's type string, and every field component takes a
+    typed question of ours with its resolved options and our validation code, driven
+    by the answer store rather than a survey-core instance. A screen component
+    composes them. All of it is proven on the dev surface while the live flow keeps
+    running on the fetched model, so nothing a visitor sees changes yet.
+  - [ ] 24d. **The flow switches over** - the atomic flip: the route reads the walk
+    from our definition, the runtime model fetch and its entry failure states are
+    removed, the submission goes through the mapper with the completeness guard
+    ahead of it, the survey-core session and the model-driven step plan are deleted,
+    and the browser suite is rewritten onto our screen ids. This is the sub-feature
+    that cannot land in halves.
+  - [ ] 24e. **The added screens and the design pass** - the seven answers the export
     never asks for, given screens in the Solean design, plus medication history
     rebuilt to its artboards, copy in German and English, browser coverage and the
     accessibility pass.

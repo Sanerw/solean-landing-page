@@ -1,6 +1,6 @@
 # Solean - Project Overview
 
-<!-- blueprint:source-hash 64271b4a7f5b0f05d8ee6679d5885c926ced4865b4ead97189ed56e008952198 -->
+<!-- blueprint:source-hash 5908975d56e9fcb3a37df93e9a939f7bce0f8ac5c9d486dafc59b85869396f1b -->
 
 > The Solean front end: a marketing site and a doctor-led GLP-1 funnel that runs
 > on RxScale's Anamnesis API and hands the order to Shopify by creating a cart
@@ -146,10 +146,16 @@ next.
       RxScale's `data` shape with its reverse index, the shadow `survey-core`
       that applies their `visibleIf` and `validators` locally, the completeness
       guard, and the contract test against the live document. Still additive.
-    - **24c** the switch: route, screens, progress, branching and submission all
-      read the local definition, and the runtime model fetch with its entry
-      failure states is removed.
-    - **24d** the added screens and the design pass: the seven answers the export
+    - **24c** the renderers: the registry keyed by our own kind, every field
+      component taking a typed question of ours with its resolved options and our
+      validation code, and a screen that composes them. Proven on the dev surface
+      while the live flow keeps running on the fetched model.
+    - **24d** the switch, which cannot land in halves: the route reads our walk,
+      the runtime model fetch and its entry failure states go, the submission runs
+      through the mapper behind the completeness guard, the survey-core session and
+      the model-driven step plan are deleted, and the browser suite moves onto our
+      screen ids.
+    - **24e** the added screens and the design pass: the seven answers the export
       never asks for, medication history rebuilt to its artboards, copy in both
       languages, browser coverage, accessibility.
 

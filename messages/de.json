@@ -293,7 +293,6 @@
 	"qn_preg_pregnant": "Ich bin aktuell schwanger",
 	"qn_preg_breastfeeding": "Ich stille",
 	"qn_preg_planning": "Ich plane in den nächsten 2 Monaten eine Schwangerschaft",
-	"qn_preg_none": "Nichts davon trifft zu",
 	"qn_past_medication_label": "Bist Du bereits in Behandlung von Übergewicht und/oder Diabetes Typ 2?",
 	"qn_past_medication_description": "Zum Beispiel mit Wegovy, Saxenda oder Mounjaro.",
 	"qn_med_never": "Nein, ich nehme keines dieser Medikamente ein",
@@ -330,5 +329,12 @@
 	"qn_duration_label": "Wie lange verwendest Du bereits das Medikament in der angegebenen Dosierung?",
 	"qn_duration_description": "Bitte gib die Dauer so genau wie möglich an (Wochen).",
 	"qn_last_dose_label": "Wann war Deine letzte Dosis des angegebenen Medikaments?",
-	"qn_last_dose_description": "Bitte gib den Zeitpunkt so genau wie möglich an (Datum)."
+	"qn_last_dose_description": "Bitte gib den Zeitpunkt so genau wie möglich an (Datum).",
+	"qv_required": "Diese Angabe wird benötigt.",
+	"qv_out_of_range": "Bitte überprüfe Deine Angaben.",
+	"qv_invalid_email": "Bitte gib eine gültige E-Mail-Adresse ein.",
+	"qv_invalid_date": "Bitte gib ein gültiges Datum an.",
+	"qv_none_with_others": "\"Keine der Genannten\" lässt sich nicht mit einer anderen Antwort kombinieren.",
+	"qv_other_text_missing": "Bitte beschreibe, was Du mit \"Andere\" meinst.",
+	"qv_screen_has_errors": "Bitte überprüfe die markierten Angaben."
 }

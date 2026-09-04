@@ -29,6 +29,11 @@ class AnswerStore {
 		return this.#started;
 	}
 
+	/** One answer, for a component that renders a single question. */
+	get<Id extends QuestionId>(id: Id): Answers[Id] {
+		return this.#answers[id];
+	}
+
 	set<Id extends QuestionId>(id: Id, value: Answers[Id]): void {
 		// Module state on the server is shared by every request, so a write here would put one
 		// visitor's answer in front of the next. Nothing should be writing during SSR: answers

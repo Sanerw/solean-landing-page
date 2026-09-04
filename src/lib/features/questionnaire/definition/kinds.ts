@@ -137,3 +137,30 @@ export function optionsFor(question: AnyQuestion, answers: Answers): readonly Ch
 
 	return typeof question.options === 'function' ? question.options(answers) : question.options;
 }
+
+/** One row a choice question draws, with the none and other items in their place. */
+export interface ChoiceItem {
+	readonly value: string;
+	readonly label: MessageFn;
+	/** The two special rows behave differently: "none" is exclusive, "other" opens a text box. */
+	readonly kind: 'option' | 'none' | 'other';
+}
+
+/**
+ * The full list a choice question renders: its own options, then the none and other items it
+ * declares. Kept out of the components because both of them need it and because the order is
+ * a decision, not an implementation detail: "none of the above" reads last, after the things
+ * it is above.
+ */
+export function choiceItems(
+	question: AnyQuestion,
+	options: readonly ChoiceOption[],
+	labels: { none: MessageFn; other: MessageFn }
+): readonly ChoiceItem[] {
+	const items: ChoiceItem[] = options.map((option) => ({ ...option, kind: 'option' }));
+
+	if (question.hasNone) items.push({ value: NONE_VALUE, label: labels.none, kind: 'none' });
+	if (question.hasOther) items.push({ value: OTHER_VALUE, label: labels.other, kind: 'other' });
+
+	return items;
+}
