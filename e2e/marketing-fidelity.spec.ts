@@ -82,8 +82,9 @@ test('the announcement and reference hero asset render without narrow-screen ove
 	await expect(page.locator(':root')).toHaveCSS('--scrim', '#041309');
 	const scrim = hero.locator(':scope > div[aria-hidden="true"]');
 	await expect(scrim).toHaveCount(1);
+	// Two stops, not three: the export ramps 88 to F0 in hex, which is 0.55 to 0.95 here.
 	const narrowScrim = await scrim.evaluate((el) => getComputedStyle(el).backgroundImage);
-	expect(narrowScrim).toMatch(/^linear-gradient\(oklab\([^)]+ \/ 0\.45\) 0%,.+ \/ 0\.7\) 50%,.+ \/ 0\.9\) 100%\)$/);
+	expect(narrowScrim).toMatch(/^linear-gradient\(oklab\([^)]+ \/ 0\.55\) 0%, oklab\([^)]+ \/ 0\.95\) 100%\)$/);
 
 	// Full bleed on the narrow frame: no card gutter, no radius, and at least a
 	// full viewport tall so the fold lands below the hero rather than inside it.
@@ -144,6 +145,12 @@ test('the announcement and reference hero asset render without narrow-screen ove
 	expect(summary).toBe(`${total.toLocaleString('en')} reviews on Reviews.io`);
 	await expect(reviewsLink.getByRole('img', { name: /out of 5 stars$/ })).toBeVisible();
 	await expect(reviewsLink.locator('svg').first()).toHaveCSS('fill', 'rgb(226, 182, 79)');
+
+	// The export sets the score bold and the summary in full white, which is what separates
+	// this from the lighter first pass at the composition.
+	const scoreText = reviewsLink.locator('span').first();
+	await expect(scoreText).toHaveCSS('font-weight', '700');
+	await expect(reviewsLink.getByText(summary)).toHaveCSS('color', 'rgb(251, 250, 247)');
 
 	// The menu opens from the overlay trigger, closes on Escape, and restores focus.
 	const menuTrigger = page.getByRole('button', { name: 'Open menu' });

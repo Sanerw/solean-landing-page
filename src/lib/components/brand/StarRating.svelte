@@ -3,7 +3,7 @@
 		/** Filled marks are Math.round(rating), clamped to max. */
 		rating: number;
 		max?: number;
-		size?: 'sm' | 'default';
+		size?: 'sm' | 'default' | 'lg';
 		/**
 		 * `badge` is the platform-style green square from the hero trust badge.
 		 * `inline` is the bare star used in testimonial cards.
@@ -29,8 +29,14 @@
 	}: Props = $props();
 
 	const filled = $derived(Math.min(Math.max(Math.round(rating), 0), max));
-	const boxSize = $derived(size === 'sm' ? 'size-5' : 'size-7');
-	const starSize = $derived(size === 'sm' ? 'size-3' : 'size-4');
+	const BOX_SIZE = { sm: 'size-5', default: 'size-7', lg: 'size-8' };
+	const STAR_SIZE = { sm: 'size-3', default: 'size-4', lg: 'size-5' };
+	// The hero's row is a run of glyphs in the reference, set tight; the smaller sizes sit
+	// beside prose and keep the airier gap they were drawn with.
+	const ROW_GAP = { sm: 'gap-1', default: 'gap-1', lg: 'gap-0.5' };
+	const boxSize = $derived(BOX_SIZE[size]);
+	const starSize = $derived(STAR_SIZE[size]);
+	const rowGap = $derived(ROW_GAP[size]);
 	// One decimal reads naturally for 4.7 and collapses to "5" for a whole number.
 	const label = $derived(`${Number(rating.toFixed(1))} out of ${max} stars`);
 
@@ -45,7 +51,7 @@
 		'M12 2.5l2.94 5.96 6.58.96-4.76 4.64 1.12 6.55L12 17.55l-5.88 3.09 1.12-6.55L2.48 9.42l6.58-.96L12 2.5z';
 </script>
 
-<span class={['inline-flex items-center gap-1', className]} role="img" aria-label={label}>
+<span class={['inline-flex items-center', rowGap, className]} role="img" aria-label={label}>
 	{#each Array.from({ length: max }) as _, i (i)}
 		{#if treatment === 'badge'}
 			<!-- The reference's trust badge draws each star as a filled square holding a white

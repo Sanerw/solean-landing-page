@@ -72,13 +72,13 @@
 			/>
 		{/if}
 
-		<!-- One ramp at every width, the stronger of the two the artboards carry. The wide
-		     composition's flat wash under a 30-to-70 scrim left the copy sitting on a sunlit
-		     facade; the narrow one's 45 to 90 holds the photograph down at both crops, so it
-		     serves both and the wash under it goes with it. -->
+		<!-- The export's mobile hero overlay, the one drawn in #041309, ramps 88 to F0 in hex
+		     over two stops: 53 to 94 percent, taken here to the nearest stock steps. It serves
+		     every width by decision, so the export's separate desktop treatment in #071D10
+		     under a flat wash is not restored. -->
 		<div
 			aria-hidden="true"
-			class="absolute inset-0 -z-10 bg-gradient-to-b from-scrim/45 via-scrim/70 to-scrim/90"
+			class="absolute inset-0 -z-10 bg-gradient-to-b from-scrim/55 to-scrim/95"
 		></div>
 
 		<SiteHeader variant="overlay" />
