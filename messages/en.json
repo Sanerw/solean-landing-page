@@ -380,5 +380,18 @@
 	"qv_invalid_name": "Please enter your name.",
 	"qv_invalid_month": "Please give the month and year, for example 08/2026.",
 	"qv_required_field": "{field} is required.",
-	"q_optional": "Optional"
+	"q_optional": "Optional",
+	"journal_eyebrow": "The Solean Journal",
+	"journal_heading": "Clear guidance for a healthier you.",
+	"journal_lead": "Doctor-reviewed guidance on weight-loss treatments, nutrition and building progress that lasts.",
+	"journal_featured_badge": "Featured guide",
+	"journal_open_article": "Read {title}",
+	"journal_reviewed_by": "Reviewed by {reviewer}",
+	"title_journal": "The Solean Journal | Solean",
+	"meta_journal": "Doctor-reviewed guides on weight-loss treatments, nutrition and lasting progress.",
+	"journal_latest_from": "Latest from",
+	"journal_articles_heading": "Articles & resources",
+	"journal_all_guides": "All guides",
+	"journal_filter_label": "Filter articles by category",
+	"journal_read_article": "Read article"
 }

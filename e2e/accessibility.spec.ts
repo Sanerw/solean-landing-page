@@ -46,6 +46,13 @@ test('the learn article has no serious accessibility violations', async ({ page 
 	expect(await violations(page)).toEqual([]);
 });
 
+test('the Journal has no serious accessibility violations', async ({ page }) => {
+	await page.goto('/learn');
+	await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+
+	expect(await violations(page)).toEqual([]);
+});
+
 /**
  * The fixture model carries one page per question type by construction, so walking it is the
  * cheapest way to put every adapted primitive in front of the scanner.

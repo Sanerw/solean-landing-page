@@ -188,9 +188,10 @@ function send(response, status, body) {
 }
 
 /**
- * Answers the two GROQ queries the Learn article makes, off a response the real dataset
- * produced. Matching on the shape of the query rather than parsing GROQ: there are two of them,
- * and a parser here would be a second implementation of Sanity to keep correct.
+ * Answers the GROQ queries the marketing pages and the Learn article make, off a response the
+ * real dataset produced. Matching on the shape of the query rather than parsing GROQ: there are
+ * a handful of them, and a parser here would be a second implementation of Sanity to keep
+ * correct.
  */
 async function sanityQuery(url) {
 	const query = url.searchParams.get('query') ?? '';
@@ -221,9 +222,12 @@ async function sanityQuery(url) {
 
 	const article = fixture.articles[language] ?? null;
 
-	// The `/learn` redirects ask only for the newest article's slug.
-	if (query.includes('[0].slug.current')) {
-		return article ? fixture.slug : null;
+	// The Journal asks for the list, the article page for one by slug, and the absence of a
+	// `$slug` is what separates them. The list is answered with the whole document rather than
+	// the query's projection: the reader takes a subset either way, and a second shape here
+	// would be one more thing to keep in step with the real dataset.
+	if (param('$slug') === null) {
+		return article ? [article] : [];
 	}
 
 	return article && param('$slug') === fixture.slug ? article : null;

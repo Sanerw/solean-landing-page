@@ -17,7 +17,8 @@ export const articlesQuery = defineQuery(`*[_type == "article" && language == $l
 		slug,
 		reviewedAt,
 		readTimeMinutes,
-		hero
+		hero,
+		reviewer->{ name, portrait }
 	}`);
 
 export const articleQuery = defineQuery(`*[_type == "article" && language == $language && slug.current == $slug][0]{
@@ -54,12 +55,6 @@ export const articleQuery = defineQuery(`*[_type == "article" && language == $la
 	seoDescription
 }`);
 
-/** The slug of the most recently reviewed article, for the `/learn` redirects. */
-export const featuredArticleSlugQuery = defineQuery(
-	`*[_type == "article" && language == $language && defined(slug.current)]
-		| order(reviewedAt desc)[0].slug.current`
-);
-
 export interface SanityImage {
 	asset?: { _ref: string };
 	alt?: string;
@@ -74,6 +69,8 @@ export interface ArticleListItem {
 	reviewedAt: string;
 	readTimeMinutes?: number;
 	hero?: SanityImage;
+	/** The Journal card credits the doctor; the article page reads the fuller shape below. */
+	reviewer?: { name: string; portrait?: SanityImage };
 }
 
 export interface ArticleDetail extends ArticleListItem {

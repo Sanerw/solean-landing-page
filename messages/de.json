@@ -380,5 +380,18 @@
 	"qv_invalid_name": "Bitte gib Deinen Namen ein.",
 	"qv_invalid_month": "Bitte gib Monat und Jahr an, zum Beispiel 08/2026.",
 	"qv_required_field": "{field} wird benötigt.",
-	"q_optional": "Optional"
+	"q_optional": "Optional",
+	"journal_eyebrow": "Das Solean Journal",
+	"journal_heading": "Klare Orientierung für ein gesünderes Leben.",
+	"journal_lead": "Ärztlich geprüfte Orientierung zu Abnehmbehandlungen, Ernährung und Fortschritt, der bleibt.",
+	"journal_featured_badge": "Empfohlener Ratgeber",
+	"journal_open_article": "{title} lesen",
+	"journal_reviewed_by": "Geprüft von {reviewer}",
+	"title_journal": "Das Solean Journal | Solean",
+	"meta_journal": "Ärztlich geprüfte Ratgeber zu Abnehmbehandlungen, Ernährung und dauerhaftem Fortschritt.",
+	"journal_latest_from": "Neu im",
+	"journal_articles_heading": "Artikel & Ratgeber",
+	"journal_all_guides": "Alle Ratgeber",
+	"journal_filter_label": "Artikel nach Kategorie filtern",
+	"journal_read_article": "Artikel lesen"
 }
