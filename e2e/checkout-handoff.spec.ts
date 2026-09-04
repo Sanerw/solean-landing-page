@@ -193,6 +193,29 @@ test('the plan the visitor picks is the plan the cart is built from', async ({ p
 	expect(ordered).toBe(FIXTURE_PRESCRIPTION_VARIANT_ID);
 });
 
+test('the prescription card opens a second screen rather than a checkout', async ({ page }) => {
+	await atRecommendation(page);
+
+	// The card stands for the group, so confirming it buys nothing: no cart, no navigation.
+	await page.getByRole('radio', { name: new RegExp(UI.prescriptionCard) }).click();
+
+	let checkouts = 0;
+	page.on('request', (request) => {
+		if (request.url().includes('/api/checkout')) checkouts++;
+	});
+
+	await checkoutButton(page).click();
+
+	await expect(page.getByRole('heading', { level: 1, name: UI.prescriptionHeadline })).toBeVisible();
+	expect(checkouts).toBe(0);
+	await expect(page).toHaveURL('/questionnaire/complete');
+
+	// Back is a way out, and the treatment the first screen had chosen is still chosen.
+	await page.getByRole('button', { name: UI.backToTreatments }).click();
+	await expect(page.getByRole('heading', { level: 1, name: UI.chooseTreatment })).toBeVisible();
+	await expect(page.getByRole('radio', { name: new RegExp(UI.prescriptionCard) })).toBeChecked();
+});
+
 /*
  * Removed on 2026-09-04 with the check it covered: `a variant nobody recommended is refused,
  * and no cart is made`. It routed the browser's request through a variant that is in the shop

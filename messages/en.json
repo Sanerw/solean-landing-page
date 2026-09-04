@@ -391,5 +391,14 @@
 	"journal_articles_heading": "Articles & resources",
 	"journal_all_guides": "All guides",
 	"journal_filter_label": "Filter articles by category",
-	"journal_read_article": "Read article"
+	"journal_read_article": "Read article",
+	"rec_script_card_title": "Prescription only",
+	"rec_script_card_badge": "No medicine",
+	"rec_script_card_body": "Clinician-issued prescription without medication",
+	"rec_script_headline": "Which medication should your prescription be for?",
+	"rec_script_body": "Select the medication you want your clinician to assess and prescribe. No medication is included with this service.",
+	"rec_script_note": "Your clinician will confirm suitability and may recommend a different medication or dose.",
+	"rec_script_action": "Continue with a prescription",
+	"rec_back": "Back to the treatments",
+	"rec_price_from": "from {price}"
 }

@@ -1,3 +1,4 @@
+import type { Money } from '$lib/domain';
 import type { RecommendedPlan } from './recommendation';
 
 /**
@@ -23,9 +24,63 @@ export function groupPlans(plans: readonly RecommendedPlan[]): PlanGroups {
 	};
 }
 
-/** The treatment is what the funnel is for; the prescription list only opens on its own. */
-export function initialMode(groups: PlanGroups): PlanMode {
-	return groups.treatment.length > 0 ? 'treatment' : 'prescription';
+/**
+ * Which screen the choice opens on.
+ *
+ * `treatment` lists the treatments with one card standing for the whole prescription group,
+ * and `prescription` lists the medications a prescription can be written for. The second is
+ * normally reached by choosing that card, but it is also where a recommendation of nothing but
+ * prescriptions starts: a screen whose only option is "prescription only" asks nothing.
+ */
+export function initialStep(groups: PlanGroups): PlanMode {
+	const onlyPrescriptions = groups.treatment.length === 0 && groups.prescription.length > 0;
+
+	return onlyPrescriptions ? 'prescription' : 'treatment';
+}
+
+/**
+ * What the summary card costs. One price while every listing agrees, which is what the live
+ * shop returns today: three prescription-only listings, all 49.90.
+ *
+ * `from` is not decoration. The card stands for a group, so a single price on a group that
+ * disagrees is a promise the next screen breaks, and the lowest is the only one that stays
+ * true when it does.
+ */
+export function groupPrice(plans: readonly RecommendedPlan[]): { price: Money; from: boolean } | null {
+	const prices = plans.flatMap((plan) => plan.options.map((option) => option.price));
+	if (prices.length === 0) return null;
+
+	const lowest = prices.reduce((min, price) => (price.amount < min.amount ? price : min));
+
+	return { price: lowest, from: prices.some((price) => price.amount !== lowest.amount) };
+}
+
+/**
+ * Which purchase a chosen variant belongs to, so the analytics mode and the confirming button
+ * follow the choice rather than a tab that no longer exists. Null when nothing is chosen or
+ * the variant is not among these plans.
+ */
+export function modeOf(groups: PlanGroups, variantId: string | null): PlanMode | null {
+	if (!variantId) return null;
+
+	const holds = (plans: readonly RecommendedPlan[]) =>
+		plans.some((plan) => plan.options.some((option) => option.variantId === variantId));
+
+	if (holds(groups.treatment)) return 'treatment';
+
+	return holds(groups.prescription) ? 'prescription' : null;
+}
+
+/**
+ * Whether confirming the first screen opens the second rather than the checkout. True only
+ * when the prescription card is the selection and there is a medication list behind it.
+ */
+export function opensPrescriptionStep(
+	groups: PlanGroups,
+	step: PlanMode,
+	prescriptionCardChosen: boolean
+): boolean {
+	return step === 'treatment' && prescriptionCardChosen && groups.prescription.length > 0;
 }
 
 /** RxScale's own default, and the first option when it names none. */

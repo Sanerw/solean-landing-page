@@ -29,13 +29,25 @@ export function recommendation() {
 		},
 		choiceLabel: m.rec_choice_label(),
 		/**
-		 * The two purchases, as the switch above the list names them. They are separated rather
-		 * than listed together because one delivers medication and the other does not.
+		 * The prescription-only group as one card beneath the treatments, which is where the
+		 * reference puts it. It is a peer of the treatments rather than a tab beside them: the
+		 * distinction is not one a visitor has been told about before this screen.
 		 */
-		modes: {
-			treatment: m.rec_mode_treatment(),
-			prescription: m.rec_mode_prescription()
+		prescriptionCard: {
+			title: m.rec_script_card_title(),
+			badge: m.rec_script_card_badge(),
+			body: m.rec_script_card_body()
 		},
+		/** The second screen, reached only by choosing that card. */
+		prescriptionStep: {
+			headline: m.rec_script_headline(),
+			body: m.rec_script_body(),
+			note: m.rec_script_note(),
+			action: m.rec_script_action(),
+			back: m.rec_back()
+		},
+		/** Only when a group's listings disagree; see `groupPrice`. */
+		priceFrom: (price: string) => m.rec_price_from({ price }),
 		noPlans: {
 			title: m.rec_no_plans_title(),
 			body: m.rec_no_plans_body()

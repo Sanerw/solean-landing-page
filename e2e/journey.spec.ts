@@ -95,7 +95,6 @@ test('a visitor walks from the landing page to the shop', async ({ page }) => {
 	// The submission happened on that last Continue, and the recommendation follows from it.
 	await expect(page).toHaveURL('/questionnaire/complete');
 	await expect(page.getByRole('heading', { name: UI.chooseTreatment })).toBeVisible();
-	await expect(page.getByRole('tab', { name: UI.modeTreatment })).toBeVisible();
 
 	// The plan RxScale pre-selected is taken as offered: what this walk is about is that the
 	// questionnaire reaches the shop, not which plan was picked.

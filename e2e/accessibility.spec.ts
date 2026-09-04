@@ -3,6 +3,7 @@ import { UI } from './ui-labels';
 import { expect, test, type Page } from '@playwright/test';
 import { walkAndSubmit, walkTo, type WalkOptions } from './answers';
 import { settledPage } from './motion';
+import { checkoutButton } from './recommendation';
 
 /**
  * One automated pass over every surface a visitor sees. Axe proves a subset of accessibility
@@ -98,14 +99,17 @@ for (const { id, options } of QUESTION_STEPS) {
 
 test('the recommendation screen has no serious accessibility violations', async ({ page }) => {
 	await walkAndSubmit(page);
-	await expect(page.getByRole('tab', { name: UI.modeTreatment })).toBeVisible();
+	await expect(page.getByRole('heading', { level: 1, name: UI.chooseTreatment })).toBeVisible();
 	// The plan list fades in after the wait, so the scan waits with it.
 	await settledPage(page);
 
 	expect(await violations(page)).toEqual([]);
 
-	// The other purchase is a panel of its own, and axe only sees the one on screen.
-	await page.getByRole('tab', { name: UI.modePrescription }).click();
+	// The medication list is a screen of its own, and axe only sees the one on screen.
+	await page.getByRole('radio', { name: new RegExp(UI.prescriptionCard) }).click();
+	await checkoutButton(page).click();
+	await expect(page.getByRole('heading', { level: 1, name: UI.prescriptionHeadline })).toBeVisible();
+	await settledPage(page);
 	expect(await violations(page)).toEqual([]);
 
 });

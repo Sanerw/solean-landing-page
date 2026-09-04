@@ -128,11 +128,13 @@ test('capture the questionnaire screens', async ({ page }) => {
 	await expect(checkoutButton(page)).toBeEnabled();
 	await shot('13-recommendation-choice');
 
-	// The other purchase, which is a panel of its own and never on screen beside the prices
+	// The other purchase, which is a screen of its own and never on screen beside the prices
 	// of the treatments.
-	await page.getByRole('tab', { name: UI.modePrescription }).click();
+	await page.getByRole('radio', { name: new RegExp(UI.prescriptionCard) }).click();
+	await checkoutButton(page).click();
+	await expect(page.getByRole('heading', { level: 1, name: UI.prescriptionHeadline })).toBeVisible();
 	await shot('13b-recommendation-prescriptions');
-	await page.getByRole('tab', { name: UI.modeTreatment }).click();
+	await page.getByRole('button', { name: UI.backToTreatments }).click();
 });
 
 /**

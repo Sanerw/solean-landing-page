@@ -139,17 +139,11 @@ test('the recommendation presents what RxScale offers, prices included', async (
 	await walkAndSubmit(page);
 	await expect(page).toHaveURL('/questionnaire/complete');
 
-	// Both purchases are offered, and never on the same list: a prescription with no
-	// medication costs a fraction of a treatment, and the two prices side by side would read
-	// as a discount on one purchase rather than as two.
-	await expect(page.getByRole('tab', { name: UI.modeTreatment })).toBeVisible();
-	await expect(page.getByRole('tab', { name: UI.modePrescription })).toBeVisible();
-
-	// Straight off the recommendation. Nothing on this screen is written down here any more.
+	// Both purchases are offered, and never as two prices on one row: a prescription with no
+	// medication costs a fraction of a treatment, so the group is one card carrying its own
+	// price rather than a listing beside the treatments.
 	await expect(page.getByText('249.00 EUR')).toBeVisible();
-	// The other purchase's price is not on screen beside it, which is the whole point of the
-	// split, and the button names back what confirming would buy.
-	await expect(page.getByText('49.90 EUR')).toBeHidden();
+	await expect(page.getByRole('radio', { name: new RegExp(UI.prescriptionCard) })).toBeVisible();
 	await expect(
 		page.getByRole('button', { name: `${UI.checkoutWith} Fixture Treatment` })
 	).toBeEnabled();
@@ -161,17 +155,22 @@ test('the recommendation presents what RxScale offers, prices included', async (
 		page.getByRole('radio', { name: 'Fixture Treatment 0.25 mg 249.00 EUR' })
 	).toBeChecked();
 
-	await page.getByRole('tab', { name: UI.modePrescription }).click();
-	await expect(page.getByText('49.90 EUR')).toBeVisible();
-	await expect(page.getByText('249.00 EUR')).toBeHidden();
+	// The medications are a screen of their own, reached by confirming the card.
+	await page.getByRole('radio', { name: new RegExp(UI.prescriptionCard) }).click();
+	await checkoutButton(page).click();
+	await expect(page.getByRole('heading', { level: 1, name: UI.prescriptionHeadline })).toBeVisible();
 
-	// Switching brings its own default: the treatment must not stay chosen while a list of
-	// prescriptions is on screen, or Continue would confirm merchandise nobody can see.
+	await expect(page.getByText('49.90 EUR')).toBeVisible();
+	// The treatment's price is not on the screen that prices prescriptions, which is the whole
+	// point of the split.
+	await expect(page.getByText('249.00 EUR')).toBeHidden();
 	await expect(
 		page.getByRole('radio', { name: 'Fixture Treatment 0.25 mg Digital-Rezept 49.90 EUR' })
 	).toBeChecked();
 
-	await page.getByRole('tab', { name: UI.modeTreatment }).click();
+	// Back is a way out, and it does not lose what the first screen had chosen.
+	await page.getByRole('button', { name: UI.backToTreatments }).click();
+	await expect(page.getByRole('heading', { level: 1, name: UI.chooseTreatment })).toBeVisible();
 
 	// The same press that takes the choice is the one that orders it, and the handoff itself
 	// is covered by its own spec.

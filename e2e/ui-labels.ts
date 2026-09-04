@@ -16,8 +16,10 @@ export const UI = {
 	openCalendar: 'Kalender öffnen',
 	checkEligibility: 'Eignung prüfen',
 	chooseTreatment: 'Wähle deine Behandlung',
-	modeTreatment: 'Behandlung',
-	modePrescription: 'Nur Rezept',
+	/** The card that stands for the prescription-only group on the first screen. */
+	prescriptionCard: 'Nur Rezept',
+	prescriptionHeadline: 'Für welches Medikament soll dein Rezept sein?',
+	backToTreatments: 'Zurück zu den Behandlungen',
 	faqHeading: 'Häufige Fragen.',
 	keyTakeaways: 'Das Wichtigste in Kürze',
 	refused: 'Deine Bestellung wurde nicht angenommen',

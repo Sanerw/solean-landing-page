@@ -391,5 +391,14 @@
 	"journal_articles_heading": "Artikel & Ratgeber",
 	"journal_all_guides": "Alle Ratgeber",
 	"journal_filter_label": "Artikel nach Kategorie filtern",
-	"journal_read_article": "Artikel lesen"
+	"journal_read_article": "Artikel lesen",
+	"rec_script_card_title": "Nur Rezept",
+	"rec_script_card_badge": "Ohne Medikament",
+	"rec_script_card_body": "Ärztlich ausgestelltes Rezept ohne Medikament",
+	"rec_script_headline": "Für welches Medikament soll dein Rezept sein?",
+	"rec_script_body": "Wähle das Medikament, das deine Ärztin oder dein Arzt prüfen und verschreiben soll. Ein Medikament ist in dieser Leistung nicht enthalten.",
+	"rec_script_note": "Deine Ärztin oder dein Arzt bestätigt die Eignung und kann ein anderes Medikament oder eine andere Dosis empfehlen.",
+	"rec_script_action": "Weiter mit Rezept",
+	"rec_back": "Zurück zu den Behandlungen",
+	"rec_price_from": "ab {price}"
 }
