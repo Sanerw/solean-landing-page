@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { localizeHref } from '$lib/paraglide/runtime';
 	import { Button } from '$lib/components/ui/button';
 	import ActivityIcon from '@lucide/svelte/icons/activity';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
@@ -42,7 +43,7 @@
 	     section already carry the same two destinations, so repeating them here would be the
 	     third and fourth on one scroll. -->
 	<div class="mt-8 flex flex-col gap-4 max-sm:hidden sm:flex-row">
-		<Button href={ROUTES.questionnaire} class="rounded-full">
+		<Button href={localizeHref(ROUTES.questionnaire)} class="rounded-full">
 			{MEDICAL_FRAMING.primaryCta}
 			<ArrowRightIcon aria-hidden="true" class="size-5" />
 		</Button>

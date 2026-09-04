@@ -30,13 +30,13 @@ test('a date of birth is required, and ours is the message that says so', async 
 
 	await page.getByRole('button', { name: UI.continue }).click();
 
-	await expect(page.getByText(UI.required).first()).toBeVisible();
+	await expect(page.getByText(UI.requiredField(UI.dateOfBirthShort))).toBeVisible();
 	await expect(page).toHaveURL('/questionnaire/about-you');
 
 	await selectDateOfBirth(page);
 	await expect(dateOfBirthField(page)).toHaveValue('14/05/1990');
 	await page.getByRole('button', { name: UI.continue }).click();
-	await expect(page).toHaveURL('/questionnaire/projection');
+	await expect(page).toHaveURL('/questionnaire/your-details');
 });
 
 test('the date of birth can be typed as well as picked', async ({ page }) => {
@@ -75,7 +75,7 @@ test('a typed date that does not exist is not an answer', async ({ page }) => {
 	// "Required" rather than "not a date", because that is what an unemitted value is. The
 	// wording is worth revisiting in 24e: the field visibly holds text while the message says
 	// nothing was answered. Unchanged from before the switch, so not a regression.
-	await expect(page.getByText(UI.required).first()).toBeVisible();
+	await expect(page.getByText(UI.requiredField(UI.dateOfBirthShort))).toBeVisible();
 	await expect(page).toHaveURL('/questionnaire/about-you');
 });
 
@@ -89,12 +89,12 @@ test('a measurement outside the plausible band reports on the control that faile
 
 	// The bounds are RxScale's, but the check is ours: theirs reads "please check what you
 	// entered" too, and it is a typo check rather than a medical decision.
-	await expect(page.getByText(UI.outOfRange)).toBeVisible();
+	await expect(page.getByText(UI.outOfRange(UI.heightShort))).toBeVisible();
 	await expect(page).toHaveURL('/questionnaire/about-you');
 
 	await page.locator('#q-heightCm').fill('178');
 	await page.getByRole('button', { name: UI.continue }).click();
-	await expect(page).toHaveURL('/questionnaire/projection');
+	await expect(page).toHaveURL('/questionnaire/your-details');
 });
 
 test('a malformed e-mail is refused before anything is sent', async ({ page }) => {
@@ -164,16 +164,20 @@ test('the dose offers the scale of the medication that was named', async ({ page
 	await expect(page.getByRole('radio', { name: '15 mg', exact: true })).toHaveCount(0);
 });
 
-test('the e-mail question describes itself, and the description is announced', async ({
-	page
-}) => {
+test('the contact fields carry their own keyboard, hint and description', async ({ page }) => {
 	await walkTo(page, 'your-details');
 
 	const email = page.locator('#q-email');
 	await expect(email).toHaveAttribute('type', 'email');
 	await expect(email).toHaveAttribute('placeholder', 'name@example.com');
-	await expect(email).toHaveAttribute('aria-describedby', /q-email-description/);
-	await expect(page.locator('#q-email-description')).toHaveText(
-		'Deine Antworten werden vertraulich zwischen Dir und unserem Ärzteteam behandelt.'
+
+	// The SMS caption is the only description left on this screen: the artboard draws nothing
+	// under the e-mail, so RxScale's confidentiality line is not transcribed there.
+	const phone = page.locator('#q-phone');
+	await expect(phone).toHaveAttribute('type', 'tel');
+	await expect(phone).toHaveAttribute('placeholder', '+49 151 234 56 78');
+	await expect(phone).toHaveAttribute('aria-describedby', /q-phone-description/);
+	await expect(page.locator('#q-phone-description')).toHaveText(
+		'Erhalte Bestellupdates, exklusive Rabatte und Tipps per SMS. Jederzeit abbestellbar.'
 	);
 });

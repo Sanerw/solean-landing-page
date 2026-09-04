@@ -14,11 +14,8 @@ async function stepIsInteractive(page: Page): Promise<void> {
 }
 
 async function questionCount(page: Page): Promise<{ current: number; total: number }> {
-	const label = await page
-		.locator(`[aria-label^="${UI.progressPrefix}"]`)
-		.first()
-		.getAttribute('aria-label');
-	// The label is localised; the two numbers in it are not, so they are what is read.
+	const label = await page.locator(UI.progressEyebrow).first().textContent();
+	// The eyebrow is localised; the two numbers in it are not, so they are what is read.
 	const match = label?.match(/(\d+)\D+(\d+)/);
 	if (!match) throw new Error(`No question count on this step: ${label}`);
 
@@ -32,7 +29,10 @@ test('a required question refuses to advance, with our own message', async ({ pa
 
 	await page.getByRole('button', { name: UI.continue }).click();
 
-	await expect(page.getByText(UI.required).first()).toBeVisible();
+	// Named, because `about-you` carries four fields and four identical refusals would leave
+	// the reader matching each message to the box above it.
+	await expect(page.getByText(UI.requiredField(UI.genderShort))).toBeVisible();
+	await expect(page.getByText(UI.requiredField(UI.heightShort))).toBeVisible();
 	await expect(page).toHaveURL('/questionnaire/about-you');
 });
 
@@ -46,7 +46,7 @@ test('a measurement outside the plausible range refuses too', async ({ page }) =
 	await page.locator('#q-weightKg').fill('110');
 	await page.getByRole('button', { name: UI.continue }).click();
 
-	await expect(page.getByText(UI.outOfRange).first()).toBeVisible();
+	await expect(page.getByText(UI.outOfRange(UI.heightShort))).toBeVisible();
 	await expect(page).toHaveURL('/questionnaire/about-you');
 });
 

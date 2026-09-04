@@ -1,25 +1,53 @@
 import { browser, dev } from '$app/environment';
+import { clearSession, loadSession, saveSession } from './persistence';
 import { emptyAnswers, type Answers, type QuestionId } from './types';
 
 /**
- * The one set of answers the questionnaire screens share, so they survive navigation between
- * screens without being written anywhere.
+ * The one set of answers the questionnaire screens share.
  *
- * **Nothing here is persisted.** The answers live in this module and nowhere else, so a
- * reload starts the questionnaire over: the medical answers a person types never outlive the
- * page that is asking for them, not even in `sessionStorage`. Moving between screens is a
- * client-side navigation and keeps the module, which is why the walk itself still works.
+ * **They are persisted, on this device only.** Every write is mirrored into `localStorage` so
+ * somebody who leaves mid-questionnaire finds their answers where they left them, for 30
+ * days. `persistence.ts` owns where that is and why it is not a cookie. Nothing reaches a
+ * server until the submission, which is unchanged.
  *
- * This is the same contract `survey-state.svelte.ts` holds for the RxScale-driven flow, which
- * 24c replaces with this one.
+ * The store is erased the moment the questionnaire has served its purpose: the answers have
+ * gone to RxScale and the visitor has left for the checkout. Keeping them past that point
+ * would mean a stranger on a shared computer could read a completed medical questionnaire,
+ * and there would be nothing left to resume anyway.
  */
 class AnswerStore {
 	#answers = $state(emptyAnswers());
 	#started = $state(false);
 	#anamnesisUid = $state<string | null>(null);
+	/** Guards against a restore overwriting answers typed before it ran. */
+	#restored = false;
 
 	get answers(): Answers {
 		return this.#answers;
+	}
+
+	/**
+	 * Read what this device has, once, on the client.
+	 *
+	 * Called from the questionnaire's own layout rather than at module scope: this file is
+	 * imported during SSR too, where `localStorage` does not exist and where module state is
+	 * shared between requests, so restoring there would put one visitor's answers in front of
+	 * the next.
+	 */
+	restore(): void {
+		if (!browser || this.#restored) return;
+
+		this.#restored = true;
+
+		const saved = loadSession();
+		if (!saved) return;
+
+		this.#answers = saved.answers;
+		this.#anamnesisUid = saved.anamnesisUid;
+		// Answers on this device are the proof that the walk has begun, which is what a fresh
+		// load otherwise has no way to know: `started` is what stops an address the visitor has
+		// not reached from opening, and a restored session has reached one.
+		this.#started = true;
 	}
 
 	/**
@@ -47,6 +75,12 @@ class AnswerStore {
 		}
 
 		this.#answers[id] = value;
+		this.#save();
+	}
+
+	/** Every write goes through here, so nothing can change without the copy following it. */
+	#save(): void {
+		saveSession({ answers: this.#answers, anamnesisUid: this.#anamnesisUid });
 	}
 
 	/**
@@ -59,17 +93,33 @@ class AnswerStore {
 
 	recordSubmission(uid: string): void {
 		this.#anamnesisUid = uid;
+		// Stored with the answers, because it is what stops a reload from filing a second
+		// anamnesis for the same person. See `SavedSession` for the whole reasoning.
+		this.#save();
 	}
 
 	markStarted(): void {
 		this.#started = true;
+		// The step a resume returns to is derived from the answers, so nothing about the
+		// position is stored; what has to survive is that there are answers at all.
+		this.#save();
 	}
 
-	/** Back to an empty questionnaire, with no trace of the last one. */
+	/**
+	 * The questionnaire is over: the record is with a doctor and the visitor is leaving for
+	 * the checkout. Only the stored copy goes, not the in-memory one, because the browser is
+	 * mid-navigation and the screen it is still showing reads from it.
+	 */
+	finish(): void {
+		clearSession();
+	}
+
+	/** Back to an empty questionnaire, with no trace of the last one, saved copy included. */
 	reset(): void {
 		this.#answers = emptyAnswers();
 		this.#started = false;
 		this.#anamnesisUid = null;
+		clearSession();
 	}
 }
 

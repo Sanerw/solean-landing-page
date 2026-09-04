@@ -17,6 +17,7 @@
 	import InfoIcon from '@lucide/svelte/icons/info';
 	import TriangleAlertIcon from '@lucide/svelte/icons/triangle-alert';
 	import BuildingPlanScreen from './BuildingPlanScreen.svelte';
+	import { answerStore } from './answers/store.svelte';
 	import { checkoutFailures, recommendation as recommendationCopy } from './recommendation-content';
 	import { requestCheckout, type CheckoutFailure } from './checkout-client';
 	import { trackCheckoutStarted } from '$lib/analytics/events';
@@ -125,6 +126,11 @@
 		// tick before `location.assign` never leaves the browser. The mode is the commerce
 		// distinction the screen makes; the product, the dose and the uid are not sent.
 		trackCheckoutStarted(mode, plans.length > 0);
+
+		// The questionnaire is over: the answers are with RxScale, the cart exists, and the
+		// browser is leaving for Shopify. The stored copy goes now rather than on the way back,
+		// because there is no way back: nothing returns to this app after the checkout.
+		answerStore.finish();
 
 		// Exactly as returned, and a full navigation because it leaves this app for Shopify.
 		// `ordering` stays true: the button must not be pressable while the browser is leaving.

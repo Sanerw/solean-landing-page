@@ -15,6 +15,24 @@ export interface WalkOptions {
 	email?: string;
 	/** `Weiblich` opens the pregnancy screen; `Männlich` skips it. */
 	gender?: 'Weiblich' | 'Männlich';
+	/**
+	 * A BMI inside the 27 to 30 band, which is the only thing that opens
+	 * `weight-related-conditions`. The default walk stays at 34, above the band.
+	 */
+	inTheBmiBand?: boolean;
+	/**
+	 * Mounjaro rather than "never", which opens the details panel and the `side-effects`
+	 * screen after it. Only a medication RxScale tracks a dose for does that.
+	 */
+	onMedication?: boolean;
+	/** Gallstones among the diseases, which is what opens `gallbladder`. */
+	hadGallstones?: boolean;
+	/**
+	 * Exact measurements, for a spec that asserts a number computed from them. `inTheBmiBand`
+	 * covers the branch; these cover the arithmetic.
+	 */
+	heightCm?: string;
+	weightKg?: string;
 }
 
 const DEFAULT_EMAIL = 'jonas@example.com';
@@ -60,12 +78,14 @@ const STEPS: { id: string; fill?: (page: Page, options: WalkOptions) => Promise<
 		fill: async (page, options) => {
 			await page.getByRole('radio', { name: options.gender ?? 'Männlich', exact: true }).click();
 			await selectDateOfBirth(page);
-			// A BMI of 34, above the band, so the weight-related conditions screen stays closed.
-			await page.locator('#q-heightCm').fill('180');
-			await page.locator('#q-weightKg').fill('110');
+			// 34 by default, above the band, so the weight-related conditions screen stays
+			// closed; 28.4 opens it.
+			await page.locator('#q-heightCm').fill(options.heightCm ?? '180');
+			await page
+				.locator('#q-weightKg')
+				.fill(options.weightKg ?? (options.inTheBmiBand ? '92' : '110'));
 		}
 	},
-	{ id: 'projection' },
 	{
 		id: 'your-details',
 		fill: async (page, options) => {
@@ -76,8 +96,25 @@ const STEPS: { id: string; fill?: (page: Page, options: WalkOptions) => Promise<
 	},
 	{
 		id: 'medication-history',
+		fill: async (page, options) => {
+			if (!options.onMedication) {
+				await page
+					.getByRole('radio', { name: 'Nein, ich nehme keines dieser Medikamente ein', exact: true })
+					.click();
+				return;
+			}
+
+			// The details panel opens with the medication, and its three questions are required.
+			await page.getByRole('radio', { name: 'Mounjaro', exact: true }).click();
+			await page.getByRole('radio', { name: '2,5 mg', exact: true }).click();
+			await page.locator('#q-pastMedicationDuration').fill('12');
+			await page.locator('#q-pastMedicationLastDose').fill('08/2026');
+		}
+	},
+	{
+		id: 'side-effects',
 		fill: async (page) => {
-			await page.getByRole('radio', { name: 'Nein, ich nehme keines dieser Medikamente ein', exact: true }).click();
+			await page.getByRole('radio', { name: 'Nein', exact: true }).click();
 		}
 	},
 	{
@@ -86,8 +123,24 @@ const STEPS: { id: string; fill?: (page: Page, options: WalkOptions) => Promise<
 			await page.getByRole('checkbox', { name: 'Keine der Genannten', exact: true }).click();
 		}
 	},
+	{ id: 'projection' },
 	{
 		id: 'medical-conditions',
+		fill: async (page, options) => {
+			const label = options.hadGallstones
+				? 'Gallensteine, Gallenblasenerkrankung oder Gallenwegserkrankung'
+				: 'Keine der Genannten';
+			await page.getByRole('checkbox', { name: label, exact: true }).click();
+		}
+	},
+	{
+		id: 'gallbladder',
+		fill: async (page) => {
+			await page.getByRole('radio', { name: 'Nein', exact: true }).click();
+		}
+	},
+	{
+		id: 'weight-related-conditions',
 		fill: async (page) => {
 			await page.getByRole('checkbox', { name: 'Keine der Genannten', exact: true }).click();
 		}
@@ -140,6 +193,21 @@ export async function stepIsInteractive(page: Page): Promise<void> {
 }
 
 /**
+ * Forget any questionnaire this browser has stored.
+ *
+ * Answers survive a reload and a return visit from feature 24e, which is a feature and also a
+ * way for one test to inherit another's session: two walks in the same test would find the
+ * first one waiting and resume it instead of starting. A walk means starting, so it says so.
+ * The specs that are about resuming clear nothing and navigate instead.
+ */
+export async function startFresh(page: Page): Promise<void> {
+	// Storage is per origin, so the page has to be on it before there is anything to clear.
+	if (new URL(page.url()).hostname === 'localhost') {
+		await page.evaluate(() => window.localStorage.clear());
+	}
+}
+
+/**
  * Answers from the first screen up to `target`, which is left open and unanswered. Pass
  * `complete` to walk the whole thing, which submits on the last Continue.
  *
@@ -151,6 +219,7 @@ export async function walkTo(
 	target: string,
 	options: WalkOptions = {}
 ): Promise<void> {
+	await startFresh(page);
 	await page.goto('/questionnaire');
 
 	for (const step of STEPS) {

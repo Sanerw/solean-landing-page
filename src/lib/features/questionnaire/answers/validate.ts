@@ -23,6 +23,9 @@ export type ValidationCode =
 	| 'required'
 	| 'out-of-range'
 	| 'invalid-email'
+	| 'invalid-phone'
+	| 'invalid-name'
+	| 'invalid-month'
 	| 'invalid-date'
 	| 'none-with-others'
 	| 'other-text-missing';
@@ -33,6 +36,28 @@ export type ScreenErrors = Partial<Record<QuestionId, ValidationCode>>;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
+
+/**
+ * A telephone number as people write one: digits, and the separators a printed number uses.
+ * Six digits is the shortest national number in use, so anything shorter is a typo rather
+ * than a short number. Nothing stricter, because the format differs by country and this field
+ * is never dialled: `DROPPED` in the mapper records that RxScale has no phone question and
+ * the cart carries none either.
+ */
+const PHONE = /^[+()\d\s./-]+$/;
+const PHONE_DIGITS = 6;
+
+/**
+ * A name has at least one letter in it. Deliberately the weakest rule that still catches a
+ * number typed into the wrong box: a prescription is written from these two fields, and
+ * anything stricter starts refusing real people. Apostrophes, hyphens, spaces and every
+ * non-Latin script have to pass, so the test is for the presence of a letter, never for the
+ * absence of anything else.
+ */
+const HAS_LETTER = /\p{L}/u;
+
+/** `MM/YYYY`, which is what the last-dose field asks for. */
+const MONTH_YEAR = /^(0[1-9]|1[0-2])\/(\d{4})$/;
 
 function isBlank(value: unknown): boolean {
 	if (typeof value === 'string') return value.trim() === '';
@@ -83,11 +108,36 @@ export function validateQuestion(
 		if (!Number.isFinite(parsed) || parsed <= 0) return 'out-of-range';
 
 		const { range } = question;
-		if (range && (parsed < range.min || parsed > range.max)) return 'out-of-range';
+		if (range && (parsed <= range.above || parsed >= range.below)) return 'out-of-range';
 	}
 
 	if (question.id === 'email' && typeof value === 'string' && !EMAIL.test(value.trim())) {
 		return 'invalid-email';
+	}
+
+	if (question.id === 'phone' && typeof value === 'string') {
+		const phone = value.trim();
+		const digits = phone.replace(/\D/g, '').length;
+
+		if (!PHONE.test(phone) || digits < PHONE_DIGITS) return 'invalid-phone';
+	}
+
+	if ((question.id === 'firstName' || question.id === 'lastName') && typeof value === 'string') {
+		if (!HAS_LETTER.test(value)) return 'invalid-name';
+	}
+
+	if (question.kind === 'month' && typeof value === 'string') {
+		const match = MONTH_YEAR.exec(value.trim());
+		if (!match) return 'invalid-month';
+
+		// A dose taken in the future is not a dose already taken. The year floor is a typo
+		// check, not a clinical one: nobody was prescribed a GLP-1 in 1912.
+		const year = Number(match[2]);
+		const month = Number(match[1]);
+		const entered = Date.UTC(year, month - 1, 1);
+		const thisMonth = Date.UTC(today.getUTCFullYear(), today.getUTCMonth(), 1);
+
+		if (entered > thisMonth || year < 1990) return 'invalid-month';
 	}
 
 	if (question.kind === 'date' && typeof value === 'string') {

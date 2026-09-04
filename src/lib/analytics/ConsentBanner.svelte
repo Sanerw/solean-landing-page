@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { localizeHref } from '$lib/paraglide/runtime';
 	import { m } from '$lib/paraglide/messages';
 	import { Button } from '$lib/components/ui/button';
 	import { analyticsConfigured } from './config';
@@ -43,7 +44,7 @@
 					{m.consent_body()}
 					<!-- Un-localised like the footer's: the policy exists as one German document. -->
 					<a
-						href="/privacy"
+						href={localizeHref('/privacy')}
 						class="underline underline-offset-4 hover:text-highlight-foreground"
 					>
 						{m.consent_privacy_link()}

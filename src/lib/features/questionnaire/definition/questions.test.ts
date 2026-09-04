@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { emptyAnswers } from '../answers/types';
 import { MEDICATIONS_WITH_DOSE } from '../answers/types';
  import { QUESTIONS, dosesFor, questionById } from './questions';
-import { NONE_VALUE, OTHER_VALUE, optionsFor } from './kinds';
+import { NONE_VALUE, OTHER_VALUE, choiceItems, optionsFor } from './kinds';
 
 const answers = emptyAnswers();
 
@@ -132,5 +132,41 @@ describe('questionById', () => {
 
 	it('throws on an id no question claims, rather than returning undefined', () => {
 		expect(() => questionById('weightRelatedConditionsOther')).toThrow();
+	});
+});
+
+describe('choiceItems ordering', () => {
+	const labels = { none: () => 'None', other: () => 'Other' };
+
+	it('draws a pinned option after the none and other rows', () => {
+		// `never` is a real RxScale value that reads last, not a `none` sentinel. See `pinned`
+		// in `kinds.ts` for why the two stay separate mechanisms.
+		const question = questionById('pastMedication');
+		const kinds = choiceItems(question, optionsFor(question, emptyAnswers()), labels).map(
+			(item) => item.kind
+		);
+
+		expect(kinds.at(-1)).toBe('pinned');
+		expect(kinds.indexOf('other')).toBeLessThan(kinds.indexOf('pinned'));
+		expect(kinds.filter((kind) => kind === 'pinned')).toHaveLength(1);
+	});
+
+	it('keeps the pinned option out of the ordinary list', () => {
+		const question = questionById('pastMedication');
+		const items = choiceItems(question, optionsFor(question, emptyAnswers()), labels);
+		const ordinary = items.filter((item) => item.kind === 'option');
+
+		expect(ordinary.map((item) => item.value)).not.toContain('never');
+	});
+
+	it('leaves a list with nothing pinned exactly as it was', () => {
+		const question = questionById('diseases');
+		const options = optionsFor(question, emptyAnswers());
+		const items = choiceItems(question, options, labels);
+
+		expect(items.slice(0, options.length).map((item) => item.value)).toEqual(
+			options.map((option) => option.value)
+		);
+		expect(items.map((item) => item.kind)).not.toContain('pinned');
 	});
 });

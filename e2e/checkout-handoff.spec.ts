@@ -153,17 +153,21 @@ test('leaving takes everything with it', async ({ page }) => {
 	await checkoutButton(page).click();
 	await expect(page.getByRole('heading', { name: 'Fixture checkout' })).toBeVisible();
 
-	// Back the way anyone would come back. The checkout is another origin, so this is a fresh
-	// load of the app, and a fresh load holds nothing: no answers, and no uid to prove the
-	// anamnesis this browser filed a moment ago. It starts the questionnaire over.
-	// The entry starts at the first question rather than the first unanswered one, which is
-	// what an empty session should see.
+	// Back the way anyone would come back. Answers survive a reload from feature 24e, but not
+	// this: the press that creates the cart erases them, because the questionnaire has done
+	// what it was for and a completed medical questionnaire has no business waiting on a
+	// shared computer. So the app starts over rather than resuming.
 	await page.goto('/questionnaire');
 	await expect(page).toHaveURL('/questionnaire/about-you');
 	await stepIsInteractive(page);
+	await expect(page.locator('#q-heightCm')).toHaveValue('');
 
+	// Filtered to this app's own keys: SvelteKit keeps scroll positions in session storage and
+	// those are the router's, not ours.
 	const stored = await page.evaluate(() =>
-		Object.keys(window.sessionStorage).filter((key) => key.startsWith('solean:'))
+		[...Object.keys(window.sessionStorage), ...Object.keys(window.localStorage)].filter((key) =>
+			key.includes('solean')
+		)
 	);
 	expect(stored).toEqual([]);
 });

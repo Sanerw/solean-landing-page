@@ -14,7 +14,7 @@
 	const label = $derived(question.confirmLabel?.() ?? '');
 </script>
 
-<FieldLabel for={controlId} class="*:data-[slot=field]:min-h-12 *:data-[slot=field]:p-3">
+<FieldLabel for={controlId} class="*:data-[slot=field]:min-h-12 *:data-[slot=field]:px-4 *:data-[slot=field]:py-3">
 	<Field orientation="horizontal" class="has-[>[data-slot=field-content]]:items-center">
 		<!-- `aria-label` for the same reason the choice fields carry one: bits-ui renders a
 		     `<button role="checkbox">`, which HTML-AAM does not name from a wrapping label. -->

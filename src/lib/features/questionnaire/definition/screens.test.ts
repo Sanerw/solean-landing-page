@@ -1,7 +1,17 @@
 import { describe, expect, it } from 'vitest';
+import { m } from '$lib/paraglide/messages';
 import { GALLSTONES, emptyAnswers, type Answers } from '../answers/types';
-import { QUESTIONS } from './questions';
-import { SCREENS, buildWalk, visibleQuestions, visibleScreens } from './screens';
+import { QUESTIONS, questionById } from './questions';
+import {
+	SCREENS,
+	buildWalk,
+	fieldLabelFor,
+	screenById,
+	screenHeading,
+	visibleQuestions,
+	visibleScreens,
+	type ScreenDef
+} from './screens';
 
 function answering(overrides: Partial<Answers>): Answers {
 	return { ...emptyAnswers(), ...overrides };
@@ -155,6 +165,16 @@ describe('buildWalk', () => {
 		);
 	});
 
+	// The export draws it after Pregnancy, a screen half the visitors never see, so it is
+	// anchored to the screen that follows instead of the one that precedes.
+	it('puts the projection immediately before medical conditions, whoever is walking', () => {
+		for (const [name, answers] of Object.entries(SCENARIOS)) {
+			const ids = buildWalk(answers).steps.map((step) => step.id);
+
+			expect(ids.indexOf('medical-conditions'), name).toBe(ids.indexOf('projection') + 1);
+		}
+	});
+
 	it('shows both interludes to every visitor, since neither sits on a conditional screen', () => {
 		for (const [name, answers] of Object.entries(SCENARIOS)) {
 			const variants = buildWalk(answers)
@@ -163,5 +183,76 @@ describe('buildWalk', () => {
 
 			expect(variants, name).toEqual(['projection', 'motivation']);
 		}
+	});
+});
+
+describe('screenHeading', () => {
+	it('uses the screen title and promotes nothing when the screen has one', () => {
+		const heading = screenHeading(screenById('about-you'), SCENARIOS.blank);
+
+		expect(heading?.title).toBe(m.qs_about_you_title());
+		expect(heading?.subtitle).toBe(m.qs_about_you_subtitle());
+		expect(heading?.donor).toBeNull();
+	});
+
+	it('leaves every question its own label when the screen titles itself', () => {
+		const screen = screenById('about-you');
+		const heading = screenHeading(screen, SCENARIOS.blank);
+
+		for (const question of visibleQuestions(screen, SCENARIOS.blank)) {
+			expect(fieldLabelFor(question, heading)).not.toBe('');
+		}
+	});
+
+	it('promotes the first visible question when the screen has no title', () => {
+		const screen = screenById('medical-conditions');
+		const heading = screenHeading(screen, SCENARIOS.blank);
+
+		expect(heading?.donor?.id).toBe('diseases');
+		expect(heading?.title).toBe(questionById('diseases').label());
+		// The promoted question prints no label of its own: the heading already is it.
+		expect(fieldLabelFor(questionById('diseases'), heading)).toBe('');
+	});
+
+	it('skips a first question a branch has hidden', () => {
+		// Built here rather than taken from `SCREENS`: every real screen whose first question a
+		// branch can hide has since been given a title of its own, and the rule still has to
+		// hold for the next one that does not.
+		const screen: ScreenDef = {
+			id: 'test-first-hidden',
+			questionIds: ['sideEffectsDescription', 'hasSideEffects']
+		};
+		const noSideEffects = { ...SCENARIOS.onWegovyWithSideEffects, hasSideEffects: 'No' as const };
+		const heading = screenHeading(screen, noSideEffects);
+
+		expect(heading?.donor?.id).toBe('hasSideEffects');
+		expect(visibleQuestions(screen, noSideEffects).map((question) => question.id)).not.toContain(
+			'sideEffectsDescription'
+		);
+	});
+
+	it('states its own title on a screen carrying two clinical questions', () => {
+		const heading = screenHeading(screenById('side-effects'), SCENARIOS.onWegovyWithSideEffects);
+
+		expect(heading?.title).toBe(m.qs_side_effects_title());
+		expect(heading?.donor).toBeNull();
+	});
+
+	it('returns no heading rather than throwing when every question is hidden', () => {
+		const screen: ScreenDef = { id: 'nothing-visible', questionIds: ['sideEffectsDescription'] };
+
+		expect(screenHeading(screen, emptyAnswers())).toBeNull();
+	});
+});
+
+describe('fieldLabelFor', () => {
+	it('prefers the short label the artboards print above a field', () => {
+		expect(fieldLabelFor(questionById('heightCm'), null)).toBe(m.qn_height_short());
+	});
+
+	it('falls back to the whole question where there is no short label', () => {
+		expect(fieldLabelFor(questionById('mentalHealth'), null)).toBe(
+			questionById('mentalHealth').label()
+		);
 	});
 });

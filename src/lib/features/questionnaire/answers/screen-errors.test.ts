@@ -52,3 +52,30 @@ describe('hasBlockingError', () => {
 		expect(hasBlockingError(['firstName'], OURS, THEIRS)).toBe(false);
 	});
 });
+
+describe('screenErrorFor with the changed set', () => {
+	it('reports nothing for a question answered again since the submit', () => {
+		// Otherwise the screen goes on saying an answer is missing while it is on display,
+		// which is what `screens/08-long-free-text.png` caught.
+		expect(screenErrorFor('weightKg', OURS, THEIRS, new Set(['weightKg']))).toBeNull();
+	});
+
+	it('drops their refusal too, because it judged the answer that has just been replaced', () => {
+		expect(screenErrorFor('eatingDisorder', {}, THEIRS, new Set(['eatingDisorder']))).toBeNull();
+	});
+
+	it('leaves an unchanged sibling reporting', () => {
+		expect(screenErrorFor('weightKg', OURS, THEIRS, new Set(['firstName']))).toEqual({
+			source: 'ours',
+			code: 'required'
+		});
+	});
+
+	it('reports again once the set is empty, which is what a fresh submit does', () => {
+		expect(screenErrorFor('weightKg', OURS, THEIRS, new Set())).not.toBeNull();
+	});
+
+	it('unblocks the screen when the only offending answer has changed', () => {
+		expect(hasBlockingError(['weightKg'], OURS, THEIRS, new Set(['weightKg']))).toBe(false);
+	});
+});

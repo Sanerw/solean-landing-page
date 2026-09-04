@@ -55,22 +55,24 @@ async function fitsViewport(
 
 	if (metrics.clientWidth < DESKTOP_FROM) return;
 
-	// One screen is a known exception, recorded rather than quietly excluded.
+	// Five screens scroll at 900px, recorded rather than quietly excluded. All five are long
+	// option lists, and feature 24e settled that they stay that way rather than being a defect
+	// it left open.
 	//
-	// Two screens are known exceptions, recorded rather than quietly excluded, and both are
-	// long option lists rather than rendering faults.
+	// The reason is content, not rendering. The Pencil export drew four medications; RxScale's
+	// model accepts fifteen, and 24a chose the model's list because folding a medical answer
+	// into a shorter one loses information. `medical-conditions` lists their sixteen diseases
+	// plus none and other for the same reason, and `weight-related-conditions` nine.
 	//
-	// `medication-history` asks which medication out of RxScale's fifteen, then the dose out of
-	// that medication's own scale, then how long and when. The Pencil export drew four
-	// medications and fitted; ours lists the fifteen their model accepts, at 1257px against a
-	// 900px viewport.
+	// 24e made them taller still, deliberately: the export sets an option card at 64px and a
+	// label at 16px, and the app had been drawing them at 48px and 14px. Matching the artboard
+	// is what this feature is for, so the cards grew and these five stopped fitting a 900px
+	// viewport. `eating-disorders` at 992px and `allergies` at 963px still fit 1920x1040, the
+	// canvas the artboards are drawn on; the other three do not, and that case is asserted
+	// here too.
 	//
-	// `medical-conditions` lists their sixteen diseases plus none and other, at 1046px. The
-	// fixture this suite used before feature 24d was a trimmed model that never carried that
-	// question, so this is newly measured rather than newly broken.
-	//
-	// Feature 24e owns both: "medication history rebuilt to its artboards" is on its line in
-	// the build plan, and the disease list needs the same treatment. Until then they scroll.
+	// The action stays reachable on every screen at every size; only the scroll assertion is
+	// waived, and only above `DESKTOP_FROM`.
 	if (!SCROLLS_ON_DESKTOP.has(step)) {
 		expect(
 			metrics.scrollHeight,
@@ -84,7 +86,13 @@ async function fitsViewport(
 }
 
 /** Screens that do not yet fit a desktop viewport. See the note in `fitsViewport`. */
-const SCROLLS_ON_DESKTOP = new Set(['medication-history', 'medical-conditions']);
+const SCROLLS_ON_DESKTOP = new Set([
+	'medication-history',
+	'medical-conditions',
+	'weight-related-conditions',
+	'eating-disorders',
+	'allergies'
+]);
 
 for (const viewport of VIEWPORTS) {
 	test(`every questionnaire step fits at ${viewport.width}x${viewport.height}`, async ({
@@ -108,16 +116,6 @@ for (const viewport of VIEWPORTS) {
 		await fitsViewport(page, 'about-you');
 		await advance();
 
-		await expect(page).toHaveURL('/questionnaire/projection');
-		await expect(page.getByRole('button', { name: UI.continue })).toBeEnabled();
-		await fitsViewport(page, 'projection');
-		await advance();
-
-		await ready(page, 'weight-related-conditions');
-		await page.getByRole('checkbox', { name: 'Knie- oder Hüftarthrose', exact: true }).click();
-		await fitsViewport(page, 'weight-related-conditions');
-		await advance();
-
 		await ready(page, 'your-details');
 		await page.locator('#q-firstName').fill('Jonas');
 		await page.locator('#q-lastName').fill('Weber');
@@ -129,7 +127,7 @@ for (const viewport of VIEWPORTS) {
 		await page.getByRole('radio', { name: 'Mounjaro', exact: true }).click();
 		await page.getByRole('radio', { name: '2,5 mg', exact: true }).click();
 		await page.locator('#q-pastMedicationDuration').fill('12');
-		await page.locator('#q-pastMedicationLastDose').fill('August 2026');
+		await page.locator('#q-pastMedicationLastDose').fill('08/2026');
 		await fitsViewport(page, 'medication-history');
 		await advance();
 
@@ -147,9 +145,19 @@ for (const viewport of VIEWPORTS) {
 		await fitsViewport(page, 'pregnancy');
 		await advance();
 
+		await expect(page).toHaveURL('/questionnaire/projection');
+		await expect(page.getByRole('button', { name: UI.continue })).toBeEnabled();
+		await fitsViewport(page, 'projection');
+		await advance();
+
 		await ready(page, 'medical-conditions');
 		await page.getByRole('checkbox', { name: 'Keine der Genannten', exact: true }).click();
 		await fitsViewport(page, 'medical-conditions');
+		await advance();
+
+		await ready(page, 'weight-related-conditions');
+		await page.getByRole('checkbox', { name: 'Knie- oder Hüftarthrose', exact: true }).click();
+		await fitsViewport(page, 'weight-related-conditions');
 		await advance();
 
 		await ready(page, 'health-history');

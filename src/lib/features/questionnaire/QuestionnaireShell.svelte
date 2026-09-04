@@ -6,12 +6,18 @@
 	import { Progress } from '$lib/components/ui/progress';
 	import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
 	import XIcon from '@lucide/svelte/icons/x';
-	import { QUESTIONNAIRE_HOME_HREF } from './routes';
+	import { questionnaireHomeHref } from './routes';
 	import type { QuestionnaireProgress } from './definition/position';
 
 	interface Props {
 		/** Absent on the resume and unknown-step screens, which have no place in the count. */
 		progress?: QuestionnaireProgress | null;
+		/**
+		 * Whether the count is drawn. The interludes and the completion screen carry an eyebrow
+		 * of their own ("Fast geschafft"), so a question counter above it would be a second one.
+		 * It stays in the markup either way, because the progress bar is named by it.
+		 */
+		showCount?: boolean;
 		backHref: string;
 		backLabel?: string;
 		children: Snippet;
@@ -19,6 +25,7 @@
 
 	let {
 		progress = null,
+		showCount = true,
 		backHref,
 		backLabel = m.q_back(),
 		children
@@ -65,7 +72,7 @@
 		</Button>
 
 		<a
-			href={QUESTIONNAIRE_HOME_HREF}
+			href={questionnaireHomeHref()}
 			aria-label={m.q_logo_home()}
 			class="rounded-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 		>
@@ -73,7 +80,7 @@
 		</a>
 
 		<Button
-			href={QUESTIONNAIRE_HOME_HREF}
+			href={questionnaireHomeHref()}
 			variant="secondary"
 			size="icon"
 			aria-label={m.q_close()}
@@ -86,13 +93,25 @@
 	<main class="flex-1 px-4 pb-8 sm:px-6 lg:px-8">
 		<div class="mx-auto w-full max-w-2xl">
 			{#if progress}
-				<Progress
-					value={percent}
-					aria-label={m.q_progress({ current: progress.current, total: progress.total })}
-				/>
+				<!--
+					`aria-labelledby`, not `aria-label`: the count is on the screen now, so naming the
+					bar from the eyebrow announces it once instead of twice in slightly different
+					words. The eyebrow is the artboards' `QUESTION 4 OF 9`.
+				-->
+				<Progress value={percent} aria-labelledby="questionnaire-progress-label" />
 			{/if}
 
 			<div class="mt-6">
+				{#if progress}
+					<p
+						id="questionnaire-progress-label"
+						class={showCount
+							? 'mb-3 font-sans text-xs font-semibold tracking-widest text-foreground uppercase sm:text-sm'
+							: 'sr-only'}
+					>
+						{m.qs_question_of({ current: progress.current, total: progress.total })}
+					</p>
+				{/if}
 				{@render children()}
 			</div>
 		</div>

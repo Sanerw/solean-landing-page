@@ -114,18 +114,24 @@ test('one anamnesis per session, whatever the visitor does next', async ({ page 
 	expect(posts).toHaveLength(1);
 });
 
-test('a reload after the submission starts the questionnaire over', async ({ page }) => {
+test('a reload after the submission keeps the order screen and files nothing again', async ({
+	page
+}) => {
 	const posts = submissions(page);
 	await walkAndSubmit(page);
 	await expect(page).toHaveURL('/questionnaire/complete');
 
 	await page.reload();
 
-	// The consequence of storing nothing, stated rather than discovered: the anamnesis is at
-	// RxScale and a doctor will read it, but this browser no longer knows about it, so the
-	// order screen is out of reach and walking again would file a second one.
-	await expect(page).toHaveURL('/questionnaire/about-you');
-	await stepIsInteractive(page);
+	// The uid is stored beside the answers from feature 24e, and this is what it is for.
+	// Without it the restored answers would reopen the last question with everything filled
+	// in, and Continue would file a second anamnesis for the same person.
+	await expect(page).toHaveURL('/questionnaire/complete');
+	expect(posts).toHaveLength(1);
+
+	// The questions stay shut for the same reason: the record exists and cannot be amended.
+	await page.goto('/questionnaire/disclaimers');
+	await expect(page).toHaveURL('/questionnaire/complete');
 	expect(posts).toHaveLength(1);
 });
 

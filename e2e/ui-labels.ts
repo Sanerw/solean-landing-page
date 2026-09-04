@@ -28,8 +28,13 @@ export const UI = {
 	projectionEyebrow: 'Deine Prognose',
 	motivationHeadline: 'Hier beginnt die Veränderung.',
 	/** Our own validation's wording, from feature 24c. The model's used to supply this. */
-	required: 'Diese Angabe wird benötigt.',
-	outOfRange: 'Bitte überprüfe Deine Angaben.',
+	/**
+	 * A refusal names the field it means, because a screen can carry four of them. The
+	 * unnamed wording still exists for a question that stands alone with no short name, and
+	 * no spec asserts it: every screen these walk through has several fields.
+	 */
+	requiredField: (field: string) => `${field} wird benötigt.`,
+	outOfRange: (field: string) => `${field} sieht nicht richtig aus.`,
 	invalidDate: 'Bitte gib ein gültiges Datum an.',
 	invalidEmail: 'Bitte gib eine gültige E-Mail-Adresse ein.',
 	submissionRejected: 'Deine Antworten wurden nicht angenommen',
@@ -38,10 +43,28 @@ export const UI = {
 	closeMenu: 'Menü schließen',
 	tableOfContents: 'Auf dieser Seite',
 	mainNav: 'Hauptnavigation',
-	/** The progress bar names the position; the specs read the numbers back out of it. */
+	/**
+	 * The artboards' eyebrow, which from feature 24e is where the count is on screen. The
+	 * progress bar is named by it rather than carrying its own label, so the specs read the
+	 * element, not an attribute.
+	 */
 	progressPrefix: 'Frage ',
+	progressEyebrow: '#questionnaire-progress-label',
 	announcementRegion: 'Wegovy-Pillen-Angebot',
 	teaserEyebrow: 'Neu im Wissensbereich',
 	logoHome: 'Solean, Startseite',
+	/** Feature 24e's screen system: the parts a spec can name. */
+	aboutYouTitle: 'Erzähl uns von Dir',
+	selectAll: 'Wähle alles Zutreffende aus',
+	orRule: 'ODER',
+	genderShort: 'Biologisches Geschlecht',
+	dateOfBirthShort: 'Geburtsdatum',
+	firstNameShort: 'Vorname',
+	heightShort: 'Größe',
+	weightShort: 'Gewicht',
+	diseasesQuestion: 'Hast Du eine oder mehrere der folgenden Erkrankungen?',
+	noneOfThese: 'Keine der Genannten',
+	neverTaken: 'Nein, ich nehme keines dieser Medikamente ein',
+	mounjaroDetails: 'Deine Angaben zu Mounjaro',
 	reviewCta: 'Bewertung schreiben'
 } as const;

@@ -27,8 +27,8 @@
 	import { missingRequired, theirErrors } from '$lib/features/questionnaire/rxscale/shadow';
 	import {
 		COMPLETION_STEP_ID,
-		QUESTIONNAIRE_ENTRY_HREF,
-		QUESTIONNAIRE_HOME_HREF,
+		questionnaireEntryHref,
+		questionnaireHomeHref,
 		questionnaireStepHref
 	} from '$lib/features/questionnaire/routes';
 	import type { QuestionId } from '$lib/features/questionnaire/answers/types';
@@ -54,7 +54,7 @@
 	const weightHref = $derived.by(() => {
 		const id = weightScreenId(answers);
 
-		return id ? questionnaireStepHref(id) : QUESTIONNAIRE_ENTRY_HREF;
+		return id ? questionnaireStepHref(id) : questionnaireEntryHref();
 	});
 	/** Null until hydration for the weight's reason: the server holds none of the answers. */
 	const email = $derived(hydrated ? readEmail(answers) : null);
@@ -113,7 +113,7 @@
 	// Once the anamnesis is sent there is no question to go back to: every step now resolves
 	// forward to this screen, so Back would bounce off it. It leaves the questionnaire instead.
 	const backHref = $derived(
-		isCompletion ? QUESTIONNAIRE_HOME_HREF : (neighbourHref(-1) ?? QUESTIONNAIRE_HOME_HREF)
+		isCompletion ? questionnaireHomeHref() : (neighbourHref(-1) ?? questionnaireHomeHref())
 	);
 	const title = $derived(
 		step?.kind === 'screen' ? (step.screen.questionIds.length > 0 ? m.title_questionnaire() : '') : ''
@@ -211,6 +211,7 @@
 
 <QuestionnaireShell
 	progress={redirecting ? null : progress}
+	showCount={!isCompletion && step?.kind === 'screen'}
 	{backHref}
 	backLabel={isCompletion ? m.q_home() : m.q_back()}
 >
@@ -225,7 +226,13 @@
 			pressing Continue they are the same gesture.
 		-->
 		{#key data.stepId}
+			<!--
+				`data-slot`, so a spec can wait for the entrance to finish. A screenshot taken while
+				this is still at `opacity: 0` is a blank page that looks like a broken screen, which
+				is what `14b-side-effects` was.
+			-->
 			<div
+				data-slot="step"
 				class="starting:translate-y-2 starting:opacity-0 transition-[opacity,translate] duration-200 ease-out-quint motion-reduce:transition-none"
 			>
 				{#if isCompletion}

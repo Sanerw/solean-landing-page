@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { m } from '$lib/paraglide/messages';
-	import { getLocale } from '$lib/paraglide/runtime';
+	import { getLocale, localizeHref } from '$lib/paraglide/runtime';
 	import StarRating from '$lib/components/brand/StarRating.svelte';
 	import { Button } from '$lib/components/ui/button';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
@@ -70,7 +70,7 @@
 					</h2>
 					<p class={SECTION_LEAD}>{RESULTS_BAND.lead}</p>
 					<Button
-						href={ROUTES.questionnaire}
+						href={localizeHref(ROUTES.questionnaire)}
 						variant="inverse"
 						class="mt-6 w-full rounded-full sm:w-auto"
 					>

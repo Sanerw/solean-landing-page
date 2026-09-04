@@ -258,3 +258,47 @@
 		@apply font-sans;
 	}
 }
+
+/* Chrome paints an autofilled field its own pale blue and does it with `!important`, so a
+   background utility cannot reach it. An inset shadow tall enough to cover the box is the one
+   way in, and the fill colour has to be restated because the same user-agent rule sets the
+   text colour too. The ground is `--surface-subtle`, what a chosen option card uses, so a
+   field the browser filled and an answer the visitor picked read as the same state.
+
+   Three things here are load-bearing.
+
+   Unlayered, deliberately. Every Tailwind rule lives in a layer and unlayered CSS outranks
+   all of them, so this survives `bg-card` and the focus ring. Inside `@layer base` it lost to
+   both, and the blue came back the moment the field was focused.
+
+   `--tw-ring-shadow` is carried through rather than dropped. The focus ring is itself a
+   `box-shadow`, so replacing the property outright would take the focus indicator off any
+   field the browser had filled. Composing the two keeps the ring and the fill.
+
+   All four states are listed because the user-agent sheet declares all four; leaving one out
+   is how the blue returns on exactly one interaction. `:-webkit-autofill` and the standard
+   `:autofill` are separate rules on purpose: one invalid selector invalidates a whole
+   selector list, so a browser that knows only one of them would drop both. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus,
+input:-webkit-autofill:active,
+textarea:-webkit-autofill,
+textarea:-webkit-autofill:hover,
+textarea:-webkit-autofill:focus,
+select:-webkit-autofill {
+	box-shadow: var(--tw-ring-shadow, 0 0 #0000), inset 0 0 0 1000px var(--surface-subtle);
+	-webkit-text-fill-color: var(--foreground);
+	caret-color: var(--foreground);
+}
+
+input:autofill,
+input:autofill:hover,
+input:autofill:focus,
+input:autofill:active,
+textarea:autofill,
+select:autofill {
+	box-shadow: var(--tw-ring-shadow, 0 0 #0000), inset 0 0 0 1000px var(--surface-subtle);
+	-webkit-text-fill-color: var(--foreground);
+	caret-color: var(--foreground);
+}

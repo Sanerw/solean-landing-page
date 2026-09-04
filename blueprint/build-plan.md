@@ -465,7 +465,7 @@ claims are not approved production content.
   The campaign, its timing and its exit condition move to the Customer.io panel, and
   the Brevo automation is switched off by hand.
 
-- [ ] 24. **Own questions, mapped onto RxScale** - the questionnaire's content moves
+- [x] 24. **Own questions, mapped onto RxScale** - the questionnaire's content moves
   into this repository. Question text, options, order, required flags and branching
   become one typed local definition, built from the Pencil export in
   `blueprint/reference/questionnaire-flow-export.html`, and the answers are mapped
@@ -503,7 +503,7 @@ claims are not approved production content.
     ahead of it, the survey-core session and the model-driven step plan are deleted,
     and the browser suite is rewritten onto our screen ids. This is the sub-feature
     that cannot land in halves.
-  - [ ] 24e. **The added screens and the design pass** - the seven answers the export
+  - [x] 24e. **The added screens and the design pass** - the seven answers the export
     never asks for, given screens in the Solean design, plus medication history
     rebuilt to its artboards, copy in German and English, browser coverage and the
     accessibility pass.

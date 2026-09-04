@@ -4,8 +4,8 @@
 	import { Button } from '$lib/components/ui/button';
 	import QuestionnaireShell from '$lib/features/questionnaire/QuestionnaireShell.svelte';
 	import {
-		QUESTIONNAIRE_ENTRY_HREF,
-		QUESTIONNAIRE_HOME_HREF
+		questionnaireEntryHref,
+		questionnaireHomeHref
 	} from '$lib/features/questionnaire/routes';
 </script>
 
@@ -14,7 +14,7 @@
 	<meta name="robots" content="noindex, nofollow" />
 </svelte:head>
 
-<QuestionnaireShell backHref={QUESTIONNAIRE_HOME_HREF}>
+<QuestionnaireShell backHref={questionnaireHomeHref()}>
 	<p class="font-sans text-xs font-semibold uppercase tracking-widest text-muted-foreground">
 		Error {page.status}
 	</p>
@@ -24,7 +24,7 @@
 		answers are untouched.
 	</p>
 	<div class="mt-8 flex flex-wrap gap-3">
-		<Button href={QUESTIONNAIRE_ENTRY_HREF}>{m.q_back_to_questionnaire()}</Button>
-		<Button href={QUESTIONNAIRE_HOME_HREF} variant="outline">{m.q_return_home()}</Button>
+		<Button href={questionnaireEntryHref()}>{m.q_back_to_questionnaire()}</Button>
+		<Button href={questionnaireHomeHref()} variant="outline">{m.q_return_home()}</Button>
 	</div>
 </QuestionnaireShell>

@@ -1,7 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { UI } from './ui-labels';
 import { walkTo } from './answers';
-import { selectDateOfBirth } from './date-picker';
 
 /**
  * Solean's own screens between the questions. From feature 24d the questions are ours too,
@@ -11,16 +10,11 @@ import { selectDateOfBirth } from './date-picker';
  */
 
 /**
- * The weight shares a screen with the sex and the date of birth from feature 24d, so all four
- * have to be answered before the projection can be reached.
+ * The projection sits where the export draws it, after the fourth question, so reaching it
+ * means walking the three screens between it and the measurements it draws.
  */
-async function answerWeight(page: Page, sizeCm: string, weightKg: string): Promise<void> {
-	await walkTo(page, 'about-you');
-	await page.getByRole('radio', { name: 'Männlich', exact: true }).click();
-	await selectDateOfBirth(page);
-	await page.locator('#q-heightCm').fill(sizeCm);
-	await page.locator('#q-weightKg').fill(weightKg);
-	await page.getByRole('button', { name: UI.continue }).click();
+async function answerWeight(page: Page, heightCm: string, weightKg: string): Promise<void> {
+	await walkTo(page, 'projection', { heightCm, weightKg });
 }
 
 test('the projection is built from the weight the user gave', async ({ page }) => {
@@ -42,13 +36,10 @@ test('the projection does not count as a question', async ({ page }) => {
 	await answerWeight(page, '178', '90');
 	await expect(page).toHaveURL('/questionnaire/projection');
 
-	const label = await page
-		.locator(`[aria-label^="${UI.progressPrefix}"]`)
-		.first()
-		.getAttribute('aria-label');
+	const label = (await page.locator(UI.progressEyebrow).first().textContent())?.trim();
 
-	// The first screen's own number, held rather than advanced. The total is 9 rather than the
-	// 8 an empty questionnaire shows, because a BMI of 28.4 opens the weight-related
+	// The number of the screen before it, held rather than advanced. The total is 9 rather
+	// than the 8 an empty questionnaire shows, because a BMI of 28.4 opens the weight-related
 	// conditions screen that a higher one does not.
-	expect(label).toBe(`${UI.progressPrefix}1 von 9`);
+	expect(label).toBe(`${UI.progressPrefix}3 von 9`);
 });

@@ -1,7 +1,14 @@
 <script lang="ts">
+	import { answerStore } from '$lib/features/questionnaire/answers/store.svelte';
 	import type { LayoutProps } from './$types';
 
 	let { children }: LayoutProps = $props();
+
+	// Here rather than in a page: the layout is entered once for the whole funnel, so the
+	// stored answers are read once and every screen below sees the same restored session.
+	// Guarded inside the store against running on the server, where the module is shared
+	// between requests and `localStorage` does not exist.
+	answerStore.restore();
 </script>
 
 <!--

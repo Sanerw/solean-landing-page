@@ -104,6 +104,8 @@ export const QUESTIONS: readonly AnyQuestion[] = [
 		id: 'gender',
 		kind: 'single',
 		label: m.qn_gender_label,
+		shortLabel: m.qn_gender_short,
+		columns: 2,
 		options: [
 			{ value: 'female', label: m.qn_gender_female },
 			{ value: 'male', label: m.qn_gender_male }
@@ -112,19 +114,30 @@ export const QUESTIONS: readonly AnyQuestion[] = [
 	defineQuestion({
 		id: 'dateOfBirth',
 		kind: 'date',
-		label: m.qn_date_of_birth_label
+		label: m.qn_date_of_birth_label,
+		// The About You artboard does not draw this field, so its short label has no
+		// reference and is ours.
+		shortLabel: m.qn_date_of_birth_short
 	}),
 	defineQuestion({
 		id: 'heightCm',
 		kind: 'number',
 		label: m.qn_height_label,
-		range: { min: 120, max: 250 }
+		shortLabel: m.qn_height_short,
+		unit: m.qn_unit_cm,
+		placeholder: m.qn_height_placeholder,
+		layout: 'half',
+		range: { above: 120, below: 250 }
 	}),
 	defineQuestion({
 		id: 'weightKg',
 		kind: 'number',
 		label: m.qn_weight_label,
-		range: { min: 40, max: 300 }
+		shortLabel: m.qn_weight_short,
+		unit: m.qn_unit_kg,
+		placeholder: m.qn_weight_placeholder,
+		layout: 'half',
+		range: { above: 40, below: 300 }
 	}),
 
 	// weight-related-conditions
@@ -132,6 +145,10 @@ export const QUESTIONS: readonly AnyQuestion[] = [
 		id: 'weightRelatedConditions',
 		kind: 'multi',
 		label: m.qn_weight_related_label,
+		// Two-up like Medical Conditions, the closest screen that has an artboard. One column
+		// of nine sentence-length diagnoses pushes this past a 900px viewport, and no artboard
+		// asks for it: this screen is one of the four the export never drew.
+		columns: 2,
 		options: [
 			{ value: 'High cholesterol or high triglycerides', label: m.qn_wrc_cholesterol },
 			{
@@ -149,27 +166,39 @@ export const QUESTIONS: readonly AnyQuestion[] = [
 		],
 		hasNone: true,
 		hasOther: true,
-		otherField: 'weightRelatedConditionsOther'
+		otherField: 'weightRelatedConditionsOther',
+		otherLabel: m.qn_weight_related_other_label,
+		otherPlaceholder: m.qn_weight_related_other_placeholder
 	}),
 
 	// your-details
+	// Both carry a short label although their full one is already short. It is what picks the
+	// artboard's micro-caps idiom over the sentence-case one a whole question gets, and
+	// `FIRST NAME` beside `E-MAIL ADDRESS` is how the artboard sets this row.
 	defineQuestion({
 		id: 'firstName',
 		kind: 'text',
-		label: m.qn_first_name_label
+		label: m.qn_first_name_label,
+		shortLabel: m.qn_first_name_short,
+		layout: 'half'
 	}),
 	defineQuestion({
 		id: 'lastName',
 		kind: 'text',
-		label: m.qn_last_name_label
+		label: m.qn_last_name_label,
+		shortLabel: m.qn_last_name_short,
+		layout: 'half'
 	}),
 	// Required here although RxScale's `EMail` is not. Asking for more than they do can never
 	// cause a 400, and the abandoned-questionnaire reminder has nothing to send to without it.
+	//
+	// No description: RxScale's confidentiality line sits under this field in their own
+	// questionnaire, and the artboard draws nothing there.
 	defineQuestion({
 		id: 'email',
 		kind: 'text',
 		label: m.qn_email_label,
-		description: m.qn_email_description
+		shortLabel: m.qn_email_short
 	}),
 	// The export marks it optional, and nothing sends it: RxScale has no phone question and
 	// the cart does not carry one.
@@ -177,6 +206,7 @@ export const QUESTIONS: readonly AnyQuestion[] = [
 		id: 'phone',
 		kind: 'text',
 		label: m.qn_phone_label,
+		shortLabel: m.qn_phone_short,
 		description: m.qn_phone_description,
 		optional: true
 	}),
@@ -184,16 +214,23 @@ export const QUESTIONS: readonly AnyQuestion[] = [
 	// medication-history
 	// One question where RxScale asks two. `never` answers their
 	// `TakingWeightlossMedication` with no; every other value answers it with yes and names
-	// the medication in `WeightlossMedication`. Their own label for the second question,
+	// the medication in `WeightlossMedication`. It reads last on screen and is stored the
+	// same, so the mapper is untouched by the reordering. Their own label for the second question,
 	// "Orilstat", is a typo, so ours spells the medicine correctly while the value stays
 	// theirs.
 	defineQuestion({
 		id: 'pastMedication',
 		kind: 'single',
+		// The artboard's question rather than RxScale's, because theirs is the yes/no half of a
+		// pair and reads as one over a list of fifteen medicines. The tense stays theirs:
+		// `DurationCurrentWeightLossDose` asks how long the medicine has been taken *for*, so a
+		// medicine stopped years ago answered under a past tense would reach a doctor as current
+		// treatment.
 		label: m.qn_past_medication_label,
-		description: m.qn_past_medication_description,
+		// Two, like the diseases: these are product names, not sentences, and fifteen of them in
+		// one column made this the longest screen in the funnel by a wide margin.
+		columns: 2,
 		options: [
-			{ value: 'never', label: m.qn_med_never },
 			{ value: 'wegovy', label: m.qn_med_wegovy },
 			{ value: 'mounjaro', label: m.qn_med_mounjaro },
 			{ value: 'saxenda', label: m.qn_med_saxenda },
@@ -206,15 +243,28 @@ export const QUESTIONS: readonly AnyQuestion[] = [
 			{ value: 'byetta', label: m.qn_med_byetta },
 			{ value: 'bydureon', label: m.qn_med_bydureon },
 			{ value: 'trulicity', label: m.qn_med_trulicity },
-			{ value: 'tanzeum', label: m.qn_med_tanzeum }
+			{ value: 'tanzeum', label: m.qn_med_tanzeum },
+			// Last, and drawn as the row that ends the list rather than one of the medications,
+			// which is how the artboards treat "I've never taken anything to treat weight loss".
+			// A real RxScale value all the same: the mapper reads it for
+			// `TakingWeightlossMedication`. See `pinned` in `kinds.ts`.
+			{ value: 'never', label: m.qn_med_never, pinned: true }
 		],
 		hasOther: true,
-		otherField: 'pastMedicationOther'
+		otherField: 'pastMedicationOther',
+		// The artboard names and explains this box. Its third line, "Shown when Other medication
+		// is selected", is a note to the designer about when the field appears, so it is not
+		// transcribed; the hint below says something a person answering can act on.
+		otherLabel: m.qn_past_medication_other_label,
+		otherPlaceholder: m.qn_past_medication_other_placeholder,
+		otherDescription: m.qn_past_medication_other_description
 	}),
 	defineQuestion({
 		id: 'pastMedicationDose',
 		kind: 'single',
 		label: m.qn_dose_label,
+		shortLabel: m.qn_dose_short,
+		columns: 2,
 		options: (answers) => dosesFor(answers.pastMedication),
 		visibleIf: takesTrackedMedication
 	}),
@@ -222,14 +272,27 @@ export const QUESTIONS: readonly AnyQuestion[] = [
 		id: 'pastMedicationDuration',
 		kind: 'number',
 		label: m.qn_duration_label,
-		description: m.qn_duration_description,
+		shortLabel: m.qn_duration_short,
+		unit: m.qn_unit_weeks,
+		placeholder: m.qn_duration_placeholder,
+		layout: 'half',
+		// A plausibility band, like the height and the weight, and ours rather than RxScale's:
+		// their question is a bare text input with no validators, so nothing but this stops a
+		// mistyped 999 from reaching a doctor as five years of GLP-1 treatment. Five years is
+		// the ceiling because tirzepatide has not been prescribable for longer than that.
+		range: { above: 0, below: 261 },
 		visibleIf: takesTrackedMedication
 	}),
+	// A month and a year rather than free text. RxScale asks for "den Zeitpunkt so genau wie
+	// möglich (Datum)" and stores a string, so the payload is unchanged; what changes is that
+	// the string is now always a date a doctor can subtract from today.
 	defineQuestion({
 		id: 'pastMedicationLastDose',
-		kind: 'text',
+		kind: 'month',
 		label: m.qn_last_dose_label,
-		description: m.qn_last_dose_description,
+		shortLabel: m.qn_last_dose_short,
+		placeholder: m.qn_last_dose_placeholder,
+		layout: 'half',
 		visibleIf: takesTrackedMedication
 	}),
 
@@ -238,12 +301,18 @@ export const QUESTIONS: readonly AnyQuestion[] = [
 		id: 'hasSideEffects',
 		kind: 'single',
 		label: m.qn_side_effects_label,
+		columns: 2,
 		options: YES_NO_CAPITALISED
 	}),
 	defineQuestion({
 		id: 'sideEffectsDescription',
 		kind: 'comment',
 		label: m.qn_side_effects_description_label,
+		shortLabel: m.qn_side_effects_description_short,
+		// The short label is "Deine Nebenwirkungen", which drops the half of RxScale's question
+		// asking how severe they are. A doctor reads this answer, so the instruction is put back
+		// where somebody is about to type rather than being lost with the long label.
+		placeholder: m.qn_side_effects_description_placeholder,
 		visibleIf: reportsSideEffects
 	}),
 
@@ -254,6 +323,8 @@ export const QUESTIONS: readonly AnyQuestion[] = [
 		id: 'pregnancyStatus',
 		kind: 'multi',
 		label: m.qn_pregnancy_label,
+		columns: 1,
+		footnote: m.qn_pregnancy_footnote,
 		options: [
 			{ value: 'pregnant', label: m.qn_preg_pregnant },
 			{ value: 'breastfeeding', label: m.qn_preg_breastfeeding },
@@ -269,6 +340,7 @@ export const QUESTIONS: readonly AnyQuestion[] = [
 		id: 'diseases',
 		kind: 'multi',
 		label: m.qn_diseases_label,
+		columns: 2,
 		options: [
 			{ value: 'Thyroid cancer', label: m.qn_dis_thyroid_cancer },
 			{ value: 'Pancreatitis', label: m.qn_dis_pancreatitis },
@@ -289,7 +361,9 @@ export const QUESTIONS: readonly AnyQuestion[] = [
 		],
 		hasNone: true,
 		hasOther: true,
-		otherField: 'diseasesOther'
+		otherField: 'diseasesOther',
+		otherLabel: m.qn_diseases_other_label,
+		otherPlaceholder: m.qn_diseases_other_placeholder
 	}),
 
 	// gallbladder
@@ -297,6 +371,7 @@ export const QUESTIONS: readonly AnyQuestion[] = [
 		id: 'gallbladderRemoved',
 		kind: 'single',
 		label: m.qn_gallbladder_label,
+		columns: 2,
 		options: YES_NO_CAPITALISED
 	}),
 
@@ -305,6 +380,7 @@ export const QUESTIONS: readonly AnyQuestion[] = [
 		id: 'familyDiseases',
 		kind: 'multi',
 		label: m.qn_family_diseases_label,
+		columns: 1,
 		options: [
 			{ value: 'Medullary thyroid cancer', label: m.qn_fam_medullary },
 			{ value: 'Multiple Endocrine Neoplasia', label: m.qn_fam_men }
@@ -315,6 +391,7 @@ export const QUESTIONS: readonly AnyQuestion[] = [
 		id: 'mentalHealth',
 		kind: 'single',
 		label: m.qn_mental_health_label,
+		columns: 2,
 		options: YES_NO_CAPITALISED
 	}),
 
@@ -324,6 +401,7 @@ export const QUESTIONS: readonly AnyQuestion[] = [
 		kind: 'single',
 		label: m.qn_eating_disorder_label,
 		description: m.qn_eating_disorder_description,
+		columns: 2,
 		options: YES_NO_CAPITALISED
 	}),
 
@@ -333,6 +411,7 @@ export const QUESTIONS: readonly AnyQuestion[] = [
 		id: 'eatingDisorderStatements',
 		kind: 'multi',
 		label: m.qn_eating_statements_label,
+		columns: 1,
 		options: [
 			{
 				value: 'Ich habe absichtlich erbrochen, weil ich mich unangenehm voll gefühlt habe.',
@@ -360,6 +439,7 @@ export const QUESTIONS: readonly AnyQuestion[] = [
 		id: 'allergies',
 		kind: 'multi',
 		label: m.qn_allergies_label,
+		columns: 2,
 		options: [
 			{ value: 'Liraglutide', label: m.qn_alg_liraglutide },
 			{ value: 'Semaglutide', label: m.qn_alg_semaglutide },
@@ -372,32 +452,37 @@ export const QUESTIONS: readonly AnyQuestion[] = [
 		],
 		hasNone: true,
 		hasOther: true,
-		otherField: 'allergiesOther'
+		otherField: 'allergiesOther',
+		otherLabel: m.qn_allergies_other_label,
+		otherPlaceholder: m.qn_allergies_other_placeholder
 	}),
 	defineQuestion({
 		id: 'otherMedication',
 		kind: 'single',
 		label: m.qn_other_medication_label,
 		description: m.qn_other_medication_description,
+		columns: 2,
 		options: YES_NO_LOWERCASE
 	}),
 	defineQuestion({
 		id: 'otherMedicationDescription',
 		kind: 'comment',
 		label: m.qn_other_medication_details_label,
+		shortLabel: m.qn_other_medication_details_short,
 		description: m.qn_other_medication_details_description,
 		visibleIf: takesOtherMedication
 	}),
 
 	// disclaimers
-	// RxScale keeps the nine statements in one newline-separated string, and so do we: the
-	// screen splits them in 24d. Their own title reads "Bitte lese", which is a typo for
+	// RxScale keeps the nine statements in one newline-separated string, and so do we, on
+	// `points` rather than `description`: nine statements a person reads one at a time, not a
+	// paragraph that happens to wrap. Their own title reads "Bitte lese", which is a typo for
 	// "Bitte lies"; the wording is ours now, so it is corrected here.
 	defineQuestion({
 		id: 'disclaimer',
 		kind: 'consent',
 		label: m.qn_disclaimer_label,
-		description: m.qn_disclaimer_points,
+		points: m.qn_disclaimer_points,
 		confirmLabel: m.qn_disclaimer_confirm
 	}),
 	// RxScale titles this "Für das Produkt Mounjaro:", a fragment that only works directly

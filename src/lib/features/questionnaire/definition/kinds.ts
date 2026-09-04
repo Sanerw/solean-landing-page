@@ -24,13 +24,32 @@ export interface ChoiceOption {
 	 */
 	readonly value: string;
 	readonly label: MessageFn;
+	/**
+	 * Drawn last, below the none and other rows, in the muted treatment the artboards give
+	 * "I've never taken anything to treat weight loss".
+	 *
+	 * **Not `hasNone`, and the difference is in the payload.** A pinned option is a real
+	 * RxScale value: `never` is what the mapper reads to answer `TakingWeightlossMedication`
+	 * with no. The `none` sentinel is a survey-core convention their validators compare
+	 * against literally. They look alike on screen and mean different things when sent, so
+	 * they stay two mechanisms.
+	 */
+	readonly pinned?: boolean;
 }
 
 /**
  * The kinds a question can be. Deliberately fewer than RxScale's type list: `multipletext`
  * and `expression` are theirs to model a page, and ours are the controls a person operates.
  */
-export type QuestionKind = 'single' | 'multi' | 'text' | 'number' | 'date' | 'comment' | 'consent';
+export type QuestionKind =
+	| 'single'
+	| 'multi'
+	| 'text'
+	| 'number'
+	| 'date'
+	| 'month'
+	| 'comment'
+	| 'consent';
 
 /**
  * Which kinds may write which answer type. This is what stops a question from claiming a kind
@@ -45,7 +64,7 @@ type KindFor<Value> = [Value] extends [boolean]
 	: [Value] extends [string[]]
 		? 'multi'
 		: [Value] extends [string]
-			? 'text' | 'number' | 'comment'
+			? 'text' | 'number' | 'month' | 'comment'
 			: 'single' | 'date';
 
 /** The `*Other` sibling that holds an "other" choice's free text, by naming convention. */
@@ -59,6 +78,31 @@ interface QuestionShape<Id extends QuestionId, Kind extends QuestionKind> {
 	readonly kind: Kind;
 	readonly label: MessageFn;
 	readonly description?: MessageFn;
+	/**
+	 * The name of the thing being asked for, where the artboards label a field rather than
+	 * repeat its question: `HEIGHT` above the box, not "Wie groß bist Du?".
+	 *
+	 * Presentation only. The full `label` stays the accessible name of a promoted question,
+	 * so nothing a screen reader hears gets shorter than what a sighted reader sees.
+	 */
+	readonly shortLabel?: MessageFn;
+	/** Half-width, so two of them share a row from `sm` up. Anything else spans the grid. */
+	readonly layout?: 'half';
+	/** `number` and `text`: the unit drawn inside the box, `cm` or `kg`. Never announced. */
+	readonly unit?: MessageFn;
+	/** The muted info card under this question's control. */
+	readonly footnote?: MessageFn;
+	/**
+	 * Newline-separated statements rendered as a real list.
+	 *
+	 * **Not `description`.** Both hold prose under a question, but a description is a
+	 * sentence and this is a list, and the difference is structural: the disclaimers screen
+	 * splits its nine statements on newlines today and gets one paragraph that happens to
+	 * wrap, rather than nine things a person can read one at a time.
+	 */
+	readonly points?: MessageFn;
+	/** How many columns the choices are drawn in. Sentences read in one, short terms in two. */
+	readonly columns?: 1 | 2;
 	/**
 	 * Dynamic options are not speculative generality. RxScale asks the dose with four
 	 * different option sets depending on which medication was named, and our one dose question
@@ -83,15 +127,32 @@ interface QuestionShape<Id extends QuestionId, Kind extends QuestionKind> {
 	 */
 	readonly confirmLabel?: MessageFn;
 	/**
-	 * `number` only: the range a typed value has to fall in.
+	 * `number` only: the open band a typed value has to fall inside.
 	 *
 	 * A plausibility check, not an eligibility rule, and the distinction decides who owns it.
 	 * RxScale's message for a height outside this band is "Bitte überprüfe Deine Angaben",
 	 * please check your entry, which is a typo check we can make immediately. Their BMI floor
 	 * and age window read "Leider können wir Dir kein Medikament verschreiben", and those are
 	 * medical decisions that stay theirs and arrive from the snapshot in 24b.
+	 *
+	 * Both ends are exclusive, because theirs are: their expression reads
+	 * `{WeightSize.size} > 120 and {WeightSize.size} < 250`, so an inclusive check here would
+	 * accept 120 on the field and meet their refusal one click later. `above` and `below`
+	 * carry that in the name, which `min` and `max` did not.
 	 */
-	readonly range?: { readonly min: number; readonly max: number };
+	readonly range?: { readonly above: number; readonly below: number };
+	/** The example inside an empty box, where the artboard draws one. */
+	readonly placeholder?: MessageFn;
+	/**
+	 * The free text an "other" reveals, as the artboards draw it: its own field name above the
+	 * box, an example inside it, and a hint below.
+	 *
+	 * Without a label the box is an unnamed input following a choice, which is what it was:
+	 * `OtherTextInput` carried an `sr-only` "Andere" because there was nothing better to say.
+	 */
+	readonly otherLabel?: MessageFn;
+	readonly otherPlaceholder?: MessageFn;
+	readonly otherDescription?: MessageFn;
 	/** Defaults to required. RxScale requires nearly every question, and so do we. */
 	readonly optional?: boolean;
 	/** Answers this question is asked for. Absent means always. */
@@ -142,8 +203,11 @@ export function optionsFor(question: AnyQuestion, answers: Answers): readonly Ch
 export interface ChoiceItem {
 	readonly value: string;
 	readonly label: MessageFn;
-	/** The two special rows behave differently: "none" is exclusive, "other" opens a text box. */
-	readonly kind: 'option' | 'none' | 'other';
+	/**
+	 * The special rows behave differently: "none" is exclusive, "other" opens a text box, and
+	 * "pinned" is an ordinary answer that simply reads last.
+	 */
+	readonly kind: 'option' | 'none' | 'other' | 'pinned';
 }
 
 /**
@@ -157,10 +221,18 @@ export function choiceItems(
 	options: readonly ChoiceOption[],
 	labels: { none: MessageFn; other: MessageFn }
 ): readonly ChoiceItem[] {
-	const items: ChoiceItem[] = options.map((option) => ({ ...option, kind: 'option' }));
+	const items: ChoiceItem[] = options
+		.filter((option) => !option.pinned)
+		.map((option) => ({ ...option, kind: 'option' }));
 
 	if (question.hasNone) items.push({ value: NONE_VALUE, label: labels.none, kind: 'none' });
 	if (question.hasOther) items.push({ value: OTHER_VALUE, label: labels.other, kind: 'other' });
+
+	// After none and other, because that is where the artboards draw it: the row that ends
+	// the list rather than one of the things being listed.
+	for (const option of options) {
+		if (option.pinned) items.push({ ...option, kind: 'pinned' });
+	}
 
 	return items;
 }

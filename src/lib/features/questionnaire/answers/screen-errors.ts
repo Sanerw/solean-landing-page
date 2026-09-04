@@ -21,8 +21,16 @@ export type ScreenError =
 export function screenErrorFor(
 	id: QuestionId,
 	ours: Partial<Record<QuestionId, ValidationCode>>,
-	theirs: Partial<Record<QuestionId, string>>
+	theirs: Partial<Record<QuestionId, string>>,
+	/**
+	 * Answered again since the last submit, and therefore no longer described by either
+	 * verdict. One rule covers both sources on purpose: theirs judged the answer that has
+	 * just been replaced, and Continue re-asks them anyway.
+	 */
+	changed: ReadonlySet<QuestionId> = new Set()
 ): ScreenError | null {
+	if (changed.has(id)) return null;
+
 	const code = ours[id];
 	if (code) return { source: 'ours', code };
 
@@ -35,7 +43,8 @@ export function screenErrorFor(
 export function hasBlockingError(
 	ids: readonly QuestionId[],
 	ours: Partial<Record<QuestionId, ValidationCode>>,
-	theirs: Partial<Record<QuestionId, string>>
+	theirs: Partial<Record<QuestionId, string>>,
+	changed: ReadonlySet<QuestionId> = new Set()
 ): boolean {
-	return ids.some((id) => screenErrorFor(id, ours, theirs) !== null);
+	return ids.some((id) => screenErrorFor(id, ours, theirs, changed) !== null);
 }

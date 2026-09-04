@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { localizeHref } from '$lib/paraglide/runtime';
 	import { m } from '$lib/paraglide/messages';
 	import SoleanLogo from '$lib/components/brand/SoleanLogo.svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -127,7 +128,7 @@
 
 		<Sheet.Footer class="gap-3.5 p-0">
 			<Button
-				href={ROUTES.questionnaire}
+				href={localizeHref(ROUTES.questionnaire)}
 				class="w-full rounded-full"
 				onclick={() => (open = false)}
 			>

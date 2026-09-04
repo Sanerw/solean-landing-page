@@ -76,19 +76,90 @@ describe('none and other', () => {
 	});
 });
 
-describe('numbers', () => {
-	it("accepts a measurement inside RxScale's own plausibility band, at both ends", () => {
-		expect(check('heightCm', answering({ heightCm: '120' }))).toBeNull();
-		expect(check('heightCm', answering({ heightCm: '250' }))).toBeNull();
-		expect(check('weightKg', answering({ weightKg: '40' }))).toBeNull();
-		expect(check('weightKg', answering({ weightKg: '300' }))).toBeNull();
+describe('the contact fields', () => {
+	it('accepts a phone number written the way people write one', () => {
+		for (const phone of ['+49 151 234 56 78', '0151/2345678', '(030) 123-4567']) {
+			expect(check('phone', answering({ phone })), phone).toBeNull();
+		}
 	});
 
-	it('refuses one just outside it', () => {
+	it('refuses letters and a number too short to be one', () => {
+		expect(check('phone', answering({ phone: 'abc' }))).toBe('invalid-phone');
+		expect(check('phone', answering({ phone: '12345' }))).toBe('invalid-phone');
+	});
+
+	// Optional, so an empty phone is still no error at all: the rule is about what was typed.
+	it('still lets the phone be left out', () => {
+		expect(check('phone', answering({ phone: '' }))).toBeNull();
+	});
+
+	it('refuses a name with no letter in it, and accepts every name that has one', () => {
+		expect(check('firstName', answering({ firstName: '123' }))).toBe('invalid-name');
+		for (const name of ["O'Brien", 'Müller-Lüdenscheidt', '李', 'Ali']) {
+			expect(check('lastName', answering({ lastName: name })), name).toBeNull();
+		}
+	});
+});
+
+describe('the last dose', () => {
+	const dose = (value: string) =>
+		check('pastMedicationLastDose', answering({ pastMedication: 'mounjaro', pastMedicationLastDose: value }));
+
+	it('accepts a month and year that has been', () => {
+		expect(dose('08/2026')).toBeNull();
+		expect(dose('01/1991')).toBeNull();
+	});
+
+	it('refuses a month that is not one, and free text', () => {
+		expect(dose('13/2026')).toBe('invalid-month');
+		expect(dose('2026')).toBe('invalid-month');
+		expect(dose('irgendwann')).toBe('invalid-month');
+	});
+
+	// A dose taken in the future is not a dose already taken, and a doctor reads this to work
+	// out the interval since.
+	it('refuses a month still ahead', () => {
+		expect(dose('12/2099')).toBe('invalid-month');
+	});
+});
+
+describe('numbers', () => {
+	it("accepts a measurement inside RxScale's own plausibility band, near both ends", () => {
+		expect(check('heightCm', answering({ heightCm: '121' }))).toBeNull();
+		expect(check('heightCm', answering({ heightCm: '249' }))).toBeNull();
+		expect(check('weightKg', answering({ weightKg: '41' }))).toBeNull();
+		expect(check('weightKg', answering({ weightKg: '299' }))).toBeNull();
+	});
+
+	// Their expression is `> 120 and < 250`, so the bound itself is theirs to refuse and ours
+	// to refuse first. Accepting it here would pass the field and fail on Continue, in German.
+	it('refuses the bound itself, exactly as their expression does', () => {
+		expect(check('heightCm', answering({ heightCm: '120' }))).toBe('out-of-range');
+		expect(check('heightCm', answering({ heightCm: '250' }))).toBe('out-of-range');
+		expect(check('weightKg', answering({ weightKg: '40' }))).toBe('out-of-range');
+		expect(check('weightKg', answering({ weightKg: '300' }))).toBe('out-of-range');
+	});
+
+	it('refuses one further outside it', () => {
 		expect(check('heightCm', answering({ heightCm: '119' }))).toBe('out-of-range');
 		expect(check('heightCm', answering({ heightCm: '251' }))).toBe('out-of-range');
 		expect(check('weightKg', answering({ weightKg: '39' }))).toBe('out-of-range');
 		expect(check('weightKg', answering({ weightKg: '301' }))).toBe('out-of-range');
+	});
+
+	// Ours, not RxScale's: their duration question carries no validators at all, so nothing
+	// else stops a mistyped 999 reaching a doctor as five years of treatment.
+	it('holds the treatment duration to a plausible number of weeks', () => {
+		const weeks = (value: string) =>
+			check(
+				'pastMedicationDuration',
+				answering({ pastMedication: 'mounjaro', pastMedicationDuration: value })
+			);
+
+		expect(weeks('12')).toBeNull();
+		expect(weeks('260')).toBeNull();
+		expect(weeks('261')).toBe('out-of-range');
+		expect(weeks('999')).toBe('out-of-range');
 	});
 
 	it('refuses text that is not a number', () => {

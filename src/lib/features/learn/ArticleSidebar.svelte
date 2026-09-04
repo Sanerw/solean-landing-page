@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { localizeHref } from '$lib/paraglide/runtime';
 	import { m } from '$lib/paraglide/messages';
 	import { Button } from '$lib/components/ui/button';
 	import SparklesIcon from '@lucide/svelte/icons/sparkles';
@@ -32,7 +33,7 @@
 		<p class="mt-3 text-sm text-background/80">
 			{m.learn_sidebar_body()}
 		</p>
-		<Button href={ROUTES.questionnaire} class="mt-5 w-full">{m.learn_sidebar_cta()}</Button>
+		<Button href={localizeHref(ROUTES.questionnaire)} class="mt-5 w-full">{m.learn_sidebar_cta()}</Button>
 	</section>
 
 	<!-- The artboard's third card. The sources themselves close the article in the main

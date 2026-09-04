@@ -4,49 +4,66 @@ import { stepIsInteractive, walkAndSubmit, walkTo } from './answers';
 import { selectDateOfBirth } from './date-picker';
 
 /**
- * What holds the walk together around the questions: answers that live for exactly as long
- * as the page asking for them, and a step that cannot be opened before the answers before it
- * are in.
+ * What holds the walk together around the questions: answers that survive a reload and a
+ * return visit, and a step that cannot be opened before the answers before it are in.
  */
 
 const firstName = (page: Page) => page.locator('#q-firstName');
 const surname = (page: Page) => page.locator('#q-lastName');
 
-/** Every key this app could be writing. The assertion is that it writes none of them. */
-function soleanKeys(page: Page): Promise<string[]> {
+/**
+ * What this app has written down about a visitor, wherever it could have written it.
+ * Filtered to our own keys: SvelteKit keeps scroll positions in session storage.
+ */
+function storedKeys(page: Page): Promise<string[]> {
 	return page.evaluate(() =>
-		Object.keys(window.sessionStorage).filter((key) => key.startsWith('solean:'))
+		[...Object.keys(window.sessionStorage), ...Object.keys(window.localStorage)].filter((key) =>
+			key.includes('solean')
+		)
 	);
 }
 
-test('nothing a visitor answers is written down', async ({ page }) => {
+/**
+ * Answers are kept on the device from feature 24e so somebody can come back to an unfinished
+ * questionnaire, and `localStorage` rather than a cookie is what keeps them off the wire: a
+ * cookie is sent to the server on every request, and medical answers would then sit in the
+ * host's access logs.
+ */
+test('the answers are kept on this device and nowhere else', async ({ page }) => {
 	await walkTo(page, 'your-details');
 	await firstName(page).fill('Jonas');
 	await surname(page).fill('Weber');
-	// Required from feature 24a, unlike RxScale's own e-mail question, so the screen does not
-	// advance without it.
 	await page.locator('#q-email').fill('jonas@example.com');
-
-	// Answered, and still nothing stored. These are real medical answers, and the guarantee is
-	// that they exist in the page and in the submission, nowhere else.
-	expect(await soleanKeys(page)).toEqual([]);
-
 	await page.getByRole('button', { name: UI.continue }).click();
 	await expect(page).toHaveURL('/questionnaire/medication-history');
-	expect(await soleanKeys(page)).toEqual([]);
+
+	expect(await storedKeys(page)).toEqual(['solean.questionnaire.session']);
+
+	// Never a cookie. Two exist and both are meant to: the analytics decision and the locale.
+	// What may not be in one is an answer, so the assertion is on the contents as well as on
+	// which cookies are set at all.
+	const cookies = await page.context().cookies();
+	expect(cookies.map((cookie) => cookie.name).sort()).toEqual([
+		'PARAGLIDE_LOCALE',
+		'solean_analytics_consent'
+	]);
+	expect(cookies.some((cookie) => cookie.value.includes('Jonas'))).toBe(false);
 });
 
-test('a refresh starts the questionnaire over', async ({ page }) => {
+test('a refresh keeps the answers and the place in the walk', async ({ page }) => {
 	await walkTo(page, 'allergies');
 
 	await page.reload();
 
-	// Back to the beginning with the answers gone.
-	await expect(page).toHaveURL('/questionnaire/about-you');
+	// Where the answers reach, not back at the beginning: the walk is derived from them.
+	await expect(page).toHaveURL('/questionnaire/allergies');
 	await stepIsInteractive(page);
-	// The walk answered these on the way through, and they are not here any more.
-	await expect(page.locator('#q-heightCm')).toHaveValue('');
-	await expect(page.locator('#q-weightKg')).toHaveValue('');
+
+	// Back to a screen the walk answered on the way through, with the answers still in it.
+	await page.goto('/questionnaire/about-you');
+	await stepIsInteractive(page);
+	await expect(page.locator('#q-heightCm')).toHaveValue('180');
+	await expect(page.locator('#q-weightKg')).toHaveValue('110');
 });
 
 test('a step the answers do not reach sends you to the one they do', async ({ page }) => {
@@ -68,9 +85,6 @@ test('a step already answered can be reopened and changed', async ({ page }) => 
 	await walkTo(page, 'your-details');
 
 	// Back, the way a visitor goes back: a link, so the session the answers live in survives.
-	// The projection sits between the two screens, so this takes two presses.
-	await page.getByRole('link', { name: UI.back, exact: true }).click();
-	await expect(page).toHaveURL('/questionnaire/projection');
 	await page.getByRole('link', { name: UI.back, exact: true }).click();
 	await expect(page).toHaveURL('/questionnaire/about-you');
 	await stepIsInteractive(page);
@@ -80,7 +94,7 @@ test('a step already answered can be reopened and changed', async ({ page }) => 
 	await expect(page.getByRole('radio', { name: 'Weiblich', exact: true })).toBeChecked();
 });
 
-/** The progress bar's accessible name, in the language the app is serving. */
+/** The eyebrow's wording, in the language the app is serving. */
 function progressLabel(current: number, total: number): string {
 	return `${UI.progressPrefix}${current} von ${total}`;
 }
@@ -88,7 +102,7 @@ function progressLabel(current: number, total: number): string {
 async function questionLabel(page: Page): Promise<string | null> {
 	await stepIsInteractive(page);
 
-	return page.locator(`[aria-label^="${UI.progressPrefix}"]`).first().getAttribute('aria-label');
+	return (await page.locator(UI.progressEyebrow).first().textContent())?.trim() ?? null;
 }
 
 test('the progress denominator follows the branch the answers open', async ({ page }) => {
@@ -106,8 +120,8 @@ test('the progress denominator follows the branch the answers open', async ({ pa
 	await page.locator('#q-weightKg').fill('90');
 	await page.getByRole('button', { name: UI.continue }).click();
 
-	await expect(page).toHaveURL('/questionnaire/projection');
-	expect(await questionLabel(page)).toBe(progressLabel(1, 10));
+	await expect(page).toHaveURL('/questionnaire/your-details');
+	expect(await questionLabel(page)).toBe(progressLabel(2, 10));
 });
 
 test('the completion screen reads the whole questionnaire as done', async ({ page }) => {
@@ -118,6 +132,8 @@ test('the completion screen reads the whole questionnaire as done', async ({ pag
 	// has never taken anything sees none of the four conditional screens. The denominator is
 	// the walk, not a fixed length the definition does not have.
 	await expect
-		.poll(() => page.locator(`[aria-label^="${UI.progressPrefix}"]`).first().getAttribute('aria-label'))
+		.poll(async () =>
+			(await page.locator(UI.progressEyebrow).first().textContent())?.trim() ?? null
+		)
 		.toBe(progressLabel(8, 8));
 });

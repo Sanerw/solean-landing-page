@@ -20,6 +20,13 @@ import type { SanityPicture } from '$lib/sanity/image';
  * Every cross-feature destination in one place. Features 6 and 7 make these real by
  * adding the routes; nothing else in marketing hardcodes a path.
  */
+/**
+ * The canonical paths, unlocalised. Every one of them has to go through `localizeHref` at the
+ * link, never here: this table is a module constant, evaluated once at import, while the
+ * locale belongs to the request. An unlocalised internal link is not a cosmetic slip, it is a
+ * language switch: German is the base locale and owns the bare path, so `/questionnaire`
+ * means the German funnel and takes an English reader with it.
+ */
 export const ROUTES = {
 	home: '/',
 	questionnaire: '/questionnaire',
@@ -56,7 +63,7 @@ export interface NavItem {
  */
 export function navItems(): readonly NavItem[] {
 	return [
-		{ label: m.nav_home(), href: ROUTES.home },
+		{ label: m.nav_home(), href: localizeHref(ROUTES.home) },
 		{
 			label: m.nav_treatments(),
 			href: '/treatments',
@@ -70,9 +77,7 @@ export function navItems(): readonly NavItem[] {
 			}))
 		},
 		{ label: m.nav_about(), href: '/about', inert: true },
-		{ label: m.nav_faq(), href: '/#faq' },
-		// Localised: `/learn` is a server redirect now, and it resolves the language from the
-		// path, so an unprefixed link would send an English reader to the German article.
+		{ label: m.nav_faq(), href: localizeHref('/#faq') },
 		{ label: m.nav_learn(), href: localizeHref(ROUTES.learn) }
 	];
 }
@@ -121,15 +126,15 @@ export function footerColumns(): readonly FooterColumn[] {
 			title: m.footer_column_explore(),
 			links: [
 				{ label: m.footer_link_treatments(), href: '/treatments', inert: true },
-				{ label: m.footer_link_how_it_works(), href: '/#how-it-works' },
-				{ label: m.footer_link_experts(), href: '/#experts' }
+				{ label: m.footer_link_how_it_works(), href: localizeHref('/#how-it-works') },
+				{ label: m.footer_link_experts(), href: localizeHref('/#experts') }
 			]
 		},
 		{
 			title: m.footer_column_support(),
 			links: [
 				{ label: m.footer_link_about(), href: '/about', inert: true },
-				{ label: m.footer_link_faqs(), href: '/#faq' },
+				{ label: m.footer_link_faqs(), href: localizeHref('/#faq') },
 				{ label: m.footer_link_contact(), href: '/contact', inert: true }
 			]
 		}
@@ -190,10 +195,10 @@ export function footerBrand() {
 		 * German legal texts. Only the labels change language; the documents do not.
 		 */
 		legal: [
-			{ label: m.footer_legal_notice(), href: '/legal-notice' },
-			{ label: m.footer_legal_privacy(), href: '/privacy' },
-			{ label: m.footer_legal_terms(), href: '/terms' },
-			{ label: m.footer_legal_cancellation(), href: '/returns' }
+			{ label: m.footer_legal_notice(), href: localizeHref('/legal-notice') },
+			{ label: m.footer_legal_privacy(), href: localizeHref('/privacy') },
+			{ label: m.footer_legal_terms(), href: localizeHref('/terms') },
+			{ label: m.footer_legal_cancellation(), href: localizeHref('/returns') }
 		] satisfies NavItem[],
 		social: [
 			{ icon: 'instagram', label: m.social_instagram(), href: 'https://instagram.com' },

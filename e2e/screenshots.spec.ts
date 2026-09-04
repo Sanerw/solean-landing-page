@@ -46,16 +46,6 @@ test('capture the questionnaire screens', async ({ page }) => {
 	await shot('03-about-you-answered');
 	await advance();
 
-	// Solean's own screen, drawn from what has been answered by the time it appears.
-	await expect(page).toHaveURL('/questionnaire/projection');
-	await shot('04-projection');
-	await advance();
-
-	await ready('weight-related-conditions');
-	await page.getByRole('checkbox', { name: 'Knie- oder Hüftarthrose', exact: true }).click();
-	await shot('05-multiple-choice');
-	await advance();
-
 	await ready('your-details');
 	await page.locator('#q-firstName').fill('Jonas');
 	await page.locator('#q-lastName').fill('Weber');
@@ -66,11 +56,12 @@ test('capture the questionnaire screens', async ({ page }) => {
 	// Mounjaro rather than "Andere": only a medication RxScale tracks a dose for opens the
 	// dose question and the side-effect screen after it.
 	await ready('medication-history');
+	await shot('07-medication-history-empty');
 	await page.getByRole('radio', { name: 'Mounjaro', exact: true }).click();
 	await page.getByRole('radio', { name: '2,5 mg', exact: true }).click();
 	await page.locator('#q-pastMedicationDuration').fill('12');
-	await page.locator('#q-pastMedicationLastDose').fill('August 2026');
-	await shot('07-dependent-options');
+	await page.locator('#q-pastMedicationLastDose').fill('08/2026');
+	await shot('07b-medication-details-panel');
 	await advance();
 
 	await ready('side-effects');
@@ -87,6 +78,12 @@ test('capture the questionnaire screens', async ({ page }) => {
 	await shot('09-conditional-screen');
 	await advance();
 
+	// Solean's own screen, in the export's place: after the fourth question and before the
+	// medical conditions. It draws the weight given on the first screen.
+	await expect(page).toHaveURL('/questionnaire/projection');
+	await shot('04-projection');
+	await advance();
+
 	// The free text an "other" reveals, captured where the default walk actually passes one.
 	await ready('medical-conditions');
 	await page.getByRole('checkbox', { name: 'Andere', exact: true }).click();
@@ -94,14 +91,21 @@ test('capture the questionnaire screens', async ({ page }) => {
 	await shot('09b-other-free-text');
 	await advance();
 
+	await ready('weight-related-conditions');
+	await page.getByRole('checkbox', { name: 'Knie- oder Hüftarthrose', exact: true }).click();
+	await shot('05-multiple-choice');
+	await advance();
+
 	await ready('health-history');
 	await page.getByRole('checkbox', { name: 'Keine der Genannten', exact: true }).click();
 	await page.getByRole('radio', { name: 'Nein', exact: true }).click();
+	await shot('10-health-history');
 	await advance();
 
 	await ready('eating-disorders');
 	await page.getByRole('radio', { name: 'Nein', exact: true }).click();
 	await page.getByRole('checkbox', { name: 'Keine der Genannten', exact: true }).click();
+	await shot('10b-eating-disorders');
 	await advance();
 
 	await expect(page).toHaveURL('/questionnaire/motivation');
@@ -155,4 +159,27 @@ test('capture the submission failures', async ({ page }) => {
 		await expect(page.getByRole('button', { name: UI.tryAgain })).toBeVisible();
 		await shot(name);
 	}
+});
+
+
+/**
+ * The two screens the main walk cannot reach. `gallbladder` needs gallstones among the
+ * diseases, which the walk above answers "none of these" to, and both are screens feature 24e
+ * designed without an artboard, so they are worth photographing beside the ones that had one.
+ */
+test('capture the branch screens', async ({ page }) => {
+	const shot = (name: string) => page.screenshot({ path: `screens/${name}.png`, fullPage: true });
+	// The screen fades in over 200ms and `walkTo` returns as soon as Continue is enabled, which
+	// is before that finishes. Unlike the walk above, nothing here types between arriving and
+	// photographing, so the wait has to be asked for.
+	const settled = () =>
+		expect(page.locator('[data-slot="step"]')).toHaveCSS('opacity', '1');
+
+	await walkTo(page, 'gallbladder', { hadGallstones: true });
+	await settled();
+	await shot('14-gallbladder');
+
+	await walkTo(page, 'side-effects', { onMedication: true });
+	await settled();
+	await shot('14b-side-effects');
 });

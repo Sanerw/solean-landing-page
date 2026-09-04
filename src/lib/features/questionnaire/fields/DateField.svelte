@@ -4,7 +4,7 @@
 	import { DatePicker } from '$lib/components/ui/date-picker';
 	import type { FieldProps } from '../definition/field-props';
 
-	let { controlId, value, onchange, invalid, describedBy }: FieldProps = $props();
+	let { question, controlId, value, onchange, invalid, describedBy }: FieldProps = $props();
 
 	const date = $derived(typeof value === 'string' ? value : '');
 
@@ -29,9 +29,9 @@
 	{initialValue}
 	{invalid}
 	{describedBy}
-	placeholder="DD/MM/YYYY"
+	placeholder={question.placeholder?.() ?? 'DD/MM/YYYY'}
 	calendarLabel={m.q_date_of_birth()}
 	openLabel={m.q_open_calendar()}
-	class="w-full sm:max-w-xs"
+	class="w-full"
 	onchange={(next) => onchange(next)}
 />

@@ -44,13 +44,6 @@ test('a visitor walks from the landing page to the shop', async ({ page }) => {
 		await page.locator('#q-weightKg').fill('90');
 	});
 
-	// The projection reads the weight from the screen just answered, which is the seam between
-	// a question screen and a Solean interlude.
-	await passInterlude(page, 'projection');
-
-	await answer(page, 'weight-related-conditions', async () => {
-		await page.getByRole('checkbox', { name: 'Knie- oder Hüftarthrose', exact: true }).click();
-	});
 	await answer(page, 'your-details', async () => {
 		await page.locator('#q-firstName').fill('Jonas');
 		await page.locator('#q-lastName').fill('Weber');
@@ -60,7 +53,7 @@ test('a visitor walks from the landing page to the shop', async ({ page }) => {
 		await page.getByRole('radio', { name: 'Mounjaro', exact: true }).click();
 		await page.getByRole('radio', { name: '2,5 mg', exact: true }).click();
 		await page.locator('#q-pastMedicationDuration').fill('12');
-		await page.locator('#q-pastMedicationLastDose').fill('August 2026');
+		await page.locator('#q-pastMedicationLastDose').fill('08/2026');
 	});
 	await answer(page, 'side-effects', async () => {
 		await page.getByRole('radio', { name: 'Ja', exact: true }).click();
@@ -71,8 +64,15 @@ test('a visitor walks from the landing page to the shop', async ({ page }) => {
 	await answer(page, 'pregnancy', async () => {
 		await page.getByRole('checkbox', { name: 'Keine der Genannten', exact: true }).click();
 	});
+	// The projection sits where the export draws it, after the fourth question, and reads the
+	// weight given on the first screen. This is the seam between a question and an interlude.
+	await passInterlude(page, 'projection');
+
 	await answer(page, 'medical-conditions', async () => {
 		await page.getByRole('checkbox', { name: 'Keine der Genannten', exact: true }).click();
+	});
+	await answer(page, 'weight-related-conditions', async () => {
+		await page.getByRole('checkbox', { name: 'Knie- oder Hüftarthrose', exact: true }).click();
 	});
 	await answer(page, 'health-history', async () => {
 		await page.getByRole('checkbox', { name: 'Keine der Genannten', exact: true }).click();
@@ -119,7 +119,7 @@ test('back from the recommendation leaves the questionnaire rather than breaking
 	await page.locator('#q-heightCm').fill('180');
 	await page.locator('#q-weightKg').fill('110');
 	await page.getByRole('button', CONTINUE).click();
-	await expect(page).toHaveURL('/questionnaire/projection');
+	await expect(page).toHaveURL('/questionnaire/your-details');
 
 	// The browser's own Back, across the entry that replaced itself. It must not reappear.
 	await page.goBack();

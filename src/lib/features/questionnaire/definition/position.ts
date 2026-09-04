@@ -15,15 +15,20 @@ export interface QuestionnaireProgress {
 	current: number;
 	total: number;
 	/**
-	 * How full the bar is. Not `current / total`: the plan choice comes after the last
-	 * question, so a full bar on the last screen would promise an end that is one screen
-	 * early. The count stays a count of screens, because that is what it is called.
+	 * How full the bar is, measured in steps walked rather than questions answered.
+	 *
+	 * Deliberately not `current / total`. Two things pull it away from the count. The plan
+	 * choice comes after the last question, so a full bar on the last screen would promise an
+	 * end that is one screen early. And an interlude asks nothing, so it may not raise the
+	 * count, but it is still a press of Continue: with the bar tied to the count, arriving at
+	 * the projection moved neither the number nor the bar, and the questionnaire read as
+	 * stuck. The bar answers "how far along am I", which an interlude does advance.
 	 */
 	percent: number;
 }
 
-/** Screens the visitor still walks after the last question: choosing the plan. */
-const SCREENS_AFTER_THE_QUESTIONS = 1;
+/** Steps the visitor still walks after the last question: choosing the plan. */
+const STEPS_AFTER_THE_QUESTIONS = 1;
 
 export function progressFor(walk: Walk, stepId: string): QuestionnaireProgress | null {
 	if (walk.screenTotal === 0) return null;
@@ -35,16 +40,14 @@ export function progressFor(walk: Walk, stepId: string): QuestionnaireProgress |
 	const index = walk.steps.findIndex((step) => step.id === stepId);
 	if (index < 0) return null;
 
-	// An interlude holds the number of the screen before it, so the bar never moves on a
-	// screen that asks nothing.
+	const percent = ((index + 1) / (walk.steps.length + STEPS_AFTER_THE_QUESTIONS)) * 100;
+
+	// An interlude holds the number of the screen before it: it asks nothing, so it cannot be
+	// question four. The bar is not held with it, for the reason on `percent` above.
 	for (let cursor = index; cursor >= 0; cursor -= 1) {
 		const step = walk.steps[cursor];
 		if (step.kind === 'screen') {
-			return {
-				current: step.screenNumber,
-				total: walk.screenTotal,
-				percent: (step.screenNumber / (walk.screenTotal + SCREENS_AFTER_THE_QUESTIONS)) * 100
-			};
+			return { current: step.screenNumber, total: walk.screenTotal, percent };
 		}
 	}
 
@@ -124,9 +127,19 @@ export function resolveStepEntry(
 	return index >= 0 && index <= limit ? { show: true } : { show: false, redirectTo };
 }
 
-/** The step a visitor entering the flow should land on. */
-export function entryStepId(walk: Walk, submitted: boolean): string {
+/**
+ * The step a visitor entering the flow should land on.
+ *
+ * Restored answers make this the furthest step they justify, which is what "pick up where you
+ * left off" means. Without them it is the first step, because there is nothing to resume.
+ */
+export function entryStepId(walk: Walk, answers: Answers, submitted: boolean): string {
 	if (submitted) return COMPLETION_STEP_ID;
 
-	return walk.steps[0]?.id ?? COMPLETION_STEP_ID;
+	const first = walk.steps[0];
+	if (!first) return COMPLETION_STEP_ID;
+
+	const limit = reachableLimit(walk, answers);
+
+	return (walk.steps[limit] ?? walk.steps.at(-1) ?? first).id;
 }

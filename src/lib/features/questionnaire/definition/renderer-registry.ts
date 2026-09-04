@@ -3,6 +3,7 @@ import ChoiceField from '../fields/ChoiceField.svelte';
 import CommentField from '../fields/CommentField.svelte';
 import ConsentField from '../fields/ConsentField.svelte';
 import DateField from '../fields/DateField.svelte';
+import MonthInputField from '../fields/MonthInputField.svelte';
 import MultiChoiceField from '../fields/MultiChoiceField.svelte';
 import NumberInputField from '../fields/NumberInputField.svelte';
 import TextInputField from '../fields/TextInputField.svelte';
@@ -37,6 +38,7 @@ const BY_KIND: Record<QuestionKind, RegistryEntry> = {
 	text: { renderer: TextInputField, presentation: 'control' },
 	number: { renderer: NumberInputField, presentation: 'control' },
 	date: { renderer: DateField, presentation: 'control' },
+	month: { renderer: MonthInputField, presentation: 'control' },
 	comment: { renderer: CommentField, presentation: 'control' },
 	consent: { renderer: ConsentField, presentation: 'group' }
 };

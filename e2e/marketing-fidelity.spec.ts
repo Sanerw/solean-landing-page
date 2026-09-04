@@ -105,7 +105,7 @@ test('the announcement and reference hero asset render without narrow-screen ove
 	// One route into the funnel, full width, with no second CTA.
 	const primary = hero.getByRole('link', { name: 'Check your eligibility' });
 	await expect(primary).toBeVisible();
-	await expect(primary).toHaveAttribute('href', '/questionnaire');
+	await expect(primary).toHaveAttribute('href', '/en/questionnaire');
 	expect((await primary.boundingBox())?.width).toBeGreaterThan(300);
 	await expect(hero.getByRole('link', { name: 'Explore treatments' })).toBeHidden();
 
@@ -395,18 +395,18 @@ test('the mobile menu opens as the reference full-screen panel', async ({ page }
 	await expect(panel.getByText('Home', { exact: true })).toHaveCSS('font-size', '30px');
 
 	// Destinations and inert state are unchanged: Treatments and About Us promise nothing.
-	await expect(home).toHaveAttribute('href', '/');
-	// Prefixed where the others are not, and deliberately: `/learn` is a server redirect that
-	// resolves the newest article from Sanity, and it reads the language off the path. An
-	// unprefixed link would land an English reader on the German article. The rest stay bare
-	// because they render in whatever locale the client already holds.
+	//
+	// Every one of them is prefixed. The locale lives in the path and German owns the bare
+	// one, so an unprefixed internal link does not mean "this page in the reader's language",
+	// it means the German page, and following it switches the language mid-visit.
+	await expect(home).toHaveAttribute('href', '/en/');
 	await expect(panel.getByRole('link', { name: /Learn/ })).toHaveAttribute('href', '/en/learn');
 	await expect(panel.getByRole('link', { name: /Treatments/ })).toHaveCount(0);
 	await expect(panel.getByRole('link', { name: /About Us/ })).toHaveCount(0);
 
 	// The CTA reaches the funnel and closes the panel behind it.
 	const cta = panel.getByRole('link', { name: 'Check your eligibility' });
-	await expect(cta).toHaveAttribute('href', '/questionnaire');
+	await expect(cta).toHaveAttribute('href', '/en/questionnaire');
 
 	// Escape and the close button both return focus to the trigger.
 	await page.keyboard.press('Escape');

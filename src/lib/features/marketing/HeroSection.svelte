@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { localizeHref } from '$lib/paraglide/runtime';
 	import { Button } from '$lib/components/ui/button';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 	import type { Rating } from './reviews';
@@ -122,7 +123,7 @@
 
 				<div class="mt-5 flex w-full flex-col items-center justify-center gap-4 sm:w-auto sm:flex-row">
 					<Button
-						href={ROUTES.questionnaire}
+						href={localizeHref(ROUTES.questionnaire)}
 						surface="dark"
 						class="w-full rounded-full sm:w-auto"
 					>

@@ -1,7 +1,7 @@
 import AxeBuilder from '@axe-core/playwright';
 import { UI } from './ui-labels';
 import { expect, test, type Page } from '@playwright/test';
-import { walkAndSubmit, walkTo } from './answers';
+import { walkAndSubmit, walkTo, type WalkOptions } from './answers';
 import { settledPage } from './motion';
 
 /**
@@ -51,29 +51,41 @@ test('the learn article has no serious accessibility violations', async ({ page 
  * cheapest way to put every adapted primitive in front of the scanner.
  */
 /**
- * One screen per control kind, so the scan covers each renderer rather than each question.
- * Fewer entries than the model era had, because several of RxScale's pages became one screen
- * of ours: sex, date of birth and both measurements now share `about-you`.
+ * Every one of our twelve question screens, so the scan covers each one rather than each
+ * renderer. Feature 24e gave four of them a design of their own and rebuilt a fifth, and a
+ * screen nothing scans is where a heading level or an unnamed control goes unnoticed.
  *
- * `weight-related-conditions` is left out deliberately: the default walk keeps a BMI of 34,
- * so that screen never opens, and its checkboxes are the same renderer `medical-conditions`
- * already scans.
+ * The conditional ones need the answers that open them, which is what `WalkOptions` carries.
+ * `health-history` is unconditional and was simply missed before.
  */
-const QUESTION_STEPS = [
-	'about-you',
-	'your-details',
-	'medication-history',
-	'medical-conditions',
-	'eating-disorders',
-	'allergies',
-	'disclaimers'
+const QUESTION_STEPS: { id: string; options?: WalkOptions }[] = [
+	{ id: 'about-you' },
+	{ id: 'your-details' },
+	{ id: 'medication-history' },
+	{ id: 'side-effects', options: { onMedication: true } },
+	{ id: 'pregnancy', options: { gender: 'Weiblich' } },
+	{ id: 'medical-conditions' },
+	{ id: 'gallbladder', options: { hadGallstones: true } },
+	{ id: 'weight-related-conditions', options: { inTheBmiBand: true } },
+	{ id: 'health-history' },
+	{ id: 'eating-disorders' },
+	{ id: 'allergies' },
+	{ id: 'disclaimers' }
 ];
 
-for (const step of QUESTION_STEPS) {
-	test(`questionnaire ${step} has no serious accessibility violations`, async ({ page }) => {
-		await walkTo(page, step);
+for (const { id, options } of QUESTION_STEPS) {
+	test(`questionnaire ${id} has no serious accessibility violations`, async ({ page }) => {
+		await walkTo(page, id, options);
 
 		expect(await violations(page)).toEqual([]);
+	});
+
+	test(`questionnaire ${id} has exactly one h1`, async ({ page }) => {
+		// Axe reports a missing or empty `h1`, not a second one, and the screen system promotes
+		// a question's own label into the heading when the screen has no title of its own.
+		await walkTo(page, id, options);
+
+		await expect(page.getByRole('heading', { level: 1 })).toHaveCount(1);
 	});
 }
 

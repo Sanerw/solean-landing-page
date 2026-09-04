@@ -8,7 +8,7 @@
 	import { buildWalk } from '$lib/features/questionnaire/definition/screens';
 	import { entryStepId } from '$lib/features/questionnaire/definition/position';
 	import {
-		QUESTIONNAIRE_HOME_HREF,
+		questionnaireHomeHref,
 		questionnaireStepHref
 	} from '$lib/features/questionnaire/routes';
 
@@ -17,7 +17,7 @@
 	// this entry behind would make Back loop through it.
 	onMount(() => {
 		const walk = buildWalk(answerStore.answers);
-		const target = entryStepId(walk, answerStore.anamnesisUid !== null);
+		const target = entryStepId(walk, answerStore.answers, answerStore.anamnesisUid !== null);
 
 		void goto(questionnaireStepHref(target), { replaceState: true });
 	});
@@ -29,7 +29,7 @@
 	<meta name="description" content={m.meta_questionnaire()} />
 </svelte:head>
 
-<QuestionnaireShell backHref={QUESTIONNAIRE_HOME_HREF}>
+<QuestionnaireShell backHref={questionnaireHomeHref()}>
 	<div role="status" class="flex justify-center py-16">
 		<Spinner aria-hidden="true" class="size-8 text-primary" />
 		<span class="sr-only">{m.q_opening_resume()}</span>

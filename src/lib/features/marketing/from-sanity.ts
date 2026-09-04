@@ -1,3 +1,4 @@
+import { localizeHref } from '$lib/paraglide/runtime';
 import { croppedPicture, picture, type SanityPicture } from '$lib/sanity/image';
 import { plain } from '$lib/sanity/plain';
 import type { HomePage, SanityImage } from '$lib/sanity/queries';
@@ -87,6 +88,16 @@ export function resultsBandFrom(band: NonNullable<HomePage['resultsBand']>) {
 	};
 }
 
+/**
+ * An editor's path, in the reader's language. Left alone when it is not ours to localise: an
+ * absolute URL belongs to someone else's site, and an anchor stays on this page.
+ */
+function internalHref(href: string | undefined): string | undefined {
+	if (!href || !href.startsWith('/')) return href;
+
+	return localizeHref(href);
+}
+
 export function howItWorksFrom(howItWorks: NonNullable<HomePage['howItWorks']>) {
 	return {
 		title: howItWorks.title,
@@ -98,8 +109,10 @@ export function howItWorksFrom(howItWorks: NonNullable<HomePage['howItWorks']>) 
 		steps: (howItWorks.steps ?? []).map((step) => ({
 			title: step.title,
 			body: step.body,
-			// An href is logic, not prose: stega markers in it would break the link.
-			href: plain(step.href),
+			// An href is logic, not prose: stega markers in it would break the link, and an
+			// unprefixed one takes an English reader into the German funnel. Both are fixed here,
+			// at the boundary, because an editor types a bare path and cannot know about either.
+			href: internalHref(plain(step.href)),
 			linkLabel: step.linkLabel
 		}))
 	};

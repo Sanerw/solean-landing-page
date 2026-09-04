@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { localizeHref } from '$lib/paraglide/runtime';
 	import { m } from '$lib/paraglide/messages';
 	import SoleanLogo from '$lib/components/brand/SoleanLogo.svelte';
 	import { Button } from '$lib/components/ui/button';
@@ -112,7 +113,7 @@
 		<div class="flex min-w-0 items-center justify-end gap-2">
 			<LanguageSelect {surface} class="hidden sm:inline-flex" />
 			<Button
-				href={ROUTES.questionnaire}
+				href={localizeHref(ROUTES.questionnaire)}
 				surface={surface}
 				size="sm"
 				class="hidden rounded-full sm:inline-flex"
