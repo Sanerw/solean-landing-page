@@ -5,8 +5,8 @@
  * The e-mail travels because only the browser has the answers. It is a prefill, sent when the
  * questionnaire collected one, used for the one upstream call and kept nowhere.
  *
- * The chosen variant travels too, and is a request rather than an instruction: the endpoint
- * checks it against RxScale's recommendation for this anamnesis before any cart exists.
+ * The chosen variant travels too. It used to be a request the endpoint checked against
+ * RxScale's recommendation; since 2026-09-04 it is taken as sent.
  */
 
 /**
@@ -16,7 +16,6 @@
 const FAILURES = [
 	'missing-anamnesis',
 	'not-configured',
-	'not-recommended',
 	'refused',
 	'unavailable'
 ] as const;

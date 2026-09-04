@@ -7,8 +7,9 @@ import type { RequestHandler } from './$types';
  * enforced in one place and the browser keeps one stable contract, not to hide a secret:
  * there is none on this path. The browser sends only what the browser owns, which is the
  * anamnesis uid, the e-mail the visitor answered with, and the variant they chose. The
- * variant is checked against RxScale's recommendation before a cart is made, because a
- * browser naming its own merchandise is a request, not an authorisation.
+ * variant used to be checked against RxScale's recommendation before a cart was made; that
+ * check was removed on 2026-09-04 for the four seconds it cost, so the variant is taken as
+ * sent and this endpoint will build a cart for any variant in the shop.
  *
  * Neither is stored or logged here. They are used for one upstream call and forgotten.
  */
@@ -17,7 +18,6 @@ import type { RequestHandler } from './$types';
 const STATUS: Record<CheckoutFailure, number> = {
 	'missing-anamnesis': 400,
 	'not-configured': 500,
-	'not-recommended': 422,
 	refused: 422,
 	unavailable: 502
 };

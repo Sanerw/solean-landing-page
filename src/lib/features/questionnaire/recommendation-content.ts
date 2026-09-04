@@ -69,10 +69,6 @@ export function checkoutFailures(): Record<CheckoutFailure, { title: string; bod
 			title: m.fail_not_configured_title(),
 			body: m.fail_not_configured_body()
 		},
-		'not-recommended': {
-			title: m.fail_not_recommended_title(),
-			body: m.fail_not_recommended_body()
-		},
 		refused: { title: m.fail_refused_title(), body: m.fail_refused_body() },
 		unavailable: { title: m.fail_unavailable_title(), body: m.fail_unavailable_body() }
 	};

@@ -1,12 +1,11 @@
 import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
 import { ANAMNESIS_ATTRIBUTE_KEY, CHECKOUT_COUNTRY_CODE } from '$lib/config/checkout';
-import { fetchRecommendation } from '$lib/server/rxscale/recommendation';
 
 /**
- * The Shopify Storefront cart the handoff redirects to. RxScale is not called on this path at
- * all: they import the order from Shopify by webhook and read the anamnesis off the cart
- * attribute attached here.
+ * The Shopify Storefront cart the handoff redirects to. RxScale is not called on this path:
+ * they import the order from Shopify by webhook and read the anamnesis off the cart attribute
+ * attached here, and since 2026-09-04 the recommendation is not read here either.
  *
  * Server-side so validation has one home and the browser keeps one contract, not for secrecy:
  * nothing on this path is a secret.
@@ -29,7 +28,6 @@ const CART_CREATE = `
 export type CheckoutFailure =
 	| 'missing-anamnesis'
 	| 'not-configured'
-	| 'not-recommended'
 	| 'refused'
 	| 'unavailable';
 
@@ -187,37 +185,19 @@ async function postCart(storeDomain: string, input: CartInput): Promise<CartAtte
 }
 
 /**
- * Which variant this anamnesis may actually buy. The browser names one, and the browser is
- * not the authority: RxScale decides which treatments and doses a person's answers allow, so
- * the recommendation is read again here and a variant that is not in it is refused. Without
- * this the endpoint would order any variant in the shop for any uid.
+ * The variant the cart is built with: the one the browser asked for, or the configured
+ * fallback when it asked for none, which is the path a person takes when RxScale recommended
+ * nothing and the screen had no plan to offer.
  *
- * When nothing is recommended, or the recommendation cannot be reached, the configured
- * variant is the only one allowed. That keeps a person who reached the end of the
- * questionnaire from being stranded, and it is the one case where a variant is offered that
- * RxScale did not name.
+ * The recommendation used to be read again here, and a variant that was not in it refused, so
+ * the endpoint could not be used to order arbitrary merchandise. That read cost about four
+ * seconds on the click, measured against the live service on 2026-09-04, and the user chose
+ * on the same day to drop it and the check together rather than cache or sign the answer.
+ * The consequence is deliberate and stated in `project-overview.md`: this endpoint is public
+ * and will now build a cart for any variant in the shop against any anamnesis uid.
  */
-async function allowedVariant(
-	anamnesisUid: string,
-	storeDomain: string,
-	requested: string
-): Promise<{ variantId: string } | { ok: false; reason: CheckoutFailure }> {
-	const fallback = configured(env.SHOPIFY_VARIANT_ID);
-	const recommendation = await fetchRecommendation(anamnesisUid, storeDomain);
-	const offered = recommendation.ok
-		? recommendation.plans.flatMap((plan) => plan.options.map((option) => option.variantId))
-		: [];
-
-	if (offered.length === 0) {
-		return fallback ? { variantId: fallback } : { ok: false, reason: 'not-configured' };
-	}
-
-	const wanted = requested.trim();
-	if (!wanted) return { ok: false, reason: 'not-recommended' };
-
-	return offered.includes(wanted)
-		? { variantId: wanted }
-		: { ok: false, reason: 'not-recommended' };
+function cartVariant(requested: string): string | null {
+	return requested.trim() || configured(env.SHOPIFY_VARIANT_ID);
 }
 
 /**
@@ -233,10 +213,10 @@ export async function createCart(
 	if (!storeDomain) return { ok: false, reason: 'not-configured' };
 	if (!anamnesisUid.trim()) return { ok: false, reason: 'missing-anamnesis' };
 
-	const allowed = await allowedVariant(anamnesisUid, storeDomain, variantId);
-	if ('reason' in allowed) return allowed;
+	const variant = cartVariant(variantId);
+	if (!variant) return { ok: false, reason: 'not-configured' };
 
-	const input = buildCartInput({ anamnesisUid, email, variantId: allowed.variantId });
+	const input = buildCartInput({ anamnesisUid, email, variantId: variant });
 	if ('ok' in input) return input;
 
 	const attempt = await postCart(storeDomain, input);
@@ -246,7 +226,7 @@ export async function createCart(
 	// A refusal carries no cart, so the order still costs exactly one.
 	if (attempt.emailRefused && input.buyerIdentity.email) {
 		// Rebuilt rather than edited, so the retry obeys the same rules as the first attempt.
-		const retry = buildCartInput({ anamnesisUid, email: '', variantId: allowed.variantId });
+		const retry = buildCartInput({ anamnesisUid, email: '', variantId: variant });
 		if ('ok' in retry) return retry;
 
 		return (await postCart(storeDomain, retry)).result;

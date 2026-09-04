@@ -136,8 +136,6 @@
 	"fail_missing_anamnesis_body": "Eine Bestellung ohne dieses Profil käme ohne ärztlich prüfbare Angaben in der Apotheke an und wurde deshalb nicht aufgegeben. Es wurde nichts abgebucht.",
 	"fail_not_configured_title": "Bestellungen sind hier nicht möglich",
 	"fail_not_configured_body": "Diese Installation von Solean kann keine Bestellungen aufgeben. Es wurde nichts abgebucht, und deine Antworten liegen bereits ärztlich vor.",
-	"fail_not_recommended_title": "Diese Behandlung steht dir nicht zur Verfügung",
-	"fail_not_recommended_body": "Die ärztliche Prüfung deiner Antworten deckt den gewählten Plan nicht ab. Er wurde deshalb nicht bestellt und es wurde nichts abgebucht. Wähle einen der oben gezeigten Pläne.",
 	"fail_refused_title": "Deine Bestellung wurde nicht angenommen",
 	"fail_refused_body": "Der medizinische Dienst konnte für diesen Plan keine Kasse erstellen. Es wurde nichts abgebucht.",
 	"fail_unavailable_title": "Wir konnten die Kasse nicht erreichen",

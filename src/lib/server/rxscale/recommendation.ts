@@ -7,9 +7,9 @@ import type { RecommendedOption, RecommendedPlan } from '$lib/features/questionn
  * their own storefront makes the moment a submission returns, and it is what decides which
  * treatments and which doses a person may order.
  *
- * Server-side for two reasons that are not secrecy: the raw document is over a megabyte of
- * catalogue graph the browser has no use for, and the same read validates the variant the
- * browser later asks to buy.
+ * Server-side because the raw document is over a megabyte of catalogue graph the browser has
+ * no use for. It validated the variant the browser later asked to buy as well, until that
+ * check was removed on 2026-09-04.
  */
 
 export type RecommendationResult =
@@ -152,9 +152,12 @@ export function toRecommendedPlans(body: unknown, storeDomain: string): Recommen
 }
 
 /**
- * Read on entry to the recommendation screen and again on the order, because the answer is
- * RxScale's and can change between the two. Never cached: a stale verdict would offer a dose
- * a doctor has since ruled out.
+ * Read on entry to the recommendation screen, and only there since 2026-09-04: the order used
+ * to read it again to check the variant, and that second read is what made the click take
+ * about four seconds.
+ *
+ * Never cached, which now matters for one caller rather than two: a stale verdict would offer
+ * a dose a doctor has since ruled out.
  */
 export async function fetchRecommendation(
 	anamnesisUid: string,

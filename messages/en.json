@@ -136,8 +136,6 @@
 	"fail_missing_anamnesis_body": "An order without it would reach the pharmacy with nothing for a doctor to review, so it was not placed. Nothing has been charged.",
 	"fail_not_configured_title": "Ordering is not available here",
 	"fail_not_configured_body": "This installation of Solean cannot place orders. Nothing has been charged, and your answers are already with a doctor.",
-	"fail_not_recommended_title": "That treatment is not available to you",
-	"fail_not_recommended_body": "The medical review of your answers does not cover the plan you picked, so it was not ordered and nothing has been charged. Choose one of the plans shown above.",
 	"fail_refused_title": "Your order was not accepted",
 	"fail_refused_body": "The medical service could not create a checkout for this plan. Nothing has been charged.",
 	"fail_unavailable_title": "We could not reach the checkout",

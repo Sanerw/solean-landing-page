@@ -396,11 +396,18 @@ Rules that bind every feature from 9 onward:
   `GET /api/v2/anamnesis/{uid}/recommendation` returns the treatments and doses
   the answers allow, each with its Shopify variant, its price, and RxScale's own
   `pre_selected` default. Nothing is computed here and the catalogue is never
-  queried. It is read server-side: the raw document is over a megabyte of
-  catalogue graph, and the same read validates the order.
-- **The variant the browser names is a request, not an authorisation.**
-  `/api/checkout` reads the recommendation again and refuses a variant that is
-  not in it, so the endpoint cannot be used to order arbitrary merchandise.
+  queried. It is read server-side because the raw document is over a megabyte of
+  catalogue graph; it used to validate the order as well, which it no longer
+  does.
+- **The variant the browser names is taken as sent, and `/api/checkout` is
+  public.** It read the recommendation again and refused a variant that was not
+  in it until 2026-09-04, when that read was removed: it cost about four seconds
+  on the click, measured against the live service, because RxScale spends that
+  long computing the answer before sending a byte. Caching or signing the
+  allowed list were both offered and both declined. Anyone can therefore create
+  a Shopify cart for any variant in the shop against any anamnesis uid. A cart
+  is not an order: the anamnesis still rides as the order attribute, payment
+  still happens in Shopify, and RxScale still validates the submission itself.
 - `SHOPIFY_VARIANT_ID` is the fallback and only that: the plan offered when
   RxScale recommends nothing, or cannot be reached. It is a bundle Shopify
   expands into medication, treatment fee, and needles, so no fee line is ever

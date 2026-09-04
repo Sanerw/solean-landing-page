@@ -20,7 +20,6 @@ export const UI = {
 	modePrescription: 'Nur Rezept',
 	faqHeading: 'Häufige Fragen.',
 	keyTakeaways: 'Das Wichtigste in Kürze',
-	notRecommended: 'Diese Behandlung steht dir nicht zur Verfügung',
 	refused: 'Deine Bestellung wurde nicht angenommen',
 	unavailable: 'Wir konnten die Kasse nicht erreichen',
 	noPlans: 'Eine Ärztin oder ein Arzt prüft deine Antworten',

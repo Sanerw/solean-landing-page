@@ -193,18 +193,13 @@ test('the plan the visitor picks is the plan the cart is built from', async ({ p
 	expect(ordered).toBe(FIXTURE_PRESCRIPTION_VARIANT_ID);
 });
 
-test('a variant nobody recommended is refused, and no cart is made', async ({ page }) => {
-	await atRecommendation(page);
-
-	// The browser names its own merchandise, which is exactly the request the endpoint must
-	// not honour: this variant is in the shop and is not in this anamnesis's recommendation.
-	await page.route('**/api/checkout', async (route) => {
-		const body = route.request().postDataJSON() as Record<string, unknown>;
-		await route.continue({ postData: JSON.stringify({ ...body, variantId: '49703591706957' }) });
-	});
-
-	await checkoutButton(page).click();
-
-	await expect(page.getByText(UI.notRecommended)).toBeVisible();
-	await expect(page).toHaveURL('/questionnaire/complete');
-});
+/*
+ * Removed on 2026-09-04 with the check it covered: `a variant nobody recommended is refused,
+ * and no cart is made`. It routed the browser's request through a variant that is in the shop
+ * and not in this anamnesis's recommendation, and asserted the endpoint refused it.
+ *
+ * `/api/checkout` no longer reads the recommendation, so it no longer refuses anything on that
+ * ground and the assertion has nothing left to observe. The property the test protected is
+ * gone by decision, not by accident: see `project-overview.md` and the note on `cartVariant`.
+ * Restoring the check means restoring this test with it.
+ */
