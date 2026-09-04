@@ -1,6 +1,6 @@
 # Solean - Project Overview
 
-<!-- blueprint:source-hash 689a30c915f90409a1afb8b73da15a4987c483095e1a17c55dcffd9543067c98 -->
+<!-- blueprint:source-hash 64271b4a7f5b0f05d8ee6679d5885c926ced4865b4ead97189ed56e008952198 -->
 
 > The Solean front end: a marketing site and a doctor-led GLP-1 funnel that runs
 > on RxScale's Anamnesis API and hands the order to Shopify by creating a cart
@@ -21,9 +21,17 @@ will read, and the order is placed by creating a Shopify cart that carries the
 anamnesis as an order attribute, then redirecting to the checkout URL Shopify
 returns.
 
-The questionnaire UI is ours; the questionnaire content is not. Text, options,
-order, and branching come from the RxScale model at runtime, so a change in their
-Admin Tool changes the funnel without a deploy here.
+The questionnaire UI is ours; through feature 23 the questionnaire content was
+not. Text, options, order, and branching came from the RxScale model at runtime,
+so a change in their Admin Tool changed the funnel without a deploy here.
+
+**Feature 24 reverses that.** The content becomes one typed definition in this
+repository, and RxScale's model becomes the contract the answers are mapped onto:
+a committed snapshot applies their `visibleIf` and their `validators` locally, a
+contract test fails when the live document drifts from it, and their server still
+validates every submission. The property being given up is stated plainly,
+because it was the point of the old arrangement: RxScale can no longer change the
+funnel's questions without a deploy here.
 
 ## Users
 
@@ -37,7 +45,7 @@ happens inside RxScale, not on a Solean screen.
 
 ## Features
 
-Twenty-three in build-plan order. The first twenty-two are complete; 23 is
+Twenty-four in build-plan order. The first twenty-three are complete; 24 is
 next.
 
 1. **Design system and core UI components** (done) - semantic tokens, two fonts,
@@ -115,7 +123,7 @@ next.
     persisted, the reminder returns someone to the start of the questionnaire,
     not to the step they left. Feature 23 replaces Brevo with Customer.io.
 
-23. **Customer.io reminder, replacing Brevo** (next) - the same reminder, moved
+23. **Customer.io reminder, replacing Brevo** (done) - the same reminder, moved
     onto Customer.io and off Brevo entirely. The seam feature 22 drew stays:
     `POST /api/reminder` takes a stage and an address, the browser half is
     untouched, and both event names keep their spelling, because a person types
@@ -125,6 +133,25 @@ next.
     identifier, because this app persists nothing it could key on instead.
     `src/lib/server/brevo/` and `BREVO_API_KEY` are deleted in the same feature,
     so the app is never wired to two mail vendors at once.
+
+24. **Own questions, mapped onto RxScale** (next) - the questionnaire's content
+    moves into this repository, built from the Pencil export at
+    `blueprint/reference/questionnaire-flow-export.html`. RxScale keeps every
+    clinical judgement and gains a new role: contract. Four sub-features, each
+    leaving the app working.
+    - **24a** the typed definition: our questions, options, screens, branching
+      and per-screen validation as data, plus the answer store. Unit tested, and
+      nothing user-facing changes yet.
+    - **24b** the contract: the committed model snapshot, the mapper into
+      RxScale's `data` shape with its reverse index, the shadow `survey-core`
+      that applies their `visibleIf` and `validators` locally, the completeness
+      guard, and the contract test against the live document. Still additive.
+    - **24c** the switch: route, screens, progress, branching and submission all
+      read the local definition, and the runtime model fetch with its entry
+      failure states is removed.
+    - **24d** the added screens and the design pass: the seven answers the export
+      never asks for, medication history rebuilt to its artboards, copy in both
+      languages, browser coverage, accessibility.
 
 Dropped to the deferred backlog with this plan change: Solean's own checkout
 (account, shipping, payment), the pricing engine, add-on selection, and the
@@ -163,7 +190,8 @@ configured, and what may travel was not re-opened.
 
 | Data | Owner | Notes |
 | --- | --- | --- |
-| Questionnaire model and theme | RxScale | SurveyJS JSON, versioned, fetched on entry to the flow, never hardcoded, never cached past the visit |
+| Questionnaire content | Solean, from feature 24 | Question text, options, order, required flags and branching, as one typed definition in the repository, in German and English. Changing a question is a deploy, deliberately |
+| RxScale model | RxScale, snapshotted here from feature 24 | The contract the answers are mapped onto. A committed copy drives their `visibleIf` and `validators` locally; the live document is read only by the contract test, which fails when the two drift. Through feature 23 this was fetched on every entry to the flow |
 | Answers in progress | Browser memory | `survey.data` in one module, never persisted. Client-side navigation between steps keeps them; a reload does not |
 | `steps[]` | Solean | Survey pages interleaved with Solean interludes. The single source of truth for position, progress, and routing |
 | Anamnesis uid | Browser memory | Returned by the submission, the key to the recommendation, and the cart's order attribute. Not persisted, so a reload after the submission cannot reach the order screen |
@@ -262,7 +290,7 @@ the checkout and order status Solean no longer builds.
 | **TypeScript strict** | Domain types and the RxScale boundary |
 | **Tailwind CSS v4** | Styling, CSS-first config, semantic tokens only |
 | **shadcn-svelte** (`luma`) | Behavior and accessibility layer, all primitives adapted |
-| **survey-core** | Headless questionnaire engine: branching, validation, the `data` shape. No SurveyJS renderer, no SurveyJS theme |
+| **survey-core** | Headless questionnaire engine: branching, validation, the `data` shape. No SurveyJS renderer, no SurveyJS theme. From feature 24 it is fed the committed snapshot and holds RxScale's rules rather than our questions |
 | **RxScale API** | Anamnesis v4 and Public API v2. Docs at `https://docs.rxscale.com`, also an MCP server |
 | **Sanity** | Editorial content. Standalone Studio in `../studio-solean`; `@sanity/sveltekit` here for the client, preview mode and Visual Editing |
 | **Customer.io** | The abandoned-questionnaire reminder, from feature 23, EU region. Server-side REST only: no tracker, no browser script |
@@ -294,6 +322,15 @@ src/lib/config/               questionnaire uid, the anamnesis attribute key, qu
 src/lib/server/shopify/       the Storefront cart client, server-only
 ```
 
+From feature 24 the questionnaire feature grows three folders, which is the whole
+shape of the pivot in one place:
+
+```
+questionnaire/definition/     our questions, options, screens, typed branching
+questionnaire/answers/        the typed answer store and our per-screen validation
+questionnaire/rxscale/        the model snapshot, the mapper, the shadow validator
+```
+
 Static marketing and editorial features consume typed content fixtures directly.
 The questionnaire owns one typed boundary per external service rather than a
 service interface per screen. No abstraction is built before something calls it.
@@ -302,7 +339,7 @@ service interface per screen. No abstraction is built before something calls it.
 
 | Call | Endpoint | Auth |
 | --- | --- | --- |
-| Fetch the questionnaire | `GET https://api.rxscale.com/api/v3-1/anamnesis/questionnaires/{uid}` | public |
+| Fetch the questionnaire model | `GET https://api.rxscale.com/api/v3-1/anamnesis/questionnaires/{uid}` | public. From feature 24 this leaves the visitor's path: only the contract test calls it |
 | Submit answers | `POST https://api.rxscale.com/api/v3-1/anamnesis/questionnaires/{uid}/submissions` | public |
 | Read the recommendation | `GET https://api.rxscale.com/api/v2/anamnesis/{anamnesisUid}/recommendation` | public |
 | Create the cart | `POST https://{store}/api/{version}/graphql.json`, `cartCreate` | Storefront token when configured |
@@ -326,13 +363,20 @@ Rules that bind every feature from 9 onward:
   because the checkout URL names the shop anyway, while `SHOPIFY_VARIANT_ID`
   stays private and is used only in `+server.ts`, so the variant stays out of
   the client bundle and validation has one home, not because it is a secret.
-- The model is the only source of question content. Nothing hardcoded, nothing
-  hidden by a condition in our code. The submission is validated server-side
-  against the current model, so hiding a required question guarantees a 400.
+- Through feature 23, the model is the only source of question content: nothing
+  hardcoded, nothing hidden by a condition in our code. **Feature 24 reverses
+  this.** The content is Solean's, in one typed definition, and RxScale's model
+  is the contract the answers are mapped onto. Their `visibleIf` and
+  `validators` still apply, from a committed snapshot and in their own wording,
+  and the submission is still validated server-side against their current model,
+  so a divergence still returns a 400. Every question of theirs that is required
+  and visible must have a mapped answer; a gap fails visibly in development
+  rather than reaching a visitor as a 400.
 - `survey-core` runs headless with `showNavigationButtons` off. Continue is gated
   on `survey.currentPage.validate(true, true)`.
-- An unmapped question type fails visibly in development and is logged in
-  production. A question is never skipped silently.
+- An unmapped question kind fails visibly in development and is logged in
+  production. A question is never skipped silently. Through feature 23 the
+  registry was keyed by RxScale's type string; from feature 24 by our own kind.
 - `_anamnesis_uid` is mandatory, exact, and set on the cart's order attributes
   alone. RxScale compares the key character for character and ignores a mismatch
   silently, so it is one constant, never assembled from parts. Order level
@@ -376,6 +420,14 @@ cart input builder (missing uid, an unconfigured variant, an absent e-mail
 answer, and the order-level placement of `_anamnesis_uid`). Component rendering and the
 RxScale calls themselves stay with the browser harness (`pnpm test:browser`), a
 walkthrough, and the build.
+
+Feature 24 adds the largest body of testable logic this project has had, and it
+is exactly the shape the gate is for: pure functions with real edge cases. In
+scope: the typed branching predicates, our per-screen validation, the mapper from
+our answers into RxScale's `data` shape at every arity (one to one, one to many,
+many to one, constant, dropped), its reverse index, the completeness guard over
+required and visible model questions, and the contract test that reads the live
+document. The screens themselves stay with the browser harness.
 
 ## Monetization
 
@@ -483,7 +535,7 @@ adapter part way through a build.
 | `SHOPIFY_VARIANT_ID` | server only | fallback only: the plan offered when RxScale recommends nothing |
 | `SHOPIFY_STOREFRONT_TOKEN` | server only, optional | sent when configured |
 | `SHOPIFY_STOREFRONT_API_VERSION` | server only, optional | defaults to `2025-01` |
-| `PUBLIC_RXSCALE_QUESTIONNAIRE_UID` | public | the questionnaire to fetch |
+| `PUBLIC_RXSCALE_QUESTIONNAIRE_UID` | public | the questionnaire the submission is filed against. From feature 24 it no longer fetches a model on the visitor's path |
 | `PUBLIC_RXSCALE_SHOP_IDENTIFIER` | public | the shop the recommendation is keyed by. The storefront hostname (`solean.com`), not the myshopify domain, which is refused |
 | `PUBLIC_SANITY_PROJECT_ID` | public | the Content Lake project, `tzq5b2my` |
 | `PUBLIC_SANITY_DATASET` | public | `production` |
@@ -545,6 +597,20 @@ Resolve each before the feature named, then re-run `/overview` if a plan changes
     RxScale confirmed it on 2026-08-31, and their line, group, order fallback is
     why. Not observed here: the live cart proves the attribute is attached and
     reads back, and only a paid order would prove the import.
+13. **How a model change reaches us, from feature 24.** The snapshot is the
+    contract, so an edit RxScale makes in their Admin Tool is invisible here
+    until the contract test runs against the live document. Open: how often it
+    runs, and whether it belongs in `pnpm test`, where an RxScale outage would
+    redden a build for a reason unrelated to the change under review. Starting
+    position is a separate command, run deliberately. Not open: a drift the test
+    catches is a deploy, and until then the funnel keeps working on the answers
+    it already maps.
+14. **Who owns the questionnaire's wording, from feature 24.** The text becomes
+    Solean's, in two languages, and it asks about a person's health. Nobody is
+    yet named as the one who signs off that a question is medically sound and
+    legally sufficient. The export is design copy, not approved clinical
+    wording; treating it as approved would be the same mistake as transcribing
+    the marketing claims. Resolve before 24d puts copy on a screen.
 
 ### The recommendation path, proven live
 
@@ -578,6 +644,15 @@ against "Question 9 of 9"; conflicting Wegovy Pill and injection copy; missing
 recurring billing terms; a delivery estimate ignoring clinical approval; copy
 naming Juniper or Voy; duplicated testimonials. Resolutions in
 `project-plan.md` section 9. The checkout and order-status inconsistencies no
-longer apply: both surfaces belong to RxScale and Shopify. Marketing medical copy
-is mock content and not approved production content; the questionnaire's medical
-content is RxScale's, not ours.
+longer apply: both surfaces belong to RxScale and Shopify.
+
+The questionnaire export at `blueprint/reference/questionnaire-flow-export.html`
+repeats the counter error in a second form, "Question 9 of 10" over nine question
+screens and "All 8 steps complete" at the end. Same resolution: the counter is
+computed from the step plan, never read off an artboard.
+
+Marketing medical copy is mock content and not approved production content. From
+feature 24 the questionnaire's wording is ours to write and ours to keep
+medically sound, which is a responsibility the fetched model used to carry. The
+clinical judgement behind it stays RxScale's: their validators decide who is
+eligible and their doctors review every submission.

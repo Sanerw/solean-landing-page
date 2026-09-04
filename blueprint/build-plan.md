@@ -42,12 +42,19 @@ Apply to every feature from 9 onward.
 - No secret is on the checkout path. The Shopify variables are read through
   `$env/dynamic/private` and used only in `+server.ts`, so the variant stays out
   of the client bundle and validation has one home, not because they are private.
-- Question text, options, order, required flags, and branching come from the
-  fetched model only. Nothing hardcoded, nothing hidden by a condition in our
-  code. The submission is validated server-side against the current model, so a
-  divergence returns 400.
+- Question text, options, order, required flags, and branching came from the
+  fetched model only through feature 23. **Feature 24 reverses this**: the
+  content is Solean's, in one typed definition, and RxScale's model becomes the
+  contract it is mapped onto. A committed snapshot of their model drives their
+  own `visibleIf` and `validators` locally, so their gates and their wording
+  still apply, and the submission is still validated server-side against their
+  current model, so a divergence returns 400. Every question of theirs that is
+  required and visible must have a mapped answer; a gap fails visibly in
+  development rather than reaching a visitor as a 400.
 - `survey-core` is a headless state engine. No SurveyJS renderer, no SurveyJS
-  theme, `showNavigationButtons` off.
+  theme, `showNavigationButtons` off. From feature 24 it runs against the
+  committed snapshot rather than a fetched document, and it holds RxScale's
+  rules rather than our questions.
 - `steps[]` is the single source of truth for position. Survey state is
   synchronised to it, never the reverse.
 - An unmapped question type fails visibly in development and is logged in
@@ -120,8 +127,9 @@ deferred until the date question proved it needed them.
 
 "Learn more" is a link or a dialog, not a tooltip by default. Not every visual
 panel needs to be a shadcn `Card`. Question types map to primitives through a
-registry keyed by the model's type, not a chain of conditionals in a screen
-component.
+registry, not a chain of conditionals in a screen component. Through feature 23
+that registry was keyed by RxScale's type string; from feature 24 it is keyed by
+our own question kind, because the question is ours.
 
 ### Component boundaries
 
@@ -456,6 +464,40 @@ claims are not approved production content.
   deleted in the same feature, so the app is never wired to two mail vendors at once.
   The campaign, its timing and its exit condition move to the Customer.io panel, and
   the Brevo automation is switched off by hand.
+
+- [ ] 24. **Own questions, mapped onto RxScale** - the questionnaire's content moves
+  into this repository. Question text, options, order, required flags and branching
+  become one typed local definition, built from the Pencil export in
+  `blueprint/reference/questionnaire-flow-export.html`, and the answers are mapped
+  into RxScale's `data` shape at submission time. RxScale stops being the source of
+  question content and becomes the contract: a snapshot of their model is committed,
+  `survey-core` runs headless against it so their own `visibleIf` and `validators`
+  still gate the walk in their own wording, and a contract test fails when the live
+  model drifts from the snapshot. Three layers of validation, each doing something
+  different: ours per screen, theirs locally from the snapshot, theirs server-side on
+  submit. The export asks 8 question screens; the model requires seven answers it
+  never asks for, so those screens are designed and built here rather than mapped
+  away. Medication history becomes a single choice, matching the model, because a
+  lossy mapping of a medical record is not acceptable. Disqualifying validators keep
+  blocking Continue inline with RxScale's own texts, and no decline screen is added.
+  What this gives up, deliberately: RxScale can no longer change the funnel's
+  questions without a deploy here.
+  - [x] 24a. **The question definition** - our questions, options, screens, typed
+    branching and per-screen validation as data, with the answer store that holds
+    them. Unit tested. The live flow still runs on the fetched model, so nothing
+    user-facing changes yet.
+  - [ ] 24b. **The RxScale contract** - the committed model snapshot, the mapper from
+    our answers into their `data` shape with its reverse index, the shadow
+    `survey-core` that applies their `visibleIf` and `validators` locally, the
+    completeness guard, and the contract test that fails on live drift. Still
+    additive.
+  - [ ] 24c. **The flow switches over** - the route, screens, progress, branching and
+    submission all read the local definition; the runtime model fetch and its entry
+    failure states are removed. Every screen renders, the added ones included.
+  - [ ] 24d. **The added screens and the design pass** - the seven answers the export
+    never asks for, given screens in the Solean design, plus medication history
+    rebuilt to its artboards, copy in German and English, browser coverage and the
+    accessibility pass.
 
 ## Testing
 
