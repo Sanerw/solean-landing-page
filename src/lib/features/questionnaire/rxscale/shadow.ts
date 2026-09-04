@@ -1,6 +1,5 @@
-import type { Model, Question } from 'survey-core';
+import { ElementFactory, Model, Question, Serializer } from 'survey-core';
 import type { Answers, QuestionId } from '../answers/types';
-import { createSurvey } from '../survey-model';
 import { ourQuestionFor, toAnamnesisData } from './mapping';
 import { SNAPSHOT_MODEL } from './snapshot';
 
@@ -18,6 +17,33 @@ import { SNAPSHOT_MODEL } from './snapshot';
  */
 
 /**
+ * RxScale's model uses their own `os-date-picker` widget, which stock survey-core does not
+ * know. An unregistered type is not merely unrendered: the engine drops the element while
+ * parsing, and `dob` is the only element on its page, so the page would leave the shadow
+ * entirely and its age validator with it.
+ *
+ * Registered as their own storefront snippet does, a plain question with no extra
+ * properties. Nothing draws it: this survey exists to be asked questions about data.
+ */
+const OS_DATE_PICKER = 'os-date-picker';
+
+class OsDatePickerQuestion extends Question {
+	getType(): string {
+		return OS_DATE_PICKER;
+	}
+}
+
+if (!Serializer.findClass(OS_DATE_PICKER)) {
+	ElementFactory.Instance.registerElement(OS_DATE_PICKER, (name) => new OsDatePickerQuestion(name));
+	Serializer.addClass(
+		OS_DATE_PICKER,
+		[],
+		() => new OsDatePickerQuestion('OS Date Picker'),
+		'question'
+	);
+}
+
+/**
  * A fresh instance per call.
  *
  * `survey-core` models are stateful: setting data attaches validation errors to questions,
@@ -26,7 +52,8 @@ import { SNAPSHOT_MODEL } from './snapshot';
  * a wrong answer, and the wrong answer is not worth any saving.
  */
 function shadowFor(answers: Answers): Model {
-	const survey = createSurvey(SNAPSHOT_MODEL);
+	const survey = new Model(SNAPSHOT_MODEL);
+	survey.showNavigationButtons = false;
 
 	// Their `visibleIf` expressions read the data, so this is what makes their branching agree
 	// with ours: the payload is the only thing the shadow ever sees.

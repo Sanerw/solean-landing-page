@@ -27,7 +27,11 @@ export const UI = {
 	projectedWeight: 'Prognostiziertes Gewicht',
 	projectionEyebrow: 'Deine Prognose',
 	motivationHeadline: 'Hier beginnt die Veränderung.',
-	cannotOpen: 'Wir können den Fragebogen nicht öffnen',
+	/** Our own validation's wording, from feature 24c. The model's used to supply this. */
+	required: 'Diese Angabe wird benötigt.',
+	outOfRange: 'Bitte überprüfe Deine Angaben.',
+	invalidDate: 'Bitte gib ein gültiges Datum an.',
+	invalidEmail: 'Bitte gib eine gültige E-Mail-Adresse ein.',
 	submissionRejected: 'Deine Antworten wurden nicht angenommen',
 	submissionFailed: 'Wir konnten deine Antworten nicht senden',
 	openMenu: 'Menü öffnen',

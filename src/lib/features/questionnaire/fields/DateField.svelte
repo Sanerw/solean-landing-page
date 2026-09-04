@@ -2,16 +2,19 @@
 	import { m } from '$lib/paraglide/messages';
 	import { today } from '@internationalized/date';
 	import { DatePicker } from '$lib/components/ui/date-picker';
-	import type { QuestionFieldProps } from '../question-registry';
+	import type { FieldProps } from '../definition/field-props';
 
-	let { controlId, invalid, describedBy, value, onchange }: QuestionFieldProps = $props();
+	let { controlId, value, onchange, invalid, describedBy }: FieldProps = $props();
+
+	const date = $derived(typeof value === 'string' ? value : '');
 
 	/**
-	 * RxScale's validator accepts visitors from their 18th birthday until the day before
-	 * their 80th. The picker mirrors that rule so impossible dates are not offered, while
-	 * SurveyJS remains the authority that validates the submitted answer.
+	 * The picker is bounded to the window RxScale accepts, so an impossible date is not
+	 * offered. It is a convenience, not the gate: their `age({dob}) < 80 && age({dob}) >= 18`
+	 * runs from the committed snapshot through `theirErrors`, and 24a's own validation
+	 * deliberately checks only that the date is real and not in the future. Anyone who reaches
+	 * an out-of-window date another way is refused by their rule, in their words.
 	 */
-	const date = $derived(typeof value === 'string' ? value : '');
 	const todayInGermany = today('Europe/Berlin');
 	const minValue = todayInGermany.subtract({ years: 80 }).add({ days: 1 });
 	const maxValue = todayInGermany.subtract({ years: 18 });
@@ -21,14 +24,14 @@
 <DatePicker
 	id={controlId}
 	value={date}
-	placeholder="DD/MM/YYYY"
-	calendarLabel={m.q_date_of_birth()}
-	openLabel={m.q_open_calendar()}
 	{minValue}
 	{maxValue}
 	{initialValue}
 	{invalid}
 	{describedBy}
+	placeholder="DD/MM/YYYY"
+	calendarLabel={m.q_date_of_birth()}
+	openLabel={m.q_open_calendar()}
 	class="w-full sm:max-w-xs"
 	onchange={(next) => onchange(next)}
 />

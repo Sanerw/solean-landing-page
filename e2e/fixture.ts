@@ -1,9 +1,13 @@
 /** Shared by the Playwright config and the specs, so the harness and the app agree. */
 export const FIXTURE_PORT = 4319;
 export const FIXTURE_UID = 'fixture-questionnaire';
-export const FIXTURE_IDENTIFIER = 'FIXTURE: trimmed MedQ recommender';
-export const FIXTURE_PAGES = 11;
-export const FIXTURE_ELEMENTS = 15;
+/**
+ * The fixture still answers the model endpoint, but from feature 24d nothing in the app calls
+ * it: the questionnaire is defined in this repository and only `pnpm check:model` reads a
+ * live document. The endpoint stays as a local stand-in for re-snapshotting; the constants
+ * that described its shape went with `questionnaire-model.spec.ts`, which tested a dev page
+ * for a model nothing fetches.
+ */
 
 /**
  * The checkout configuration the preview server runs with. Pointing the store domain at the

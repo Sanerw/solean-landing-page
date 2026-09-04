@@ -13,6 +13,9 @@ import { questionById } from './questions';
 
 export type InterludeVariant = 'projection' | 'motivation';
 
+/** The interlude ids, which are also URL segments, so the route can validate one. */
+export const INTERLUDE_VARIANTS = ['projection', 'motivation'] as const;
+
 export interface ScreenDef {
 	/** The URL segment, kebab-case, and the id progress and routing count by. */
 	readonly id: string;

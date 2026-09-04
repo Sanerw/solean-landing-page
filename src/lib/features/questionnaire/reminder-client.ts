@@ -1,5 +1,6 @@
 import { getLocale } from '$lib/paraglide/runtime';
-import { readEmail, type AnswerData } from './answers';
+import { readEmail } from './answers';
+import type { Answers } from './answers/types';
 
 /**
  * The browser half of the abandoned-questionnaire reminder. It asks Solean's own endpoint,
@@ -45,14 +46,14 @@ function signal(stage: Stage, email: string): void {
 }
 
 /**
- * Begin watching for abandonment. Called on every Continue, because the e-mail question can
- * be any step in the model and the answer only exists once its page has validated; the guard
- * above is what makes the repetition harmless.
+ * Begin watching for abandonment. Called on every Continue, because the answer only exists
+ * once the screen asking for it has validated; the guard above is what makes the repetition
+ * harmless.
  */
-export function startReminderWatch(data: AnswerData): void {
+export function startReminderWatch(answers: Answers): void {
 	if (watching) return;
 
-	const email = readEmail(data);
+	const email = readEmail(answers);
 	// The model does not require the address, and a questionnaire walked without one simply
 	// cannot be reminded. Not an error, and not a reason to keep asking.
 	if (!email) return;
@@ -66,8 +67,8 @@ export function startReminderWatch(data: AnswerData): void {
  * condition, and it also sets `QUESTIONNAIRE_COMPLETED` on the contact as a second line of
  * defence inside Customer.io.
  */
-export function endReminderWatch(data: AnswerData): void {
-	const email = readEmail(data);
+export function endReminderWatch(answers: Answers): void {
+	const email = readEmail(answers);
 	if (!email) return;
 
 	signal('submitted', email);

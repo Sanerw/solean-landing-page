@@ -48,7 +48,7 @@ test('nothing is signalled before the address has been answered', async ({ page 
 	const signals = captureReminders(page);
 
 	// `page30` is the e-mail question, left open by `walkTo`.
-	await walkTo(page, 'page30');
+	await walkTo(page, 'your-details');
 	await page.waitForTimeout(300);
 
 	expect(signals).toEqual([]);
@@ -57,12 +57,16 @@ test('nothing is signalled before the address has been answered', async ({ page 
 test('the watch starts on the step that answers the e-mail, once', async ({ page }) => {
 	const signals = captureReminders(page);
 
-	// Past the e-mail question and several steps beyond it. Continue runs the same code every
-	// time, so this is where a missing guard would show up as a signal per step.
-	await walkTo(page, 'page1');
+	// Past the e-mail question and several screens beyond it. Continue runs the same code every
+	// time, so this is where a missing guard would show up as a signal per screen.
+	//
+	// `medical-conditions` rather than a conditional screen: the default walk keeps a BMI of 34,
+	// which leaves the weight-related conditions closed, and targeting a screen the answers
+	// never open would walk the whole questionnaire and submit it.
+	await walkTo(page, 'medical-conditions');
 	await expect.poll(() => signals.length).toBe(1);
 
-	await page.getByRole('checkbox', { name: 'Knie- oder Hüftarthrose' }).click();
+	await page.getByRole('checkbox', { name: 'Keine der Genannten', exact: true }).click();
 	await page.getByRole('button', { name: UI.continue }).click();
 	await stepIsInteractive(page);
 

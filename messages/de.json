@@ -336,5 +336,7 @@
 	"qv_invalid_date": "Bitte gib ein gültiges Datum an.",
 	"qv_none_with_others": "\"Keine der Genannten\" lässt sich nicht mit einer anderen Antwort kombinieren.",
 	"qv_other_text_missing": "Bitte beschreibe, was Du mit \"Andere\" meinst.",
-	"qv_screen_has_errors": "Bitte überprüfe die markierten Angaben."
+	"qv_screen_has_errors": "Bitte überprüfe die markierten Angaben.",
+	"q_submission_incomplete_body": "Der Fragebogen ist unvollständig, deshalb haben wir nichts gesendet. Bitte wende Dich an support@solean.com.",
+	"q_submission_failed_body": "Der medizinische Dienst hat nicht geantwortet. Es wurde nichts gespeichert und nichts an einen Arzt gesendet. Deine Antworten sind noch da. Bitte versuche es gleich noch einmal."
 }

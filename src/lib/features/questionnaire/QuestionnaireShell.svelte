@@ -7,7 +7,7 @@
 	import ArrowLeftIcon from '@lucide/svelte/icons/arrow-left';
 	import XIcon from '@lucide/svelte/icons/x';
 	import { QUESTIONNAIRE_HOME_HREF } from './routes';
-	import type { QuestionnaireProgress } from './steps';
+	import type { QuestionnaireProgress } from './definition/position';
 
 	interface Props {
 		/** Absent on the resume and unknown-step screens, which have no place in the count. */

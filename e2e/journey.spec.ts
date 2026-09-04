@@ -32,50 +32,64 @@ test('a visitor walks from the landing page to the shop', async ({ page }) => {
 	await page.getByRole('link', { name: UI.checkEligibility }).first().click();
 
 	// The entry replaces itself with the first step, so Back must never land on it again.
-	await expect(page).toHaveURL('/questionnaire/page30');
+	await expect(page).toHaveURL('/questionnaire/about-you');
 	await expect(page.getByRole('button', CONTINUE)).toBeEnabled();
 
-	await answer(page, 'page30', async () => {
-		await page.getByRole('textbox').fill('walker@example.com');
-	});
-	await answer(page, 'page27', async () => {
-		await page.getByLabel('Bitte gib Deinen Vornamen an.').fill('Jonas');
-		await page.getByLabel('Bitte gib Deinen Nachnamen an.').fill('Weber');
-	});
-	await answer(page, 'page26', async () => {
+	// A female visitor with a BMI of 28.4, which opens both of the conditional screens this
+	// walk passes through.
+	await answer(page, 'about-you', async () => {
+		await page.getByRole('radio', { name: 'Weiblich', exact: true }).click();
 		await selectDateOfBirth(page);
-	});
-	await answer(page, 'page3', async () => {
-		await page.getByRole('radio', { name: 'Weiblich' }).click();
-	});
-	await answer(page, 'page4', async () => {
-		await page.getByRole('radio', { name: 'Nein' }).click();
-	});
-	await answer(page, 'page2', async () => {
-		await page.getByLabel('Größe (cm)').fill('178');
-		await page.getByLabel('Gewicht (kg)').fill('90');
+		await page.locator('#q-heightCm').fill('178');
+		await page.locator('#q-weightKg').fill('90');
 	});
 
-	// The projection reads the weight two steps back, which is the seam between a survey page
-	// and a Solean interlude.
+	// The projection reads the weight from the screen just answered, which is the seam between
+	// a question screen and a Solean interlude.
 	await passInterlude(page, 'projection');
 
-	await answer(page, 'page1', async () => {
-		await page.getByRole('checkbox', { name: 'Knie- oder Hüftarthrose' }).click();
+	await answer(page, 'weight-related-conditions', async () => {
+		await page.getByRole('checkbox', { name: 'Knie- oder Hüftarthrose', exact: true }).click();
 	});
-	await answer(page, 'page16', async () => {
-		await page.getByRole('checkbox', { name: 'Keine der Genannten' }).click();
+	await answer(page, 'your-details', async () => {
+		await page.locator('#q-firstName').fill('Jonas');
+		await page.locator('#q-lastName').fill('Weber');
+		await page.locator('#q-email').fill('walker@example.com');
+	});
+	await answer(page, 'medication-history', async () => {
+		await page.getByRole('radio', { name: 'Mounjaro', exact: true }).click();
+		await page.getByRole('radio', { name: '2,5 mg', exact: true }).click();
+		await page.locator('#q-pastMedicationDuration').fill('12');
+		await page.locator('#q-pastMedicationLastDose').fill('August 2026');
+	});
+	await answer(page, 'side-effects', async () => {
+		await page.getByRole('radio', { name: 'Ja', exact: true }).click();
+	});
+	await answer(page, 'side-effects', async () => {
+		await page.locator('#q-sideEffectsDescription').fill('Leichte Übelkeit in der ersten Woche.');
+	});
+	await answer(page, 'pregnancy', async () => {
+		await page.getByRole('checkbox', { name: 'Keine der Genannten', exact: true }).click();
+	});
+	await answer(page, 'medical-conditions', async () => {
+		await page.getByRole('checkbox', { name: 'Keine der Genannten', exact: true }).click();
+	});
+	await answer(page, 'health-history', async () => {
+		await page.getByRole('checkbox', { name: 'Keine der Genannten', exact: true }).click();
+		await page.getByRole('radio', { name: 'Nein', exact: true }).click();
+	});
+	await answer(page, 'eating-disorders', async () => {
+		await page.getByRole('radio', { name: 'Nein', exact: true }).click();
+		await page.getByRole('checkbox', { name: 'Keine der Genannten', exact: true }).click();
 	});
 	await passInterlude(page, 'motivation');
-	await answer(page, 'page18', async () => {
-		await page.getByRole('radio', { name: 'Andere' }).click();
-		await page.getByRole('textbox').fill('Metformin 500mg');
+	await answer(page, 'allergies', async () => {
+		await page.getByRole('checkbox', { name: 'Keine der Genannten', exact: true }).click();
+		await page.getByRole('radio', { name: 'Nein', exact: true }).click();
 	});
-	await answer(page, 'page22', async () => {
-		await page.getByRole('radio', { name: 'Ja' }).click();
-	});
-	await answer(page, 'page23', async () => {
-		await page.getByRole('textbox').fill('Leichte Übelkeit in der ersten Woche.');
+	await answer(page, 'disclaimers', async () => {
+		await page.getByRole('checkbox', { name: 'Bestätigen', exact: true }).click();
+		await page.getByRole('checkbox', { name: 'Ich verstehe', exact: true }).click();
 	});
 
 	// The submission happened on that last Continue, and the recommendation follows from it.
@@ -97,17 +111,19 @@ test('back from the recommendation leaves the questionnaire rather than breaking
 }) => {
 	await page.goto('/');
 	await page.getByRole('link', { name: UI.checkEligibility }).first().click();
-	await expect(page).toHaveURL('/questionnaire/page30');
+	await expect(page).toHaveURL('/questionnaire/about-you');
 
-	// One step in is enough: what is under test is where the shell's Back points once the
-	// answers are gone, not the walk itself.
-	await page.getByRole('textbox').fill('walker@example.com');
+	// One screen in is enough: what is under test is where Back points, not the walk itself.
+	await page.getByRole('radio', { name: 'Männlich', exact: true }).click();
+	await selectDateOfBirth(page);
+	await page.locator('#q-heightCm').fill('180');
+	await page.locator('#q-weightKg').fill('110');
 	await page.getByRole('button', CONTINUE).click();
-	await expect(page).toHaveURL('/questionnaire/page27');
+	await expect(page).toHaveURL('/questionnaire/projection');
 
 	// The browser's own Back, across the entry that replaced itself. It must not reappear.
 	await page.goBack();
-	await expect(page).toHaveURL('/questionnaire/page30');
+	await expect(page).toHaveURL('/questionnaire/about-you');
 	await page.goBack();
 	await expect(page).toHaveURL('/');
 });

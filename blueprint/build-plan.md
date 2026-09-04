@@ -497,7 +497,7 @@ claims are not approved production content.
     by the answer store rather than a survey-core instance. A screen component
     composes them. All of it is proven on the dev surface while the live flow keeps
     running on the fetched model, so nothing a visitor sees changes yet.
-  - [ ] 24d. **The flow switches over** - the atomic flip: the route reads the walk
+  - [x] 24d. **The flow switches over** - the atomic flip: the route reads the walk
     from our definition, the runtime model fetch and its entry failure states are
     removed, the submission goes through the mapper with the completeness guard
     ahead of it, the survey-core session and the model-driven step plan are deleted,

@@ -6,42 +6,39 @@
 	import ProjectionInterstitial from '$lib/features/questionnaire/ProjectionInterstitial.svelte';
 	import RecommendationScreen from '$lib/features/questionnaire/RecommendationScreen.svelte';
 	import QuestionnaireShell from '$lib/features/questionnaire/QuestionnaireShell.svelte';
-	import SurveyStepScreen from '$lib/features/questionnaire/SurveyStepScreen.svelte';
-	import { questionnaireSession } from '$lib/features/questionnaire/survey-state.svelte';
+	import ScreenView from '$lib/features/questionnaire/ScreenView.svelte';
+	import SubmissionAlert from '$lib/features/questionnaire/SubmissionAlert.svelte';
+	import { answerStore } from '$lib/features/questionnaire/answers/store.svelte';
 	import { analyticsConsent } from '$lib/analytics/consent.svelte';
 	import { trackAnamnesisSubmitted, trackQuestionnaireStarted } from '$lib/analytics/events';
-	import { readEmail, readWeightKg, weightStepId } from '$lib/features/questionnaire/answers';
-	import { submitAnamnesis, type AnamnesisSubmission } from '$lib/features/questionnaire/anamnesis-client';
+	import { readEmail, readWeightKg, weightScreenId } from '$lib/features/questionnaire/answers';
+	import {
+		submitAnamnesis,
+		type AnamnesisSubmission
+	} from '$lib/features/questionnaire/anamnesis-client';
 	import {
 		endReminderWatch,
 		startReminderWatch
 	} from '$lib/features/questionnaire/reminder-client';
 	import { questionnaireUid } from '$lib/config/rxscale';
+	import { buildWalk } from '$lib/features/questionnaire/definition/screens';
+	import { progressFor, resolveStepEntry } from '$lib/features/questionnaire/definition/position';
+	import { toAnamnesisData } from '$lib/features/questionnaire/rxscale/mapping';
+	import { missingRequired, theirErrors } from '$lib/features/questionnaire/rxscale/shadow';
 	import {
 		COMPLETION_STEP_ID,
-		buildStepPlan,
-		progressFor,
-		resolveStepEntry,
-		stepIdForPage
-	} from '$lib/features/questionnaire/steps';
-	import {
 		QUESTIONNAIRE_ENTRY_HREF,
 		QUESTIONNAIRE_HOME_HREF,
 		questionnaireStepHref
 	} from '$lib/features/questionnaire/routes';
+	import type { QuestionId } from '$lib/features/questionnaire/answers/types';
 	import type { PageProps } from './$types';
 
 	let { data }: PageProps = $props();
 
-	const document = $derived(data.questionnaire.ok ? data.questionnaire.document : null);
-	const survey = $derived(document ? questionnaireSession.surveyFor(document) : null);
-
-	// Recomputed on every answer: `visibleIf` decides which pages are in the plan at all.
-	const plan = $derived.by(() => {
-		questionnaireSession.revision;
-
-		return survey ? buildStepPlan(survey) : null;
-	});
+	const answers = $derived(answerStore.answers);
+	// Recomputed on every answer: the branching decides which screens are in the walk at all.
+	const walk = $derived(buildWalk(answers));
 
 	/**
 	 * The answers live in the browser, so the server can only render the screen's frame. The
@@ -53,44 +50,30 @@
 		hydrated = true;
 	});
 
-	const weightKg = $derived.by(() => {
-		questionnaireSession.revision;
-		if (!hydrated || !survey) return undefined;
-
-		return readWeightKg(survey.data);
-	});
-
+	const weightKg = $derived(hydrated ? readWeightKg(answers) : undefined);
 	const weightHref = $derived.by(() => {
-		const stepId = survey ? weightStepId(survey) : null;
+		const id = weightScreenId(answers);
 
-		return stepId ? questionnaireStepHref(stepId) : QUESTIONNAIRE_ENTRY_HREF;
+		return id ? questionnaireStepHref(id) : QUESTIONNAIRE_ENTRY_HREF;
 	});
-
 	/** Null until hydration for the weight's reason: the server holds none of the answers. */
-	const email = $derived.by(() => {
-		questionnaireSession.revision;
-		if (!hydrated || !survey) return null;
-
-		return readEmail(survey.data);
-	});
+	const email = $derived(hydrated ? readEmail(answers) : null);
 
 	/**
 	 * Which step the answers justify opening. Null until hydration, because the server has no
-	 * answers and must not decide this; the step renders as the model describes it until the
-	 * browser can say otherwise.
+	 * answers and must not decide this.
 	 */
-	const entry = $derived.by(() => {
-		questionnaireSession.revision;
-		if (!hydrated || !plan || !survey) return null;
-
-		return resolveStepEntry(
-			plan,
-			survey,
-			data.stepId,
-			questionnaireSession.anamnesisUid !== null,
-			questionnaireSession.started
-		);
-	});
+	const entry = $derived(
+		hydrated
+			? resolveStepEntry(
+					walk,
+					answers,
+					data.stepId,
+					answerStore.anamnesisUid !== null,
+					answerStore.started
+				)
+			: null
+	);
 
 	const redirecting = $derived(entry !== null && !entry.show);
 
@@ -104,11 +87,9 @@
 
 	/**
 	 * The funnel's entry. Guarded once per page load inside the event module, so walking the
-	 * steps does not re-send it and a reload legitimately starts a new session. Deferred to
-	 * hydration because the server neither has the answers nor the consent decision applied.
-	 *
-	 * Depends on the consent decision too: an advert can land someone here directly, and the
-	 * banner they then answer is the one standing between this event and being sent.
+	 * steps does not re-send it. Depends on the consent decision too: an advert can land
+	 * someone here directly, and the banner they then answer is the one standing between this
+	 * event and being sent.
 	 */
 	$effect(() => {
 		analyticsConsent.state;
@@ -116,21 +97,15 @@
 	});
 
 	const isCompletion = $derived(data.stepId === COMPLETION_STEP_ID);
-	const page = $derived(
-		survey?.pages.find((candidate) => stepIdForPage(candidate.name) === data.stepId) ?? null
-	);
+	const step = $derived(walk.steps.find((candidate) => candidate.id === data.stepId) ?? null);
+	const stepIndex = $derived(step ? walk.steps.indexOf(step) : -1);
+	const progress = $derived(progressFor(walk, data.stepId));
 
-	const planStep = $derived(plan?.steps.find((step) => step.id === data.stepId) ?? null);
-	const planIndex = $derived(plan && planStep ? plan.steps.indexOf(planStep) : -1);
-
-	// The rule itself lives with the plan, so the screen states no position of its own.
-	const progress = $derived(plan ? progressFor(plan, data.stepId) : null);
-
-	/** Position comes from the plan alone: a step outside it is never shown. */
+	/** Position comes from the walk alone: a step outside it is never shown. */
 	function neighbourHref(direction: 1 | -1): string | null {
-		if (!plan || planIndex < 0) return null;
+		if (stepIndex < 0) return null;
 
-		const neighbour = plan.steps[planIndex + direction];
+		const neighbour = walk.steps[stepIndex + direction];
 
 		return neighbour ? questionnaireStepHref(neighbour.id) : null;
 	}
@@ -140,30 +115,44 @@
 	const backHref = $derived(
 		isCompletion ? QUESTIONNAIRE_HOME_HREF : (neighbourHref(-1) ?? QUESTIONNAIRE_HOME_HREF)
 	);
-	const title = $derived(page?.questions[0]?.title?.split('\n')[0] ?? 'Questionnaire');
-
-	// The engine's own page pointer follows the plan, so `page.validate` and `survey.data`
-	// agree with what the route is showing.
-	$effect(() => {
-		if (survey && page) survey.currentPage = page;
-	});
+	const title = $derived(
+		step?.kind === 'screen' ? (step.screen.questionIds.length > 0 ? m.title_questionnaire() : '') : ''
+	);
 
 	let submitting = $state(false);
 	let submission = $state<Extract<AnamnesisSubmission, { ok: false }> | null>(null);
+	/**
+	 * RxScale's refusals, from the last Continue. Never derived: the shadow re-parses the
+	 * committed snapshot per call, so a derived would re-parse it on every keystroke, and
+	 * their rules judge complete answers anyway.
+	 */
+	let refusals = $state<Partial<Record<QuestionId, string>>>({});
+	/** Model questions our branching never asked for. A gap here is a predictable 400. */
+	let incomplete = $state<readonly string[]>([]);
+
+	function change(id: QuestionId, value: unknown): void {
+		answerStore.set(id, value as never);
+		// A refusal is about the answers that produced it, so editing any of them retires it.
+		refusals = {};
+	}
 
 	/**
-	 * The end of the plan is where the answers leave the browser. Anywhere else, continuing is
+	 * The end of the walk is where the answers leave the browser. Anywhere else, continuing is
 	 * a navigation and nothing more.
 	 */
 	async function advance(): Promise<void> {
-		// Moving off a step is what makes this session a started one, and an optional first
-		// question skipped by pressing Continue has to count.
-		questionnaireSession.markStarted();
+		// Their rules judge complete answers, so this is the only moment worth asking, and only
+		// after our own validation has passed.
+		refusals = theirErrors(answers);
+		if (step?.kind === 'screen' && step.screen.questionIds.some((id) => refusals[id])) return;
+
+		// Moving off a step is what makes this session a started one.
+		answerStore.markStarted();
 
 		// The step just validated may have been the one asking for the e-mail, so this is the
-		// earliest the address can exist. Guarded to fire once per session, and deliberately not
-		// awaited: a reminder must never hold up the walk.
-		if (survey) startReminderWatch(survey.data);
+		// earliest the address can exist. Deliberately not awaited: a reminder must never hold
+		// up the walk.
+		startReminderWatch(answers);
 
 		const next = neighbourHref(1);
 
@@ -178,20 +167,25 @@
 
 	/**
 	 * One anamnesis per session. A uid already in hand means the record exists at RxScale, and
-	 * a second submission would create a second one for the same person, so the only thing
-	 * left to do is go to it.
+	 * a second submission would create a second one for the same person.
 	 */
 	async function send(): Promise<void> {
-		if (!survey || submitting) return;
-		if (questionnaireSession.anamnesisUid !== null) {
+		if (submitting) return;
+		if (answerStore.anamnesisUid !== null) {
 			await goto(questionnaireStepHref(COMPLETION_STEP_ID));
 			return;
 		}
 
+		// The completeness guard, and the first caller 24b's `missingRequired` has ever had.
+		// A question of theirs that is required and visible but has no mapped answer means our
+		// branching and theirs disagree, and sending anyway produces a 400 nobody can act on.
+		incomplete = missingRequired(answers);
+		if (incomplete.length > 0) return;
+
 		submitting = true;
 		submission = null;
 
-		const result = await submitAnamnesis(fetch, questionnaireUid(), survey.data);
+		const result = await submitAnamnesis(fetch, questionnaireUid(), toAnamnesisData(answers));
 
 		if (!result.ok) {
 			submitting = false;
@@ -199,16 +193,13 @@
 			return;
 		}
 
-		// The recommendation is read on the screen that shows the wait, not here. Recording the
-		// uid is what makes every step resolve forward, so the route's own effect would navigate
-		// during an await anyway; leaving at once is the honest version of that.
 		submitting = false;
 		// The count is the shape of the questionnaire the branching produced, never the answers
 		// that produced it. The uid itself is deliberately not sent.
-		trackAnamnesisSubmitted(plan?.steps.filter((step) => step.kind === 'survey').length ?? 0);
-		// The record exists, so no reminder is owed. The campaign's exit condition reads this event.
-		endReminderWatch(survey.data);
-		questionnaireSession.recordSubmission(result.uid);
+		trackAnamnesisSubmitted(walk.screenTotal);
+		// The record exists, so no reminder is owed. The campaign's exit condition reads this.
+		endReminderWatch(answers);
+		answerStore.recordSubmission(result.uid);
 		await goto(questionnaireStepHref(COMPLETION_STEP_ID));
 	}
 </script>
@@ -224,36 +215,45 @@
 	backLabel={isCompletion ? m.q_home() : m.q_back()}
 >
 	{#if redirecting}
-		<!-- The same handoff as the flow's entry page, and the same reasoning. -->
 		<div role="status" class="flex justify-center py-16">
 			<Spinner aria-hidden="true" class="size-8 text-primary" />
 			<span class="sr-only">{m.q_opening_resume()}</span>
 		</div>
 	{:else}
 		<!--
-			Keyed on the step rather than on the survey page, so an interlude enters the same way
-			a question does: to the person pressing Continue they are the same gesture. The key
-			also still guarantees what the page-level one did, that a step gets a fresh component
-			rather than an old one handed new props, because a step id names exactly one page.
+			Keyed on the step, so an interlude enters the same way a question does: to the person
+			pressing Continue they are the same gesture.
 		-->
 		{#key data.stepId}
 			<div
 				class="starting:translate-y-2 starting:opacity-0 transition-[opacity,translate] duration-200 ease-out-quint motion-reduce:transition-none"
 			>
 				{#if isCompletion}
-					<!--
-						One screen, not two: the plan is chosen and ordered in the same press. A separate
-						confirmation step only asked the visitor to agree with themselves.
-					-->
-					<RecommendationScreen anamnesisUid={questionnaireSession.anamnesisUid} {email} />
-				{:else if planStep?.kind === 'interlude'}
-					{#if planStep.variant === 'motivation'}
+					<RecommendationScreen anamnesisUid={answerStore.anamnesisUid} {email} />
+				{:else if step?.kind === 'interlude'}
+					{#if step.variant === 'motivation'}
 						<MotivationInterstitial oncontinue={advance} stories={data.stories} />
-					{:else if planStep.variant === 'projection'}
+					{:else if step.variant === 'projection'}
 						<ProjectionInterstitial {weightKg} weightStepHref={weightHref} oncontinue={advance} />
 					{/if}
-				{:else if page}
-					<SurveyStepScreen {page} onvalid={advance} {submitting} {submission} />
+				{:else if step?.kind === 'screen'}
+					<ScreenView
+						screen={step.screen}
+						{answers}
+						onchange={change}
+						onvalid={advance}
+						theirErrors={refusals}
+						busy={submitting}
+						actionLabel={submitting
+							? m.q_submitting
+							: submission
+								? m.q_try_again
+								: m.q_continue}
+					>
+						{#snippet beforeAction()}
+							<SubmissionAlert {submission} {incomplete} />
+						{/snippet}
+					</ScreenView>
 				{/if}
 			</div>
 		{/key}

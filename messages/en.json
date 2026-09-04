@@ -336,5 +336,7 @@
 	"qv_invalid_date": "Please enter a valid date.",
 	"qv_none_with_others": "\"None of the above\" cannot be combined with another answer.",
 	"qv_other_text_missing": "Please describe what you mean by \"Other\".",
-	"qv_screen_has_errors": "Please check the highlighted answers."
+	"qv_screen_has_errors": "Please check the highlighted answers.",
+	"q_submission_incomplete_body": "The questionnaire is incomplete, so nothing was sent. Please contact support@solean.com.",
+	"q_submission_failed_body": "The medical service did not answer, so nothing was saved and nothing was sent to a doctor. Your answers are still here. Try again in a moment."
 }

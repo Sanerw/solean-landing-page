@@ -16,6 +16,7 @@ import { emptyAnswers, type Answers, type QuestionId } from './types';
 class AnswerStore {
 	#answers = $state(emptyAnswers());
 	#started = $state(false);
+	#anamnesisUid = $state<string | null>(null);
 
 	get answers(): Answers {
 		return this.#answers;
@@ -48,6 +49,18 @@ class AnswerStore {
 		this.#answers[id] = value;
 	}
 
+	/**
+	 * The submitted anamnesis. Its presence is what ends the questionnaire: the record exists
+	 * at RxScale, a doctor will read it, and nothing on this side can amend or replace it.
+	 */
+	get anamnesisUid(): string | null {
+		return this.#anamnesisUid;
+	}
+
+	recordSubmission(uid: string): void {
+		this.#anamnesisUid = uid;
+	}
+
 	markStarted(): void {
 		this.#started = true;
 	}
@@ -56,6 +69,7 @@ class AnswerStore {
 	reset(): void {
 		this.#answers = emptyAnswers();
 		this.#started = false;
+		this.#anamnesisUid = null;
 	}
 }
 

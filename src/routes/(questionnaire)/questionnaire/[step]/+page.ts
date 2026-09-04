@@ -1,30 +1,21 @@
 import { error } from '@sveltejs/kit';
-import { COMPLETION_STEP_ID, INTERLUDES, stepIdForPage } from '$lib/features/questionnaire/steps';
+import { COMPLETION_STEP_ID } from '$lib/features/questionnaire/routes';
+import { SCREENS, INTERLUDE_VARIANTS } from '$lib/features/questionnaire/definition/screens';
 import type { PageLoad } from './$types';
 
 /**
- * The server knows the model but not the answers, so all it can decide is whether the
- * document has a page with this id. Which steps are currently reachable depends on
- * `survey.data`, which exists only in the browser, so the component owns position.
+ * Whether this address names a step of the questionnaire at all.
+ *
+ * That is all the server can decide. Which steps a visitor may currently open depends on
+ * their answers, and the answers live only in the browser, so position is the component's.
  */
-export const load: PageLoad = async ({ params, parent }) => {
-	const { questionnaire } = await parent();
+export const load: PageLoad = async ({ params }) => {
+	const known =
+		SCREENS.some((screen) => screen.id === params.step) ||
+		INTERLUDE_VARIANTS.includes(params.step as (typeof INTERLUDE_VARIANTS)[number]) ||
+		params.step === COMPLETION_STEP_ID;
 
-	// The layout renders the failure state instead of this page, so there is nothing to check.
-	if (!questionnaire.ok) return { stepId: params.step };
-
-	const isKnownPage = questionnaire.document.model.pages.some((page) => {
-		if (typeof page !== 'object' || page === null) return false;
-		const name = (page as { name?: unknown }).name;
-
-		return typeof name === 'string' && stepIdForPage(name) === params.step;
-	});
-
-	const isInterlude = INTERLUDES.some((placement) => placement.variant === params.step);
-
-	if (!isKnownPage && !isInterlude && params.step !== COMPLETION_STEP_ID) {
-		error(404, 'That questionnaire step does not exist.');
-	}
+	if (!known) error(404, 'That questionnaire step does not exist.');
 
 	return { stepId: params.step };
 };

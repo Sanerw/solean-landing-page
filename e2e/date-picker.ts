@@ -3,7 +3,7 @@ import { UI } from './ui-labels';
 
 /** The field itself, which is a text input a visitor can type a date straight into. */
 export function dateOfBirthField(page: Page) {
-	return page.getByLabel('Bitte gib Dein Geburtsdatum an');
+	return page.locator('#q-dateOfBirth');
 }
 
 /** Opens the calendar, which hangs off its own icon now that the field takes typing. */

@@ -185,7 +185,7 @@ test('a questionnaire step is never sent as a page view', async ({ page }) => {
 	await awaitEvent(traffic, 'page_viewed');
 
 	await page.goto('/questionnaire');
-	await expect(page).toHaveURL(/\/questionnaire\/page\d+/);
+	await expect(page).toHaveURL(/\/questionnaire\/[a-z-]+/);
 	await page.waitForTimeout(500);
 
 	// Which steps a person is shown is decided by the model's branching, so a step path is
@@ -243,11 +243,11 @@ test('a heatmap click on a medical question carries no answer wording', async ({
 	// click landing before one would simply not be sent. The walk passes the date picker,
 	// which is the portalled surface a class on the shell alone did not cover.
 	const recorded = traffic.recorder.length;
-	await walkTo(page, 'page1');
+	await walkTo(page, 'medical-conditions');
 	await expect.poll(() => traffic.recorder.length, FLUSH).toBeGreaterThan(recorded);
 
 	// A checkbox whose label is a diagnosis, which is the worst case rather than a typical one.
-	await page.getByRole('checkbox', { name: 'Knie- oder H\u00fcftarthrose' }).click();
+	await page.getByRole('checkbox', { name: 'Nierenerkrankung', exact: true }).click();
 	await awaitEvent(traffic, '$mp_click');
 
 	const onQuestionnaire = traffic.events.filter((entry) =>

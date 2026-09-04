@@ -1,6 +1,7 @@
 import { expect, test, type Page } from '@playwright/test';
 import { UI } from './ui-labels';
 import { stepIsInteractive, walkAndSubmit, walkTo } from './answers';
+import { selectDateOfBirth } from './date-picker';
 
 /**
  * What holds the walk together around the questions: answers that live for exactly as long
@@ -8,8 +9,8 @@ import { stepIsInteractive, walkAndSubmit, walkTo } from './answers';
  * are in.
  */
 
-const firstName = (page: Page) => page.getByLabel('Bitte gib Deinen Vornamen an.');
-const surname = (page: Page) => page.getByLabel('Bitte gib Deinen Nachnamen an.');
+const firstName = (page: Page) => page.locator('#q-firstName');
+const surname = (page: Page) => page.locator('#q-lastName');
 
 /** Every key this app could be writing. The assertion is that it writes none of them. */
 function soleanKeys(page: Page): Promise<string[]> {
@@ -19,58 +20,64 @@ function soleanKeys(page: Page): Promise<string[]> {
 }
 
 test('nothing a visitor answers is written down', async ({ page }) => {
-	await walkTo(page, 'page27');
+	await walkTo(page, 'your-details');
 	await firstName(page).fill('Jonas');
 	await surname(page).fill('Weber');
+	// Required from feature 24a, unlike RxScale's own e-mail question, so the screen does not
+	// advance without it.
+	await page.locator('#q-email').fill('jonas@example.com');
 
 	// Answered, and still nothing stored. These are real medical answers, and the guarantee is
 	// that they exist in the page and in the submission, nowhere else.
 	expect(await soleanKeys(page)).toEqual([]);
 
 	await page.getByRole('button', { name: UI.continue }).click();
-	await expect(page).toHaveURL('/questionnaire/page26');
+	await expect(page).toHaveURL('/questionnaire/medication-history');
 	expect(await soleanKeys(page)).toEqual([]);
 });
 
 test('a refresh starts the questionnaire over', async ({ page }) => {
-	await walkTo(page, 'page16');
+	await walkTo(page, 'allergies');
 
 	await page.reload();
 
-	// Back to the beginning with the answers gone. The first question asks for an e-mail and
-	// requires nothing, and a fresh load still starts there: skipping it would look like the
-	// questionnaire had dropped a question.
-	await expect(page).toHaveURL('/questionnaire/page30');
+	// Back to the beginning with the answers gone.
+	await expect(page).toHaveURL('/questionnaire/about-you');
 	await stepIsInteractive(page);
-	// The walk answered this one on the way through, and the answer is not here any more.
-	await expect(page.getByRole('textbox')).toHaveValue('');
+	// The walk answered these on the way through, and they are not here any more.
+	await expect(page.locator('#q-heightCm')).toHaveValue('');
+	await expect(page.locator('#q-weightKg')).toHaveValue('');
 });
 
 test('a step the answers do not reach sends you to the one they do', async ({ page }) => {
-	await page.goto('/questionnaire/page23');
+	await page.goto('/questionnaire/side-effects');
 
 	// An empty session reaches exactly one step: the first.
-	await expect(page).toHaveURL('/questionnaire/page30');
+	await expect(page).toHaveURL('/questionnaire/about-you');
 	await stepIsInteractive(page);
 });
 
 test('the completion screen is not a place you can jump to', async ({ page }) => {
 	await page.goto('/questionnaire/complete');
 
-	await expect(page).toHaveURL('/questionnaire/page30');
+	await expect(page).toHaveURL('/questionnaire/about-you');
 });
 
 test('a step already answered can be reopened and changed', async ({ page }) => {
-	await walkTo(page, 'page2');
+	// One screen past the one being reopened, so there is something to come back from.
+	await walkTo(page, 'your-details');
 
 	// Back, the way a visitor goes back: a link, so the session the answers live in survives.
+	// The projection sits between the two screens, so this takes two presses.
 	await page.getByRole('link', { name: UI.back, exact: true }).click();
-	await expect(page).toHaveURL('/questionnaire/page3');
+	await expect(page).toHaveURL('/questionnaire/projection');
+	await page.getByRole('link', { name: UI.back, exact: true }).click();
+	await expect(page).toHaveURL('/questionnaire/about-you');
 	await stepIsInteractive(page);
 
-	await expect(page.getByRole('radio', { name: 'Männlich' })).toBeChecked();
-	await page.getByRole('radio', { name: 'Weiblich' }).click();
-	await expect(page.getByRole('radio', { name: 'Weiblich' })).toBeChecked();
+	await expect(page.getByRole('radio', { name: 'Männlich', exact: true })).toBeChecked();
+	await page.getByRole('radio', { name: 'Weiblich', exact: true }).click();
+	await expect(page.getByRole('radio', { name: 'Weiblich', exact: true })).toBeChecked();
 });
 
 /** The progress bar's accessible name, in the language the app is serving. */
@@ -85,27 +92,32 @@ async function questionLabel(page: Page): Promise<string | null> {
 }
 
 test('the progress denominator follows the branch the answers open', async ({ page }) => {
-	await walkTo(page, 'page3');
+	await walkTo(page, 'about-you');
 
-	// Eight questions is what this fixture asks before any conditional page is opened.
-	expect(await questionLabel(page)).toBe(progressLabel(4, 8));
+	// Eight screens is what the definition asks before any conditional one is opened, and
+	// `about-you` is the first of them.
+	expect(await questionLabel(page)).toBe(progressLabel(1, 8));
 
-	await page.getByRole('radio', { name: 'Weiblich' }).click();
+	// A BMI inside the 27 to 30 band, which opens the weight-related conditions screen, and a
+	// female visitor, which opens the pregnancy screen. Two more for the visitor to answer.
+	await page.getByRole('radio', { name: 'Weiblich', exact: true }).click();
+	await selectDateOfBirth(page);
+	await page.locator('#q-heightCm').fill('178');
+	await page.locator('#q-weightKg').fill('90');
 	await page.getByRole('button', { name: UI.continue }).click();
 
-	// The pregnancy question is now one of them, and it is the visitor's to answer.
-	await expect(page).toHaveURL('/questionnaire/page4');
-	expect(await questionLabel(page)).toBe(progressLabel(5, 9));
+	await expect(page).toHaveURL('/questionnaire/projection');
+	expect(await questionLabel(page)).toBe(progressLabel(1, 10));
 });
 
 test('the completion screen reads the whole questionnaire as done', async ({ page }) => {
 	await walkAndSubmit(page);
 
 	await expect(page.getByRole('heading', { level: 1 })).toHaveText(UI.chooseTreatment);
-	// Ten, because the walk answers "Andere" to the medication question, and that opens the
-	// side-effects pages behind it. The denominator is the branch actually walked, not a fixed
-	// length the model does not have.
+	// Eight, which is the branch this walk actually opens: a male visitor with a BMI of 34 who
+	// has never taken anything sees none of the four conditional screens. The denominator is
+	// the walk, not a fixed length the definition does not have.
 	await expect
 		.poll(() => page.locator(`[aria-label^="${UI.progressPrefix}"]`).first().getAttribute('aria-label'))
-		.toBe(progressLabel(10, 10));
+		.toBe(progressLabel(8, 8));
 });

@@ -50,7 +50,24 @@ test('the learn article has no serious accessibility violations', async ({ page 
  * The fixture model carries one page per question type by construction, so walking it is the
  * cheapest way to put every adapted primitive in front of the scanner.
  */
-const QUESTION_STEPS = ['page30', 'page27', 'page26', 'page3', 'page2', 'page1', 'page16', 'page18'];
+/**
+ * One screen per control kind, so the scan covers each renderer rather than each question.
+ * Fewer entries than the model era had, because several of RxScale's pages became one screen
+ * of ours: sex, date of birth and both measurements now share `about-you`.
+ *
+ * `weight-related-conditions` is left out deliberately: the default walk keeps a BMI of 34,
+ * so that screen never opens, and its checkboxes are the same renderer `medical-conditions`
+ * already scans.
+ */
+const QUESTION_STEPS = [
+	'about-you',
+	'your-details',
+	'medication-history',
+	'medical-conditions',
+	'eating-disorders',
+	'allergies',
+	'disclaimers'
+];
 
 for (const step of QUESTION_STEPS) {
 	test(`questionnaire ${step} has no serious accessibility violations`, async ({ page }) => {

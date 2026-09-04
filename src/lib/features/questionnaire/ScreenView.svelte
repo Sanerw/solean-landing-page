@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { Snippet } from 'svelte';
 	import { m } from '$lib/paraglide/messages';
 	import { Button } from '$lib/components/ui/button';
 	import {
@@ -16,7 +17,7 @@
 	import { optionsFor } from './definition/kinds';
 	import { rendererFor } from './definition/renderer-registry';
 	import { visibleQuestions, type ScreenDef } from './definition/screens';
-	import UnsupportedKind from './fields2/UnsupportedKind.svelte';
+	import UnsupportedKind from './fields/UnsupportedKind.svelte';
 
 	interface Props {
 		screen: ScreenDef;
@@ -32,9 +33,26 @@
 		 */
 		theirErrors?: Partial<Record<QuestionId, string>>;
 		busy?: boolean;
+		/** Rendered between the questions and the action: the submission's own failures. */
+		beforeAction?: Snippet;
+		/**
+		 * The action's wording. The route overrides it after a failed submission, where the
+		 * press is a retry rather than a step forward; the screen itself has no idea a
+		 * submission exists.
+		 */
+		actionLabel?: () => string;
 	}
 
-	let { screen, answers, onchange, onvalid, theirErrors = {}, busy = false }: Props = $props();
+	let {
+		screen,
+		answers,
+		onchange,
+		onvalid,
+		theirErrors = {},
+		busy = false,
+		beforeAction,
+		actionLabel = m.q_continue
+	}: Props = $props();
 
 	/** Errors appear on submit, not while someone is still typing their first answer. */
 	let submitted = $state(false);
@@ -173,8 +191,10 @@
 		</div>
 	{/each}
 
+	{@render beforeAction?.()}
+
 	<Button type="submit" size="default" class="w-full" disabled={!hydrated || busy}>
-		{m.q_continue()}
+		{actionLabel()}
 		<ArrowRightIcon aria-hidden="true" />
 	</Button>
 </form>

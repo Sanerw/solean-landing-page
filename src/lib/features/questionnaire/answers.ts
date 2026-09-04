@@ -1,48 +1,47 @@
-import type { Model } from 'survey-core';
-import { WEIGHT_QUESTION } from '$lib/config/answers';
-import { EMAIL_QUESTION_NAME } from '$lib/config/checkout';
-import { stepIdForPage } from './steps';
-
-/** `survey.data`: question name to answer, the shape the submission sends. */
-export type AnswerData = Record<string, unknown>;
+import type { Answers } from './answers/types';
+import { SCREENS, visibleScreens } from './definition/screens';
 
 /**
- * The weight in kilograms, or null when it has not been given or is not a number we can
- * project from. Pure and separate from the engine so the reading rule can be checked against
- * a plain object.
+ * Reading the few answers something other than the questionnaire needs.
  *
- * The inputs are text, so the stored value is a string: the model validates the range, not
- * the type.
+ * Through feature 23 these read `survey.data`, an untyped bag keyed by RxScale's question
+ * names. From 24d they read `Answers`, so the question name is a field and a rename is a
+ * compile error rather than a value that silently reads as absent.
  */
-export function readWeightKg(data: AnswerData): number | null {
-	const answer = data[WEIGHT_QUESTION.name];
-	if (typeof answer !== 'object' || answer === null) return null;
 
-	const raw = (answer as Record<string, unknown>)[WEIGHT_QUESTION.weightItem];
-	if (typeof raw !== 'string' && typeof raw !== 'number') return null;
+/**
+ * The weight in kilograms, or null when it has not been given or is not a number the
+ * projection could draw. The input is text, so the stored value is a string: the range is
+ * validation's business, not this function's.
+ *
+ * The comma handling matches `bmi()` in `conditions.ts` and the mapper, because a German
+ * keyboard types one and all three have to agree about what a measurement is.
+ */
+export function readWeightKg(answers: Answers): number | null {
+	const raw = answers.weightKg.replace(',', '.').trim();
+	if (raw === '') return null;
 
 	const kg = Number(raw);
 
 	return Number.isFinite(kg) && kg > 0 ? kg : null;
 }
 
-/** The step that asks for the weight, read from the model rather than configured twice. */
-export function weightStepId(survey: Model): string | null {
-	const page = survey.getQuestionByName(WEIGHT_QUESTION.name)?.page;
+/** The screen that asks for the weight, read from the definition rather than configured. */
+export function weightScreenId(answers: Answers): string | null {
+	const screen = visibleScreens(answers).find((candidate) =>
+		candidate.questionIds.includes('weightKg')
+	);
 
-	return page ? stepIdForPage(page.name) : null;
+	return screen?.id ?? SCREENS[0]?.id ?? null;
 }
 
 /**
- * The buyer's e-mail, or null when the question was skipped. The model does not require it,
- * so an order with nowhere to send a confirmation is a state this app has to handle rather
- * than one it can assume away.
+ * The buyer's e-mail, or null when it has not been typed. 24a made it required, but a caller
+ * can still be asked before the visitor has reached that screen, so absence is a state rather
+ * than an error.
  */
-export function readEmail(data: AnswerData): string | null {
-	const answer = data[EMAIL_QUESTION_NAME];
-	if (typeof answer !== 'string') return null;
-
-	const trimmed = answer.trim();
+export function readEmail(answers: Answers): string | null {
+	const trimmed = answers.email.trim();
 
 	return trimmed ? trimmed : null;
 }

@@ -13,7 +13,7 @@ import { selectDateOfBirth } from './date-picker';
 export interface WalkOptions {
 	/** The first question. A marker address is how a spec asks the fixture to fail. */
 	email?: string;
-	/** `Weiblich` opens the pregnancy page; `Männlich` skips it. */
+	/** `Weiblich` opens the pregnancy screen; `Männlich` skips it. */
 	gender?: 'Weiblich' | 'Männlich';
 }
 
@@ -26,7 +26,10 @@ const DEFAULT_EMAIL = 'jonas@example.com';
  */
 export const REFUSED_CHECKOUT = 'refused@example.com';
 export const UNREACHABLE_CHECKOUT = 'unreachable@example.com';
-/** The model asks for the address with no validators, so anyone can mistype their way here. */
+/**
+ * Our own validation refuses this before anything is sent, which is a change from the model
+ * era: RxScale asked for the address with no validators at all.
+ */
 export const MALFORMED_EMAIL = 'nicht-eine-adresse';
 
 /**
@@ -40,98 +43,107 @@ export const NO_PLANS = 'TRIGGER-NO-PLANS@example.com';
 export const NO_RECOMMENDATION = 'TRIGGER-NO-RECOMMENDATION@example.com';
 
 /**
- * The fixture's pages in the order the model shows them, each with what it takes to pass.
- * `page4` is conditional on the gender answer and so is not in the straight line; the walk
- * handles it where it can appear.
+ * Our screens, in the order the definition walks them, each with what it takes to pass.
+ *
+ * From feature 24d the questionnaire is defined in this repository, so these are our screen
+ * ids rather than RxScale's model page names, and several of theirs collapse into one of
+ * ours: the e-mail and the name share `your-details`, and the sex, date of birth and both
+ * measurements share `about-you`.
+ *
+ * The conditional screens are not on this straight line. `pregnancy` opens for a female
+ * visitor and the walk passes through it where it appears; the rest stay closed for the
+ * answers below, deliberately, so the default walk is the short one.
  */
 const STEPS: { id: string; fill?: (page: Page, options: WalkOptions) => Promise<void> }[] = [
 	{
-		id: 'page30',
+		id: 'about-you',
 		fill: async (page, options) => {
-			await page.getByRole('textbox').fill(options.email ?? DEFAULT_EMAIL);
-		}
-	},
-	{
-		id: 'page27',
-		fill: async (page) => {
-			await page.getByLabel('Bitte gib Deinen Vornamen an.').fill('Jonas');
-			await page.getByLabel('Bitte gib Deinen Nachnamen an.').fill('Weber');
-		}
-	},
-	{ id: 'page26', fill: async (page) => selectDateOfBirth(page) },
-	{
-		id: 'page3',
-		fill: async (page, options) => {
-			await page.getByRole('radio', { name: options.gender ?? 'Männlich' }).click();
-		}
-	},
-	{
-		id: 'page4',
-		fill: async (page) => {
-			await page.getByRole('radio', { name: 'Nein' }).click();
-		}
-	},
-	{
-		id: 'page2',
-		fill: async (page) => {
-			// A BMI of 28.4, which is what makes the conditions question visible.
-			await page.getByLabel('Größe (cm)').fill('178');
-			await page.getByLabel('Gewicht (kg)').fill('90');
+			await page.getByRole('radio', { name: options.gender ?? 'Männlich', exact: true }).click();
+			await selectDateOfBirth(page);
+			// A BMI of 34, above the band, so the weight-related conditions screen stays closed.
+			await page.locator('#q-heightCm').fill('180');
+			await page.locator('#q-weightKg').fill('110');
 		}
 	},
 	{ id: 'projection' },
 	{
-		id: 'page1',
-		fill: async (page) => {
-			await page.getByRole('checkbox', { name: 'Knie- oder Hüftarthrose' }).click();
+		id: 'your-details',
+		fill: async (page, options) => {
+			await page.locator('#q-firstName').fill('Jonas');
+			await page.locator('#q-lastName').fill('Weber');
+			await page.locator('#q-email').fill(options.email ?? DEFAULT_EMAIL);
 		}
 	},
 	{
-		id: 'page16',
+		id: 'medication-history',
 		fill: async (page) => {
-			await page.getByRole('checkbox', { name: 'Keine der Genannten' }).click();
+			await page.getByRole('radio', { name: 'Nein, ich nehme keines dieser Medikamente ein', exact: true }).click();
+		}
+	},
+	{
+		id: 'pregnancy',
+		fill: async (page) => {
+			await page.getByRole('checkbox', { name: 'Keine der Genannten', exact: true }).click();
+		}
+	},
+	{
+		id: 'medical-conditions',
+		fill: async (page) => {
+			await page.getByRole('checkbox', { name: 'Keine der Genannten', exact: true }).click();
+		}
+	},
+	{
+		id: 'health-history',
+		fill: async (page) => {
+			await page.getByRole('checkbox', { name: 'Keine der Genannten', exact: true }).click();
+			await page.getByRole('radio', { name: 'Nein', exact: true }).click();
+		}
+	},
+	{
+		id: 'eating-disorders',
+		fill: async (page) => {
+			await page.getByRole('radio', { name: 'Nein', exact: true }).click();
+			await page.getByRole('checkbox', { name: 'Keine der Genannten', exact: true }).click();
 		}
 	},
 	{ id: 'motivation' },
 	{
-		id: 'page18',
+		id: 'allergies',
 		fill: async (page) => {
-			await page.getByRole('radio', { name: 'Andere' }).click();
-			await page.getByRole('textbox').fill('Metformin 500mg');
+			await page.getByRole('checkbox', { name: 'Keine der Genannten', exact: true }).click();
+			await page.getByRole('radio', { name: 'Nein', exact: true }).click();
 		}
 	},
 	{
-		id: 'page22',
+		id: 'disclaimers',
 		fill: async (page) => {
-			await page.getByRole('radio', { name: 'Ja' }).click();
-		}
-	},
-	{
-		id: 'page23',
-		fill: async (page) => {
-			await page.getByRole('textbox').fill('Leichte Übelkeit in der ersten Woche.');
+			await page.getByRole('checkbox', { name: 'Bestätigen', exact: true }).click();
+			await page.getByRole('checkbox', { name: 'Ich verstehe', exact: true }).click();
 		}
 	}
 ];
 
-/** The last step, whose Continue is the submission. */
-export const LAST_STEP = 'page23';
+/** The last screen, whose Continue is the submission. */
+export const LAST_STEP = 'disclaimers';
 /** Both completion screens live here. */
 export const COMPLETE_STEP = 'complete';
 
+/** Screens only a branch opens, which the straight walk steps over when they are closed. */
+const CONDITIONAL_STEPS = new Set(['pregnancy', 'weight-related-conditions', 'side-effects', 'gallbladder']);
+
 /**
- * A step is not interactive until hydration: validation, branching and navigation all need
- * the engine. Continue being enabled is the honest signal to wait on.
+ * A step is not interactive until hydration: validation, branching and navigation are all
+ * client-side. Continue being enabled is the honest signal to wait on.
  */
 export async function stepIsInteractive(page: Page): Promise<void> {
 	await expect(page.getByRole('button', { name: UI.continue })).toBeEnabled();
 }
 
 /**
- * Answers from the first question up to `target`, which is left open and unanswered. Pass
+ * Answers from the first screen up to `target`, which is left open and unanswered. Pass
  * `complete` to walk the whole thing, which submits on the last Continue.
  *
- * Starts at `/questionnaire` rather than the first page, because that entry is itself part
+ * Starts at `/questionnaire` rather than the first screen, because that entry is itself part
  * of what a visitor goes through.
  */
 export async function walkTo(
@@ -148,9 +160,8 @@ export async function walkTo(
 			return;
 		}
 
-		// The pregnancy page only appears on one branch, and the walk passes through whichever
-		// branch the gender answer opened rather than asserting a fixed line.
-		if (step.id === 'page4' && !page.url().endsWith('/page4')) continue;
+		// A screen the answers did not open is simply not where the visitor is.
+		if (CONDITIONAL_STEPS.has(step.id) && !page.url().endsWith(`/${step.id}`)) continue;
 
 		await expect(page).toHaveURL(`/questionnaire/${step.id}`);
 		await stepIsInteractive(page);

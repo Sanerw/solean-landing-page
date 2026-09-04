@@ -5,7 +5,8 @@ import {
 	REFUSED_CHECKOUT,
 	UNREACHABLE_CHECKOUT,
 	stepIsInteractive,
-	walkAndSubmit
+	walkAndSubmit,
+	walkTo
 } from './answers';
 import { FIXTURE_PRESCRIPTION_VARIANT_ID } from './fixture';
 import { checkoutButton, choosePlan, type PlanChoice } from './recommendation';
@@ -110,22 +111,26 @@ test('a service that does not answer offers the retry, and stays where it is', a
 	await expect(page).toHaveURL('/questionnaire/complete');
 });
 
-test('an e-mail the shop refuses is dropped rather than allowed to end the order', async ({
-	page
-}) => {
+test('a malformed e-mail never reaches the shop at all', async ({ page }) => {
+	// This used to be a server rule with a browser proof: RxScale's model asked for the address
+	// with no validators, so a mistyped one travelled as far as Shopify, which refused the
+	// prefill, and the cart was built without it.
+	//
+	// From feature 24a the address is validated on the screen that asks for it, so the walk
+	// stops there and the shop is never asked. The server still drops a prefill Shopify
+	// refuses, and `cart.ts` keeps its own coverage of that; what changed is that a person can
+	// no longer get there by mistyping.
 	const calls = checkoutCalls(page);
-	await atRecommendation(page, MALFORMED_EMAIL);
+	await walkTo(page, 'your-details');
+	await page.locator('#q-firstName').fill('Jonas');
+	await page.locator('#q-lastName').fill('Weber');
+	await page.locator('#q-email').fill(MALFORMED_EMAIL);
 
-	await checkoutButton(page).click();
+	await page.getByRole('button', { name: UI.continue }).click();
 
-	await expect(page.getByRole('heading', { name: 'Fixture checkout' })).toBeVisible();
-
-	// The cart that exists was built without the prefill. That is the whole rule: the e-mail is
-	// a convenience, and Shopify asks for an address at checkout either way.
-	await expect(page.getByTestId('prefill')).toHaveText('none');
-
-	// One press, one order. The refusal carried no cart, so answering it left exactly one.
-	expect(calls).toHaveLength(1);
+	await expect(page.getByText(UI.invalidEmail)).toBeVisible();
+	await expect(page).toHaveURL('/questionnaire/your-details');
+	expect(calls).toHaveLength(0);
 });
 
 test('an answer set with no e-mail still reaches the checkout', async ({ page }) => {
@@ -154,7 +159,7 @@ test('leaving takes everything with it', async ({ page }) => {
 	// The entry starts at the first question rather than the first unanswered one, which is
 	// what an empty session should see.
 	await page.goto('/questionnaire');
-	await expect(page).toHaveURL('/questionnaire/page30');
+	await expect(page).toHaveURL('/questionnaire/about-you');
 	await stepIsInteractive(page);
 
 	const stored = await page.evaluate(() =>

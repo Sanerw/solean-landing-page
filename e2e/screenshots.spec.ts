@@ -1,6 +1,11 @@
 import { expect, test } from '@playwright/test';
 import { UI } from './ui-labels';
-import { REJECTED_SUBMISSION, UNAVAILABLE_SUBMISSION, walkTo } from './answers';
+import {
+	LAST_STEP,
+	REJECTED_SUBMISSION,
+	UNAVAILABLE_SUBMISSION,
+	walkTo
+} from './answers';
 import { openCalendar, selectDateOfBirth } from './date-picker';
 import { checkoutButton } from './recommendation';
 
@@ -14,83 +19,105 @@ import { checkoutButton } from './recommendation';
 test('capture the questionnaire screens', async ({ page }) => {
 	const shot = (name: string) => page.screenshot({ path: `screens/${name}.png`, fullPage: true });
 	// The step id as well as the button state: Continue is enabled on the screen just left
-	// behind too, so waiting on it alone would type the next answer into the previous page.
+	// behind too, so waiting on it alone would type the next answer into the previous screen.
 	const ready = async (step: string) => {
 		await expect(page).toHaveURL(`/questionnaire/${step}`);
 		await expect(page.getByRole('button', { name: UI.continue })).toBeEnabled();
 	};
 	const advance = () => page.getByRole('button', { name: UI.continue }).click();
 
+	// One capture per control kind rather than per question. From feature 24d several of
+	// RxScale's pages are one screen of ours, so the sex, the date of birth and both
+	// measurements are photographed together on `about-you` instead of one at a time.
 	await page.goto('/questionnaire');
-	await ready('page30');
-	await shot('01-text-and-notice');
-	await advance();
+	await ready('about-you');
+	await shot('01-about-you-empty');
 
-	await ready('page27');
-	await page.getByLabel('Bitte gib Deinen Vornamen an.').fill('Jonas');
-	await page.getByLabel('Bitte gib Deinen Nachnamen an.').fill('Weber');
-	await shot('02-short-text');
-	await advance();
-
-	await ready('page26');
 	await openCalendar(page);
 	await expect(page.locator('[data-slot="popover-content"]')).toHaveCSS('opacity', '1');
-	await shot('03-date-picker-open');
+	await shot('02-date-picker-open');
 	await page.keyboard.press('Escape');
+
 	await selectDateOfBirth(page);
-	await shot('03-date-of-birth');
+	await page.getByRole('radio', { name: 'Weiblich', exact: true }).click();
+	// A BMI between 27 and 30, which is what the weight-related conditions screen is behind.
+	await page.locator('#q-heightCm').fill('178');
+	await page.locator('#q-weightKg').fill('90');
+	await shot('03-about-you-answered');
 	await advance();
 
-	await ready('page3');
-	await page.getByRole('radio', { name: 'Weiblich' }).click();
-	await shot('04-single-choice');
-	await advance();
-
-	// The branch the answer above opens.
-	await ready('page4');
-	await page.getByRole('radio', { name: 'Nein' }).click();
-	await shot('05-conditional-question');
-	await advance();
-
-	await ready('page2');
-	// A BMI between 27 and 30, which is what the conditions question below is behind.
-	await page.getByLabel('Größe (cm)').fill('178');
-	await page.getByLabel('Gewicht (kg)').fill('90');
-	await shot('06-composite-input');
-	await advance();
-
-	// Solean's own screens, both drawn from what has been answered by the time they appear.
+	// Solean's own screen, drawn from what has been answered by the time it appears.
 	await expect(page).toHaveURL('/questionnaire/projection');
-	await shot('07-projection');
+	await shot('04-projection');
 	await advance();
 
-	await ready('page1');
-	await page.getByRole('checkbox', { name: 'Knie- oder Hüftarthrose' }).click();
-	await shot('08-multiple-choice');
+	await ready('weight-related-conditions');
+	await page.getByRole('checkbox', { name: 'Knie- oder Hüftarthrose', exact: true }).click();
+	await shot('05-multiple-choice');
 	await advance();
 
-	await ready('page16');
-	await page.getByRole('checkbox', { name: 'Keine der Genannten' }).click();
-	await shot('09-allergies');
+	await ready('your-details');
+	await page.locator('#q-firstName').fill('Jonas');
+	await page.locator('#q-lastName').fill('Weber');
+	await page.locator('#q-email').fill('jonas@example.com');
+	await shot('06-text-inputs');
+	await advance();
+
+	// Mounjaro rather than "Andere": only a medication RxScale tracks a dose for opens the
+	// dose question and the side-effect screen after it.
+	await ready('medication-history');
+	await page.getByRole('radio', { name: 'Mounjaro', exact: true }).click();
+	await page.getByRole('radio', { name: '2,5 mg', exact: true }).click();
+	await page.locator('#q-pastMedicationDuration').fill('12');
+	await page.locator('#q-pastMedicationLastDose').fill('August 2026');
+	await shot('07-dependent-options');
+	await advance();
+
+	await ready('side-effects');
+	await page.getByRole('radio', { name: 'Ja', exact: true }).click();
+	await advance();
+
+	await ready('side-effects');
+	await page.locator('#q-sideEffectsDescription').fill('Leichte Übelkeit in der ersten Woche.');
+	await shot('08-long-free-text');
+	await advance();
+
+	await ready('pregnancy');
+	await page.getByRole('checkbox', { name: 'Keine der Genannten', exact: true }).click();
+	await shot('09-conditional-screen');
+	await advance();
+
+	// The free text an "other" reveals, captured where the default walk actually passes one.
+	await ready('medical-conditions');
+	await page.getByRole('checkbox', { name: 'Andere', exact: true }).click();
+	await page.locator('#q-diseases-other-text').fill('Sarkoidose');
+	await shot('09b-other-free-text');
+	await advance();
+
+	await ready('health-history');
+	await page.getByRole('checkbox', { name: 'Keine der Genannten', exact: true }).click();
+	await page.getByRole('radio', { name: 'Nein', exact: true }).click();
+	await advance();
+
+	await ready('eating-disorders');
+	await page.getByRole('radio', { name: 'Nein', exact: true }).click();
+	await page.getByRole('checkbox', { name: 'Keine der Genannten', exact: true }).click();
 	await advance();
 
 	await expect(page).toHaveURL('/questionnaire/motivation');
 	await shot('10-motivation');
 	await advance();
 
-	await ready('page18');
-	await page.getByRole('radio', { name: 'Andere' }).click();
-	await page.getByRole('textbox').fill('Metformin 500mg');
-	await shot('11-other-free-text');
+	await ready('allergies');
+	await page.getByRole('checkbox', { name: 'Keine der Genannten', exact: true }).click();
+	await page.getByRole('radio', { name: 'Nein', exact: true }).click();
+	await shot('11-allergies');
 	await advance();
 
-	await ready('page22');
-	await page.getByRole('radio', { name: 'Ja' }).click();
-	await advance();
-
-	await ready('page23');
-	await page.getByRole('textbox').fill('Leichte Übelkeit in der ersten Woche.');
-	await shot('12-long-free-text');
+	await ready('disclaimers');
+	await page.getByRole('checkbox', { name: 'Bestätigen', exact: true }).click();
+	await page.getByRole('checkbox', { name: 'Ich verstehe', exact: true }).click();
+	await shot('12-consent');
 	await advance();
 
 	await expect(page).toHaveURL('/questionnaire/complete');
@@ -102,7 +129,6 @@ test('capture the questionnaire screens', async ({ page }) => {
 	await page.getByRole('tab', { name: UI.modePrescription }).click();
 	await shot('13b-recommendation-prescriptions');
 	await page.getByRole('tab', { name: UI.modeTreatment }).click();
-
 });
 
 /**
@@ -116,10 +142,15 @@ test('capture the submission failures', async ({ page }) => {
 		[REJECTED_SUBMISSION, '15-submission-rejected'],
 		[UNAVAILABLE_SUBMISSION, '16-submission-unavailable']
 	] as const) {
-		// The marker rides in the last question's free text: the walk cannot be rewound to an
-		// earlier answer without reloading, and reloading now starts the questionnaire over.
-		await walkTo(page, 'page23');
-		await page.getByRole('textbox').fill(marker);
+		// The marker rides in on the e-mail rather than a free text: the screen it used to use
+		// is closed for this walk, and the fixture matches the marker anywhere in the payload.
+		//
+		// Walked to the last screen and submitted by hand rather than through `COMPLETE_STEP`:
+		// the submission is meant to fail here, so the visitor stays where they were and a walk
+		// asserting it reached the end would fail with it.
+		await walkTo(page, LAST_STEP, { email: `${marker}@example.com` });
+		await page.getByRole('checkbox', { name: 'Bestätigen', exact: true }).click();
+		await page.getByRole('checkbox', { name: 'Ich verstehe', exact: true }).click();
 		await page.getByRole('button', { name: UI.continue }).click();
 		await expect(page.getByRole('button', { name: UI.tryAgain })).toBeVisible();
 		await shot(name);

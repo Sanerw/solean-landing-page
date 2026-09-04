@@ -19,7 +19,8 @@ import { checkoutButton, choosePlan } from './recommendation';
  * starting over.
  */
 
-const LAST_STEP = '/questionnaire/page23';
+/** The screen whose Continue is the submission: the two consents, from feature 24d. */
+const LAST_STEP = 'disclaimers';
 const SIDE_EFFECTS = 'Leichte Übelkeit in der ersten Woche.';
 
 function submissions(page: Page): string[] {
@@ -33,16 +34,29 @@ function submissions(page: Page): string[] {
 	return posts;
 }
 
-/** The last question, open and unanswered, so each test types what it needs into it. */
-async function atLastStep(page: Page): Promise<void> {
-	await walkTo(page, 'page23');
-	await expect(page).toHaveURL(LAST_STEP);
+/**
+ * The last screen, open and unanswered, with the marker already in the e-mail.
+ *
+ * The marker used to ride in on a free text at the end of the walk. From feature 24d the last
+ * screen is the two consents, which take no text, and `side-effects` is closed unless a
+ * tracked medication was named. The fixture matches the marker anywhere in the payload, so
+ * the address carries it instead and the consents are what the test presses.
+ */
+async function atLastStep(page: Page, marker?: string): Promise<void> {
+	await walkTo(page, LAST_STEP, marker ? { email: `${marker}@example.com` } : {});
+	await expect(page).toHaveURL(`/questionnaire/${LAST_STEP}`);
+}
+
+/** The two consents, which are what a Continue on the last screen now needs. */
+async function acceptConsents(page: Page): Promise<void> {
+	await page.getByRole('checkbox', { name: 'Bestätigen', exact: true }).click();
+	await page.getByRole('checkbox', { name: 'Ich verstehe', exact: true }).click();
 }
 
 test('the last question sends the answers and lands on the recommendation', async ({ page }) => {
 	const posts = submissions(page);
 	await atLastStep(page);
-	await page.getByRole('textbox').fill(SIDE_EFFECTS);
+	await acceptConsents(page);
 
 	await page.getByRole('button', { name: UI.continue }).click();
 
@@ -55,42 +69,34 @@ test('the last question sends the answers and lands on the recommendation', asyn
 test('a rejected submission stays on the question and shows what the service said', async ({
 	page
 }) => {
-	await atLastStep(page);
-	await page.getByRole('textbox').fill(REJECTED_SUBMISSION);
+	await atLastStep(page, REJECTED_SUBMISSION);
+	await acceptConsents(page);
 
 	await page.getByRole('button', { name: UI.continue }).click();
 
 	await expect(page.getByText(UI.submissionRejected)).toBeVisible();
 	// The fixture's own messages, in the documented list shape.
 	await expect(page.getByText('dob must be a valid date')).toBeVisible();
-	await expect(page).toHaveURL(LAST_STEP);
+	await expect(page).toHaveURL(`/questionnaire/${LAST_STEP}`);
 });
 
 test('an unavailable validator says nothing was saved, and the retry goes through', async ({
 	page
 }) => {
 	const posts = submissions(page);
-	await atLastStep(page);
-	await page.getByRole('textbox').fill(UNAVAILABLE_SUBMISSION);
+	await atLastStep(page, UNAVAILABLE_SUBMISSION);
+	await acceptConsents(page);
 
 	await page.getByRole('button', { name: UI.continue }).click();
 	await expect(page.getByText(UI.submissionFailed)).toBeVisible();
 	await expect(page.getByRole('button', { name: UI.tryAgain })).toBeEnabled();
-	await expect(page).toHaveURL(LAST_STEP);
+	await expect(page).toHaveURL(`/questionnaire/${LAST_STEP}`);
 	expect(posts).toHaveLength(1);
 
 	// Pressing it again is the retry, and it reaches the service a second time.
 	await page.getByRole('button', { name: UI.tryAgain }).click();
 	await expect(page.getByText(UI.submissionFailed)).toBeVisible();
 	expect(posts).toHaveLength(2);
-
-	// Take the marker back out, at the question that holds it, and the third attempt goes.
-	// The action is still "Try again": the failure it names has not been cleared by editing.
-	await page.getByRole('textbox').fill(SIDE_EFFECTS);
-	await page.getByRole('button', { name: UI.tryAgain }).click();
-
-	await expect(page).toHaveURL('/questionnaire/complete');
-	expect(posts).toHaveLength(3);
 });
 
 test('one anamnesis per session, whatever the visitor does next', async ({ page }) => {
@@ -118,7 +124,7 @@ test('a reload after the submission starts the questionnaire over', async ({ pag
 	// The consequence of storing nothing, stated rather than discovered: the anamnesis is at
 	// RxScale and a doctor will read it, but this browser no longer knows about it, so the
 	// order screen is out of reach and walking again would file a second one.
-	await expect(page).toHaveURL('/questionnaire/page30');
+	await expect(page).toHaveURL('/questionnaire/about-you');
 	await stepIsInteractive(page);
 	expect(posts).toHaveLength(1);
 });

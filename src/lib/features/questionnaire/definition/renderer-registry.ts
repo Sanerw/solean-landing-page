@@ -1,11 +1,11 @@
 import type { Component } from 'svelte';
-import ChoiceField from '../fields2/ChoiceField.svelte';
-import CommentField from '../fields2/CommentField.svelte';
-import ConsentField from '../fields2/ConsentField.svelte';
-import DateField from '../fields2/DateField.svelte';
-import MultiChoiceField from '../fields2/MultiChoiceField.svelte';
-import NumberInputField from '../fields2/NumberInputField.svelte';
-import TextInputField from '../fields2/TextInputField.svelte';
+import ChoiceField from '../fields/ChoiceField.svelte';
+import CommentField from '../fields/CommentField.svelte';
+import ConsentField from '../fields/ConsentField.svelte';
+import DateField from '../fields/DateField.svelte';
+import MultiChoiceField from '../fields/MultiChoiceField.svelte';
+import NumberInputField from '../fields/NumberInputField.svelte';
+import TextInputField from '../fields/TextInputField.svelte';
 import type { FieldProps } from './field-props';
 import type { AnyQuestion, QuestionKind } from './kinds';
 

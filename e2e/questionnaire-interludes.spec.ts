@@ -1,18 +1,25 @@
 import { expect, test, type Page } from '@playwright/test';
 import { UI } from './ui-labels';
 import { walkTo } from './answers';
+import { selectDateOfBirth } from './date-picker';
 
 /**
- * Solean's own screens between the model's questions. Unlike the questions, this content is
- * ours, so what is asserted here is our copy and our arithmetic. The projection's numbers
- * come from the model built in feature 8c applied to the weight the user actually gave.
+ * Solean's own screens between the questions. From feature 24d the questions are ours too,
+ * but the distinction still holds: an interlude asks nothing and so never moves the count.
+ * The projection's numbers come from the model built in feature 8c applied to the weight the
+ * visitor actually gave.
  */
 
+/**
+ * The weight shares a screen with the sex and the date of birth from feature 24d, so all four
+ * have to be answered before the projection can be reached.
+ */
 async function answerWeight(page: Page, sizeCm: string, weightKg: string): Promise<void> {
-	// The weight question is only reachable once the questions before it are answered.
-	await walkTo(page, 'page2');
-	await page.getByLabel('Größe (cm)').fill(sizeCm);
-	await page.getByLabel('Gewicht (kg)').fill(weightKg);
+	await walkTo(page, 'about-you');
+	await page.getByRole('radio', { name: 'Männlich', exact: true }).click();
+	await selectDateOfBirth(page);
+	await page.locator('#q-heightCm').fill(sizeCm);
+	await page.locator('#q-weightKg').fill(weightKg);
 	await page.getByRole('button', { name: UI.continue }).click();
 }
 
@@ -40,7 +47,8 @@ test('the projection does not count as a question', async ({ page }) => {
 		.first()
 		.getAttribute('aria-label');
 
-	// The weight question's own number, held rather than advanced. The total is 9 rather than
-	// the 8 the walk started with because this BMI is what makes the conditions page visible.
-	expect(label).toBe(`${UI.progressPrefix}5 von 9`);
+	// The first screen's own number, held rather than advanced. The total is 9 rather than the
+	// 8 an empty questionnaire shows, because a BMI of 28.4 opens the weight-related
+	// conditions screen that a higher one does not.
+	expect(label).toBe(`${UI.progressPrefix}1 von 9`);
 });
