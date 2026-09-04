@@ -105,6 +105,40 @@ export interface ArticleDetail extends ArticleListItem {
 	related?: { _id: string; title: string; category: string; slug: { current: string } }[];
 }
 
+/**
+ * One policy document. Addressed by id rather than filtered by slug and language, the way the
+ * home page is: the four routes each know which document they serve, so a lookup would be a
+ * query that can return the wrong one.
+ */
+export const legalPageQuery = defineQuery(`*[_id == "legalPage-" + $slug + "-" + $language][0]{
+	title,
+	slug,
+	language,
+	blocks[]{
+		_type,
+		lines[]{ spans[]{ text, bold, underline, href } },
+		items[]{ spans[]{ text, bold, underline, href } }
+	}
+}`);
+
+export interface SanityLegalSpan {
+	text: string;
+	bold?: boolean;
+	underline?: boolean;
+	href?: string;
+}
+
+export interface SanityLegalPage {
+	title: string;
+	slug: string;
+	language: string;
+	blocks?: {
+		_type: 'legalParagraph' | 'legalList';
+		lines?: { spans?: SanityLegalSpan[] }[];
+		items?: { spans?: SanityLegalSpan[] }[];
+	}[];
+}
+
 /** The announcement bar shows on every marketing page, so the layout reads it on its own. */
 export const announcementQuery = defineQuery(
 	`*[_id == "homePage-" + $language][0].announcement{

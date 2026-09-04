@@ -1,11 +1,18 @@
 <script lang="ts">
+	import { getLocale } from '$lib/paraglide/runtime';
 	import LegalPage from '$lib/features/legal/LegalPage.svelte';
-	import { TERMS } from '$lib/features/legal/content/terms';
+	import { toLegalDocument } from '$lib/features/legal/from-sanity';
+	import type { PageProps } from './$types';
+
+	let { data }: PageProps = $props();
+
+	const document = $derived(toLegalDocument(data.page));
+	const german = $derived(getLocale() === 'de');
 </script>
 
 <svelte:head>
-	<title>AGB | Solean</title>
-	<meta name="description" content="Allgemeine Geschäftsbedingungen von Solean." />
+	<title>{german ? 'AGB | Solean' : 'Terms and conditions | Solean'}</title>
+	<meta name="description" content={german ? 'Allgemeine Geschäftsbedingungen von Solean.' : 'General terms and conditions of Solean.'} />
 </svelte:head>
 
-<LegalPage document={TERMS} />
+<LegalPage {document} lang={data.page.language} />

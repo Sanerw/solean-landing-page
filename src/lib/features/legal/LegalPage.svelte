@@ -5,9 +5,11 @@
 
 	interface Props {
 		document: LegalDocument;
+		/** The document's own language, which is not always the shell's. See the article below. */
+		lang: string;
 	}
 
-	let { document }: Props = $props();
+	let { document, lang }: Props = $props();
 </script>
 
 <!--
@@ -19,11 +21,12 @@
 </div>
 
 <!--
-	`lang="de"` on the article, not on the page: the shell around it is English, and a screen
-	reader that reads German legal text with an English voice is unusable. This is the seam
-	feature 19 closes.
+	The language on the article, not on the page: it is the document's own, and the shell around
+	it is whatever locale the visitor chose. A screen reader that reads German legal text with an
+	English voice is unusable, so this stays even now that both languages exist, because a German
+	document can still be served to a reader whose shell is English.
 -->
-<article lang="de" class={[CONTAINER, 'py-12 lg:py-16']}>
+<article {lang} class={[CONTAINER, 'py-12 lg:py-16']}>
 	<div class="mx-auto max-w-3xl">
 		<h1 class="font-display text-3xl font-medium sm:text-4xl">{document.title}</h1>
 

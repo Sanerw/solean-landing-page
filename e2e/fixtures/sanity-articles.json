@@ -1231,5 +1231,5929 @@
 				"verified": true
 			}
 		]
+	},
+	"legalPages": {
+		"legal-notice-de": {
+			"title": "Impressum",
+			"slug": "legal-notice",
+			"language": "de",
+			"blocks": [
+				{
+					"_type": "legalParagraph",
+					"_key": "j02w2qqxdr",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "e3ja11k7fp",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "sto10wmj68",
+									"text": "SoLean ist ein Angebot der:"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "2oebgcatjb",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "vlq0ovon6x",
+									"text": "DTC Healthtech Solution Limited",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "lvnxu0e5tx",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "3lk5uwzdov",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "sbrtaf6rkl",
+									"text": "Lippmannstraße 8"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "ea4vgum8qs",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "bgep86ck29",
+									"text": "22769 Hamburg"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "1klldsyh83",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "41w0perggb",
+									"text": "Deutschland"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "o8scq3k9so",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "j89r5m11ir",
+									"text": "Telefon: +49 40 87709420"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "hz3k5jiddl",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "d3w2b4kfvx",
+									"text": "Kundenservice: support@solean.com"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "54gbtqo3a9",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "pgbx6q99h6",
+									"text": "Corporate Registration:"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "llb6mgqehu",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "ni6rltioz",
+									"text": "1st Floor, Behan House,"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "ugy7f833vi",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "5fxf9hz8yf",
+									"text": "10 Mount Street Lower,"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "zuv23afrea",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "ih8z325n90",
+									"text": "D02 HT71, Dublin,"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "w4pzbzu3ir",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "szkljuh9t",
+									"text": "Ireland"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "7zw5u3z9jf",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "p68lqa0igp",
+									"text": "Vertreten durch Geschäftsführer:"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "yuzzrkmz6b",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "3cloybe7ql",
+									"text": "Jan Mehner"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "l1ji0flzqu",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "i4kxaqxqj5",
+									"text": "USt-IdNr.: DE342812966"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "yijgmr520l",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "cy1xocrhdm",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "wex2kwi23l",
+									"text": "Handelsregisternummer: 681172"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "dfn3j4ypbu",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "ojoe44zdwl",
+									"text": "Companies Registration Office Ireland, Dublin"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "m933ggbvky",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "bdozqj553w",
+									"text": "Außergerichtliche Streitbeilegung: Die Europäische Kommission stellt eine Plattform für die außergerichtliche Online-Streitbeilegung (OS-Plattform) bereit, die unter "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "r0v3vhq0in",
+									"text": "www.ec.europa.eu/consumers/odr",
+									"href": "http://www.ec.europa.eu/consumers/odr"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "oqvpob99nj",
+									"text": " aufrufbar ist. Wir sind weder verpflichtet noch bereit, an dem Streitschlichtungsverfahren teilzunehmen."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "md81s9dfnp",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "cdz355f8r3",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "cf4f3h0gfq",
+									"text": "Apotheke Bad Nieuweschans"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "087dsmdhl5",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "g8clslos63",
+									"text": "Verlengde Hoofdstraat 1D,"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "6p49blt2ww",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "t1o3zz9ero",
+									"text": "9693 AB Bad Nieuweschans,"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "7nku6tq2gh",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "u630zv4b0k",
+									"text": "Niederlande"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "96rxtx5yyu",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "mkhd2l7wxs",
+									"text": "Stand: 01.03.2024"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "961ik1uqd5",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "pq1ywpz1e2",
+									"text": "*Für die Abgabe von Arzneimitteln zuständige Versandapotheke, sofern eine Zustellung nach Hause gewünscht wird."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "tvgl24vrp9",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "7bhdt36cv0",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "w3l0r3yzhk",
+									"text": "Weitere Informationen über das Unternehmen und die Dienstleistungen sind auf der Unternehmens-Website zu finden: "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "8tvp1hds0f",
+									"text": "ht-ventures.com",
+									"href": "http://ht-ventures.com/"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "73k24xtxc0",
+									"text": ". Diese Seite bietet einen umfassenden Einblick in die Mission und das Engagement für Qualität und Service."
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		"privacy-de": {
+			"title": "Datenschutzerklärung",
+			"slug": "privacy",
+			"language": "de",
+			"blocks": [
+				{
+					"_type": "legalParagraph",
+					"_key": "vk2y87vwb7",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "dl923c0dnh",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "r62imbq2bo",
+									"text": "Datenschutz",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "po3pi7usmr",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "40briwrbs3",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "tj1usf57wb",
+									"text": "Verantwortlicher",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "sh5nd7f6h9",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "t0o5nrxvb4",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "40t7akgizn",
+									"text": "Datenschutzbeauftragter",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "ybgpr5hyjk",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "3vsas9ete0",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "qjdccv4bno",
+									"text": "datenschutz@heydata.eu",
+									"href": "mailto:datenschutz@heydata.eu"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "givt4f5ltu",
+									"text": ","
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "gilxaxyfgc",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "d0afl1tjow",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "pzkfdbzwv1",
+									"text": "https://www.heydata.eu/",
+									"href": "https://www.heydata.eu/"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "her6cbogk9",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "ftetv632e2",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "4o7c3nj42a",
+									"text": "Inhalt",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "mzz4gyfrgs",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "tirpwoqp4j",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "o7wj9d6txl",
+									"text": "1. Protokollierung von Daten bei der Nutzung unseres Internet-Auftritts",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "03t6m8xgkb",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "k8tvhr0mf3",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "qieipvm30b",
+									"text": "2. Erhebung und Verwendung von personenbezogenen Daten",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "i3matk4k4e",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "mppz9eq4lt",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "rcqn00cp44",
+									"text": "3. Zweck und Rechtsgrundlage für die Verarbeitung",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "zd5m05yafg",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "ubf2haoejw",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "le4zoahh3u",
+									"text": "3.1 Anamnesebogen",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "e6bjrd9qef",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "2we4ysa287",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "b84o6e4l8x",
+									"text": "3.2 Bestellung",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "87tnnh4t2h",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "n4ysc8a1xr",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "v1tk7ako0y",
+									"text": "3.3 Datensicherheit",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "qhobqrei0t",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "cg4ugt6kev",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "v3lnsr52am",
+									"text": "3.4 Kontaktformular",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "4qlpssnx5c",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "lcdj626me6",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "7dp1ocw6h5",
+									"text": "3.5 Cookies",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "p9dm8n78h7",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "hffd8lf5d3",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "bz2s8oasjc",
+									"text": "4. Deine Rechte",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "upw0iweoq3",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "uo5fu8xij6",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "wfxk6hdjie",
+									"text": "Als Betroffener steht dir im Falle eines datenschutzrechtlichen Verstoßes ein Beschwerderecht bei der zuständigen Aufsichtsbehörde zu. Zuständige Aufsichtsbehörde bezüglich datenschutzrechtlicher Fragen ist der Datenschutzbeauftragte des Mitgliedstaates, in dem sich der Sitz unseres Unternehmens befindet. Im Falle einer gemeinsamen Datenverantwortlichkeit mit einem Arzt kannst du auch Kontakt zu der zuständigen Aufsichtsbehörde des Arztes aufnehmen. Die jeweilige Aufsichtsbehörde sitzt in dem Mitgliedsstaat, in dem der Arzt gemeldet ist und seinen Praxissitz hat. Für Irland ist dies der Data Protection Commissioner. Einzelheiten findest du unter "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "91j0xjmx9v",
+									"text": "https://dataprotection.ie/",
+									"href": "https://dataprotection.ie/"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "4b328i79s6",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "desbwkjjo6",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "h9iwjp5871",
+									"text": "Du kannst dieses Recht aber auch bei einer Aufsichtsbehörde in dem Mitgliedstaat deines Aufenthaltsorts, deines Arbeitsplatzes oder des Orts des mutmaßlichen Verstoßes geltend machen. Die Kontaktdaten der Aufsichtsbehörden in Deutschland findest du unter "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "il29wxup9c",
+									"text": "https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html",
+									"href": "https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "h2d4515hlp",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "ftdu71fkb7",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "6kpo1hh6g6",
+									"text": "5. Profiling",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "3fbkzc05aj",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "r8re66e2jr",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "1t93qxykvt",
+									"text": "6. Speicherdauer, Löschung von personenbezogenen Daten",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "jin2sqo9m2",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "zx5xo2othz",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "s9pn5zpnkw",
+									"text": "7. Datenübermittlung an Dritte",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "lvbrgjjzzz",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "3ux4olfrs2",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "oxroxlwlji",
+									"text": "8. Datenübermittlungen in Drittländer",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "5uknvndto8",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "yfxtaqjp2g",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "u5nwcr627y",
+									"text": "9. Auftragsverarbeiter",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "22zf028azh",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "59sdbko29x",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "nrgg5c305k",
+									"text": "Google (Überblick)",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "vm29b4dt4k",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "8tslciytu6",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "sdlwqdsgkz",
+									"text": "Hierbei kann auch eine Übermittlung an die Muttergesellschaft von Google erfolgen, die Google LLC in den USA. Google handelt bei der Bereitstellung der Dienste als unser "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "silm9c52mv",
+									"text": "Auftragsverarbeiter",
+									"href": "https://www.teleclinic.com/datenschutz/#anchor-datenschutz12.4"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "98nki3swd4",
+									"text": ". Ergänzende Informationen zum Datenschutz bei Google findest du in den "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "1y3udreosp",
+									"text": "Datenschutzhinweisen von Google",
+									"href": "https://policies.google.com/privacy?hl=de"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "v5ze5chcvg",
+									"text": ": https://policies.google.com/privacy?hl=de"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "cbpuwgoqfz",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "utqbzmb66p",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "vwlrmu3dw",
+									"text": "Du kannst der Erhebung bzw. Auswertung deiner Daten durch diese Tools widersprechen, indem du entweder die Einstellungen deines Browsers anpasst oder das von Google bereitgestellte Plug-In installierst ("
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "x2ootny2zk",
+									"text": "https://www.google.com/settings/ads/plugin",
+									"href": "https://www.google.com/settings/ads/plugin"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "35qna5gj78",
+									"text": ")."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "7f1t41m8ss",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "6o0w283uil",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "4nqp1dnlpq",
+									"text": "Google Analytics (Nutzungsstatistiken)",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "eesrgml06s",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "ub9gkwfitf",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "ikfkwqk70q",
+									"text": "Du kannst der Datenerfassung und Nutzung im Rahmen von Google Analytics und Universal Analytics widersprechen, indem du "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "hqer7tvm79",
+									"text": "dieses Browser-Plugin",
+									"href": "https://tools.google.com/dlpage/gaoptout?hl=de"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "apq9ko6t6a",
+									"text": " herunterlädst und installierst: "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "38j864m06w",
+									"text": "https://tools.google.com/dlpage/gaoptout?hl=de",
+									"href": "https://tools.google.com/dlpage/gaoptout?hl=de"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "2wnnuc5lhc",
+									"text": " oder deine Einwilligung dadurch widerrufst, dass du den Analyse Cookies – Schalter auf „aus“ stellst. Durch den Widerruf der Einwilligung wird die Rechtmäßigkeit der aufgrund der Einwilligung bis zum Widerruf erfolgten Verarbeitung nicht berührt."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "w4y1x5zcka",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "vyk80ky027",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "e67ly5ge25",
+									"text": "Firebase Dynamic Links (optimierte Links)",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "mlrc58cym",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "idah3aa3dc",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "n52qmwfe7h",
+									"text": "Google Ads",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "2hea4hc0ma",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "s6g0amxiwi",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "sqw3qwwtr0",
+									"text": "- durch Deaktivierung der Cookies für Conversion-Tracking, indem du die Einstellungen in deinem Browser so änderst, dass Cookies von der Domain "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "xg7vf8mjrx",
+									"text": "www.googleadservices.com ",
+									"href": "http://www.googleadservices.com/"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "tnz8vvhk13",
+									"text": "blockiert werden, wobei diese Einstellung gelöscht werden, wenn du deine Cookies löschst oder deinen Browser zurücksetzt;"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "7uwai85udt",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "1zl1icca97",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "8hmr5lgtvg",
+									"text": "Google Tag Manager",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "8ytbb4pl0d",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "4rz0czy9ss",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "067ehtr3pm",
+									"text": "Google Cloud Services",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "z346k3apzy",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "icviz3zlui",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "nsrrqbs1b5",
+									"text": "Wir haben auf unserer Webseite einen Programmcode von Meta integriert (sog. „Remarketing Tag“). Durch diesen wird eine direkte Verbindung zwischen dem Endgerät und Rechnern von Meta hergestellt, wenn unsere Webseiten besucht werden. Hierdurch wird an den Meta-Server übermittelt, welche unserer Seiten der Nutzer besucht hat und ggf. welche Aktionen er bei uns ausgeführt hat (z.B. Registrierung als neuer Nutzer). Meta kann diese Information dem Nutzungskonto bei Facebook oder Instagram oder einem Pseudonym zuordnen und so potentielle Interessen ermitteln. Dies kann auch über mehrere Endgeräte und besuchte Webseiten hinweg übergreifend erfolgen. Wenn der Nutzer die Seiten von Facebook oder Instagram besucht, werden dort personalisierte, interessenbezogene Werbeanzeigen angezeigt. Weitere Informationen zum Umgang mit den Daten durch Meta und Möglichkeiten zum Schutz der Privatsphäre findest du unter "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "norsf9d3m5",
+									"text": "https://www.facebook.com/about/privacy/",
+									"href": "https://www.facebook.com/about/privacy/"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "fa2lcax62l",
+									"text": "."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "fsua15pxph",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "2682yhvroq",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "qfp5vnfqzz",
+									"text": "Du kannst außerdem die Remarketing-Funktion “Custom Audiences” im Bereich Einstellungen für Werbeanzeigen unter "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "czxm69ja1x",
+									"text": "https://www.facebook.com/ads/preferences/?entry_product=ad_settings_screen",
+									"href": "https://www.facebook.com/ads/preferences/?entry_product=ad_settings_screen"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "ik8b90p9x3",
+									"text": " deaktivieren. Dazu musst du bei Facebook angemeldet sein."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "o58xw8x5iz",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "ea8j4vrp2p",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "5ig2gfxuzl",
+									"text": "Wenn du kein Facebook Konto besitzt, kannst du nutzungsbasierte Werbung von Meta auf der Website der European Interactive Digital Advertising Alliance deaktivieren: "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "hsi9ht6fan",
+									"text": "http://www.youronlinechoices.com/de/praferenzmanagement/",
+									"href": "http://www.youronlinechoices.com/de/praferenzmanagement/"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "kr31sjk2is",
+									"text": "."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "2wytc33wf2",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "bbwma25d1w",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "7ge9lzr0s1",
+									"text": "Stripe",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "p4yxhof6jr",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "6xmiaqjzea",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "kklukvroo",
+									"text": "PayPal",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "ghf9oidus",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "j6wmz2fdz3",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "19lq915ne4",
+									"text": "Kompas Health",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "9h2u8vpyej",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "eui7q1wztt",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "mitybou1p7",
+									"text": "Health Finder",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "yehkbm8a63",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "kniwaxy82g",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "i3c01wgoas",
+									"text": "APONS",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "wjzdc7u2oo",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "sginy960z6",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "mcon64m3xu",
+									"text": "E-Mail-Marketing:",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "4293r6a8qu",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "sl2fcazmj6",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "pgazo0jt4n",
+									"text": "Website-Tracking:",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "3pf9otyp9c",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "i4u4wsgklh",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "5sxjqpyi24",
+									"text": "Datenverarbeitung in den USA:",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "j99bzdl41o",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "w83bld1jxc",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "s9yfayco19",
+									"text": "Klaviyo verarbeitet deine Daten auch in den USA. Klaviyo ist aktiver Teilnehmer des EU-US Data Privacy Frameworks, wodurch der korrekte und sichere Datentransfer personenbezogener Daten von EU-Bürgern in die USA geregelt wird. Durch das EU-US Data Privacy Framework und die Standardvertragsklauseln verpflichtet sich Klaviyo, bei der Verarbeitung deiner Daten das europäische Datenschutzniveau einzuhalten, selbst wenn die Daten in den USA gespeichert, verarbeitet und verwaltet werden."
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "crlvpqaykn",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "1qpizl183t",
+									"text": "Weitere Informationen und Widerruf:",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "msqqw799vk",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "muddhr7tk4",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "uxil12osga",
+									"text": "Weitere Informationen zum Datenschutz bei Klaviyo findest du in der Datenschutzerklärung von Klaviyo: "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "ocngzraoh2",
+									"text": "https://www.klaviyo.com/legal/privacy-policy",
+									"href": "https://www.google.com/url?sa=E&source=gmail&q=https://www.google.com/url?sa=E%26source=gmail%26q=https://www.klaviyo.com/legal/privacy-policy"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "a4esf8bdlp",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "318le0z6g8",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "peq3gjp3pg",
+									"text": "Informationen zum Datenschutz und zur Datennutzung durch Klar können Sie der nachfolgenden Webseite entnehmen: "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "ej132zmsr8",
+									"text": "https://www.getklar.com/data-protection",
+									"href": "https://www.getklar.com/data-protection"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "qtkq3etk8i",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "1zc2zn055u",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "c18h28mb0j",
+									"text": "Hotjar (Analyse des Nutzungsverhaltens)",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "yx5iffsoyn",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "nindtcd3wk",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "bt7kcnmvjl",
+									"text": "Hotjar arbeitet mit Cookies und anderen Technologien, um diese Informationen zu sammeln. Cookies haben eine Lebensdauer von 365 Tagen, Einzelheiten zu den Cookies findest du unter "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "bn06suu4fj",
+									"text": "https://help.hotjar.com/hc/en-us/articles/115011789248-Hotjar-Cookies",
+									"href": "https://help.hotjar.com/hc/en-us/articles/115011789248-Hotjar-Cookies"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "eqdpr7g9wd",
+									"text": "."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "n9u3qrgh5i",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "50bwmop6j5",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "rja1fn656j",
+									"text": "Hotjar speichert die genannten Nutzungsdaten in einem pseudonymisierten Nutzerprofil. Die Informationen werden weder von Hotjar noch von uns zur Identifizierung einzelner Nutzer verwendet oder mit weiteren Daten über einzelne Nutzer zusammengeführt. Weitere Informationen findest du in Hotjars Datenschutzerklärung unter "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "vfjigg85ms",
+									"text": "https://www.hotjar.com/legal/policies/privacy",
+									"href": "https://www.hotjar.com/legal/policies/privacy"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "ghctt3fjac",
+									"text": ". Die Nutzungsdaten werden nach 365 Tagen gelöscht."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "w1m2xd3ee1",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "xtk17t48hh",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "ewbz2gq3kl",
+									"text": "Du kannst dem Setzen des Tracking-Cookies von Hotjar und der Erfassung der Nutzungsdaten widersprechen, indem du auf folgenden Link (zur Seite von Hotjar) klickst: "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "q6l1129jkb",
+									"text": "https://www.hotjar.com/legal/compliance/opt-out",
+									"href": "https://www.hotjar.com/legal/compliance/opt-out"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "gno651nlxl",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "jlf18lgh0h",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "s3cudhwbqi",
+									"text": "Shopify",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "opn03uon88",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "qnqd4w2h6m",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "9wcykfck77",
+									"text": "Post & DHL Versand App",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "x9xmtvz5mv",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "qonqsn8jda",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "bvfd6ox9qq",
+									"text": "10. Änderungen dieser Datenschutzerklärung",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "gjomah2t5r",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "qovlh8j29b",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "w735i7uhw9",
+									"text": "11. Kontakt",
+									"underline": true
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		"terms-de": {
+			"title": "AGB",
+			"slug": "terms",
+			"language": "de",
+			"blocks": [
+				{
+					"_type": "legalParagraph",
+					"_key": "19lyvo7uhe",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "xrcx0tol4o",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "r8wr2g7l5s",
+									"text": "Allgemeine Geschäftsbedingungen (AGB) und Widerrufsbelehrung",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "xpdchvjh7q",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "ey25i8o3dq",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "vkbva90baa",
+									"text": "1. Geltungsbereich",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "ml2x5awrxy",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "dl8zmf0h8p",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "8oz6hhyk84",
+									"text": "2. Vertragspartner",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "1vfe0u6qaq",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "0em8t1kex4",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "46c9yzgz19",
+									"text": "Wenn du einen Vertrag mit uns selbst abschließt, so lautet deine Vertragspartnerin DTC Healthtech Solution Limited (ab jetzt schreiben wir in diesem Text nur noch "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "s6rdgzx32f",
+									"text": "DTC",
+									"bold": true
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "2dyhsuvegs",
+									"text": ") mit Sitz in Second Floor, One Stephen Street Upper, Dublin 8, D08 DR9P, Ireland, eingetragen beim Companies Registration Office Ireland unter der Handelsregisternummer 681172, vertreten durch den Geschäftsführer Jan Mehner. DTC ist deine Vertragspartnerin für alle Verträge aus dieser Geschäftsbeziehung, wenn in den nachfolgenden AGB nicht etwas Abweichendes vereinbart wird. DTC nutzt für ihre Plattform die Website solean.com."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "eaqpwzjy53",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "k5iy6plikb",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "m2o9w1ojr7",
+									"text": "3. Leistungen von DTC",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "fiyre07dlb",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "amwffh753z",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "jwsha9yhb5",
+									"text": "(b) DTC verfügt über Kooperationsvereinbarungen mit Gesundheitsdienstleistern, Apotheken und Anbietern von Selbsttests (nachfolgend: "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "lipfvv61c5",
+									"text": "Kooperationspartner",
+									"bold": true
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "dzk2rao8u8",
+									"text": "), deren hohe Qualitätsstandards laufend durch das Qualitätsmanagementteam von DTC überprüft und im Bedarfsfall im Interesse der Nutzerinnen optimiert werden."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "lnanm8llhg",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "qwqczfj62e",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "yi6s3vdxtj",
+									"text": "4. Telemedizinische Heilbehandlung",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "28p69j4sky",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "o3uxv2deis",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "oabd0nqhq3",
+									"text": "(a) Gesundheitsdienstleister",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "ua8qegac4j",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "vh8ht7ofd8",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "pv5tnl2scj",
+									"text": "Wenn du mit DTC einen Vertrag über die Durchführung einer telemedizinischen Heilbehandlung abschließt, werden die ärztlichen Leistungen durch Ärzte der mit DTC kooperierenden Gesundheitsdienstleister erbracht. DTC kooperiert mit Health Finder Pro Ireland Ltd. (eingetragen und zugelassen in Irland mit der irischen Handelsregisternummer 682654, Geschäftssitz 6-9 Trinity House, Dublin 2, Irland; nachfolgend: "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "9i389y5luj",
+									"text": "Health Finder",
+									"bold": true
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "dw4sryr1m8",
+									"text": ") sowie einem in Deutschland ansässigen, approbierten Arzt."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "8t5s0zo84s",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "1kxbvmb3yn",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "725jb5i99b",
+									"text": "(b) Behandelnde Ärzte",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "s2hw412gxh",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "4il7sldm7i",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "aukifuk87m",
+									"text": "Alle Ärzte der Gesundheitsdienstleister unterstehen der Aufsicht des Irish Medical Council (IMC)"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "vuukhsilxa",
+									"text": "[1]",
+									"href": "#_ftn1"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "v9vr80p0vc",
+									"text": " bzw. der zuständigen Ärztekammer in Deutschland und sind dort registriert. Leitende Ärzte von Health Finder sind Dr. Doniert Alexis Macfarlane, IMC registration 430114 und Dr. Omer Hassan Mohammed Dahawi, IMC registration 424646. Ärztliche Behandler in Deutschland sind Zyl Stavropolis, zugelassen unter der Arztnummer 80276001086128072753 und Anna-Magdalena Jakob, zugelassen unter der Arztnummer 802760200420262. Alle Ärzte verfügen über eine umfassende Berufshaftpflichtversicherung."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "eeq9l2z33k",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "0la7l5l7p0",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "b0q0qh4dsl",
+									"text": "(c) Abschluss des Heilbehandlungsvertrags",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "u568r12vhl",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "rapn4mzrj2",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "oi2y3yb8y3",
+									"text": "Sofern du über bei SoLean eine telemedizinische Behandlung in Anspruch nehmen möchtest, um ein Rezept für ein verschreibungspflichtiges Arzneimittel zu erhalten, musst du über bei SoLean eine Rezeptanfrage stellen und einen medizinischen Fragebogen (nachfolgend: "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "0k88gfem0u",
+									"text": "Anamnesebogen",
+									"bold": true
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "fpntlg3pk6",
+									"text": ") beantworten, der als Grundlage für die telemedizinische Heilbehandlung dient."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "6yfscrew8i",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "s2xennsnvm",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "e2k1d2902n",
+									"text": "(d) Telemedizinische Heilbehandlung",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "c425cz3acv",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "i555avksa1",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "h9ol9mwz8e",
+									"text": "(e) Datenübermittlung",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "3g5i299kzg",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "loi0ztqie6",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "4g92rn28vt",
+									"text": "(f) Rezeptausstellung",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "3ej1grfm0a",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "yblu8ww2wy",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "lrk41jim91",
+									"text": "Alle Ärzte der mit DTC kooperierenden Gesundheitsdienstleister verordnen über SoLean ausschließlich Privatrezepte, welche auf Grundlage der EU-Patientenmobilitätsrichtlinie"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "cj8ctlz6r8",
+									"text": "[2]",
+									"href": "#_ftn2"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "122keiphlr",
+									"text": " auf dem Gebiet der Europäischen Union (EU) eingelöst werden können. Die so verordneten Arzneimittel müssen in der Regel von dir in voller Höhe selbst bezahlt werden. Eine Kostenerstattung über die gesetzliche Krankenversicherung (GKV) ist grundsätzlich nicht möglich."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "cjht62ge6p",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "rzvq62sq6v",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "10u3yqa237",
+									"text": "(g) Kosten",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "fkyrtih51i",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "vv0wgk5a6c",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "nt1l70ct8x",
+									"text": "Ärztliche Erstkonsultation",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "7il6c00bb5",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "feht8jnpvt",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "drecs6wc8u",
+									"text": "Keine Rückerstattung",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "6eu6ncofac",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "eubaxsadyo",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "zg35my0ou1",
+									"text": "Stornierung und Rückerstattung",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalList",
+					"_key": "m4djqdx8bu",
+					"items": [
+						{
+							"_type": "legalLine",
+							"_key": "lpi4hjww1i",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "uwbcvio9g5",
+									"text": "Vollständige Rückerstattung",
+									"bold": true
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "ben5nu5mt7",
+									"text": ": Bis zur Versandübermittlung an die Apotheke"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "n30ay0q7oi",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "eendu8gr6e",
+									"text": "Teilweise Rückerstattung",
+									"bold": true
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "29jer34dp0",
+									"text": ": Nach Versandauslösung (abzgl. Behandlungsgebühr und Versandkosten)"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "tngl2dwofg",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "aa1mtcd5gp",
+									"text": "Keine Rückerstattung",
+									"bold": true
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "gikz3ru416",
+									"text": ": Nach Zustellung an den Kunden"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "rrwusnkabg",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "eovzns99q3",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "mts98l6foj",
+									"text": "5. Arzneimittelkauf",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "k7wt9wikze",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "72fx45nblh",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "0iquy7medc",
+									"text": "(a) Versandapotheken",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "h4b64um6i6",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "z49ox5s5r2",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "m5z5g4icwl",
+									"text": "Sofern dir DTC einen Kaufvertrag über Arzneimittel vermittelt, ist dein Vertragspartner entweder die Apotheke Bad Neuschanz, Verlengde Hoofdstraat 1D, 9693 AB Bad Nieuweschans, Niederlande (unter Aufsicht der Inspectie Gezondheidszorg en Jeugd4, registriert als Apotheek Bad Nieuweschans BV; nachfolgend: "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "4amy4tef5m",
+									"text": "Apons",
+									"bold": true
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "dui8no3gg6",
+									"text": ") oder die APO Pharmacy B.V., Express 2, 6921 RB Duiven, Niederlande (unter Aufsicht der Inspectie Gezondheidszorg en Jeugd4, registriert als APO Pharmacy B.V.; nachfolgend: "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "a5gemz6d2a",
+									"text": "APO",
+									"bold": true
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "c2hj01ycoj",
+									"text": ". Die Versandapotheken werden jeweils durch einen in der Europäischen Union (EU) zugelassenen und zur Ausübung des Apothekerberufs berechtigten Apotheker verantwortlich geleitet. Grundlage für den Kaufvertrag mit der Versandapotheke sind diese AGB von DTC und die AGB der jeweiligen Versandapotheke, welche für Apons unter "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "nvr69oem3j",
+									"text": "https://www.apons.eu/agb.html",
+									"href": "https://www.apons.eu/agb.html"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "rpk077at4x",
+									"text": " und für APO unter "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "zg7is8087o",
+									"text": "https://www.apo.com/agb ",
+									"href": "https://www.apo.com/agb"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "etp6l497lp",
+									"text": "abgerufen werden können."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "lufeub6jfe",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "ppeh3odkti",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "ehlvb1kfd5",
+									"text": "(b) Abschluss des Arzneimittelkaufvertrags",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "obw483jtc",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "ia2wv1cxd0",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "50r40uz58y",
+									"text": "(c) Kosten und Versand",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "8d0h076mls",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "f3gpioiuwp",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "f36i11fnv6",
+									"text": "6. Erwerb von Selbsttests, Nahrungsergänzungsmitteln und Kosmetika",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "eti43ipkwg",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "esnb3u1xnx",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "ftff1c3grd",
+									"text": "(a) Anbieter",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "uvk5cmd5c2",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "77x7ut266m",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "nax14old96",
+									"text": "Anbieter der über bei SoLean beziehbaren Nahrungsergänzungsmittel und Kosmetika ist NextGen Pharma s.r.o. (Sitz: Kaprova 42/14 Prague 1, 110 00 Staré Město, Tschechische Republik; nachfolgend: "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "j6bm3697x8",
+									"text": "NextGen",
+									"bold": true
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "wkoiarbe8q",
+									"text": "). NextGen ist dein Vertragspartner, wenn du über bei SoLean Nahrungsergänzungsmittel oder Kosmetika erwirbst."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "ql85kfbbqi",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "ukskzn4ksr",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "93gkvxqmig",
+									"text": "(b) Abschluss eines Vertrags",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "bqwnjgkdaa",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "ah7gpsbrht",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "fifzzjhspz",
+									"text": "(c) Kosten und Versand",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "jrg5yr9vym",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "t8dbtsv0cp",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "rxkxlalxar",
+									"text": "7. Sorgfaltspflichten der Nutzerin",
+									"bold": true
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "pki62peo9c",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "mh4v4cdtlc",
+									"text": "a) Telemedizinische Heilbehandlung",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "j17mjdf6nj",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "20kd8vdgsn",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "idbpoqm5ab",
+									"text": "b) Verschriebenes Arzneimittel",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "eptwyw39fb",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "6f3wckj6id",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "r1r9vfu2er",
+									"text": "8.Zahlungsabwicklung",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "mah4rl79n1",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "wzr40yw06u",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "pib49oz6wj",
+									"text": "Die AGB von PayPal (Europe) S. à.r.l. et Cie, S.C. A. (Sitz: 22-24 Boulevard Royal L-2449 Luxembourg) sind unter "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "ozo89hw192",
+									"text": "https://www.paypal.com/de/webapps/mpp/ua/useragreement-full?locale.x=de_DE",
+									"href": "https://www.paypal.com/de/webapps/mpp/ua/useragreement-full?locale.x=de_DE"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "m0xxzi60nt",
+									"text": " abrufbar."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "d2e3o9huhn",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "9oekz6fjrk",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "x4auesnonf",
+									"text": "Die AGB von Stripe Payments Europe Ltd. (Sitz: The One Building, 1 Grand Canal Street Lower, Dublin 2, Ireland) kannst du unter "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "5uptpt2ez9",
+									"text": "https://stripe.com/payment-terms/legal",
+									"href": "https://stripe.com/payment-terms/legal"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "6tjrbcl6dr",
+									"text": " einsehen."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "aagr6khmwv",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "ef8elp5lr0",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "vcnsdtq5oy",
+									"text": "Die AGB von Klarna Bank AB (publ.) (Sitz: Sveavagen 46, 111 34 Stockholm, Schweden) kannst du unter "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "k5t5kvq74i",
+									"text": "https://www.klarna.com/de/agb/",
+									"href": "https://www.klarna.com/de/agb/"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "mtw7z7dnig",
+									"text": " abrufen."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "e43d5gyjut",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "66apxamcwo",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "6e8u17bmow",
+									"text": "9. Datenschutz und ärztliche Schweigepflicht",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "vikltbff7u",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "hx3tbw3dk8",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "52x6bt1gox",
+									"text": "10. Haftungsausschluss",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "ltqyuhvek4",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "hw0qso8q8y",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "95at9yjekb",
+									"text": "11. Widerrufsbelehrung",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "yizgs8bgtx",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "njy28i43p3",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "v4fuhoyww6",
+									"text": "Widerrufsbelehrung",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "9joj7pjy13",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "h1qnwicqxu",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "qtgi53cwkk",
+									"text": "Widerrufsrecht",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "hlmq1bwu21",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "qc7ol8vmnx",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "s8bw7kr9mu",
+									"text": "Erlöschen des Widerrufsrechts",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "kqllt6jaz1",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "3pw8254g8q",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "uut3kbh283",
+									"text": "Folgen des Widerrufs",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "git9071jv1",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "jxaiy5jdiv",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "k7jh5s7d7o",
+									"text": "Wertersatz",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "36jtlw569p",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "wi6yewlbw2",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "z6qju2nvb3",
+									"text": "Muster-Widerrufsformular",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "u4wht40jr9",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "j3rpy3vkdh",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "vnet1pwo4h",
+									"text": "12. Informationspflichten",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "vktm8ba97i",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "rnmvgpn2jy",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "5tss71l9zj",
+									"text": "Die für den Vertragsabschluss zur Verfügung stehende Sprache ist ausschließlich Deutsch."
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "pt996wwa2o",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "pvz2q1yajw",
+									"text": "Wir sind nicht verpflichtet und grundsätzlich auch nicht bereit, an Streitbeilegungsverfahren vor einer Verbraucherschlichtungsstelle teilzunehmen. Ein außergerichtliches Beschwerde- oder Rechtsbehelfsverfahren, dem DTC unterworfen ist, existiert nicht."
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "cbhax0fr7j",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "2sfxm7kphs",
+									"text": "Alle weiteren Informationen zu DTC, dem Angebot und der Abwicklung kannst du den Darstellungen auf www.solean.com entnehmen. Eingaben zu deinen Daten kannst du während der Registrierung jederzeit abbrechen und korrigieren."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "l3yr86pief",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "w5npgi56og",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "0wkgp3zgj2",
+									"text": "13. Nutzungsrechte",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "u9yeesba4u",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "s4uxmb0gfx",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "ex5xa3anlz",
+									"text": "14. Schlussbestimmungen",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "gs2ua3w2zz",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "ghhi9d5cb8",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "zi736b1te1",
+									"text": "DTC Healthtech Solution Limited",
+									"bold": true
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "01yss5a48y",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "ravyypf15r",
+									"text": "vertreten durch den Geschäftsführer Jan Mehner"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "9rq1wi2kfx",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "dddvau74ry",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "0uu0oy3tc3",
+									"text": "[1]",
+									"href": "#_ftnref1"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "9h4y9rau0o",
+									"text": " Der IMC ("
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "8ut7pn7jqk",
+									"text": "https://www.medicalcouncil.ie/",
+									"href": "https://www.medicalcouncil.ie/"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "3vcukxynfq",
+									"text": ") ist die Ärztekammer und Aufsichtsbehörde Irlands über alle praktizierenden Ärzte und zuständig für deren Ausbildung und für die ärztliche Standesordnung. Alle Ärzte, die Patientinnen über SoLean behandeln, sind an die ärztliche Standesordnung des IMC, den Guide to Professional Conduct and Ethics for Registered Medical Professionals ("
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "ny7qforrxd",
+									"text": "https://www.medicalcouncil.ie/news-and-publications/reports/guide-to-professional-conduct-and-ethics-for-registered-medical-practitioners-amended-.pdf",
+									"href": "https://www.medicalcouncil.ie/news-and-publications/reports/guide-to-professional-conduct-and-ethics-for-registered-medical-practitioners-amended-.pdf"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "p725h6o1sn",
+									"text": ") gebunden."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "gap5vloan0",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "mcvll3tpom",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "u1zg7mt94k",
+									"text": "[2]",
+									"href": "#_ftnref2"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "srsykjxbb0",
+									"text": " 2 "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "bqk5ixdo6n",
+									"text": "https://www.bundesgesundheitsministerium.de/service/begriffe-von-a-z/p/patientenmobilitaetsrichtlinie.html",
+									"href": "https://www.bundesgesundheitsministerium.de/service/begriffe-von-a-z/p/patientenmobilitaetsrichtlinie.html"
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		"returns-de": {
+			"title": "Widerrufsrecht",
+			"slug": "returns",
+			"language": "de",
+			"blocks": [
+				{
+					"_type": "legalParagraph",
+					"_key": "dp88d5acwr",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "fgamtsrfdo",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "wsmibzhixi",
+									"text": "Widerrufsbelehrung",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "f7shaxptd3",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "nxdkjanejy",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "f7m878fdud",
+									"text": "Gültig seit 01.03.2024"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "gn3ggboc6c",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "a1kolh0ykc",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "5biz6det0u",
+									"text": "Widerrufsrecht",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "62in2k7jrp",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "ztkadnp07p",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "9tutcr1lno",
+									"text": "Du hast als Nutzerin das Recht, den mit uns abgeschlossenen Vertrag über unsere Vermittlungsleistungen innerhalb von 14 Tagen ohne Angabe von Gründen in Textform (z. B. per Brief oder E-Mail) zu widerrufen. Du kannst dafür das beigefügte Muster-Widerrufsformular verwenden, das jedoch nicht vorgeschrieben ist. Die Frist beginnt nach Erhalt dieser Widerrufsbelehrung, jedoch nicht vor dem Tag des Vertragsabschlusses."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "i6ua8tzthd",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "h9nv5a1aaz",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "j6ejmgruep",
+									"text": "Zur Wahrung der Widerrufsfrist genügt die rechtzeitige Absendung des Widerrufs an"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "ry8h30n0v4",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "0h2ytwpvrq",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "8elxj4ewu1",
+									"text": "DTC Healthtech Solution Limited"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "whronqdimo",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "djw4wwdxmu",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "n4s5bu9oco",
+									"text": "1st Floor, Behan House, 10 Mount Street Lower,"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "vhfgzk55vo",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "wvlit9vtfu",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "spdnwyrkac",
+									"text": "Dublin, D02 HT71, Irland"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "j8hayc98rr",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "5o78kkcd63",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "f90r2v2n4k",
+									"text": "E-Mail: support@solean.com"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "qr3nzld2w8",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "19po6w5gkx",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "7im2v50b45",
+									"text": "Diese Widerrufsbelehrung gilt lediglich für den zwischen dir und DTC abgeschlossenen Vermittlungsvertrag. Für den Widerruf der durch DTC vermittelten Verträge gelten die jeweiligen Bestimmungen deines Vertragspartners."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "8p328vn4zs",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "qazszm1cqq",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "lifxujro2l",
+									"text": "Erlöschen des Widerrufsrechts",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "14ztzkaoak",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "ou7tkxqd21",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "a4iceh2jb2",
+									"text": "Folgen des Widerrufs",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "c4kipw3rty",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "vr3kgpdjxe",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "endan8pg73",
+									"text": "Wertersatz",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "69d6ezdkwb",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "1dkbhaaexo",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "i5vmirgtig",
+									"text": "Muster-Widerrufsformular",
+									"bold": true
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		"legal-notice-en": {
+			"title": "Legal notice",
+			"slug": "legal-notice",
+			"language": "en",
+			"blocks": [
+				{
+					"_type": "legalParagraph",
+					"_key": "j02w2qqxdr",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "e3ja11k7fp",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "sto10wmj68",
+									"text": "SoLean is a service provided by:"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "2oebgcatjb",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "vlq0ovon6x",
+									"text": "DTC Healthtech Solution Limited",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "lvnxu0e5tx",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "3lk5uwzdov",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "sbrtaf6rkl",
+									"text": "Lippmannstraße 8"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "ea4vgum8qs",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "bgep86ck29",
+									"text": "22769 Hamburg"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "1klldsyh83",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "41w0perggb",
+									"text": "Germany"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "o8scq3k9so",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "j89r5m11ir",
+									"text": "Telephone: +49 40 87709420"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "hz3k5jiddl",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "d3w2b4kfvx",
+									"text": "Customer service: support@solean.com"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "54gbtqo3a9",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "pgbx6q99h6",
+									"text": "Corporate Registration:"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "llb6mgqehu",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "ni6rltioz",
+									"text": "1st Floor, Behan House,"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "ugy7f833vi",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "5fxf9hz8yf",
+									"text": "10 Mount Street Lower,"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "zuv23afrea",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "ih8z325n90",
+									"text": "D02 HT71, Dublin,"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "w4pzbzu3ir",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "szkljuh9t",
+									"text": "Ireland"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "7zw5u3z9jf",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "p68lqa0igp",
+									"text": "Represented by the managing director:"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "yuzzrkmz6b",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "3cloybe7ql",
+									"text": "Jan Mehner"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "l1ji0flzqu",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "i4kxaqxqj5",
+									"text": "VAT identification number: DE342812966"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "yijgmr520l",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "cy1xocrhdm",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "wex2kwi23l",
+									"text": "Commercial register number: 681172"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "dfn3j4ypbu",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "ojoe44zdwl",
+									"text": "Companies Registration Office Ireland, Dublin"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "m933ggbvky",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "bdozqj553w",
+									"text": "Out-of-court dispute resolution: The European Commission provides a platform for online dispute resolution (ODR platform), which is available at "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "r0v3vhq0in",
+									"text": "www.ec.europa.eu/consumers/odr",
+									"href": "http://www.ec.europa.eu/consumers/odr"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "oqvpob99nj",
+									"text": ". We are neither obliged nor willing to take part in dispute resolution proceedings before a consumer arbitration board."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "md81s9dfnp",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "cdz355f8r3",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "cf4f3h0gfq",
+									"text": "Apotheke Bad Nieuweschans"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "087dsmdhl5",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "g8clslos63",
+									"text": "Verlengde Hoofdstraat 1D,"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "6p49blt2ww",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "t1o3zz9ero",
+									"text": "9693 AB Bad Nieuweschans,"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "7nku6tq2gh",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "u630zv4b0k",
+									"text": "Netherlands"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "96rxtx5yyu",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "mkhd2l7wxs",
+									"text": "Last updated: 1 March 2024"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "961ik1uqd5",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "pq1ywpz1e2",
+									"text": "*The mail-order pharmacy responsible for dispensing medicines where delivery to your home is requested."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "tvgl24vrp9",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "7bhdt36cv0",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "w3l0r3yzhk",
+									"text": "Further information about the company and its services can be found on the corporate website: "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "8tvp1hds0f",
+									"text": "ht-ventures.com",
+									"href": "http://ht-ventures.com/"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "73k24xtxc0",
+									"text": ". That page gives a full account of the mission and the commitment to quality and service."
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		"privacy-en": {
+			"title": "Privacy policy",
+			"slug": "privacy",
+			"language": "en",
+			"blocks": [
+				{
+					"_type": "legalParagraph",
+					"_key": "vk2y87vwb7",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "dl923c0dnh",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "r62imbq2bo",
+									"text": "Data protection",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "po3pi7usmr",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "40briwrbs3",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "tj1usf57wb",
+									"text": "Controller",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "sh5nd7f6h9",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "t0o5nrxvb4",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "40t7akgizn",
+									"text": "Data protection officer",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "ybgpr5hyjk",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "3vsas9ete0",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "qjdccv4bno",
+									"text": "datenschutz@heydata.eu",
+									"href": "mailto:datenschutz@heydata.eu"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "givt4f5ltu",
+									"text": ","
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "gilxaxyfgc",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "d0afl1tjow",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "pzkfdbzwv1",
+									"text": "https://www.heydata.eu/",
+									"href": "https://www.heydata.eu/"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "her6cbogk9",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "ftetv632e2",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "4o7c3nj42a",
+									"text": "Contents",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "mzz4gyfrgs",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "tirpwoqp4j",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "o7wj9d6txl",
+									"text": "1. Logging of data when our website is used",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "03t6m8xgkb",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "k8tvhr0mf3",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "qieipvm30b",
+									"text": "2. Collection and use of personal data",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "i3matk4k4e",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "mppz9eq4lt",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "rcqn00cp44",
+									"text": "3. Purpose of and legal basis for the processing",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "zd5m05yafg",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "ubf2haoejw",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "le4zoahh3u",
+									"text": "3.1 Medical history form",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "e6bjrd9qef",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "2we4ysa287",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "b84o6e4l8x",
+									"text": "3.2 Order",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "87tnnh4t2h",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "n4ysc8a1xr",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "v1tk7ako0y",
+									"text": "3.3 Data security",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "qhobqrei0t",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "cg4ugt6kev",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "v3lnsr52am",
+									"text": "3.4 Contact form",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "4qlpssnx5c",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "lcdj626me6",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "7dp1ocw6h5",
+									"text": "3.5 Cookies",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "p9dm8n78h7",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "hffd8lf5d3",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "bz2s8oasjc",
+									"text": "4. Your rights",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "upw0iweoq3",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "uo5fu8xij6",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "wfxk6hdjie",
+									"text": "As a data subject you have a right to lodge a complaint with the competent supervisory authority in the event of a breach of data protection law. The supervisory authority competent for data protection questions is the data protection officer of the member state in which our company has its registered office. In the case of joint controllership with a doctor, you may also contact the supervisory authority competent for that doctor. The relevant supervisory authority is located in the member state in which the doctor is registered and has his practice. For Ireland this is the Data Protection Commissioner. You can find details at "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "91j0xjmx9v",
+									"text": "https://dataprotection.ie/",
+									"href": "https://dataprotection.ie/"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "4b328i79s6",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "desbwkjjo6",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "h9iwjp5871",
+									"text": "You may, however, also assert this right with a supervisory authority in the member state of your residence, your place of work or the place of the alleged infringement. You can find the contact details of the supervisory authorities in Germany at "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "il29wxup9c",
+									"text": "https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html",
+									"href": "https://www.bfdi.bund.de/DE/Infothek/Anschriften_Links/anschriften_links-node.html"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "h2d4515hlp",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "ftdu71fkb7",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "6kpo1hh6g6",
+									"text": "5. Profiling",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "3fbkzc05aj",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "r8re66e2jr",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "1t93qxykvt",
+									"text": "6. Storage period, erasure of personal data",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "jin2sqo9m2",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "zx5xo2othz",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "s9pn5zpnkw",
+									"text": "7. Transfer of data to third parties",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "lvbrgjjzzz",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "3ux4olfrs2",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "oxroxlwlji",
+									"text": "8. Transfers of data to third countries",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "5uknvndto8",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "yfxtaqjp2g",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "u5nwcr627y",
+									"text": "9. Processors",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "22zf028azh",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "59sdbko29x",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "nrgg5c305k",
+									"text": "Google (overview)",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "vm29b4dt4k",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "8tslciytu6",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "sdlwqdsgkz",
+									"text": "This may also involve a transfer to Google's parent company, Google LLC in the USA. In providing the services, Google acts as our "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "silm9c52mv",
+									"text": "processor",
+									"href": "https://www.teleclinic.com/datenschutz/#anchor-datenschutz12.4"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "98nki3swd4",
+									"text": ". Additional information about data protection at Google can be found in the "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "1y3udreosp",
+									"text": "Google privacy notice",
+									"href": "https://policies.google.com/privacy?hl=de"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "v5ze5chcvg",
+									"text": ": https://policies.google.com/privacy?hl=de"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "cbpuwgoqfz",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "utqbzmb66p",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "vwlrmu3dw",
+									"text": "You can object to the collection or evaluation of your data by these tools either by adjusting your browser settings or by installing the plug-in provided by Google ("
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "x2ootny2zk",
+									"text": "https://www.google.com/settings/ads/plugin",
+									"href": "https://www.google.com/settings/ads/plugin"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "35qna5gj78",
+									"text": ")."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "7f1t41m8ss",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "6o0w283uil",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "4nqp1dnlpq",
+									"text": "Google Analytics (usage statistics)",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "eesrgml06s",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "ub9gkwfitf",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "ikfkwqk70q",
+									"text": "You can object to the collection and use of data within the framework of Google Analytics and Universal Analytics by downloading and installing "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "hqer7tvm79",
+									"text": "this browser plug-in",
+									"href": "https://tools.google.com/dlpage/gaoptout?hl=de"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "apq9ko6t6a",
+									"text": ": "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "38j864m06w",
+									"text": "https://tools.google.com/dlpage/gaoptout?hl=de",
+									"href": "https://tools.google.com/dlpage/gaoptout?hl=de"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "2wnnuc5lhc",
+									"text": " or by withdrawing your consent by setting the analysis cookies switch to „off“. Withdrawing consent does not affect the lawfulness of the processing carried out on the basis of the consent up to the withdrawal."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "w4y1x5zcka",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "vyk80ky027",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "e67ly5ge25",
+									"text": "Firebase Dynamic Links (optimised links)",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "mlrc58cym",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "idah3aa3dc",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "n52qmwfe7h",
+									"text": "Google Ads",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "2hea4hc0ma",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "s6g0amxiwi",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "sqw3qwwtr0",
+									"text": "- by disabling the cookies for conversion tracking, by changing the settings in your browser so that cookies from the domain "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "xg7vf8mjrx",
+									"text": "www.googleadservices.com ",
+									"href": "http://www.googleadservices.com/"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "tnz8vvhk13",
+									"text": "are blocked, whereby this setting is deleted if you delete your cookies or reset your browser;"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "7uwai85udt",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "1zl1icca97",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "8hmr5lgtvg",
+									"text": "Google Tag Manager",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "8ytbb4pl0d",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "4rz0czy9ss",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "067ehtr3pm",
+									"text": "Google Cloud Services",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "z346k3apzy",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "icviz3zlui",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "nsrrqbs1b5",
+									"text": "We have integrated a piece of program code from Meta into our website (a „remarketing tag“). Through this, a direct connection is established between the device and Meta's computers when our web pages are visited. This transmits to the Meta server which of our pages the user has visited and, where applicable, which actions they carried out with us (for example registration as a new user). Meta can assign this information to the user account on Facebook or Instagram or to a pseudonym and thereby determine potential interests. This can also take place across several devices and visited websites. When the user visits the Facebook or Instagram pages, personalised, interest-based advertisements are displayed there. Further information about how Meta handles data and about options for protecting your privacy can be found at "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "norsf9d3m5",
+									"text": "https://www.facebook.com/about/privacy/",
+									"href": "https://www.facebook.com/about/privacy/"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "fa2lcax62l",
+									"text": "."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "fsua15pxph",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "2682yhvroq",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "qfp5vnfqzz",
+									"text": "You can also deactivate the remarketing function “Custom Audiences” in the advertising settings area at "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "czxm69ja1x",
+									"text": "https://www.facebook.com/ads/preferences/?entry_product=ad_settings_screen",
+									"href": "https://www.facebook.com/ads/preferences/?entry_product=ad_settings_screen"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "ik8b90p9x3",
+									"text": ". To do so you must be logged in to Facebook."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "o58xw8x5iz",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "ea8j4vrp2p",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "5ig2gfxuzl",
+									"text": "If you do not have a Facebook account, you can deactivate usage-based advertising from Meta on the website of the European Interactive Digital Advertising Alliance: "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "hsi9ht6fan",
+									"text": "http://www.youronlinechoices.com/de/praferenzmanagement/",
+									"href": "http://www.youronlinechoices.com/de/praferenzmanagement/"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "kr31sjk2is",
+									"text": "."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "2wytc33wf2",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "bbwma25d1w",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "7ge9lzr0s1",
+									"text": "Stripe",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "p4yxhof6jr",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "6xmiaqjzea",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "kklukvroo",
+									"text": "PayPal",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "ghf9oidus",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "j6wmz2fdz3",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "19lq915ne4",
+									"text": "Kompas Health",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "9h2u8vpyej",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "eui7q1wztt",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "mitybou1p7",
+									"text": "Health Finder",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "yehkbm8a63",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "kniwaxy82g",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "i3c01wgoas",
+									"text": "APONS",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "wjzdc7u2oo",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "sginy960z6",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "mcon64m3xu",
+									"text": "E-mail marketing:",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "4293r6a8qu",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "sl2fcazmj6",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "pgazo0jt4n",
+									"text": "Website tracking:",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "3pf9otyp9c",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "i4u4wsgklh",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "5sxjqpyi24",
+									"text": "Data processing in the USA:",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "j99bzdl41o",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "w83bld1jxc",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "s9yfayco19",
+									"text": "Klaviyo also processes your data in the USA. Klaviyo is an active participant in the EU-US Data Privacy Framework, which governs the correct and secure transfer of personal data of EU citizens to the USA. Through the EU-US Data Privacy Framework and the standard contractual clauses, Klaviyo undertakes to observe the European level of data protection when processing your data, even where the data is stored, processed and managed in the USA."
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "crlvpqaykn",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "1qpizl183t",
+									"text": "Further information and withdrawal:",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "msqqw799vk",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "muddhr7tk4",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "uxil12osga",
+									"text": "Further information about data protection at Klaviyo can be found in Klaviyo's privacy policy: "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "ocngzraoh2",
+									"text": "https://www.klaviyo.com/legal/privacy-policy",
+									"href": "https://www.google.com/url?sa=E&source=gmail&q=https://www.google.com/url?sa=E%26source=gmail%26q=https://www.klaviyo.com/legal/privacy-policy"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "a4esf8bdlp",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "318le0z6g8",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "peq3gjp3pg",
+									"text": "Information about data protection and the use of data by Klar can be found on the following website: "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "ej132zmsr8",
+									"text": "https://www.getklar.com/data-protection",
+									"href": "https://www.getklar.com/data-protection"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "qtkq3etk8i",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "1zc2zn055u",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "c18h28mb0j",
+									"text": "Hotjar (analysis of usage behaviour)",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "yx5iffsoyn",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "nindtcd3wk",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "bt7kcnmvjl",
+									"text": "Hotjar works with cookies and other technologies in order to collect this information. Cookies have a lifetime of 365 days; details of the cookies can be found at "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "bn06suu4fj",
+									"text": "https://help.hotjar.com/hc/en-us/articles/115011789248-Hotjar-Cookies",
+									"href": "https://help.hotjar.com/hc/en-us/articles/115011789248-Hotjar-Cookies"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "eqdpr7g9wd",
+									"text": "."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "n9u3qrgh5i",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "50bwmop6j5",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "rja1fn656j",
+									"text": "Hotjar stores the usage data named in a pseudonymised user profile. The information is used neither by Hotjar nor by us to identify individual users, nor is it merged with further data about individual users. Further information can be found in Hotjar's privacy policy at "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "vfjigg85ms",
+									"text": "https://www.hotjar.com/legal/policies/privacy",
+									"href": "https://www.hotjar.com/legal/policies/privacy"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "ghctt3fjac",
+									"text": ". The usage data is erased after 365 days."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "w1m2xd3ee1",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "xtk17t48hh",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "ewbz2gq3kl",
+									"text": "You can object to Hotjar's tracking cookie being set and to the collection of usage data by clicking the following link (to Hotjar's page): "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "q6l1129jkb",
+									"text": "https://www.hotjar.com/legal/compliance/opt-out",
+									"href": "https://www.hotjar.com/legal/compliance/opt-out"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "gno651nlxl",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "jlf18lgh0h",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "s3cudhwbqi",
+									"text": "Shopify",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "opn03uon88",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "qnqd4w2h6m",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "9wcykfck77",
+									"text": "Post & DHL shipping app",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "x9xmtvz5mv",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "qonqsn8jda",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "bvfd6ox9qq",
+									"text": "10. Changes to this privacy policy",
+									"underline": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "gjomah2t5r",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "qovlh8j29b",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "w735i7uhw9",
+									"text": "11. Contact",
+									"underline": true
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		"terms-en": {
+			"title": "General Terms and Conditions",
+			"slug": "terms",
+			"language": "en",
+			"blocks": [
+				{
+					"_type": "legalParagraph",
+					"_key": "19lyvo7uhe",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "xrcx0tol4o",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "r8wr2g7l5s",
+									"text": "General Terms and Conditions (GTC) and withdrawal instructions",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "xpdchvjh7q",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "ey25i8o3dq",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "vkbva90baa",
+									"text": "1. Scope",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "ml2x5awrxy",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "dl8zmf0h8p",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "8oz6hhyk84",
+									"text": "2. Contracting party",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "1vfe0u6qaq",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "0em8t1kex4",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "46c9yzgz19",
+									"text": "If you conclude a contract with us directly, your contracting party is DTC Healthtech Solution Limited (from here on we will write only "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "s6rdgzx32f",
+									"text": "DTC",
+									"bold": true
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "2dyhsuvegs",
+									"text": ") with its registered office at Second Floor, One Stephen Street Upper, Dublin 8, D08 DR9P, Ireland, registered with the Companies Registration Office Ireland under commercial register number 681172, represented by its managing director Jan Mehner. DTC is your contracting party for all contracts arising from this business relationship, unless the terms and conditions below provide otherwise. DTC uses the website solean.com for its platform."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "eaqpwzjy53",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "k5iy6plikb",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "m2o9w1ojr7",
+									"text": "3. Services provided by DTC",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "fiyre07dlb",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "amwffh753z",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "jwsha9yhb5",
+									"text": "(b) DTC has cooperation agreements with healthcare providers, pharmacies and providers of self-tests (hereinafter: "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "lipfvv61c5",
+									"text": "cooperation partners",
+									"bold": true
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "dzk2rao8u8",
+									"text": "), whose high quality standards are continuously reviewed by DTC's quality management team and, where necessary, improved in the interest of users."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "lnanm8llhg",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "qwqczfj62e",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "yi6s3vdxtj",
+									"text": "4. Telemedicine medical treatment",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "28p69j4sky",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "o3uxv2deis",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "oabd0nqhq3",
+									"text": "(a) Healthcare providers",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "ua8qegac4j",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "vh8ht7ofd8",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "pv5tnl2scj",
+									"text": "If you conclude a contract with DTC for the performance of telemedicine treatment, the medical services are provided by doctors of the healthcare providers cooperating with DTC. DTC cooperates with Health Finder Pro Ireland Ltd. (registered and licensed in Ireland under Irish commercial register number 682654, registered office 6-9 Trinity House, Dublin 2, Ireland; hereinafter: "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "9i389y5luj",
+									"text": "Health Finder",
+									"bold": true
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "dw4sryr1m8",
+									"text": ") and with a licensed doctor based in Germany."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "8t5s0zo84s",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "1kxbvmb3yn",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "725jb5i99b",
+									"text": "(b) Treating doctors",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "s2hw412gxh",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "4il7sldm7i",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "aukifuk87m",
+									"text": "All doctors of the healthcare providers are subject to the supervision of the Irish Medical Council (IMC)"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "vuukhsilxa",
+									"text": "[1]",
+									"href": "#_ftn1"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "v9vr80p0vc",
+									"text": " or of the competent medical association in Germany, and are registered there. The lead doctors at Health Finder are Dr. Doniert Alexis Macfarlane, IMC registration 430114, and Dr. Omer Hassan Mohammed Dahawi, IMC registration 424646. The treating doctors in Germany are Zyl Stavropolis, licensed under doctor number 80276001086128072753, and Anna-Magdalena Jakob, licensed under doctor number 802760200420262. All doctors hold comprehensive professional indemnity insurance."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "eeq9l2z33k",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "0la7l5l7p0",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "b0q0qh4dsl",
+									"text": "(c) Conclusion of the treatment contract",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "u568r12vhl",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "rapn4mzrj2",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "oi2y3yb8y3",
+									"text": "If you wish to use a telemedicine treatment through bei SoLean in order to obtain a prescription for a prescription-only medicinal product, you must submit a prescription request through bei SoLean and answer a medical questionnaire (hereinafter: "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "0k88gfem0u",
+									"text": "medical history form",
+									"bold": true
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "fpntlg3pk6",
+									"text": ") which serves as the basis for the telemedicine treatment."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "6yfscrew8i",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "s2xennsnvm",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "e2k1d2902n",
+									"text": "(d) Telemedicine medical treatment",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "c425cz3acv",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "i555avksa1",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "h9ol9mwz8e",
+									"text": "(e) Transfer of data",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "3g5i299kzg",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "loi0ztqie6",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "4g92rn28vt",
+									"text": "(f) Issuing of prescriptions",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "3ej1grfm0a",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "yblu8ww2wy",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "lrk41jim91",
+									"text": "All doctors of the healthcare providers cooperating with DTC prescribe exclusively private prescriptions through SoLean, which can be redeemed within the territory of the European Union (EU) on the basis of the EU Patient Mobility Directive"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "cj8ctlz6r8",
+									"text": "[2]",
+									"href": "#_ftn2"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "122keiphlr",
+									"text": ". As a rule you must pay for the medicinal products prescribed in this way in full yourself. Reimbursement through the statutory health insurance scheme (GKV) is generally not possible."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "cjht62ge6p",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "rzvq62sq6v",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "10u3yqa237",
+									"text": "(g) Costs",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "fkyrtih51i",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "vv0wgk5a6c",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "nt1l70ct8x",
+									"text": "Initial medical consultation",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "7il6c00bb5",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "feht8jnpvt",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "drecs6wc8u",
+									"text": "No refund",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "6eu6ncofac",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "eubaxsadyo",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "zg35my0ou1",
+									"text": "Cancellation and refund",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalList",
+					"_key": "m4djqdx8bu",
+					"items": [
+						{
+							"_type": "legalLine",
+							"_key": "lpi4hjww1i",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "uwbcvio9g5",
+									"text": "Full refund",
+									"bold": true
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "ben5nu5mt7",
+									"text": ": until the consignment is transmitted to the pharmacy"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "n30ay0q7oi",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "eendu8gr6e",
+									"text": "Partial refund",
+									"bold": true
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "29jer34dp0",
+									"text": ": after dispatch has been triggered (less the treatment fee and shipping costs)"
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "tngl2dwofg",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "aa1mtcd5gp",
+									"text": "No refund",
+									"bold": true
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "gikz3ru416",
+									"text": ": after delivery to the customer"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "rrwusnkabg",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "eovzns99q3",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "mts98l6foj",
+									"text": "5. Purchase of medicinal products",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "k7wt9wikze",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "72fx45nblh",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "0iquy7medc",
+									"text": "(a) Mail-order pharmacies",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "h4b64um6i6",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "z49ox5s5r2",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "m5z5g4icwl",
+									"text": "Where DTC brokers a contract of sale for medicinal products for you, your contracting party is either Apotheke Bad Neuschanz, Verlengde Hoofdstraat 1D, 9693 AB Bad Nieuweschans, Netherlands (supervised by the Inspectie Gezondheidszorg en Jeugd4, registered as Apotheek Bad Nieuweschans BV; hereinafter: "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "4amy4tef5m",
+									"text": "Apons",
+									"bold": true
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "dui8no3gg6",
+									"text": ") or APO Pharmacy B.V., Express 2, 6921 RB Duiven, Netherlands (supervised by the Inspectie Gezondheidszorg en Jeugd4, registered as APO Pharmacy B.V.; hereinafter: "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "a5gemz6d2a",
+									"text": "APO",
+									"bold": true
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "c2hj01ycoj",
+									"text": ". Each mail-order pharmacy is under the responsible management of a pharmacist licensed in the European Union (EU) and entitled to practise the profession of pharmacist. The basis for the contract of sale with the mail-order pharmacy is these DTC terms and conditions together with the terms and conditions of the respective mail-order pharmacy, which can be retrieved for Apons at "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "nvr69oem3j",
+									"text": "https://www.apons.eu/agb.html",
+									"href": "https://www.apons.eu/agb.html"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "rpk077at4x",
+									"text": " and for APO at "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "zg7is8087o",
+									"text": "https://www.apo.com/agb ",
+									"href": "https://www.apo.com/agb"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "etp6l497lp",
+									"text": "."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "lufeub6jfe",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "ppeh3odkti",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "ehlvb1kfd5",
+									"text": "(b) Conclusion of the contract of sale for medicinal products",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "obw483jtc",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "ia2wv1cxd0",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "50r40uz58y",
+									"text": "(c) Costs and shipping",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "8d0h076mls",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "f3gpioiuwp",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "f36i11fnv6",
+									"text": "6. Purchase of self-tests, food supplements and cosmetic products",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "eti43ipkwg",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "esnb3u1xnx",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "ftff1c3grd",
+									"text": "(a) Providers",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "uvk5cmd5c2",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "77x7ut266m",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "nax14old96",
+									"text": "The provider of the food supplements and cosmetic products available through bei SoLean is NextGen Pharma s.r.o. (registered office: Kaprova 42/14 Prague 1, 110 00 Staré Město, Czech Republic; hereinafter: "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "j6bm3697x8",
+									"text": "NextGen",
+									"bold": true
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "wkoiarbe8q",
+									"text": "). NextGen is your contracting party when you purchase food supplements or cosmetic products through bei SoLean."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "ql85kfbbqi",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "ukskzn4ksr",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "93gkvxqmig",
+									"text": "(b) Conclusion of a contract",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "bqwnjgkdaa",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "ah7gpsbrht",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "fifzzjhspz",
+									"text": "(c) Costs and shipping",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "jrg5yr9vym",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "t8dbtsv0cp",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "rxkxlalxar",
+									"text": "7. The user's duties of care",
+									"bold": true
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "pki62peo9c",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "mh4v4cdtlc",
+									"text": "a) Telemedicine medical treatment",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "j17mjdf6nj",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "20kd8vdgsn",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "idbpoqm5ab",
+									"text": "b) Prescribed medicinal product",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "eptwyw39fb",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "6f3wckj6id",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "r1r9vfu2er",
+									"text": "8. Payment processing",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "mah4rl79n1",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "wzr40yw06u",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "pib49oz6wj",
+									"text": "The terms and conditions of PayPal (Europe) S.à r.l. et Cie, S.C.A. (registered office: 22-24 Boulevard Royal L-2449 Luxembourg) are available at "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "ozo89hw192",
+									"text": "https://www.paypal.com/de/webapps/mpp/ua/useragreement-full?locale.x=de_DE",
+									"href": "https://www.paypal.com/de/webapps/mpp/ua/useragreement-full?locale.x=de_DE"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "m0xxzi60nt",
+									"text": "."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "d2e3o9huhn",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "9oekz6fjrk",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "x4auesnonf",
+									"text": "The terms and conditions of Stripe Payments Europe Ltd. (registered office: The One Building, 1 Grand Canal Street Lower, Dublin 2, Ireland) can be viewed at "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "5uptpt2ez9",
+									"text": "https://stripe.com/payment-terms/legal",
+									"href": "https://stripe.com/payment-terms/legal"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "6tjrbcl6dr",
+									"text": "."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "aagr6khmwv",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "ef8elp5lr0",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "vcnsdtq5oy",
+									"text": "The terms and conditions of Klarna Bank AB (publ.) (registered office: Sveavagen 46, 111 34 Stockholm, Sweden) can be retrieved at "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "k5t5kvq74i",
+									"text": "https://www.klarna.com/de/agb/",
+									"href": "https://www.klarna.com/de/agb/"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "mtw7z7dnig",
+									"text": "."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "e43d5gyjut",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "66apxamcwo",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "6e8u17bmow",
+									"text": "9. Data protection and medical confidentiality",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "vikltbff7u",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "hx3tbw3dk8",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "52x6bt1gox",
+									"text": "10. Exclusion of liability",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "ltqyuhvek4",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "hw0qso8q8y",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "95at9yjekb",
+									"text": "11. Withdrawal instructions",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "yizgs8bgtx",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "njy28i43p3",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "v4fuhoyww6",
+									"text": "Withdrawal instructions",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "9joj7pjy13",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "h1qnwicqxu",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "qtgi53cwkk",
+									"text": "Right of withdrawal",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "hlmq1bwu21",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "qc7ol8vmnx",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "s8bw7kr9mu",
+									"text": "Expiry of the right of withdrawal",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "kqllt6jaz1",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "3pw8254g8q",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "uut3kbh283",
+									"text": "Consequences of withdrawal",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "git9071jv1",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "jxaiy5jdiv",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "k7jh5s7d7o",
+									"text": "Compensation for value",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "36jtlw569p",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "wi6yewlbw2",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "z6qju2nvb3",
+									"text": "Model withdrawal form",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "u4wht40jr9",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "j3rpy3vkdh",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "vnet1pwo4h",
+									"text": "12. Information obligations",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "vktm8ba97i",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "rnmvgpn2jy",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "5tss71l9zj",
+									"text": "The only language available for concluding the contract is German."
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "pt996wwa2o",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "pvz2q1yajw",
+									"text": "We are not obliged, and are generally not willing, to take part in dispute resolution proceedings before a consumer arbitration board. There is no out-of-court complaint or redress procedure to which DTC is subject."
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "cbhax0fr7j",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "2sfxm7kphs",
+									"text": "All further information about DTC, what it offers and how it is handled can be found in the descriptions at www.solean.com. You can cancel and correct entries of your data at any time during registration."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "l3yr86pief",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "w5npgi56og",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "0wkgp3zgj2",
+									"text": "13. Rights of use",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "u9yeesba4u",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "s4uxmb0gfx",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "ex5xa3anlz",
+									"text": "14. Final provisions",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "gs2ua3w2zz",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "ghhi9d5cb8",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "zi736b1te1",
+									"text": "DTC Healthtech Solution Limited",
+									"bold": true
+								}
+							]
+						},
+						{
+							"_type": "legalLine",
+							"_key": "01yss5a48y",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "ravyypf15r",
+									"text": "represented by its managing director Jan Mehner"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "9rq1wi2kfx",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "dddvau74ry",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "0uu0oy3tc3",
+									"text": "[1]",
+									"href": "#_ftnref1"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "9h4y9rau0o",
+									"text": " The IMC ("
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "8ut7pn7jqk",
+									"text": "https://www.medicalcouncil.ie/",
+									"href": "https://www.medicalcouncil.ie/"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "3vcukxynfq",
+									"text": ") is Ireland's medical council and the supervisory authority over all practising doctors, responsible for their training and for the medical code of conduct. All doctors who treat patients through SoLean are bound by the IMC's medical code of conduct, the Guide to Professional Conduct and Ethics for Registered Medical Professionals ("
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "ny7qforrxd",
+									"text": "https://www.medicalcouncil.ie/news-and-publications/reports/guide-to-professional-conduct-and-ethics-for-registered-medical-practitioners-amended-.pdf",
+									"href": "https://www.medicalcouncil.ie/news-and-publications/reports/guide-to-professional-conduct-and-ethics-for-registered-medical-practitioners-amended-.pdf"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "p725h6o1sn",
+									"text": ")."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "gap5vloan0",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "mcvll3tpom",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "u1zg7mt94k",
+									"text": "[2]",
+									"href": "#_ftnref2"
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "srsykjxbb0",
+									"text": " 2 "
+								},
+								{
+									"_type": "legalSpan",
+									"_key": "bqk5ixdo6n",
+									"text": "https://www.bundesgesundheitsministerium.de/service/begriffe-von-a-z/p/patientenmobilitaetsrichtlinie.html",
+									"href": "https://www.bundesgesundheitsministerium.de/service/begriffe-von-a-z/p/patientenmobilitaetsrichtlinie.html"
+								}
+							]
+						}
+					]
+				}
+			]
+		},
+		"returns-en": {
+			"title": "Right of withdrawal",
+			"slug": "returns",
+			"language": "en",
+			"blocks": [
+				{
+					"_type": "legalParagraph",
+					"_key": "dp88d5acwr",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "fgamtsrfdo",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "wsmibzhixi",
+									"text": "Withdrawal instructions",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "f7shaxptd3",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "nxdkjanejy",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "f7m878fdud",
+									"text": "Valid since 1 March 2024"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "gn3ggboc6c",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "a1kolh0ykc",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "5biz6det0u",
+									"text": "Right of withdrawal",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "62in2k7jrp",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "ztkadnp07p",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "9tutcr1lno",
+									"text": "As a user, you have the right to withdraw from the contract concluded with us for our brokerage services within 14 days, without giving any reason, in text form (for example by letter or e-mail). You may use the attached model withdrawal form for this purpose, although its use is not mandatory. The period begins once you have received these withdrawal instructions, but not before the day on which the contract was concluded."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "i6ua8tzthd",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "h9nv5a1aaz",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "j6ejmgruep",
+									"text": "To meet the withdrawal deadline, it is sufficient that you send your notice of withdrawal before the period expires, to"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "ry8h30n0v4",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "0h2ytwpvrq",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "8elxj4ewu1",
+									"text": "DTC Healthtech Solution Limited"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "whronqdimo",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "djw4wwdxmu",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "n4s5bu9oco",
+									"text": "1st Floor, Behan House, 10 Mount Street Lower,"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "vhfgzk55vo",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "wvlit9vtfu",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "spdnwyrkac",
+									"text": "Dublin, D02 HT71, Ireland"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "j8hayc98rr",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "5o78kkcd63",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "f90r2v2n4k",
+									"text": "E-mail: support@solean.com"
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "qr3nzld2w8",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "19po6w5gkx",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "7im2v50b45",
+									"text": "These withdrawal instructions apply only to the brokerage contract concluded between you and DTC. Withdrawal from the contracts brokered by DTC is governed by the relevant provisions of your respective contracting party."
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "8p328vn4zs",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "qazszm1cqq",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "lifxujro2l",
+									"text": "Expiry of the right of withdrawal",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "14ztzkaoak",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "ou7tkxqd21",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "a4iceh2jb2",
+									"text": "Consequences of withdrawal",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "c4kipw3rty",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "vr3kgpdjxe",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "endan8pg73",
+									"text": "Compensation for value",
+									"bold": true
+								}
+							]
+						}
+					]
+				},
+				{
+					"_type": "legalParagraph",
+					"_key": "69d6ezdkwb",
+					"lines": [
+						{
+							"_type": "legalLine",
+							"_key": "1dkbhaaexo",
+							"spans": [
+								{
+									"_type": "legalSpan",
+									"_key": "i5vmirgtig",
+									"text": "Model withdrawal form",
+									"bold": true
+								}
+							]
+						}
+					]
+				}
+			]
+		}
 	}
 }

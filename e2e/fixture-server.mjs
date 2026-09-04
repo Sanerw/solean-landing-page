@@ -220,6 +220,11 @@ async function sanityQuery(url) {
 		return fixture.testimonials[language] ?? [];
 	}
 
+	// The four policy documents, addressed by id the way the real query addresses them.
+	if (query.includes('legalPage-')) {
+		return fixture.legalPages[`${param('$slug')}-${language}`] ?? null;
+	}
+
 	const article = fixture.articles[language] ?? null;
 
 	// The Journal asks for the list, the article page for one by slug, and the absence of a

@@ -7,10 +7,20 @@ import { expect, test } from '@playwright/test';
  * rather than pinned here, where a lawful edit upstream would read as a test failure.
  */
 const DOCUMENTS = [
-	{ label: 'Impressum', href: '/legal-notice', heading: 'Impressum' },
-	{ label: 'Datenschutz', href: '/privacy', heading: 'Datenschutzerklärung' },
-	{ label: 'AGB', href: '/terms', heading: 'AGB' },
-	{ label: 'Widerruf', href: '/returns', heading: 'Widerrufsrecht' }
+	{ label: 'Impressum', href: '/legal-notice', heading: 'Impressum', english: 'Legal notice' },
+	{
+		label: 'Datenschutz',
+		href: '/privacy',
+		heading: 'Datenschutzerklärung',
+		english: 'Privacy policy'
+	},
+	{ label: 'AGB', href: '/terms', heading: 'AGB', english: 'General Terms and Conditions' },
+	{
+		label: 'Widerruf',
+		href: '/returns',
+		heading: 'Widerrufsrecht',
+		english: 'Right of withdrawal'
+	}
 ] as const;
 
 for (const doc of DOCUMENTS) {
@@ -24,6 +34,32 @@ for (const doc of DOCUMENTS) {
 		const body = page.locator('article');
 		await expect(body).toHaveAttribute('lang', 'de');
 		expect((await body.innerText()).length).toBeGreaterThan(500);
+	});
+
+	test(`/en${doc.href} serves ${doc.english}`, async ({ page }) => {
+		const response = await page.goto(`/en${doc.href}`);
+
+		expect(response?.status()).toBe(200);
+		await expect(page.getByRole('heading', { level: 1, name: doc.english })).toBeVisible();
+
+		// The seam feature 19 left: the article used to say `de` whatever the locale, so a
+		// screen reader read English text with a German voice. It now follows the document.
+		const body = page.locator('article');
+		await expect(body).toHaveAttribute('lang', 'en');
+		expect((await body.innerText()).length).toBeGreaterThan(500);
+	});
+
+	test(`${doc.href} and its English counterpart carry the same structure`, async ({ page }) => {
+		// The translation may not reshape the document: block for block, list for list. The
+		// wording is not compared, because that is the part that is meant to differ.
+		const shape = async (path: string) => {
+			await page.goto(path);
+			return page.locator('article > div > div').evaluate((el) =>
+				[...el.children].map((child) => child.tagName)
+			);
+		};
+
+		expect(await shape(`/en${doc.href}`)).toEqual(await shape(doc.href));
 	});
 
 	test(`the footer links to ${doc.heading}`, async ({ page }) => {

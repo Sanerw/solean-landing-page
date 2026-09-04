@@ -24,11 +24,7 @@ export type LegalBlock =
 	| { kind: 'list'; items: LegalLine[] };
 
 export interface LegalDocument {
-	/** The document's own German title, as the source page headed it. */
+	/** The document's own title, in its own language, as the source page headed it. */
 	title: string;
-	/** The page it was copied from, so the next person knows what to diff against. */
-	source: string;
-	/** The date it was copied. The document's own "Stand" line, where it has one, is a block. */
-	copied: string;
 	blocks: LegalBlock[];
 }

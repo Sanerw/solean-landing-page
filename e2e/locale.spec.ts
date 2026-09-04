@@ -45,8 +45,9 @@ test('the default language is German end to end', async ({ page }) => {
 	await expect(page.getByRole('link', { name: 'Start', exact: true }).first()).toBeVisible();
 	await expect(page.getByRole('heading', { name: 'Häufige Fragen.' })).toBeVisible();
 
-	// German in both locales, because they are the German legal texts rather than a translation.
-	await page.goto('/en/privacy');
+	// The legal pages used to serve the German text under both locales, because there was only
+	// one. Each now has its own document, so the bare path is the German one.
+	await page.goto('/privacy');
 	await expect(page.getByRole('heading', { level: 1, name: 'Datenschutzerklärung' })).toBeVisible();
 });
 
@@ -55,6 +56,11 @@ test('English is complete under its prefix', async ({ page }) => {
 
 	await expect(page.locator('footer').getByText('Contact our care team')).toBeVisible();
 	await expect(page.getByRole('heading', { name: 'Frequently asked questions.' })).toBeVisible();
+
+	// The last German-only surface. `legal-pages.spec.ts` covers all four in both languages;
+	// what this asserts is that the locale sweep no longer has an exception in it.
+	await page.goto('/en/privacy');
+	await expect(page.getByRole('heading', { level: 1, name: 'Privacy policy' })).toBeVisible();
 });
 
 // The control names itself in the language it is currently showing, so the second half of the
