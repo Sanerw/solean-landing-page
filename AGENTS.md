@@ -512,9 +512,29 @@ so an older pnpm resolving without the rule produces a lockfile the deploy rejec
 - Unit tests (watch): `pnpm test:watch`
 - Browser tests: `pnpm test:browser` (Playwright, Chromium)
 - Questionnaire fixture API: `pnpm fixture:questionnaire` (port 4319)
+- RxScale contract check: `pnpm check:model`
 
 No lint or format command is configured. No `Verify` command and no automatic
 GitHub checks exist yet.
+
+`pnpm check:model` asks RxScale whether their questionnaire still matches
+`src/lib/features/questionnaire/rxscale/model-snapshot.json`, the copy feature 24
+builds against. It is **deliberately not part of `pnpm test` or any CI job**:
+their availability is not this project's build status, and an outage of theirs
+must not redden a build for a change that has nothing to do with them. Open
+question 13 in `project-overview.md` records that the schedule for running it is
+still undecided.
+
+It compares structure only, never wording: names, types, `isRequired`,
+`visibleIf`, choice values, `multipletext` items and validator expressions, plus
+the document's `identifier` and `version`. A reworded question of theirs is not
+drift, because the wording is Solean's from feature 24a.
+
+Two exit codes, and the difference matters: **1 means the questionnaire moved**,
+**2 means RxScale could not be reached or answered something unusable**. Sharing
+one would make a network blip read as a change to the funnel. When it reports
+drift, the fix is a fresh snapshot plus whatever the change implies for the
+mapping and the coverage guards, and that is a deploy.
 
 **The test gate is on.** `pnpm test` is declared above, so a step that adds
 logic where a wrong answer is possible ships a passing test in the same

@@ -486,7 +486,7 @@ claims are not approved production content.
     branching and per-screen validation as data, with the answer store that holds
     them. Unit tested. The live flow still runs on the fetched model, so nothing
     user-facing changes yet.
-  - [ ] 24b. **The RxScale contract** - the committed model snapshot, the mapper from
+  - [x] 24b. **The RxScale contract** - the committed model snapshot, the mapper from
     our answers into their `data` shape with its reverse index, the shadow
     `survey-core` that applies their `visibleIf` and `validators` locally, the
     completeness guard, and the contract test that fails on live drift. Still

@@ -1,0 +1,1141 @@
+{
+	"identifier": "LIVE: MedQ NEW RECOMMENDER (01/26)",
+	"model": {
+		"checkErrorsMode": "onValueChanged",
+		"completeText": "Abschließen",
+		"completedHtml": {
+			"de": "<h3>Wir erstellen deine Produktempfehlung</h3>",
+			"default": "<h3>Thank you for your answers</h3>"
+		},
+		"completedHtmlOnCondition": [
+			{
+				"html": "<h3>Wir erstellen deine Produktempfehlung</h3>"
+			}
+		],
+		"pageNextText": "Weiter",
+		"pagePrevText": "Zurück",
+		"pages": [
+			{
+				"elements": [
+					{
+						"description": "Deine Antworten werden vertraulich zwischen Dir und unserem Ärzteteam behandelt.",
+						"klaviyoIdentifierKey": "email",
+						"klaviyoTrackEventName": "003MedQ Multi started",
+						"klaviyoTrackKey": "E-Mail",
+						"name": "EMail",
+						"title": "Beginnen wir mit Deinen Kontaktdaten\nBitte gib Deine E-Mail ein:",
+						"type": "text"
+					},
+					{
+						"description": "Mit der Angabe Deiner E-Mail-Adresse bestätigst Du, dass SoLean Dir Informationen per E-Mail zusenden darf. Dies kannst Du jederzeit widerrufen.",
+						"name": "InfoEMail",
+						"title": "Info:",
+						"type": "expression"
+					}
+				],
+				"name": "page30",
+				"title": "E-Mail"
+			},
+			{
+				"elements": [
+					{
+						"isRequired": true,
+						"items": [
+							{
+								"isRequired": true,
+								"name": "Name",
+								"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+								"title": "Vorname"
+							},
+							{
+								"isRequired": true,
+								"name": "Surname",
+								"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+								"title": "Nachname"
+							}
+						],
+						"klaviyoIdentifierKey": "firstname",
+						"klaviyoTrackEventName": "003MedQ Multi started",
+						"klaviyoTrackKey": "Firstname",
+						"name": "Name",
+						"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+						"title": "Bitte gib Deinen Vor- und Nachnamen an.",
+						"type": "multipletext",
+						"visible": false
+					},
+					{
+						"isRequired": true,
+						"klaviyoIdentifierKey": "first_name",
+						"klaviyoTrackEventName": "003MedQ Multi Firstname submit",
+						"klaviyoTrackKey": "Firstname",
+						"name": "FirstName",
+						"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+						"title": "Bitte gib Deinen Vornamen an.",
+						"type": "text"
+					},
+					{
+						"isRequired": true,
+						"klaviyoIdentifierKey": "last_name",
+						"klaviyoTrackEventName": "003MedQ Multi Lastname submit",
+						"klaviyoTrackKey": "Lastname",
+						"name": "Surname",
+						"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+						"title": "Bitte gib Deinen Nachnamen an.",
+						"type": "text"
+					}
+				],
+				"name": "page27",
+				"title": "Name"
+			},
+			{
+				"elements": [
+					{
+						"isRequired": true,
+						"name": "dob",
+						"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+						"title": "Bitte gib Dein Geburtsdatum an",
+						"type": "os-date-picker",
+						"validators": [
+							{
+								"expression": "age({dob}) < 80 && age({dob}) >= 18",
+								"text": "Leider können wir Dir unseren Service nicht anbieten. Wir empfehlen Dir Dein Arzt des Vertrauens zu konsultieren.",
+								"type": "expression"
+							}
+						]
+					},
+					{
+						"isRequired": true,
+						"items": [
+							{
+								"inputType": "number",
+								"isRequired": true,
+								"maxValueExpression": "31",
+								"minValueExpression": "1",
+								"name": "Day",
+								"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+								"title": "Tag"
+							},
+							{
+								"inputType": "number",
+								"isRequired": true,
+								"maxValueExpression": "12",
+								"minValueExpression": "1",
+								"name": "Month",
+								"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+								"title": "Monat"
+							},
+							{
+								"inputType": "number",
+								"isRequired": true,
+								"maxValueExpression": "2007",
+								"minValueExpression": "1935",
+								"name": "Year",
+								"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+								"title": "Jahr",
+								"validators": [
+									{
+										"type": "expression"
+									}
+								]
+							}
+						],
+						"name": "dob2",
+						"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+						"title": "Bitte gib Dein Geburtsdatum an",
+						"type": "multipletext",
+						"visible": false
+					}
+				],
+				"name": "page26",
+				"title": "dob"
+			},
+			{
+				"elements": [
+					{
+						"choices": [
+							{
+								"text": "Weiblich",
+								"value": "female"
+							},
+							{
+								"text": "Männlich",
+								"value": "male"
+							}
+						],
+						"isRequired": true,
+						"name": "Gender",
+						"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+						"title": "Welches biologische Geschlecht hast Du?",
+						"type": "radiogroup"
+					}
+				],
+				"name": "page3",
+				"title": "Gender"
+			},
+			{
+				"elements": [
+					{
+						"choices": [
+							{
+								"text": "Ja",
+								"value": "yes"
+							},
+							{
+								"text": "Nein",
+								"value": "no"
+							}
+						],
+						"isRequired": true,
+						"name": "isPregnantorBreastfeeding",
+						"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+						"title": "Bist Du aktuell schwanger oder stillst Du?",
+						"type": "radiogroup",
+						"validators": [
+							{
+								"expression": "{isPregnantorBreastfeeding} = 'no'",
+								"text": "Es tut uns sehr leid, aber wir können Dir das Medikament nicht verschreiben. Bitte kontaktiere Deinen Arzt des Vertrauens.",
+								"type": "expression"
+							}
+						],
+						"visibleIf": "{Gender} = 'female'"
+					}
+				],
+				"name": "page4",
+				"title": "isPregnantorBreastfeeding"
+			},
+			{
+				"elements": [
+					{
+						"choices": [
+							{
+								"text": "Ja",
+								"value": "Yes"
+							},
+							{
+								"text": "Nein",
+								"value": "No"
+							}
+						],
+						"description": "Das Medikament muss mindestens 2 Monate vor einer geplanten Schwangerschaft abgesetzt werden.",
+						"isRequired": true,
+						"name": "PlanningPregnancy",
+						"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+						"title": "Ist in den nächsten 2 Monaten eine Schwangerschaft geplant?",
+						"type": "radiogroup",
+						"validators": [
+							{
+								"expression": "{PlanningPregnancy} = 'No'",
+								"text": "Das Medikament muss mindestens 2 Monate vor einer geplanten Schwangerschaft abgesetzt werden.",
+								"type": "expression"
+							}
+						],
+						"visibleIf": "{Gender} = 'female'"
+					}
+				],
+				"name": "page5",
+				"title": "PlanningPregnancy"
+			},
+			{
+				"elements": [
+					{
+						"isRequired": true,
+						"items": [
+							{
+								"inputType": "number",
+								"isRequired": true,
+								"name": "size",
+								"requiredErrorText": "Erforderlich",
+								"title": "Größe (cm)",
+								"validators": [
+									{
+										"expression": "{WeightSize.size} > 120 and {WeightSize.size} < 250",
+										"text": "Bitte überprüfe Deine Angaben.",
+										"type": "expression"
+									}
+								]
+							},
+							{
+								"inputType": "number",
+								"isRequired": true,
+								"name": "weight",
+								"requiredErrorText": "Erforderlich",
+								"title": "Gewicht (kg)",
+								"validators": [
+									{
+										"expression": "{WeightSize.weight} > 40 and {WeightSize.weight} < 300",
+										"text": "Bitte überprüfe Deine Angaben.",
+										"type": "expression"
+									}
+								]
+							}
+						],
+						"name": "WeightSize",
+						"requiredErrorText": "Diese Angaben werden benötigt, um Deinen BMI zu errechnen.",
+						"title": "Bitte gib Deine Größe und Dein Gewicht an.",
+						"type": "multipletext",
+						"validators": [
+							{
+								"expression": "({WeightSize.weight} empty) || ({WeightSize.size} empty)  || ((({WeightSize.weight})/({WeightSize.size}/100  * {WeightSize.size}/100)) >= 27)",
+								"text": "Dieses Medikament kann nur verschrieben werden, wenn Dein BMI über 27 liegt oder zwischen 27 und 30, und Du eine gewichtsbedingte Begleiterkrankung hast.",
+								"type": "expression"
+							}
+						]
+					}
+				],
+				"name": "page2",
+				"title": "WeightSize"
+			},
+			{
+				"elements": [
+					{
+						"choices": [
+							{
+								"text": "Hoher Cholesterinspiegel oder hohe Triglyceride",
+								"value": "High cholesterol or high triglycerides"
+							},
+							{
+								"text": "Herzkrankheit oder periphere Gefäßerkrankung, einschließlich Angina pectoris, frühere Herzinfarkte, früherer Schlaganfall",
+								"value": "Heart disease or peripheral vascular disease, including angina, previous heart attacks, previous stroke"
+							},
+							{
+								"text": "Knie- oder Hüftarthrose",
+								"value": "Knee or hip osteoarthritis"
+							},
+							{
+								"text": "Rückenschmerzen im Zusammenhang mit Übergewicht",
+								"value": "Pain in back related to weight"
+							},
+							{
+								"text": "Polyzystisches Ovarialsyndrom (PCOS)",
+								"value": "Polycystic ovary syndrome (PCOS)"
+							},
+							{
+								"text": "Fettleber",
+								"value": "Fatty liver"
+							},
+							{
+								"text": "Hoher Blutdruck",
+								"value": "High blood pressure"
+							},
+							{
+								"text": "Diabetes Typ 2",
+								"value": "Type 2 Diabetes"
+							},
+							{
+								"text": "Prädiabetes",
+								"value": "Pre-diabetes"
+							}
+						],
+						"isRequired": true,
+						"name": "WeightRelatedConditions",
+						"noneText": "Keine der Genannten",
+						"otherErrorText": "Bitte gib Informationen zu weiteren Erkrankungen an.",
+						"otherPlaceholder": "Bitte gib Informationen zu weiteren Erkrankungen an.",
+						"otherText": "Andere",
+						"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+						"showNoneItem": true,
+						"showOtherItem": true,
+						"title": "Wurde bei Dir eine der folgenden Erkrankungen festgestellt?",
+						"type": "checkbox",
+						"validators": [
+							{
+								"expression": "{WeightRelatedConditions} anyof ['Pre-diabetes', 'Type 2 Diabetes', 'High blood pressure', 'Fatty liver', 'Polycystic ovary syndrome (PCOS)', 'Pain in back related to weight', 'Knee or hip osteoarthritis', 'Heart disease or peripheral vascular disease, including angina, previous heart attacks, previous stroke', 'High cholesterol or high triglycerides', 'other']",
+								"text": "Es tut uns leid. Das Medikament kann bei einem BMI zwischen 27 und 30 nur verschrieben werden, wenn gewichtsbedingten gesundheitlichen Problemen vorliegen.",
+								"type": "expression"
+							}
+						],
+						"visibleIf": "{WeightSize.size} notempty and {WeightSize.weight} notempty and (({WeightSize.weight})/({WeightSize.size}/100  * {WeightSize.size}/100)) >= 27 and (({WeightSize.weight})/({WeightSize.size}/100  * {WeightSize.size}/100)) <= 30"
+					}
+				],
+				"name": "page1",
+				"title": "WeightRelatedConditions"
+			},
+			{
+				"elements": [
+					{
+						"choices": [
+							{
+								"text": "Schilddrüsenkrebs",
+								"value": "Thyroid cancer"
+							},
+							{
+								"text": "Pankreatitis oder Erkrankungen der Bauchspeicheldrüse",
+								"value": "Pancreatitis"
+							},
+							{
+								"text": "Gallensteine, Gallenblasenerkrankung oder Gallenwegserkrankung",
+								"value": "Gallstones, gallbladder disease"
+							},
+							{
+								"text": "Lebererkrankung - Fettleber ausgenommen",
+								"value": "Liver disease"
+							},
+							{
+								"text": "Nierenerkrankung",
+								"value": "Kidney disease"
+							},
+							{
+								"text": "Diabetische Retinopathie",
+								"value": "Diabetic retinopathy"
+							},
+							{
+								"text": "Tachykardie oder Herzleitungsstörungen",
+								"value": "Tachycardia or cardiac conduction disorders"
+							},
+							{
+								"text": "Psychische oder psychiatrische Probleme",
+								"value": "Psychological or psychiatric problems"
+							},
+							{
+								"text": "Verwendung von Insulin (z. B. Actrapid, Humulin) oder Arzneimitteln gegen Diabetes wie Sulfonylharnstoffe (z. B. Gliclazid, Glibenclamid, Tolbutamid, Glipizid, Glimepirid)",
+								"value": "insulin or sulphonylureas"
+							},
+							{
+								"text": "Herzinsuffizienz",
+								"value": "Heart failure"
+							},
+							{
+								"text": "Gewichtsverlustoperation/Gewichtsreduktionschirurgie in den letzten 3 Monaten",
+								"value": "Weight loss surgery"
+							},
+							{
+								"text": "Diabetes Typ 1",
+								"value": "Type 1 diabetes"
+							},
+							{
+								"text": "Endokrinologische und/oder Schilddrüsenstörungen",
+								"value": "Endocrinological and/or thyroid disorders"
+							},
+							{
+								"text": "Porphorie",
+								"value": "porphoria"
+							},
+							{
+								"text": "Entzündliche Magen- oder Darmerkrankungen (z. B. Morbus Crohn oder Colitis ulcerosa)",
+								"value": "Inflammatory stomach or intestinal diseases"
+							},
+							{
+								"text": "Schwere gastrointestinale Störungen (wie Gastroparese)",
+								"value": "Severe gastrointestinal disorders"
+							}
+						],
+						"isRequired": true,
+						"name": "Diseases",
+						"noneText": "Keine der Genannten",
+						"otherErrorText": "Bitte gib Informationen zu weiteren Erkrankungen an",
+						"otherPlaceholder": "Bitte gib Informationen zu weiteren Erkrankungen an.",
+						"otherText": "Andere",
+						"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+						"showNoneItem": true,
+						"showOtherItem": true,
+						"title": "Hast Du eine oder mehrere der folgenden Erkrankungen?",
+						"type": "checkbox",
+						"validators": [
+							{
+								"expression": "{Diseases} = ['none'] or {Diseases} = ['Gallstones, gallbladder disease'] or {Diseases} = ['other']",
+								"text": "Es tut uns sehr leid, aber wir können Dir das Medikament nicht verschreiben. Bitte kontaktiere Deinen Arzt des Vertrauens.",
+								"type": "expression"
+							}
+						]
+					}
+				],
+				"name": "page6",
+				"title": "Diseases"
+			},
+			{
+				"elements": [
+					{
+						"choices": [
+							{
+								"text": "Ja",
+								"value": "Yes"
+							},
+							{
+								"text": "Nein",
+								"value": "No"
+							}
+						],
+						"isRequired": true,
+						"name": "GallbladderRemoved",
+						"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+						"title": "Hattest Du eine Operation zur Entfernung Deiner Gallenblase?",
+						"type": "radiogroup",
+						"validators": [
+							{
+								"expression": "{GallbladderRemoved} = 'Yes'",
+								"text": "Leider können wir Dir auf Grund Deiner Angaben kein Medikament verschreiben. ",
+								"type": "expression"
+							}
+						],
+						"visibleIf": "{Diseases} allof ['Gallstones, gallbladder disease']"
+					}
+				],
+				"name": "page7",
+				"title": "GallbladderRemoved"
+			},
+			{
+				"elements": [
+					{
+						"choices": [
+							{
+								"text": "Medulläres Schilddrüsenkarzinom",
+								"value": "Medullary thyroid cancer"
+							},
+							{
+								"text": "Multiple endokrine Neoplasie",
+								"value": "Multiple Endocrine Neoplasia"
+							}
+						],
+						"isRequired": true,
+						"name": "FamilyDiseases",
+						"noneText": "Keine der Genannten",
+						"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+						"showNoneItem": true,
+						"title": "Sind bei Dir oder in Deiner Familie folgende Erkrankungen bereits aufgetreten?",
+						"type": "checkbox",
+						"validators": [
+							{
+								"expression": "{FamilyDiseases} = ['none']",
+								"text": "Leider können wir Dir das Medikament auf Grund Deiner Angaben nicht verschreiben.",
+								"type": "expression"
+							}
+						]
+					}
+				],
+				"name": "page8",
+				"title": "FamilyDiseases"
+			},
+			{
+				"elements": [
+					{
+						"choices": [
+							{
+								"text": "Ja",
+								"value": "Yes"
+							},
+							{
+								"text": "Nein",
+								"value": "No"
+							}
+						],
+						"isRequired": true,
+						"name": "PsychologicalConditions",
+						"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+						"title": "Wurden bei Dir Depressionen oder andere psychische Gesundheitsprobleme diagnostiziert oder hattest Du jemals Selbstmordgedanken?",
+						"type": "radiogroup",
+						"validators": [
+							{
+								"expression": "{PsychologicalConditions} = 'No'",
+								"text": "Leider können wir Dir auf Grund Deiner Angaben kein Medikament verschreiben.",
+								"type": "expression"
+							}
+						]
+					}
+				],
+				"name": "page9",
+				"title": "PsychologicalConditions"
+			},
+			{
+				"elements": [
+					{
+						"choices": [
+							{
+								"text": "Ja",
+								"value": "Yes"
+							},
+							{
+								"text": "Nein",
+								"value": "No"
+							}
+						],
+						"description": "Magersucht (Anorexie), Bulimie, Binge Eating oder ähnliches. Auch wenn die Essstörung nicht medizinisch bestätigt wurde, wähle bitte Ja.",
+						"isRequired": true,
+						"name": "EatingDisorder",
+						"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+						"title": "Leidest Du derzeit oder hast Du früher an einer Essstörung gelitten?\n",
+						"type": "radiogroup",
+						"validators": [
+							{
+								"expression": "{EatingDisorder} = 'No'",
+								"text": "Leider können wir Dir das Medikament auf Grund Deiner Angaben nicht verschreiben.",
+								"type": "expression"
+							}
+						]
+					}
+				],
+				"name": "page10",
+				"title": "EatingDisorder"
+			},
+			{
+				"elements": [
+					{
+						"choices": [
+							"Ich habe absichtlich erbrochen, weil ich mich unangenehm voll gefühlt habe.",
+							"Ich bin besorgt, die Kontrolle über mein Essverhalten zu verlieren.",
+							"Ich habe in den letzten drei Monaten mehr als 6 kg abgenommen.",
+							"Ich halte mich für dick, obwohl andere sagen, dass ich zu dünn bin.",
+							"Mein Leben wird vom Thema Essen dominiert."
+						],
+						"isRequired": true,
+						"name": "question1",
+						"noneText": "Keine der Genannten",
+						"showNoneItem": true,
+						"title": "Trifft eine oder treffen mehrere der Aussagen auf Dich zu?\n",
+						"type": "checkbox"
+					}
+				],
+				"name": "EatingDisorder2",
+				"title": "EatingDisorder2"
+			},
+			{
+				"elements": [
+					{
+						"choices": [
+							{
+								"text": "Liraglutid",
+								"value": "Liraglutide"
+							},
+							{
+								"text": "Semaglutid",
+								"value": "Semaglutide"
+							},
+							"Tirzepatid",
+							"Benzylalkohol",
+							{
+								"text": "Dinatriumphosphat-Dihydrat",
+								"value": "Disodium phosphate dihydrate"
+							},
+							{
+								"text": "Propylenglykol",
+								"value": "Propylene glycol"
+							},
+							{
+								"text": "Phenol",
+								"value": "phenol"
+							},
+							{
+								"text": "Salzsäure/Natriumhydroxid",
+								"value": "Hydrochloric Acid/Sodium Hydroxide"
+							}
+						],
+						"isRequired": true,
+						"name": "allergy",
+						"noneText": "Keine der Genannten",
+						"otherErrorText": "Bitte gib Informationen zu Deinen Allergien an.",
+						"otherPlaceholder": "Bitte gib Informationen zu Deinen Allergien an.",
+						"otherText": "Andere",
+						"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+						"showNoneItem": true,
+						"showOtherItem": true,
+						"title": "Bist Du gegen Substanzen, Medikamente oder Lebensmittel allergisch?",
+						"type": "checkbox",
+						"validators": [
+							{
+								"expression": "{allergy} = ['none'] or {allergy} allof ['other']",
+								"text": "Leider können wir Dir das Medikament auf Grund Deiner Allergien nicht verschreiben.",
+								"type": "expression"
+							}
+						]
+					}
+				],
+				"name": "page16",
+				"title": "allergy"
+			},
+			{
+				"elements": [
+					{
+						"choices": [
+							{
+								"text": "Ja",
+								"value": "yes"
+							},
+							{
+								"text": "Nein",
+								"value": "no"
+							}
+						],
+						"description": "z.B mit Wegovy, Saxenda oder Mounjaro",
+						"isRequired": true,
+						"name": "TakingWeightlossMedication",
+						"noneText": "Keine der Genannten",
+						"otherText": "Andere",
+						"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+						"title": "Bist Du bereits in Behandlung von Übergewicht und/oder Diabetes Typ 2?*\n",
+						"type": "radiogroup"
+					}
+				],
+				"name": "page17",
+				"title": "TakingWeightlossMedication"
+			},
+			{
+				"elements": [
+					{
+						"choices": [
+							{
+								"text": "Wegovy",
+								"value": "wegovy"
+							},
+							{
+								"text": "Mounjaro",
+								"value": "mounjaro"
+							},
+							{
+								"text": "Saxenda",
+								"value": "saxenda"
+							},
+							{
+								"text": "Nevolat (Liraglutid)",
+								"value": "nevolat (liraglutid)"
+							},
+							{
+								"text": "Ozempic",
+								"value": "ozempic"
+							},
+							{
+								"text": "Orilstat",
+								"value": "Orlistat"
+							},
+							{
+								"text": "Rybelsus",
+								"value": "rybelsus"
+							},
+							{
+								"text": "Victoza",
+								"value": "victoza"
+							},
+							{
+								"text": "Xenical",
+								"value": "xenical"
+							},
+							{
+								"text": "Byetta",
+								"value": "byetta"
+							},
+							{
+								"text": "Bydureon",
+								"value": "bydureon"
+							},
+							{
+								"text": "Trulicity",
+								"value": "trulicity"
+							},
+							{
+								"text": "Tanzeum",
+								"value": "tanzeum"
+							}
+						],
+						"isRequired": true,
+						"name": "WeightlossMedication",
+						"otherErrorText": "Bitte gib Dein Medikament an.",
+						"otherPlaceholder": "Name  / Dosierung  (ie: 25mg) / Häufigkeit der Einnahme (z.B.: 1 Tablette pro Tag) / Dauer der Einnahme (z.B. 4 Wochen)",
+						"otherText": "Andere",
+						"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+						"showOtherItem": true,
+						"title": "Bitte wähle die entsprechenden Medikamente:",
+						"type": "radiogroup",
+						"validators": [
+							{
+								"type": "expression"
+							}
+						],
+						"visibleIf": "({TakingWeightlossMedication} == 'yes')"
+					}
+				],
+				"name": "page18",
+				"title": "WeightlossMedication"
+			},
+			{
+				"elements": [
+					{
+						"choices": [
+							{
+								"text": "0,25",
+								"value": "0,25 mg"
+							},
+							{
+								"text": "0,5",
+								"value": "0,5 mg"
+							},
+							{
+								"text": "1,0",
+								"value": "1 mg"
+							},
+							{
+								"text": "1,7",
+								"value": "1,7 mg"
+							},
+							{
+								"text": "2,4",
+								"value": "2,4 mg"
+							}
+						],
+						"isRequired": true,
+						"name": "CurrentDosingSemaglutide",
+						"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+						"title": "In welcher Dosierung verwendest Du das Medikament?",
+						"type": "radiogroup",
+						"visibleIf": "{WeightlossMedication} = 'wegovy' "
+					},
+					{
+						"choices": [
+							{
+								"text": "0,25",
+								"value": "0,25 mg"
+							},
+							{
+								"text": "0,5",
+								"value": "0,5 mg"
+							},
+							{
+								"text": "1,0",
+								"value": "1 mg"
+							},
+							{
+								"text": "1,7",
+								"value": "1,7 mg"
+							},
+							{
+								"text": "2,0",
+								"value": "2,0 mg"
+							}
+						],
+						"isRequired": true,
+						"name": "CurrentDosingSemaglutide2",
+						"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+						"title": "In welcher Dosierung verwendest Du das Medikament?",
+						"type": "radiogroup",
+						"visibleIf": "{WeightlossMedication} = 'ozempic'"
+					},
+					{
+						"choices": [
+							"0,6",
+							"1,2",
+							"1,8",
+							"2,4",
+							"3,0"
+						],
+						"isRequired": true,
+						"name": "DosingSaxenda",
+						"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+						"title": "In welcher Dosierung verwendest Du das Medikament?",
+						"type": "radiogroup",
+						"visibleIf": "{WeightlossMedication} anyof ['saxenda', 'nevolat (liraglutid)']"
+					},
+					{
+						"choices": [
+							{
+								"text": "2,5 mg",
+								"value": "2.5 mg"
+							},
+							{
+								"text": "5 mg",
+								"value": "5.0 mg"
+							},
+							{
+								"text": "7,5 mg",
+								"value": "7.5 mg"
+							},
+							{
+								"text": "10 mg",
+								"value": "10.0 mg"
+							},
+							{
+								"text": "12,5 mg",
+								"value": "12.5 mg"
+							},
+							{
+								"text": "15 mg",
+								"value": "15.0 mg"
+							}
+						],
+						"isRequired": true,
+						"name": "question4",
+						"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+						"title": "In welcher Dosierung verwendest Du das Medikament?",
+						"type": "radiogroup",
+						"visibleIf": "{WeightlossMedication} = 'mounjaro'"
+					}
+				],
+				"name": "page19",
+				"title": "CurrentDosing"
+			},
+			{
+				"elements": [
+					{
+						"description": "Bitte gib den Zeitpunkt so genau wie möglich an (Datum).",
+						"isRequired": true,
+						"name": "LastIntakeWeightlossMedication",
+						"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+						"title": "Wann war Deine letzte Dosis des angegebenen Medikaments?",
+						"type": "text",
+						"visibleIf": "{WeightlossMedication} anyof ['wegovy', 'ozempic', 'saxenda', 'mounjaro', 'nevolat (liraglutid)']"
+					}
+				],
+				"name": "page20",
+				"title": "LastIntakeWeightlossMedication"
+			},
+			{
+				"elements": [
+					{
+						"description": "Bitte gib die Dauer so genau wie möglich an (Wochen).",
+						"inputType": "number",
+						"isRequired": true,
+						"max": 100,
+						"maxErrorText": "Bitte überprüfe Deine Angaben.",
+						"minErrorText": "Bitte überprüfe Deine Angaben.",
+						"name": "DurationCurrentWeightLossDose",
+						"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+						"title": "Wie lange verwendest Du bereits das Medikament in der angegebenen Dosierung?",
+						"type": "text",
+						"visibleIf": "{WeightlossMedication} anyof ['wegovy', 'ozempic', 'saxenda', 'mounjaro', 'nevolat (liraglutid)']"
+					}
+				],
+				"name": "page21",
+				"title": "DurationCurrentWeightLossDose"
+			},
+			{
+				"elements": [
+					{
+						"choices": [
+							{
+								"text": "Ja",
+								"value": "Yes"
+							},
+							{
+								"text": "Nein",
+								"value": "No"
+							}
+						],
+						"isRequired": true,
+						"name": "WegovySideEffects",
+						"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+						"title": "Hast Du Nebenwirkungen bei der Anwendung Deines derzeitigen Medikamentes?",
+						"type": "radiogroup",
+						"validators": [
+							{
+								"type": "expression"
+							}
+						],
+						"visibleIf": "{WeightlossMedication} anyof ['wegovy', 'saxenda', 'ozempic', 'mounjaro', 'nevolat (liraglutid)'] and {TakingWeightlossMedication} = 'yes'"
+					}
+				],
+				"name": "page22",
+				"title": "SideEffects"
+			},
+			{
+				"elements": [
+					{
+						"isRequired": true,
+						"name": "SideEffectsDescription",
+						"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+						"title": "Bitte gib an, welche Nebenwirkungen Du hast sowie den Schweregrad dieser Nebenwirkungen.",
+						"type": "comment",
+						"visibleIf": "{WegovySideEffects} = 'Yes'"
+					}
+				],
+				"name": "page23",
+				"title": "SideEffectsDescription"
+			},
+			{
+				"elements": [
+					{
+						"choices": [
+							{
+								"text": "Ja",
+								"value": "yes"
+							},
+							{
+								"text": "Nein",
+								"value": "no"
+							}
+						],
+						"description": "Das Medikament verzögert die Magenentleerung und könnte die Aufnahme von gleichzeitig oral gegebenen Medikamenten beeinflussen.",
+						"isRequired": true,
+						"name": "OtherMedication",
+						"otherPlaceholder": "Name des Medikaments / Dosierung des Medikaments (ie: 25mg) / Häufigkeit der Einnahme (z.B.: 1 Tablette pro Tag)",
+						"otherText": "Ja",
+						"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+						"title": "Nimmst Du noch andere Medikamente ein, einschließlich verschreibungspflichtige und rezeptfreie?",
+						"type": "radiogroup",
+						"validators": [
+							{
+								"type": "expression"
+							}
+						]
+					}
+				],
+				"name": "page24",
+				"title": "OtherMedication"
+			},
+			{
+				"elements": [
+					{
+						"description": "Name / Dosierung (ie: 25mg) / Häufigkeit der Einnahme (z.B.: 1 Tablette pro Tag)",
+						"isRequired": true,
+						"name": "OtherMedicationsDescription",
+						"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+						"title": "Bitte gib Informationen zu den anderen Medikamenten an.",
+						"type": "comment",
+						"visibleIf": "{OtherMedication} = 'yes'"
+					}
+				],
+				"name": "page25",
+				"title": "OtherMedicationsDescription"
+			},
+			{
+				"elements": [
+					{
+						"choices": [
+							{
+								"text": "Bestätigen",
+								"value": "Item 3"
+							}
+						],
+						"description": "• Ich bestätige, vor der Medikamenteneinnahme Diät- und Sportversuche unternommen zu haben.\n• Ich werde die Packungsbeilage sowie den Arztbrief von SoLean lesen und bei Bedenken meinen Arzt konsultieren.\n• Ich informiere mich, wie das Medikament aufzubewahren und wie die Nadeln zu entsorgen sind.\n• Die Behandlung dient ausschließlich meinem persönlichen Gebrauch.\nMeine Angaben sind genau und wahrheitsgemäß.\n• Ich bin mir der Behandlungsrisiken bewusst.\n• Ich verstehe die Notwendigkeit regelmäßiger ärztlicher Kontrollen.\n• Bei Stimmungsänderungen suche ich sofort ärztliche Hilfe.\n• Mir ist bewusst, dass das Medikament die Fahrtüchtigkeit und Alkoholverträglichkeit beeinflussen kann.\n",
+						"isRequired": true,
+						"name": "Disclaimer",
+						"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+						"title": "Bitte lese die folgende Information und bestätige, dass Du diese verstanden hast.\n",
+						"type": "checkbox",
+						"validators": [
+							{
+								"type": "expression"
+							}
+						]
+					}
+				],
+				"name": "page28",
+				"title": "Disclaimer"
+			},
+			{
+				"elements": [
+					{
+						"description": "Alle Medikamente von SoLean sind original und lieferbar. Sie werden Dir diskret und gekühlt von unseren Versandapotheken zugeschickt. \nWenn Du Fragen oder Bedenken hast, wende Dich bitte an unseren Kundenservice: support@solean.com",
+						"name": "question3",
+						"title": "Info",
+						"type": "expression"
+					},
+					{
+						"description": "Bitte beachte, dass die Packung des Saxenda® Pens und des Nevolat® Pens keine Einwegnadeln enthält. Für die tägliche Verabreichung kannst Du die Einwegnadeln beim Abschluss Deiner Bestellung hinzufügen.",
+						"name": "InfoSaxendaPen",
+						"title": "Für das Produkt Saxenda & Nevolat:",
+						"type": "expression"
+					},
+					{
+						"choices": [
+							{
+								"text": "Ich verstehe",
+								"value": "I understand"
+							}
+						],
+						"description": "Mounjaro kann die Effektivität oraler hormoneller Verhütungsmittel reduzieren. Wenn Du eine orale Verhütungspille verwendest, musst Du während der ersten 4 Wochen der Behandlung und 4 Wochen nach jeder Dosissteigerung eine Barrieremethode zur Empfängnisverhütung (z. B. Kondom) anwenden.",
+						"isRequired": true,
+						"name": "ContraceptionDisclaimer",
+						"requiredErrorText": "Der Arzt benötigt diese Angaben zur Erstellung Deines Rezeptes.",
+						"title": "Für das Produkt Mounjaro: ",
+						"type": "radiogroup"
+					}
+				],
+				"name": "page12",
+				"title": "Disclaimer"
+			}
+		],
+		"progressBarLocation": "aboveheader",
+		"showPageTitles": false,
+		"showProgressBar": "aboveHeader",
+		"startSurveyText": "Beginnen"
+	},
+	"theme": {
+		"backgroundImage": "",
+		"backgroundImageAttachment": "scroll",
+		"backgroundImageFit": "cover",
+		"backgroundOpacity": 1,
+		"colorPalette": "light",
+		"cssVariables": {
+			"--sjs-article-font-default-fontStretch": "normal",
+			"--sjs-article-font-default-fontStyle": "normal",
+			"--sjs-article-font-default-fontWeight": "400",
+			"--sjs-article-font-default-letterSpacing": "0",
+			"--sjs-article-font-default-lineHeight": "28px",
+			"--sjs-article-font-default-paragraphIndent": "0px",
+			"--sjs-article-font-default-textCase": "none",
+			"--sjs-article-font-default-textDecoration": "none",
+			"--sjs-article-font-large-fontStretch": "normal",
+			"--sjs-article-font-large-fontStyle": "normal",
+			"--sjs-article-font-large-fontWeight": "700",
+			"--sjs-article-font-large-letterSpacing": "0",
+			"--sjs-article-font-large-lineHeight": "40px",
+			"--sjs-article-font-large-paragraphIndent": "0px",
+			"--sjs-article-font-large-textCase": "none",
+			"--sjs-article-font-large-textDecoration": "none",
+			"--sjs-article-font-medium-fontStretch": "normal",
+			"--sjs-article-font-medium-fontStyle": "normal",
+			"--sjs-article-font-medium-fontWeight": "700",
+			"--sjs-article-font-medium-letterSpacing": "0",
+			"--sjs-article-font-medium-lineHeight": "32px",
+			"--sjs-article-font-medium-paragraphIndent": "0px",
+			"--sjs-article-font-medium-textCase": "none",
+			"--sjs-article-font-medium-textDecoration": "none",
+			"--sjs-article-font-x-large-fontStretch": "normal",
+			"--sjs-article-font-x-large-fontStyle": "normal",
+			"--sjs-article-font-x-large-fontWeight": "700",
+			"--sjs-article-font-x-large-letterSpacing": "0",
+			"--sjs-article-font-x-large-lineHeight": "56px",
+			"--sjs-article-font-x-large-paragraphIndent": "0px",
+			"--sjs-article-font-x-large-textCase": "none",
+			"--sjs-article-font-x-large-textDecoration": "none",
+			"--sjs-article-font-xx-large-fontStretch": "normal",
+			"--sjs-article-font-xx-large-fontStyle": "normal",
+			"--sjs-article-font-xx-large-fontWeight": "700",
+			"--sjs-article-font-xx-large-letterSpacing": "0",
+			"--sjs-article-font-xx-large-lineHeight": "64px",
+			"--sjs-article-font-xx-large-paragraphIndent": "0px",
+			"--sjs-article-font-xx-large-textCase": "none",
+			"--sjs-article-font-xx-large-textDecoration": "none",
+			"--sjs-base-unit": "8px",
+			"--sjs-border-default": "rgba(0, 0, 0, 0.12)",
+			"--sjs-border-inside": "rgba(0, 0, 0, 0.16)",
+			"--sjs-border-light": "rgba(0, 0, 0, 0.12)",
+			"--sjs-corner-radius": "4px",
+			"--sjs-general-backcolor": "rgba(246, 246, 246, 1)",
+			"--sjs-general-backcolor-dark": "rgba(235, 235, 235, 1)",
+			"--sjs-general-backcolor-dim": "#F5F5F3",
+			"--sjs-general-backcolor-dim-dark": "rgba(235, 235, 235, 1)",
+			"--sjs-general-backcolor-dim-light": "rgba(255, 255, 255, 1)",
+			"--sjs-general-dim-forecolor": "rgba(0, 0, 0, 0.91)",
+			"--sjs-general-dim-forecolor-light": "rgba(0, 0, 0, 0.45)",
+			"--sjs-general-forecolor": "rgba(0, 0, 0, 0.91)",
+			"--sjs-general-forecolor-light": "rgba(0, 0, 0, 0.45)",
+			"--sjs-primary-backcolor": "#15213F",
+			"--sjs-primary-backcolor-dark": "rgba(14, 21, 41, 1)",
+			"--sjs-primary-backcolor-light": "rgba(21, 33, 63, 0.1)",
+			"--sjs-primary-forecolor": "rgba(255, 255, 255, 1)",
+			"--sjs-primary-forecolor-light": "rgba(255, 255, 255, 0.25)",
+			"--sjs-secondary-backcolor": "rgba(255, 152, 20, 1)",
+			"--sjs-secondary-backcolor-light": "rgba(255, 152, 20, 0.1)",
+			"--sjs-secondary-backcolor-semi-light": "rgba(255, 152, 20, 0.25)",
+			"--sjs-secondary-forecolor": "rgba(255, 255, 255, 1)",
+			"--sjs-secondary-forecolor-light": "rgba(255, 255, 255, 0.25)",
+			"--sjs-shadow-inner": "0px 0px 0px 1px rgba(0, 0, 0, 0.12)",
+			"--sjs-shadow-large": "0px 8px 16px 0px rgba(0, 0, 0, 0.1)",
+			"--sjs-shadow-medium": "0px 0px 0px 1px rgba(0, 0, 0, 0.1),0px 2px 6px 0px rgba(0, 0, 0, 0.1)",
+			"--sjs-shadow-small": "0px 0px 0px 1px rgba(0, 0, 0, 0.15)",
+			"--sjs-special-blue": "rgba(67, 127, 217, 1)",
+			"--sjs-special-blue-forecolor": "rgba(255, 255, 255, 1)",
+			"--sjs-special-blue-light": "rgba(67, 127, 217, 0.1)",
+			"--sjs-special-green": "rgba(25, 179, 148, 1)",
+			"--sjs-special-green-forecolor": "rgba(255, 255, 255, 1)",
+			"--sjs-special-green-light": "rgba(25, 179, 148, 0.1)",
+			"--sjs-special-red": "rgba(229, 10, 62, 1)",
+			"--sjs-special-red-forecolor": "rgba(255, 255, 255, 1)",
+			"--sjs-special-red-light": "rgba(229, 10, 62, 0.1)",
+			"--sjs-special-yellow": "rgba(255, 152, 20, 1)",
+			"--sjs-special-yellow-forecolor": "rgba(255, 255, 255, 1)",
+			"--sjs-special-yellow-light": "rgba(255, 152, 20, 0.1)"
+		},
+		"isPanelless": true,
+		"themeName": "flat"
+	},
+	"type": "PRODUCT_RECOMMENDER",
+	"version": "1"
+}
