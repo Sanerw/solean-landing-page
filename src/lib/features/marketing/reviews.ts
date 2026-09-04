@@ -33,13 +33,3 @@ export function parseRating(body: unknown): Rating | null {
 export function formatScore(score: number): string {
 	return score.toFixed(1);
 }
-
-/**
- * The badge's own line. The count is spelled out rather than abbreviated: at this volume an
- * exact number is more credible than a rounded one, and it is the number the platform shows.
- */
-export function formatRating(rating: Rating): string {
-	const reviews = rating.total === 1 ? 'review' : 'reviews';
-
-	return `${formatScore(rating.score)} - ${rating.total.toLocaleString('en-GB')} ${reviews}`;
-}

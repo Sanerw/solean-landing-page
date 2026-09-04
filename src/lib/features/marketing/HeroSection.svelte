@@ -72,14 +72,13 @@
 			/>
 		{/if}
 
-		<!-- Each artboard darkens differently, so each is followed rather than averaged. The
-		     wide one lays a flat wash under a 28-to-72 percent scrim; the narrow one carries
-		     no wash and runs 45 to 90, because its crop keeps the sunlit facade and the pale
-		     pavement that the wide composition crops out. -->
-		<div aria-hidden="true" class="absolute inset-0 -z-10 sm:bg-scrim/15"></div>
+		<!-- One ramp at every width, the stronger of the two the artboards carry. The wide
+		     composition's flat wash under a 30-to-70 scrim left the copy sitting on a sunlit
+		     facade; the narrow one's 45 to 90 holds the photograph down at both crops, so it
+		     serves both and the wash under it goes with it. -->
 		<div
 			aria-hidden="true"
-			class="absolute inset-0 -z-10 bg-gradient-to-b from-scrim/45 via-scrim/70 to-scrim/90 sm:from-scrim/30 sm:via-scrim/55 sm:to-scrim/70"
+			class="absolute inset-0 -z-10 bg-gradient-to-b from-scrim/45 via-scrim/70 to-scrim/90"
 		></div>
 
 		<SiteHeader variant="overlay" />

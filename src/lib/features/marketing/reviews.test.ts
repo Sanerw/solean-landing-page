@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatRating, formatScore, parseRating } from './reviews';
+import { formatScore, parseRating } from './reviews';
 
 describe('parseRating', () => {
 	it('reads the shape the live endpoint returns', () => {
@@ -38,16 +38,5 @@ describe('formatScore', () => {
 		expect(formatScore(4.86)).toBe('4.9');
 		expect(formatScore(5)).toBe('5.0');
 		expect(formatScore(4.04)).toBe('4.0');
-	});
-});
-
-describe('formatRating', () => {
-	it('names the count exactly', () => {
-		expect(formatRating({ score: 4.86, total: 104 })).toBe('4.9 - 104 reviews');
-	});
-
-	it('groups a large count and keeps the singular for one', () => {
-		expect(formatRating({ score: 4.5, total: 1200 })).toBe('4.5 - 1,200 reviews');
-		expect(formatRating({ score: 5, total: 1 })).toBe('5.0 - 1 review');
 	});
 });

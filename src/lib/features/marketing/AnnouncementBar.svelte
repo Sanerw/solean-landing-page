@@ -11,7 +11,11 @@
 	page, including the legal ones, so a missing announcement must not cost them a blank strip.
 -->
 {#if announcement}
-	<aside class="bg-announcement text-announcement-foreground" aria-label={m.a11y_announcement()}>
+	<aside
+		data-site-announcement
+		class="bg-announcement text-announcement-foreground"
+		aria-label={m.a11y_announcement()}
+	>
 		<div
 			class="mx-auto flex h-16 w-full items-center justify-between gap-3 px-4 py-2 text-left sm:h-11 sm:justify-center sm:gap-24 sm:px-9 sm:py-0 sm:text-center"
 		>

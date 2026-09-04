@@ -64,6 +64,11 @@ test('the announcement and reference hero asset render without narrow-screen ove
 	);
 	await expect(reviewsLink).toHaveAttribute('target', '_blank');
 
+	const favicon = page.locator('head link[rel="icon"]');
+	const faviconHref = await favicon.getAttribute('href');
+	expect(faviconHref).toMatch(/favicon.*\.ico$/);
+	expect((await page.request.get(new URL(faviconHref!, page.url()).toString())).ok()).toBe(true);
+
 	const widths = await page.evaluate(() => ({
 		client: document.documentElement.clientWidth,
 		scroll: document.documentElement.scrollWidth
@@ -71,6 +76,15 @@ test('the announcement and reference hero asset render without narrow-screen ove
 	expect(widths.scroll).toBe(widths.client);
 
 	const hero = page.locator('section[aria-labelledby="hero-heading"]');
+
+	// One scrim over the photograph, not a flat wash under a second gradient, and the green
+	// it ramps is the token rather than a literal repeated here.
+	await expect(page.locator(':root')).toHaveCSS('--scrim', '#041309');
+	const scrim = hero.locator(':scope > div[aria-hidden="true"]');
+	await expect(scrim).toHaveCount(1);
+	const narrowScrim = await scrim.evaluate((el) => getComputedStyle(el).backgroundImage);
+	expect(narrowScrim).toMatch(/^linear-gradient\(oklab\([^)]+ \/ 0\.45\) 0%,.+ \/ 0\.7\) 50%,.+ \/ 0\.9\) 100%\)$/);
+
 	// Full bleed on the narrow frame: no card gutter, no radius, and at least a
 	// full viewport tall so the fold lands below the hero rather than inside it.
 	const heroBox = await hero.boundingBox();
@@ -116,6 +130,21 @@ test('the announcement and reference hero asset render without narrow-screen ove
 	await reviewsLink.focus();
 	await expect(reviewsLink).toBeFocused();
 
+	// The reference composition rather than a pill: nothing is drawn behind the figures.
+	await expect(reviewsLink).toHaveCSS('background-color', 'rgba(0, 0, 0, 0)');
+	await expect(reviewsLink).toHaveCSS('border-top-width', '0px');
+	await expect(reviewsLink).toHaveCSS('backdrop-filter', 'none');
+
+	// Reviews.io answers with whatever the shop scores today, so the shape is asserted and
+	// the reference's own figures are not: a one-decimal score over a summary naming the
+	// count from the accessible name, in the page's locale, and gold stars between them.
+	const [score, summary] = (await reviewsLink.innerText()).split('\n');
+	expect(score).toMatch(/^\d\.\d$/);
+	const total = Number(/from (\d+) reviews/.exec(await reviewsLink.getAttribute('aria-label') ?? '')?.[1]);
+	expect(summary).toBe(`${total.toLocaleString('en')} reviews on Reviews.io`);
+	await expect(reviewsLink.getByRole('img', { name: /out of 5 stars$/ })).toBeVisible();
+	await expect(reviewsLink.locator('svg').first()).toHaveCSS('fill', 'rgb(226, 182, 79)');
+
 	// The menu opens from the overlay trigger, closes on Escape, and restores focus.
 	const menuTrigger = page.getByRole('button', { name: 'Open menu' });
 	await expect(menuTrigger).toBeVisible();
@@ -127,6 +156,10 @@ test('the announcement and reference hero asset render without narrow-screen ove
 
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await expect(announcement).toHaveCSS('height', '44px');
+
+	// The wide composition darkens exactly as the narrow one does: one ramp, not two.
+	await expect(scrim).toHaveCount(1);
+	expect(await scrim.evaluate((el) => getComputedStyle(el).backgroundImage)).toBe(narrowScrim);
 
 	// Desktop regression: the card frame, the struck headline, and both CTAs are intact.
 	expect((await hero.boundingBox())?.x).toBe(12);
@@ -170,8 +203,11 @@ test('matches the desktop Treatments menu geometry and keyboard behaviour', asyn
 	await page.goto('/en');
 
 	const logo = page.getByLabel('Solean, home').locator('svg');
-	await expect(logo).toHaveCSS('height', '60px');
-	await expect(logo).toHaveCSS('width', '166px');
+	await expect(logo).toHaveCSS('height', '51px');
+	await expect(logo).toHaveAttribute('viewBox', '0 0 166 60');
+	await expect(logo).toHaveAttribute('fill', 'currentColor');
+	const logoBox = await logo.boundingBox();
+	expect(logoBox?.width).toBeCloseTo(166 * 0.85, 1);
 
 	const trigger = page.getByRole('button', { name: 'Treatments' });
 	await expect(trigger).toHaveCSS('font-size', '14px');
@@ -422,6 +458,43 @@ test('the mobile menu opens as the reference full-screen panel', async ({ page }
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await expect(page.getByRole('button', { name: 'Open menu' })).toBeHidden();
 	await expect(page.getByRole('button', { name: 'Treatments' })).toBeVisible();
+});
+
+test('the mobile menu follows only the visible part of the announcement bar', async ({ page }) => {
+	async function expectMenuTop(width: number, scrollY: number, expectedTop: number) {
+		await page.setViewportSize({ width, height: 844 });
+		await page.goto('/en');
+		await page.evaluate((top) => window.scrollTo(0, top), scrollY);
+		await expect.poll(() => page.evaluate(() => Math.round(window.scrollY))).toBe(scrollY);
+
+		await page.getByRole('button', { name: 'Open menu' }).click();
+		await expect
+			.poll(async () => {
+				const panel = await page.getByRole('dialog').boundingBox();
+				const overlay = await page.locator('[data-slot="sheet-overlay"]').boundingBox();
+				return { panel: Math.round(panel?.y ?? -1), overlay: Math.round(overlay?.y ?? -1) };
+			})
+			.toEqual({ panel: expectedTop, overlay: expectedTop });
+	}
+
+	// On a phone the 64px bar is half visible, then fully gone.
+	await expectMenuTop(390, 32, 32);
+	await page.keyboard.press('Escape');
+	await expectMenuTop(390, 70, 0);
+	await page.keyboard.press('Escape');
+
+	// The same calculation follows the shorter 44px tablet bar.
+	await expectMenuTop(768, 22, 22);
+	await page.keyboard.press('Escape');
+
+	// An unset announcement renders no aside, represented here by removing that optional node.
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto('/en');
+	await page.locator('[data-site-announcement]').evaluate((element) => element.remove());
+	await page.getByRole('button', { name: 'Open menu' }).click();
+	await expect
+		.poll(async () => Math.round((await page.getByRole('dialog').boundingBox())?.y ?? -1))
+		.toBe(0);
 });
 
 test('the narrow landing sections follow the artboard', async ({ page }) => {

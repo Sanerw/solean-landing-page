@@ -23,11 +23,23 @@
 	let { surface = 'default' }: Props = $props();
 
 	let open = $state(false);
+	let menuTop = $state(0);
+
+	function setOpen(next: boolean): void {
+		if (next) {
+			const announcement = document.querySelector<HTMLElement>('[data-site-announcement]');
+			menuTop = Math.max(0, announcement?.getBoundingClientRect().bottom ?? 0);
+		}
+
+		open = next;
+	}
+
+	const menuTopStyle = $derived(`top: ${menuTop}px`);
 
 	const pad = (index: number) => String(index + 1).padStart(2, '0');
 </script>
 
-<Sheet.Root bind:open>
+<Sheet.Root bind:open={() => open, setOpen}>
 	<Sheet.Trigger>
 		{#snippet child({ props })}
 			<Button
@@ -48,19 +60,19 @@
 		{/snippet}
 	</Sheet.Trigger>
 
-	<!-- The reference keeps the offer bar visible and drops the panel under it, so both the
-	     panel and its scrim start at the bar's height rather than covering the viewport. The
+	<!-- When the offer bar is still visible, both the panel and its scrim start at its bottom.
+	     Once it has scrolled away they cover the full viewport without exposing the page. The
 	     primitive's own side geometry is overridden; its focus trap, Escape handling and
 	     scroll lock are not. The inset matches the closed header, so the logo and the
 	     button do not move when the menu opens. -->
 	<Sheet.Content
 		side="right"
 		showCloseButton={false}
-		overlayClass="top-16 sm:top-11"
+		overlayStyle={menuTopStyle}
+		style={menuTopStyle}
 		class="gap-0 bg-foreground px-4 pb-7 pt-4 text-background
 			data-[side=right]:border-l-0 data-[side=right]:inset-x-0 data-[side=right]:inset-y-auto data-[side=right]:bottom-0
-			data-[side=right]:top-16 data-[side=right]:h-auto data-[side=right]:w-full
-			data-[side=right]:sm:top-11 data-[side=right]:sm:max-w-none"
+			data-[side=right]:h-auto data-[side=right]:w-full data-[side=right]:sm:max-w-none"
 	>
 		<Sheet.Header class="flex-row items-center justify-between gap-4 p-0">
 			<!-- The dialog still needs its name; the logo carries it visually. -->
@@ -71,7 +83,7 @@
 				class="rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-foreground"
 				onclick={() => (open = false)}
 			>
-				<SoleanLogo size="default" class="h-12 text-background" />
+				<SoleanLogo size="default" class="h-[40.8px] text-background" />
 			</a>
 
 			<Sheet.Close>

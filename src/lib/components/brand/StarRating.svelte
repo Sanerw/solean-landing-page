@@ -37,6 +37,9 @@
 	const inlineFill = $derived(
 		surface === 'dark' ? 'fill-primary' : 'fill-highlight-foreground'
 	);
+	// The empty mark has to recede on its own ground, and --border is a near-white hairline:
+	// over a photograph it reads brighter than the gold it is meant to sit behind.
+	const inlineEmptyFill = $derived(surface === 'dark' ? 'fill-background/25' : 'fill-border');
 
 	const STAR =
 		'M12 2.5l2.94 5.96 6.58.96-4.76 4.64 1.12 6.55L12 17.55l-5.88 3.09 1.12-6.55L2.48 9.42l6.58-.96L12 2.5z';
@@ -74,7 +77,7 @@
 		{:else}
 			<svg
 				viewBox="0 0 24 24"
-				class={[starSize, i < filled ? inlineFill : 'fill-border']}
+				class={[starSize, i < filled ? inlineFill : inlineEmptyFill]}
 				aria-hidden="true"
 			>
 				<path d={STAR} />

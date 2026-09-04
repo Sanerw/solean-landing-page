@@ -107,7 +107,7 @@
 		>
 			<!-- One narrow-screen size for both variants: the two headers appear on the same
 			     phone, so a mark that changed size between them would read as a bug. -->
-			<SoleanLogo size="default" class="max-sm:h-12 min-[1200px]:h-15" />
+			<SoleanLogo size="default" class="max-sm:h-[40.8px] min-[1200px]:h-[51px]" />
 		</a>
 
 		<div class="flex min-w-0 items-center justify-end gap-2">

@@ -19,6 +19,7 @@
 		showCloseButton = true,
 		portalProps,
 		overlayClass,
+		overlayStyle,
 		children,
 		...restProps
 	}: WithoutChildrenOrChild<SheetPrimitive.ContentProps> & {
@@ -27,12 +28,13 @@
 		showCloseButton?: boolean;
 		/** Lets a panel that does not cover the whole viewport align its scrim to itself. */
 		overlayClass?: string;
+		overlayStyle?: SheetPrimitive.OverlayProps["style"];
 		children: Snippet;
 	} = $props();
 </script>
 
 <SheetPortal {...portalProps}>
-	<SheetOverlay class={overlayClass} />
+	<SheetOverlay class={overlayClass} style={overlayStyle} />
 	<SheetPrimitive.Content
 		bind:ref
 		data-slot="sheet-content"
