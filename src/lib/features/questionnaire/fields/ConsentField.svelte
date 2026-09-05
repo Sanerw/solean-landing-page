@@ -27,7 +27,7 @@
 			onCheckedChange={(next) => onchange(next === true)}
 		/>
 		<FieldContent class="min-w-0">
-			<FieldTitle class="block w-full min-w-0 break-words font-display text-sm font-semibold">
+			<FieldTitle class="block w-full min-w-0 break-words font-display text-base font-semibold sm:text-sm">
 				{label}
 			</FieldTitle>
 		</FieldContent>

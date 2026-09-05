@@ -108,7 +108,7 @@
 							longest word, which pushes a long compound out of the card instead of
 							wrapping it.
 						-->
-						<FieldTitle class="block w-full min-w-0 break-words font-display text-sm font-semibold">
+						<FieldTitle class="block w-full min-w-0 break-words font-display text-base font-semibold sm:text-sm">
 							{item.label()}
 						</FieldTitle>
 					</FieldContent>

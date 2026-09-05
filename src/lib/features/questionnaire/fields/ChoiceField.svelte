@@ -70,6 +70,8 @@
 					full ? '' : 'h-full',
 					// 48px and `px-4`, which is `Input`'s own box: a choice card and a text field are
 					// the same control to the person answering, so they are the same size here.
+					// The choice text follows `Input`'s responsive size for the same reason, which
+					// is why it is 16px on a phone and 14px from `sm` up.
 					'*:data-[slot=field]:min-h-12 *:data-[slot=field]:px-4 *:data-[slot=field]:py-3',
 					// The pinned row is the list's closing statement, not one of its items, and it
 					// keeps that ground whether or not it is the answer: only the border changes.
@@ -113,7 +115,7 @@
 							longest word, which pushes a long compound out of the card instead of
 							wrapping it.
 						-->
-						<FieldTitle class="block w-full min-w-0 break-words font-display text-sm font-semibold">
+						<FieldTitle class="block w-full min-w-0 break-words font-display text-base font-semibold sm:text-sm">
 							{item.label()}
 						</FieldTitle>
 					</FieldContent>

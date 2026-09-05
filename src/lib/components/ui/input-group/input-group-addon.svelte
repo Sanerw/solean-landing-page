@@ -4,8 +4,11 @@
 	// Only inline-start and inline-end are adapted: nothing in this project stacks
 	// an addon above or below the control, so block-start/block-end stay out until
 	// a feature genuinely needs them.
+	//
+	// The text size is the same responsive pair as `Input`, and has to be: the addon is the
+	// unit beside the number, so a mismatch reads as two sizes inside one box.
 	export const inputGroupAddonVariants = tv({
-		base: "h-full gap-2 text-sm font-medium text-muted-foreground group-data-[disabled=true]/input-group:opacity-50 [&>svg:not([class*='size-'])]:size-4 flex cursor-text items-center justify-center select-none",
+		base: "h-full gap-2 text-base font-medium text-muted-foreground group-data-[disabled=true]/input-group:opacity-50 [&>svg:not([class*='size-'])]:size-4 flex cursor-text items-center justify-center select-none sm:text-sm",
 		variants: {
 			align: {
 				"inline-start": "pl-4 order-first",
