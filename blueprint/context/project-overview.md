@@ -177,16 +177,25 @@ and medical answers to RxScale, who own storage, retention, and clinical review.
 - Answers, the anamnesis uid, and the checkout URL never reach console output,
   analytics, or an error report in production.
 - Nothing about the answers is persisted or forwarded anywhere except the
-  anamnesis submission and, for the e-mail alone, the checkout call and the
-  Customer.io reminder.
+  anamnesis submission and, for the contact details alone, the checkout call and
+  the Customer.io reminder.
 
-**The reminder exception, decided 2026-09-03.** The visitor's e-mail is forwarded
-to a marketing processor when the question is answered, which is *before* any
-submission, so a reminder can reach someone who walked away. A personal
-identifier leaves an unfinished medical questionnaire, deliberately. What may
-travel is the e-mail and a stage marker: no answer, no anamnesis uid, no
-medication or dose, no name, no telephone number. Typing the e-mail and
-continuing is the whole consent step; there is no separate marketing opt-in.
+**The reminder exception, decided 2026-09-03.** The visitor's contact details are
+forwarded to a marketing processor when the question is answered, which is
+*before* any submission, so a reminder can reach someone who walked away.
+Personal data leaves an unfinished medical questionnaire, deliberately. Typing
+the details and continuing is the whole consent step; there is no separate
+marketing opt-in.
+
+**What may travel widened on 2026-09-05**, at the user's request, so a reminder
+can greet the person it is sent to: the e-mail, the first name, the last name,
+and the telephone number when it was given, all four answered on the same
+`your-details` screen, plus a stage marker and the UI locale. What may never
+travel did not move: no answer value, no anamnesis uid, no medication or dose.
+The name and the number are personal data under DSGVO exactly as the address
+already was, and the privacy policy still describes none of it, for the reason
+recorded in `AGENTS.md`: it is a verbatim mirror of Solean's own document and
+cannot be amended here.
 
 **The processor changed, the decision did not.** Feature 22 sent this to Brevo;
 feature 23 moves it to Customer.io, EU region. Only one processor is ever
@@ -205,7 +214,7 @@ configured, and what may travel was not re-opened.
 | Questionnaire uid, store domain, variant id, question names | Config | One module per concern. Nothing on the checkout path is a secret |
 | Order, payment, prescription, delivery | Shopify, then RxScale by webhook | Not modelled here. RxScale is never told about the order by us |
 | Learn article and its reviewer | Sanity | Published editorial copy, one document per language. Read at request time, never cached past the response |
-| Visitor e-mail, once typed | Customer.io, EU region | Forwarded when the question is answered, before any submission, so a reminder can be sent. The e-mail and a stage marker, nothing else |
+| Visitor contact details, once typed | Customer.io, EU region | Forwarded when the question is answered, before any submission, so a reminder can be sent. The e-mail, the name, the telephone number when given, a stage marker and the locale. Nothing else |
 
 ### steps[] (Solean)
 

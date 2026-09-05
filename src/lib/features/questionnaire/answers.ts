@@ -45,3 +45,36 @@ export function readEmail(answers: Answers): string | null {
 
 	return trimmed ? trimmed : null;
 }
+
+/** Not answered yet, rather than answered with nothing. */
+function answered(value: string): string | undefined {
+	return value.trim() || undefined;
+}
+
+/**
+ * Everything the reminder may carry about a person, or null when the address has not been
+ * typed: Customer.io keys the profile by the address, so without one there is nobody to
+ * remind and nothing to send.
+ *
+ * Assembled field by field rather than sliced off `Answers`, which is the whole medical
+ * questionnaire. A spread would put a diagnosis on a marketing call the first time somebody
+ * widened the shape.
+ */
+export interface ReminderContact {
+	email: string;
+	firstName?: string;
+	lastName?: string;
+	phone?: string;
+}
+
+export function readReminderContact(answers: Answers): ReminderContact | null {
+	const email = readEmail(answers);
+	if (!email) return null;
+
+	return {
+		email,
+		firstName: answered(answers.firstName),
+		lastName: answered(answers.lastName),
+		phone: answered(answers.phone)
+	};
+}

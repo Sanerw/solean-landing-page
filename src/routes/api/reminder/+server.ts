@@ -32,11 +32,11 @@ export const POST: RequestHandler = async ({ request }) => {
 	const parsed = readReminderRequest(body);
 	if (!parsed.ok) return new Response(null, { status: 400 });
 
-	const result = await sendReminderEvent(parsed.stage, parsed.email, parsed.language);
+	const result = await sendReminderEvent(parsed.stage, parsed.person, parsed.language);
 
-	// Content-free on purpose. The address is personal data from a medical funnel, and a log
-	// line is exactly the kind of place it must not end up. The stage is safe: it says which
-	// call failed and nothing about who was on the other end of it.
+	// Content-free on purpose. The address, the name and the telephone number are personal data
+	// from a medical funnel, and a log line is exactly the kind of place they must not end up.
+	// The stage is safe: it says which call failed and nothing about who was on the other end.
 	if (result === 'failed')
 		console.error(`[reminder] Customer.io refused the ${parsed.stage} event`);
 

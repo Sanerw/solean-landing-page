@@ -13,6 +13,11 @@ import { selectDateOfBirth } from './date-picker';
 export interface WalkOptions {
 	/** The first question. A marker address is how a spec asks the fixture to fail. */
 	email?: string;
+	/**
+	 * The one optional field on `your-details`. Left blank by default, because that is how most
+	 * walks arrive and the reminder has to be right about both.
+	 */
+	phone?: string;
 	/** `Weiblich` opens the pregnancy screen; `Männlich` skips it. */
 	gender?: 'Weiblich' | 'Männlich';
 	/**
@@ -92,6 +97,7 @@ const STEPS: { id: string; fill?: (page: Page, options: WalkOptions) => Promise<
 			await page.locator('#q-firstName').fill('Jonas');
 			await page.locator('#q-lastName').fill('Weber');
 			await page.locator('#q-email').fill(options.email ?? DEFAULT_EMAIL);
+			if (options.phone) await page.locator('#q-phone').fill(options.phone);
 		}
 	},
 	{

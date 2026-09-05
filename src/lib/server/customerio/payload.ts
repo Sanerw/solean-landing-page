@@ -1,17 +1,22 @@
 /**
- * The requests sent to Customer.io, built from nothing but a stage and an address.
+ * The requests sent to Customer.io, built from a stage, a person, and a locale.
  *
  * Kept pure and separate from the call so the one rule that matters here can be asserted
  * without a network: **only the keys below may ever leave this app.** The funnel is medical,
- * and `project-overview.md` allows the e-mail and a stage marker to reach the reminder
- * processor and nothing else. No answer value, no anamnesis uid, no medication or dose, no
- * name, no telephone number. The builder takes two arguments rather than an object for exactly
- * that reason: there is no bag of extra properties for a caller to widen later.
+ * and `project-overview.md` allows the contact details a person types into `your-details` to
+ * reach the reminder processor, and nothing else. No answer value, no anamnesis uid, no
+ * medication or dose.
+ *
+ * The name and the telephone number were forbidden here until 2026-09-05, when the user asked
+ * for them so a reminder can address somebody by name. What replaced that rule is the shape of
+ * `ReminderPerson`: a closed record with a field per allowed value, read one line at a time
+ * into the attributes below rather than spread. There is still no bag a caller can widen, and
+ * a field added to the record has to be named twice, here and in the exact key set
+ * `payload.test.ts` asserts, before it can travel.
  *
  * Both stages are a batch of an identify and an event, for the same reason: an event's
  * `attributes` are the *event's* and never reach the profile, proven against the live workspace
- * on 2026-09-03, so anything the campaign reads off a person needs an `identify`. The capture
- * carries the language; the submission carries the language and the completion marker.
+ * on 2026-09-03, so anything the campaign reads off a person needs an `identify`.
  */
 
 export const REMINDER_STAGES = ['email_captured', 'submitted'] as const;
@@ -20,6 +25,19 @@ export type ReminderStage = (typeof REMINDER_STAGES)[number];
 
 export function isReminderStage(value: unknown): value is ReminderStage {
 	return REMINDER_STAGES.some((stage) => stage === value);
+}
+
+/**
+ * Everything about a person that may reach Customer.io, and the whole of it. Optional means
+ * not answered rather than not allowed: the address is the identifier and cannot be missing,
+ * the names are required on our screen but a caller can still be a step early, and the phone
+ * is optional in the questionnaire itself.
+ */
+export interface ReminderPerson {
+	email: string;
+	firstName?: string;
+	lastName?: string;
+	phone?: string;
 }
 
 /**
@@ -44,6 +62,15 @@ export const COMPLETED_ATTRIBUTE = 'questionnaire_completed';
  * locale, read from the path the visitor was on, never from an answer.
  */
 export const LANGUAGE_ATTRIBUTE = 'language';
+
+/**
+ * Customer.io's own conventional profile attributes, spelled the way its templates and its SMS
+ * channel expect to find them. `{{customer.first_name}}` is what somebody writes in the panel,
+ * so a camelCase key here would leave every mail greeting nobody.
+ */
+export const FIRST_NAME_ATTRIBUTE = 'first_name';
+export const LAST_NAME_ATTRIBUTE = 'last_name';
+export const PHONE_ATTRIBUTE = 'phone';
 
 const BATCH_PATH = '/api/v2/batch';
 
@@ -77,15 +104,26 @@ function personEvent(stage: ReminderStage, email: string): PersonEvent {
 
 export function buildReminderRequest(
 	stage: ReminderStage,
-	email: string,
+	person: ReminderPerson,
 	language: string
 ): ReminderRequest {
+	const { email } = person;
+
 	/**
-	 * Both stages carry the language rather than only the capture. The two calls are
+	 * Every stage carries every attribute rather than only the capture. The two calls are
 	 * independent, so a capture whose request was lost must not leave the profile without the
-	 * attribute the campaign branches on.
+	 * attribute the campaign branches on, or without the name the mail greets.
 	 */
 	const attributes: Record<string, string | boolean> = { [LANGUAGE_ATTRIBUTE]: language };
+
+	/**
+	 * One line per allowed field, never a spread of the record. An empty value is omitted
+	 * rather than sent as an empty string: `{{customer.first_name}}` against `''` renders
+	 * "Hallo ," where an absent attribute lets the template fall back.
+	 */
+	if (person.firstName) attributes[FIRST_NAME_ATTRIBUTE] = person.firstName;
+	if (person.lastName) attributes[LAST_NAME_ATTRIBUTE] = person.lastName;
+	if (person.phone) attributes[PHONE_ATTRIBUTE] = person.phone;
 
 	/**
 	 * Only on the way out. The campaign's exit condition already removes the person when this

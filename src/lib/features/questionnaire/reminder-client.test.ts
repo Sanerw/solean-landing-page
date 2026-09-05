@@ -1,10 +1,25 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import { emptyAnswers, type Answers } from './answers/types';
 
-/** A visitor whose only relevant answer is the address, or the lack of one. */
-function answering(email = ''): Answers {
-	return { ...emptyAnswers(), email };
+/** A visitor who has answered the address, and by default the name beside it. */
+function answering(email = '', details: Partial<Answers> = {}): Answers {
+	return {
+		...emptyAnswers(),
+		email,
+		firstName: email ? 'Jonas' : '',
+		lastName: email ? 'Weber' : '',
+		...details
+	};
 }
+
+/** What the `your-details` screen produces when the phone is left blank, which is the default. */
+const CAPTURED = {
+	stage: 'email_captured',
+	email: 'jonas@example.com',
+	firstName: 'Jonas',
+	lastName: 'Weber',
+	language: 'de'
+};
 
 /**
  * The watch is module state with the lifetime of one questionnaire session, so every case
@@ -17,7 +32,7 @@ async function freshClient() {
 	return import('./reminder-client');
 }
 
-function bodies(): { stage: string; email: string }[] {
+function bodies(): Record<string, unknown>[] {
 	return vi.mocked(fetch).mock.calls.map(([, init]) => JSON.parse(String(init?.body)));
 }
 
@@ -37,9 +52,7 @@ describe('reminder client', () => {
 		// Continue is pressed on every step, and this runs on each one.
 		for (let i = 0; i < 5; i++) startReminderWatch(data);
 
-		expect(bodies()).toEqual([
-			{ stage: 'email_captured', email: 'jonas@example.com', language: 'de' }
-		]);
+		expect(bodies()).toEqual([CAPTURED]);
 	});
 
 	it('says nothing until the address exists', async () => {
@@ -52,9 +65,7 @@ describe('reminder client', () => {
 		// The e-mail question can sit anywhere in the model, so the watch has to survive the
 		// steps walked before it and still start on the one that answers it.
 		startReminderWatch(answering('jonas@example.com'));
-		expect(bodies()).toEqual([
-			{ stage: 'email_captured', email: 'jonas@example.com', language: 'de' }
-		]);
+		expect(bodies()).toEqual([CAPTURED]);
 	});
 
 	it('a session without an address is never reminded and never retried', async () => {
@@ -73,9 +84,42 @@ describe('reminder client', () => {
 		startReminderWatch(data);
 		endReminderWatch(data);
 
-		expect(bodies()).toEqual([
-			{ stage: 'email_captured', email: 'jonas@example.com', language: 'de' },
-			{ stage: 'submitted', email: 'jonas@example.com', language: 'de' }
+		expect(bodies()).toEqual([CAPTURED, { ...CAPTURED, stage: 'submitted' }]);
+	});
+
+	it('carries the telephone number only when one was typed', async () => {
+		// Optional in the questionnaire, so the key is absent rather than empty: an empty string
+		// would overwrite a number the person gave on an earlier session with nothing.
+		const { startReminderWatch, endReminderWatch } = await freshClient();
+
+		startReminderWatch(answering('jonas@example.com'));
+		expect(bodies()[0]).not.toHaveProperty('phone');
+
+		endReminderWatch(answering('jonas@example.com', { phone: ' +49 170 1234567 ' }));
+		expect(bodies()[1]).toMatchObject({ phone: '+49 170 1234567' });
+	});
+
+	it('sends the contact details and nothing else', async () => {
+		// Exact keys rather than an absence check, so an answer added to the body later fails
+		// here instead of reaching a marketing processor. This visitor also answered a diagnosis
+		// and a weight; neither is the reminder's business.
+		const { endReminderWatch } = await freshClient();
+
+		endReminderWatch(
+			answering('jonas@example.com', {
+				phone: '+49 170 1234567',
+				weightKg: '108',
+				weightRelatedConditions: ['Type 2 Diabetes']
+			})
+		);
+
+		expect(Object.keys(bodies()[0]).sort()).toEqual([
+			'email',
+			'firstName',
+			'language',
+			'lastName',
+			'phone',
+			'stage'
 		]);
 	});
 

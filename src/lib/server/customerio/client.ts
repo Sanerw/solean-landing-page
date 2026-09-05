@@ -1,5 +1,5 @@
 import { env } from '$env/dynamic/private';
-import { buildReminderRequest, type ReminderStage } from './payload';
+import { buildReminderRequest, type ReminderPerson, type ReminderStage } from './payload';
 
 /**
  * The one place Customer.io is spoken to, and it is only ever spoken to from the server.
@@ -79,13 +79,13 @@ export type ReminderResult = 'sent' | 'not-configured' | 'failed';
 
 export async function sendReminderEvent(
 	stage: ReminderStage,
-	email: string,
+	person: ReminderPerson,
 	language: string
 ): Promise<ReminderResult> {
 	const auth = authorization();
 	if (!auth) return 'not-configured';
 
-	const { path, body } = buildReminderRequest(stage, email, language);
+	const { path, body } = buildReminderRequest(stage, person, language);
 
 	try {
 		const response = await fetch(HOST + path, {

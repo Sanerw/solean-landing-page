@@ -57,7 +57,7 @@ export interface Answers {
 	firstName: string;
 	lastName: string;
 	email: string;
-	/** Collected because the export asks for it. Nothing sends it anywhere. */
+	/** Optional. Sent to Customer.io with the reminder when given, and nowhere else. */
 	phone: string;
 
 	// medication-history

@@ -11,6 +11,12 @@ const { basicAuth, reminderConfigured, sendReminderEvent, wasAccepted } = await 
 /** `sid:key` base64-encoded, so the expectation is not just the implementation repeated. */
 const EXPECTED_HEADER = 'Basic c2lkOmtleQ==';
 
+/**
+ * The address alone, so the language assertion below still proves nothing else is invented on
+ * the way out. What the record may carry is `payload.test.ts`'s subject.
+ */
+const PERSON = { email: 'jonas@example.com' };
+
 function configure(siteId?: string, apiKey?: string): void {
 	mockEnv.CUSTOMERIO_SITE_ID = siteId;
 	mockEnv.CUSTOMERIO_TRACK_API_KEY = apiKey;
@@ -82,9 +88,7 @@ describe('sendReminderEvent', () => {
 		const fetchMock = answerWith(200, '{}');
 		vi.stubGlobal('fetch', fetchMock);
 
-		await expect(sendReminderEvent('email_captured', 'jonas@example.com', 'de')).resolves.toBe(
-			'sent'
-		);
+		await expect(sendReminderEvent('email_captured', PERSON, 'de')).resolves.toBe('sent');
 
 		const [url, init] = fetchMock.mock.calls[0];
 		expect(url).toBe('https://track-eu.customer.io/api/v2/batch');
@@ -95,7 +99,7 @@ describe('sendReminderEvent', () => {
 		const fetchMock = answerWith(200, '{}');
 		vi.stubGlobal('fetch', fetchMock);
 
-		await sendReminderEvent('email_captured', 'jonas@example.com', 'en');
+		await sendReminderEvent('email_captured', PERSON, 'en');
 
 		const sent = JSON.parse(fetchMock.mock.calls[0][1].body);
 		expect(sent.batch[0].attributes).toEqual({ language: 'en' });
@@ -105,7 +109,7 @@ describe('sendReminderEvent', () => {
 		const fetchMock = answerWith(200, '{}');
 		vi.stubGlobal('fetch', fetchMock);
 
-		await expect(sendReminderEvent('submitted', 'jonas@example.com', 'de')).resolves.toBe('sent');
+		await expect(sendReminderEvent('submitted', PERSON, 'de')).resolves.toBe('sent');
 		expect(fetchMock.mock.calls[0][0]).toBe('https://track-eu.customer.io/api/v2/batch');
 	});
 
@@ -114,22 +118,20 @@ describe('sendReminderEvent', () => {
 		const fetchMock = answerWith(200, '{}');
 		vi.stubGlobal('fetch', fetchMock);
 
-		await expect(sendReminderEvent('email_captured', 'jonas@example.com', 'de')).resolves.toBe(
-			'not-configured'
-		);
+		await expect(sendReminderEvent('email_captured', PERSON, 'de')).resolves.toBe('not-configured');
 		expect(fetchMock).not.toHaveBeenCalled();
 	});
 
 	it('reports a refusal as failed', async () => {
 		vi.stubGlobal('fetch', answerWith(400, '{"errors":[{"reason":"bad"}]}'));
 
-		await expect(sendReminderEvent('email_captured', 'jonas@example.com', 'de')).resolves.toBe('failed');
+		await expect(sendReminderEvent('email_captured', PERSON, 'de')).resolves.toBe('failed');
 	});
 
 	it('reports a network that went away as failed rather than throwing', async () => {
 		// The caller answers 204 to a visitor either way, so this must resolve, never reject.
 		vi.stubGlobal('fetch', vi.fn().mockRejectedValue(new Error('ECONNRESET')));
 
-		await expect(sendReminderEvent('email_captured', 'jonas@example.com', 'de')).resolves.toBe('failed');
+		await expect(sendReminderEvent('email_captured', PERSON, 'de')).resolves.toBe('failed');
 	});
 });

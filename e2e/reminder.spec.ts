@@ -24,8 +24,19 @@ import { UI } from './ui-labels';
 interface Signal {
 	stage?: unknown;
 	email?: unknown;
+	firstName?: unknown;
+	lastName?: unknown;
+	phone?: unknown;
 	language?: unknown;
 }
+
+/** What `your-details` produces on the default walk, which leaves the optional phone blank. */
+const CONTACT = {
+	email: 'jonas@example.com',
+	firstName: 'Jonas',
+	lastName: 'Weber',
+	language: 'de'
+};
 
 function captureReminders(page: Page): Signal[] {
 	const signals: Signal[] = [];
@@ -70,9 +81,8 @@ test('the watch starts on the step that answers the e-mail, once', async ({ page
 	await page.getByRole('button', { name: UI.continue }).click();
 	await stepIsInteractive(page);
 
-	expect(signals).toEqual([
-		{ stage: 'email_captured', email: 'jonas@example.com', language: 'de' }
-	]);
+	// An exact object, so the absent phone is asserted too: it is optional and was not typed.
+	expect(signals).toEqual([{ stage: 'email_captured', ...CONTACT }]);
 });
 
 test('submitting ends the watch', async ({ page }) => {
@@ -83,35 +93,47 @@ test('submitting ends the watch', async ({ page }) => {
 	await expect.poll(() => signals.length).toBe(2);
 
 	expect(signals).toEqual([
-		{ stage: 'email_captured', email: 'jonas@example.com', language: 'de' },
-		{ stage: 'submitted', email: 'jonas@example.com', language: 'de' }
+		{ stage: 'email_captured', ...CONTACT },
+		{ stage: 'submitted', ...CONTACT }
 	]);
 });
 
-test('the signals carry the stage and the address, and nothing else', async ({ page }) => {
+test('the signals carry the contact details, and nothing else', async ({ page }) => {
 	const signals = captureReminders(page);
 
-	// An address that shares no substring with the name answered on `page27`, so the leak check
-	// below cannot pass by matching the e-mail it is supposed to allow.
+	// An address that shares no substring with the name answered on `your-details`, so the leak
+	// check below measures the medical answers rather than passing on the e-mail.
 	const email = 'funnel-check@example.com';
+	const phone = '+49 170 1234567';
 
-	await walkAndSubmit(page, { email });
+	await walkAndSubmit(page, { email, phone });
 	await expect.poll(() => signals.length).toBe(2);
 
 	// Exact keys rather than an absence check, so a field added later fails here instead of
 	// travelling to a marketing processor unnoticed.
 	for (const signal of signals) {
-		expect(Object.keys(signal).sort()).toEqual(['email', 'language', 'stage']);
+		expect(Object.keys(signal).sort()).toEqual([
+			'email',
+			'firstName',
+			'language',
+			'lastName',
+			'phone',
+			'stage'
+		]);
 	}
 
 	/**
-	 * The privacy boundary, asserted against what left the browser. This walk answers a name, a
-	 * date of birth, a diagnosis and a side effect, and submits an anamnesis. None of it is the
-	 * reminder's business.
+	 * The privacy boundary, asserted against what left the browser. The name and the telephone
+	 * number travel from 2026-09-05, deliberately, so a reminder can greet somebody. This walk
+	 * also answers a date of birth, a diagnosis and a side effect, and submits an anamnesis.
+	 * None of that is the reminder's business, and it is what this list measures.
 	 */
 	const payload = JSON.stringify(signals).toLowerCase();
 	expect(payload).toContain(email);
-	for (const leak of ['jonas', 'weber', '1990', 'hüftarthrose', 'übelkeit', 'anam-']) {
+	expect(payload).toContain('jonas');
+	expect(payload).toContain('weber');
+	expect(payload).toContain('1234567');
+	for (const leak of ['1990', 'hüftarthrose', 'übelkeit', 'anam-']) {
 		expect(payload, leak).not.toContain(leak);
 	}
 });

@@ -1,5 +1,5 @@
 import { getLocale } from '$lib/paraglide/runtime';
-import { readEmail } from './answers';
+import { readReminderContact, type ReminderContact } from './answers';
 import type { Answers } from './answers/types';
 
 /**
@@ -11,9 +11,9 @@ import type { Answers } from './answers/types';
  * form is medical: a marketing call that fails must not delay a navigation, block a
  * submission, or put an error in front of somebody answering questions about their health.
  *
- * Only the address travels, and only because the answers live in the browser. The stage
- * travels as a stage, never as a vendor event name, so the server keeps the choice of which
- * automation a signal belongs to.
+ * Only the contact details travel: the address, the name, and the telephone number when it was
+ * given. The medical answers stay in the browser. The stage travels as a stage, never as a
+ * vendor event name, so the server keeps the choice of which automation a signal belongs to.
  */
 
 type Stage = 'email_captured' | 'submitted';
@@ -31,13 +31,25 @@ type Stage = 'email_captured' | 'submitted';
  */
 let watching = false;
 
-function signal(stage: Stage, email: string): void {
+function signal(stage: Stage, contact: ReminderContact): void {
 	void fetch('/api/reminder', {
 		method: 'POST',
 		headers: { 'content-type': 'application/json' },
-		// The language the campaign picks its mail by. Read here rather than on the server,
+		// Field by field rather than a spread of the contact, the same rule the server's payload
+		// builder follows: what leaves this app is written out here, so widening it is a visible
+		// edit. An unanswered field is `undefined` and `JSON.stringify` drops it, so the body
+		// carries the phone only when somebody typed one.
+		//
+		// The language is the campaign's mail choice. Read here rather than on the server,
 		// because the locale lives in the path the visitor is on, not in the request body.
-		body: JSON.stringify({ stage, email, language: getLocale() })
+		body: JSON.stringify({
+			stage,
+			email: contact.email,
+			firstName: contact.firstName,
+			lastName: contact.lastName,
+			phone: contact.phone,
+			language: getLocale()
+		})
 	}).catch(() => {
 		// Deliberately empty. There is nothing a visitor could do with this, and nothing this
 		// app should do either: the endpoint already answers 204 to its own upstream failures,
@@ -53,13 +65,14 @@ function signal(stage: Stage, email: string): void {
 export function startReminderWatch(answers: Answers): void {
 	if (watching) return;
 
-	const email = readEmail(answers);
-	// The model does not require the address, and a questionnaire walked without one simply
-	// cannot be reminded. Not an error, and not a reason to keep asking.
-	if (!email) return;
+	const contact = readReminderContact(answers);
+	// No address, no reminder: a questionnaire walked without one simply cannot be reminded.
+	// Not an error, and not a reason to keep asking. The name rides along because it is answered
+	// on the same screen, so a capture that happens at all has one.
+	if (!contact) return;
 
 	watching = true;
-	signal('email_captured', email);
+	signal('email_captured', contact);
 }
 
 /**
@@ -68,8 +81,8 @@ export function startReminderWatch(answers: Answers): void {
  * defence inside Customer.io.
  */
 export function endReminderWatch(answers: Answers): void {
-	const email = readEmail(answers);
-	if (!email) return;
+	const contact = readReminderContact(answers);
+	if (!contact) return;
 
-	signal('submitted', email);
+	signal('submitted', contact);
 }

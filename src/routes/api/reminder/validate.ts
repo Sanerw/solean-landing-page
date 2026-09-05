@@ -1,4 +1,8 @@
-import { isReminderStage, type ReminderStage } from '$lib/server/customerio/payload';
+import {
+	isReminderStage,
+	type ReminderPerson,
+	type ReminderStage
+} from '$lib/server/customerio/payload';
 import { baseLocale, isLocale } from '$lib/paraglide/runtime';
 
 /**
@@ -11,6 +15,20 @@ import { baseLocale, isLocale } from '$lib/paraglide/runtime';
 const MAX_EMAIL_LENGTH = 254;
 
 /**
+ * Room for a real name and a real number, and no room for prose. Neither is validated for
+ * correctness: a name has no shape worth asserting, and a telephone number typed by a person
+ * in Germany may carry spaces, slashes, a country code or none of it.
+ */
+const MAX_NAME_LENGTH = 100;
+const MAX_PHONE_LENGTH = 32;
+
+/**
+ * Control characters, which no name or number contains and which are how a value typed here
+ * would try to become a second line of something downstream.
+ */
+const CONTROL_CHARACTERS = /[\u0000-\u001f\u007f]/;
+
+/**
  * Shape, not correctness. Nothing here can tell a real mailbox from an invented one, and
  * pretending otherwise with a longer pattern would only reject unusual but valid addresses.
  * Customer.io is the one that finds out whether it delivers.
@@ -20,7 +38,7 @@ const EMAIL_SHAPE = /^[^\s@]+@[^\s@.]+(\.[^\s@.]+)+$/;
 export type ValidationFailure = 'bad-stage' | 'bad-email';
 
 export type ValidationResult =
-	| { ok: true; stage: ReminderStage; email: string; language: string }
+	| { ok: true; stage: ReminderStage; person: ReminderPerson; language: string }
 	| { ok: false; reason: ValidationFailure };
 
 /**
@@ -36,6 +54,24 @@ function readLanguage(value: unknown): string {
 	return typeof value === 'string' && isLocale(value) ? value : baseLocale;
 }
 
+/**
+ * The name and the telephone number, which the reminder carries from 2026-09-05 so a mail can
+ * greet somebody by name.
+ *
+ * **Unusable is absent, never a 400.** They follow the language's rule rather than the
+ * address's: the address is the identifier and a call without one is meaningless, while a name
+ * that arrives too long or with a control character in it costs a greeting, not the reminder.
+ * This endpoint may never be a reason a questionnaire fails.
+ */
+function readOptionalDetail(value: unknown, maxLength: number): string | undefined {
+	if (typeof value !== 'string') return undefined;
+
+	const trimmed = value.trim();
+	if (!trimmed || trimmed.length > maxLength || CONTROL_CHARACTERS.test(trimmed)) return undefined;
+
+	return trimmed;
+}
+
 export function readReminderRequest(body: unknown): ValidationResult {
 	const source = typeof body === 'object' && body !== null ? (body as Record<string, unknown>) : {};
 
@@ -48,5 +84,17 @@ export function readReminderRequest(body: unknown): ValidationResult {
 		return { ok: false, reason: 'bad-email' };
 	}
 
-	return { ok: true, stage: source.stage, email, language: readLanguage(source.language) };
+	return {
+		ok: true,
+		stage: source.stage,
+		// Field by field, so the body cannot widen what reaches the processor by carrying a key
+		// this app has never heard of.
+		person: {
+			email,
+			firstName: readOptionalDetail(source.firstName, MAX_NAME_LENGTH),
+			lastName: readOptionalDetail(source.lastName, MAX_NAME_LENGTH),
+			phone: readOptionalDetail(source.phone, MAX_PHONE_LENGTH)
+		},
+		language: readLanguage(source.language)
+	};
 }

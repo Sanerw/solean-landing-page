@@ -382,8 +382,8 @@ It replaced Brevo in feature 23. The seam did not move, only the vendor behind i
 | Region | **EU**, and not interchangeable with the US host. See the region trap below |
 | Auth | HTTP Basic, `CUSTOMERIO_SITE_ID` and `CUSTOMERIO_TRACK_API_KEY`, server only. Either one absent means this deployment sends no reminders |
 | Key type | a **Track API key**, not an App API key. They are different credentials and only the first authenticates these endpoints |
-| Our endpoint | `POST /api/reminder`, `{ stage, email }` |
-| What may travel | the e-mail and a stage marker. Nothing else, ever |
+| Our endpoint | `POST /api/reminder`, `{ stage, email, firstName, lastName, phone, language }` |
+| What may travel | the contact details from `your-details` and a stage marker. Nothing else, ever |
 
 ### The three strings a person types into the Customer.io panel
 
@@ -430,14 +430,40 @@ rather than on reading documentation.
 wrong. A 401 is not the signal either, because a wrong key looks identical. The EU host is used
 because the workspace is an EU workspace, confirmed in the panel and nowhere else.
 
-### What may never be sent
+### What may travel, and what may never
 
-No answer value, no anamnesis uid, no medication or dose, no name, no telephone number. The
-builder takes a stage and an address as two scalars rather than an object, so there is no bag of
-properties for a caller to widen, and `payload.test.ts` asserts the **exact** key set at every
-depth rather than the absence of known-bad keys: a field added later fails the test instead of
-travelling. Its key collector is recursive on purpose, because the submitted stage nests inside
-`batch[]` and a hand-written flattener would stop measuring exactly where the nesting begins.
+**What may travel** is what a person types into `your-details`: the e-mail, the first name, the
+last name, and the telephone number when it was given. They reach Customer.io as profile
+attributes on the `identify` half of both stages, under its own conventional keys, `first_name`,
+`last_name` and `phone`, because `{{customer.first_name}}` is what somebody writes into a
+template in the panel.
+
+The name and the number were forbidden here until **2026-09-05**, when the user asked for them
+so a reminder can greet the person it is sent to. Nothing else about that decision moved: an
+identifier still leaves an unfinished medical questionnaire before any submission, and typing
+the e-mail and pressing Continue is still the whole consent step.
+
+**What may never be sent:** no answer value, no anamnesis uid, no medication or dose.
+
+Three mechanics hold that line, and none of them is decoration.
+
+- **`ReminderPerson` is a closed record, not a bag.** The builder used to take two scalars for
+  this reason; it now takes one typed record whose fields it reads *by name*, one line each,
+  rather than spreading. A field added to the record cannot travel until somebody writes the
+  line that sends it.
+- **`payload.test.ts` asserts the exact key set at every depth**, not the absence of known-bad
+  keys, so a field added later fails the test instead of travelling. Its key collector is
+  recursive on purpose, because the submitted stage nests inside `batch[]` and a hand-written
+  flattener would stop measuring exactly where the nesting begins.
+- **The public endpoint drops what it cannot use rather than refusing it.** `/api/reminder` is
+  public, so the name and the number are hostile input: they are trimmed, capped at 100 and 32
+  characters, and dropped when empty, oversized, of the wrong type, or carrying a control
+  character. Only the address is worth a 400, because it is the identifier. A rejection anywhere
+  else would cost the reminder itself, and this endpoint may never be why a questionnaire fails.
+
+An unanswered field is omitted rather than sent empty, at both ends: `JSON.stringify` drops the
+`undefined` in the browser, and the builder skips a blank. An empty `first_name` renders as
+"Hallo ," where an absent one lets the template fall back.
 
 ### Three guards that look optional and are not
 
