@@ -98,7 +98,7 @@
 
 				<h1
 					id="hero-heading"
-					class="mt-4 max-w-5xl text-balance font-display text-5xl font-medium leading-none tracking-tight text-background sm:text-4xl lg:text-5xl xl:text-6xl"
+					class="mt-4 max-w-5xl text-balance font-display text-5xl font-medium leading-none tracking-tight text-background sm:text-4xl lg:text-6xl xl:text-7xl"
 				>
 					<!-- The narrow frame drops the struck phrase: at this measure the rule breaks
 					     across lines and reads as two struck words rather than one struck idea. -->
