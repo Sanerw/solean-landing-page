@@ -171,10 +171,17 @@
 @theme inline {
 	--font-sans: 'DM Sans Variable', 'DM Sans Fallback', ui-sans-serif, system-ui, sans-serif;
 	--font-display: 'Inter Tight Variable', 'Inter Tight Fallback', ui-sans-serif, system-ui, sans-serif;
-	--spacing-hero-frame: calc(100svh - 5rem);
+	/* While the offer bar is commented out of the marketing layout, the hero takes the height
+	   the bar used to hold: full viewport under sm where the photograph bleeds, and viewport
+	   less the 12px card gutter above it, so the bottom inset matches the sides. Restore the
+	   three commented lines with the bar. */
+	/* --spacing-hero-frame: calc(100svh - 5rem); */
 	/* The narrow hero fills what the offer bar leaves, and the bar is 64px, then 44px. */
-	--spacing-hero-bleed: calc(100svh - 4rem);
-	--spacing-hero-bleed-sm: calc(100svh - 2.75rem);
+	/* --spacing-hero-bleed: calc(100svh - 4rem); */
+	/* --spacing-hero-bleed-sm: calc(100svh - 2.75rem); */
+	--spacing-hero-frame: calc(100svh - 1.5rem);
+	--spacing-hero-bleed: 100svh;
+	--spacing-hero-bleed-sm: calc(100svh - 1.5rem);
 
 	--color-background: var(--background);
 	--color-foreground: var(--foreground);
