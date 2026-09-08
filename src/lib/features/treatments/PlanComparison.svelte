@@ -3,6 +3,7 @@
 	import { localizeHref } from '$lib/paraglide/runtime';
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 	import { CONTAINER } from '$lib/features/marketing/container';
+	import { ROUTES } from '$lib/features/marketing/content';
 	import { SECTION_HEADING, SECTION_LEAD, SECTION_Y } from './type';
 	import { comparisonDurations, comparisonRows, formatPrice } from './content';
 	import type { Plan } from './types';
@@ -154,7 +155,7 @@
 									</span>
 								{:else}
 									<a
-										href={localizeHref(`/treatments/${row.slug}`)}
+										href={localizeHref(ROUTES.treatment(row.slug))}
 										class="inline-flex shrink-0 items-center gap-1 rounded-sm bg-accent px-2 py-1 text-xs font-bold text-foreground outline-none hover:bg-highlight focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
 										aria-label={m.treatment_compare_learn_more_about({ name: row.name })}
 									>

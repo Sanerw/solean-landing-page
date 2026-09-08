@@ -31,8 +31,17 @@ export const ROUTES = {
 	home: '/',
 	questionnaire: '/questionnaire',
 	learn: '/learn',
-	learnArticle: (slug: string) => `/learn/blog/${slug}`
+	learnArticle: (slug: string) => `/learn/blog/${slug}`,
+	/**
+	 * One product page. A builder rather than four hand-assembled paths, because a path spelled
+	 * out at the call site is a path somebody forgets to localise, which is exactly how the two
+	 * landing CTAs came to send an English reader to the German site.
+	 */
+	treatment: (slug: string) => `/treatments/${slug}`
 } as const;
+
+/** The product the landing page's secondary CTAs open while the treatments index is undrawn. */
+export const FEATURED_TREATMENT_SLUG = 'wegovy-pill';
 
 export type { ProjectionHorizon, ProjectionPoint };
 
@@ -74,7 +83,7 @@ export function navItems(): readonly NavItem[] {
 				// From the domain, not rebuilt here, so this menu and the page it opens cannot
 				// disagree about a product's name.
 				label: treatmentDisplayName(treatment),
-				href: localizeHref(`/treatments/${treatment.id}`),
+				href: localizeHref(ROUTES.treatment(treatment.id)),
 				description:
 					treatment.form === 'tablet' ? m.nav_treatment_tablet() : m.nav_treatment_injection()
 			}))

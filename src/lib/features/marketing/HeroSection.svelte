@@ -4,7 +4,7 @@
 	import ArrowRightIcon from '@lucide/svelte/icons/arrow-right';
 	import type { Rating } from './reviews';
 	import { CONTAINER } from './container';
-	import { ROUTES } from './content';
+	import { FEATURED_TREATMENT_SLUG, ROUTES } from './content';
 	import type { HomePage } from '$lib/sanity/queries';
 	import type { SanityPicture } from '$lib/sanity/image';
 	import HeroArticleTeaser from './HeroArticleTeaser.svelte';
@@ -132,7 +132,7 @@
 					<!-- The reference offers one route into the funnel on a narrow screen; the
 					     second CTA and the teaser return with the room to carry them. -->
 					<Button
-						href="/treatments"
+						href={localizeHref(ROUTES.treatment(FEATURED_TREATMENT_SLUG))}
 						variant="outline"
 						surface="dark"
 						class="hidden w-full rounded-full sm:inline-flex sm:w-auto"

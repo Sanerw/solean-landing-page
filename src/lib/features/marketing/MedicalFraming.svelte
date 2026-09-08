@@ -6,7 +6,7 @@
 	import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
 	import BrainIcon from '@lucide/svelte/icons/brain';
 	import DnaIcon from '@lucide/svelte/icons/dna';
-	import { ROUTES } from './content';
+	import { FEATURED_TREATMENT_SLUG, ROUTES } from './content';
 	import type { medicalFramingFrom } from './from-sanity';
 	import { SECTION_HEADING, SECTION_LEAD } from './type';
 
@@ -47,8 +47,13 @@
 			{MEDICAL_FRAMING.primaryCta}
 			<ArrowRightIcon aria-hidden="true" class="size-5" />
 		</Button>
-		<!-- Inert, matching how the hero treats the same destination until it exists. -->
-		<Button href="/treatments" variant="outline" class="rounded-full">
+		<!-- The treatments index is still undrawn, so this opens the product it would have led
+		     with rather than a route that does not exist. -->
+		<Button
+			href={localizeHref(ROUTES.treatment(FEATURED_TREATMENT_SLUG))}
+			variant="outline"
+			class="rounded-full"
+		>
 			{MEDICAL_FRAMING.secondaryCta}
 			<ArrowUpRightIcon aria-hidden="true" class="size-5" />
 		</Button>

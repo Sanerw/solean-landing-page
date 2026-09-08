@@ -602,3 +602,39 @@ test('the navigation dropdown paints above the page, and its items respond to ho
 		.poll(() => other.evaluate((el) => getComputedStyle(el).backgroundColor))
 		.not.toBe(before);
 });
+
+/**
+ * Both landing-page secondary CTAs used to link to `/treatments`, which has no index route, and
+ * used to do it unprefixed. Two failures in one href: a 404, and a language switch for an
+ * English reader, because German owns the bare path. They open the Wegovy Pill page instead
+ * until the index is drawn.
+ */
+for (const [locale, home, prefix] of [
+	['English', '/en', '/en'],
+	['German', '/', '']
+] as const) {
+	test(`the landing CTAs reach a treatment page that exists, in ${locale}`, async ({ page }) => {
+		await page.setViewportSize({ width: 1440, height: 900 });
+		await page.goto(home);
+
+		const expected = `${prefix}/treatments/wegovy-pill`;
+		await expect(
+			page
+				.locator('section[aria-labelledby="hero-heading"]')
+				.getByRole('link', { name: /treatment|Behandlung/i })
+				.first()
+		).toHaveAttribute('href', expected);
+
+		// The index does not exist, so nothing may point at it.
+		const hrefs = await page
+			.getByRole('link')
+			.evaluateAll((els) => els.map((el) => el.getAttribute('href')));
+		expect(hrefs.filter((href) => href === '/treatments' || href === '/en/treatments')).toEqual(
+			[]
+		);
+
+		const response = await page.goto(expected);
+		expect(response?.status()).toBe(200);
+		await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+	});
+}
