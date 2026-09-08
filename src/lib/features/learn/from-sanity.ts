@@ -32,7 +32,7 @@ export function toArticle(article: ArticleDetail): Article {
 					? croppedPicture(article.reviewer.portrait, AVATAR_WIDTHS, 1)
 					: undefined
 			},
-			nextReviewAt: article.nextReviewAt ?? '',
+			nextReviewAt: article.nextReviewAt,
 			readTimeMinutes: article.readTimeMinutes ?? 0
 		},
 		body: toBlocks(article.body)

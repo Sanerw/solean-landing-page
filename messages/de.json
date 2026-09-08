@@ -66,6 +66,7 @@
 	"learn_neighbours_label": "Mehr aus dem Journal",
 	"learn_reviewed_title": "Fachlich auf Richtigkeit geprüft",
 	"learn_reviewed_body": "Geprüft von {reviewer}. Nächste Prüfung fällig am",
+	"learn_reviewed_body_undated": "Geprüft von {reviewer}.",
 	"learn_read_time": "{minutes} Min. Lesezeit",
 	"learn_table_attribute": "Merkmal",
 	"proj_eyebrow": "Deine Prognose",

@@ -8,8 +8,12 @@ import { defineQuery } from 'groq';
  * Studio's translation metadata, so a query without the filter would return the same article
  * once per locale.
  */
+// Ordered by the review date, falling back to when the document was made. That order is not
+// cosmetic: it picks the Journal's featured card and decides what "previous" and "next" mean at
+// the foot of every article, so an article awaiting its first review still needs a defined place
+// in it rather than wherever GROQ happens to sort a null.
 export const articlesQuery = defineQuery(`*[_type == "article" && language == $language && defined(slug.current)]
-	| order(reviewedAt desc){
+	| order(coalesce(reviewedAt, _createdAt) desc){
 		_id,
 		title,
 		category,

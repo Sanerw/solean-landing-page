@@ -71,6 +71,18 @@ describe('toArticle', () => {
 		expect(toArticle(article({ tags: ['Weight loss'] })).tags).toEqual(['Weight loss']);
 	});
 
+	/**
+	 * The `?? ''` this replaced was a 500 waiting to happen: a blank date typechecks and then
+	 * throws `RangeError: Invalid time value` inside `Intl.DateTimeFormat`. Leaving it undefined
+	 * is what forces the review note to decide what to draw.
+	 */
+	it('leaves an absent next review date absent rather than blank', () => {
+		expect(toArticle(article()).review.nextReviewAt).toBeUndefined();
+		expect(toArticle(article({ nextReviewAt: '2027-02-14' })).review.nextReviewAt).toBe(
+			'2027-02-14'
+		);
+	});
+
 	// An article an editor has created and not yet written is a legitimate state, not a 500.
 	it('gives a document with no body an empty one rather than undefined', () => {
 		expect(toArticle(article()).body).toEqual([]);

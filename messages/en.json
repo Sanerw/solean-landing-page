@@ -66,6 +66,7 @@
 	"learn_neighbours_label": "More from the Journal",
 	"learn_reviewed_title": "Clinically reviewed for accuracy",
 	"learn_reviewed_body": "Reviewed by {reviewer}. Next review due",
+	"learn_reviewed_body_undated": "Reviewed by {reviewer}.",
 	"learn_read_time": "{minutes} min read",
 	"learn_table_attribute": "Attribute",
 	"proj_eyebrow": "Your projection",

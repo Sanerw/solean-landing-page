@@ -81,7 +81,11 @@ export interface Article {
 	hero?: SanityPicture;
 	review: {
 		reviewer: ArticleReviewer;
-		nextReviewAt: string;
+		/**
+		 * Optional, and deliberately not defaulted to `''`. A blank date typechecks and then
+		 * throws in `Intl.DateTimeFormat`, so the absence has to stay visible to the compiler.
+		 */
+		nextReviewAt?: string;
 		readTimeMinutes: number;
 	};
 	/**

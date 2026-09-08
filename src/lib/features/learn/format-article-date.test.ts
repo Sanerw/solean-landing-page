@@ -20,4 +20,14 @@ describe('formatArticleDate', () => {
 	it('falls back to English for a locale it has no formatter for', () => {
 		expect(formatArticleDate('2026-08-28', 'fr')).toBe('28 Aug 2026');
 	});
+
+	/**
+	 * Documented rather than defended against. It is not this function's job to invent a date for
+	 * a caller that has none, and the throw is loud where a silent "Invalid Date" on a medical
+	 * page would not be. What changed in this fix is that `Article` no longer hands it a blank
+	 * string: the absence stays `undefined` and the caller decides what to draw.
+	 */
+	it('throws rather than printing nonsense when handed no date at all', () => {
+		expect(() => formatArticleDate('', 'de')).toThrow(RangeError);
+	});
 });
