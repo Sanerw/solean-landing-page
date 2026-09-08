@@ -672,12 +672,11 @@ test('the article follows its artboard below the hero', async ({ page }) => {
 	const faqTop = (await page.getByRole('heading', { name: 'Frequently asked questions' }).boundingBox())!.y;
 	expect((await sources.boundingBox())!.y).toBeGreaterThan(faqTop);
 
-	// The sidebar keeps the artboard's three cards, the third naming the standard.
-	const sidebar = page.getByLabel('Article summary and standards');
-	await expect(sidebar.getByRole('heading', { name: 'Key takeaways' })).toBeVisible();
-	await expect(sidebar.getByRole('heading', { name: 'Not sure which treatment fits?' })).toBeVisible();
-	await expect(sidebar.getByRole('heading', { name: 'Our editorial standards' })).toBeVisible();
-	await expect(sidebar.getByRole('heading', { name: 'Sources and medical review' })).toHaveCount(0);
+	// The right-hand column went with the September artboards: no key takeaways, no
+	// eligibility card, no editorial-standards note. The article closes on its sources.
+	await expect(page.getByLabel('Article summary and standards')).toHaveCount(0);
+	await expect(page.getByRole('heading', { name: 'Key takeaways' })).toHaveCount(0);
+	await expect(page.getByRole('heading', { name: 'Not sure which treatment fits?' })).toHaveCount(0);
 
 	// The related-guides band was dropped during review.
 	await expect(page.getByText('More expert guides')).toHaveCount(0);

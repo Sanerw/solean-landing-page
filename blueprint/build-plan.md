@@ -547,7 +547,7 @@ claims are not approved production content.
     article's neighbours read from the Journal's own order, and the Journal's
     featured card aligned to the same treatment. The body below the hero is
     untouched, so the page keeps working.
-  - [ ] 26b. **The body and the neighbours** - the centred contents list and
+  - [x] 26b. **The body and the neighbours** - the centred contents list and
     reading column, the sections restyled to the artboard (the gold rule on the
     quick answer, the comparison table, the side-effect list, the maker cards,
     the FAQ and the review note), the right-hand column deleted with

@@ -116,14 +116,27 @@ test('the comparison table scrolls inside itself rather than squashing or moving
 	await noHorizontalOverflow(page, 'the learn article beside its table');
 });
 
-test('the table of contents is reachable on a phone', async ({ page }) => {
+/**
+ * Feature 17 put the contents list on a phone as two columns of links, reasoning that the
+ * article is long enough for scrolling to a section by hand to be the difference between
+ * reading it and leaving. The September 2026 artboard reverses that: `Article Mobile Body`
+ * holds `Article Main Content` and nothing else, so at 390 the reading column takes the whole
+ * panel and the list is not drawn.
+ *
+ * Reviewed and chosen deliberately in 26b, rather than the test being deleted with the layout
+ * it described. What replaced the argument: eight anchors between the reader and the first
+ * sentence is a table of contents standing where the article should be.
+ */
+test('the contents list is a desktop rail, and is not drawn on a phone', async ({ page }) => {
+	const toc = page.getByRole('navigation', { name: UI.tableOfContents });
+
 	await page.setViewportSize(NARROW[0]);
 	await page.goto('/learn/blog/mounjaro-vs-wegovy');
+	await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+	await expect(toc).toBeHidden();
 
-	// Two columns on a phone rather than the desktop's sticky rail, and every entry has to be
-	// a real link: the article is long enough that scrolling to a section by hand is the
-	// difference between reading it and leaving.
-	const toc = page.getByRole('navigation', { name: UI.tableOfContents });
+	// Wide, it is there and every entry is a real link, which is what made it worth having.
+	await page.setViewportSize({ width: 1440, height: 900 });
 	await expect(toc).toBeVisible();
 	await expect(toc.getByRole('link').first()).toBeVisible();
 });

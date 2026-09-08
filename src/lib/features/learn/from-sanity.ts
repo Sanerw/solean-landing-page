@@ -90,8 +90,9 @@ function toProfile(profile: NonNullable<ArticleDetail['treatmentProfiles']>[numb
 		manufacturer: profile.manufacturer,
 		frequency: profile.frequency ?? '',
 		mainAction: profile.mainAction ?? '',
-		// A label, not content: the same words on every article, so it stays a message.
-		manufacturerLabel: m.learn_manufacturer_label(),
+		// A label, not content: the same sentence on every article, with the treatment's own name
+		// in it, as the artboard writes it. So it stays a message and takes a parameter.
+		manufacturerLabel: m.learn_manufacturer_label({ treatment: treatment.name }),
 		manufacturerBody: profile.manufacturerNote ?? ''
 	} satisfies ArticleTreatmentProfile;
 }
@@ -142,7 +143,6 @@ export function toArticle(article: ArticleDetail): Article {
 		},
 		toc: articleToc(article),
 		quickAnswer: article.quickAnswer ?? [],
-		keyTakeaways: article.keyTakeaways ?? [],
 		comparison: { profiles },
 		howTheyWork: article.howTheyWork ?? [],
 		expectedResults: article.expectedResults ?? [],

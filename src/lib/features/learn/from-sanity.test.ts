@@ -156,7 +156,6 @@ describe('toArticle', () => {
 		const mapped = toArticle(article());
 
 		expect(mapped.quickAnswer).toEqual([]);
-		expect(mapped.keyTakeaways).toEqual([]);
 		expect(mapped.sideEffects).toEqual({ intro: '', items: [] });
 		expect(mapped.sourcesSummary).toBe('');
 	});

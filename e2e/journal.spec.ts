@@ -123,3 +123,73 @@ test('the article fits the narrow frame', async ({ page }) => {
 	}));
 	expect(widths.scroll).toBe(widths.client);
 });
+
+/**
+ * The body, rebuilt to the September artboards in 26b. The article's copy is Sanity's and is
+ * not asserted here; the layout and the behaviour are this repository's.
+ */
+test('the contents list sits beside the reading column, and not at all on a phone', async ({
+	page
+}) => {
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await page.goto('/en/learn/blog/mounjaro-vs-wegovy');
+
+	const contents = page.getByRole('navigation', { name: 'On this page' });
+	const heading = page.getByRole('heading', { name: 'Quick answer' });
+	await expect(contents).toBeVisible();
+
+	// Beside, not above: the artboard sets the list against the column rather than over it.
+	const list = (await contents.boundingBox())!;
+	const column = (await heading.boundingBox())!;
+	expect(list.x + list.width).toBeLessThanOrEqual(column.x);
+
+	// The narrow artboard has no contents list at all: eight anchors between the reader and the
+	// first sentence is not a phone layout.
+	await page.setViewportSize({ width: 390, height: 844 });
+	await expect(contents).toBeHidden();
+	await expect(heading).toBeVisible();
+});
+
+test('every contents link points at a section the page actually has', async ({ page }) => {
+	await page.setViewportSize({ width: 1440, height: 900 });
+	await page.goto('/en/learn/blog/mounjaro-vs-wegovy');
+
+	const hrefs = await page
+		.getByRole('navigation', { name: 'On this page' })
+		.getByRole('link')
+		.evaluateAll((links) => links.map((link) => link.getAttribute('href')));
+
+	expect(hrefs.length).toBeGreaterThan(0);
+	for (const href of hrefs) {
+		expect(href).toMatch(/^#/);
+		await expect(page.locator(href!)).toHaveCount(1);
+	}
+});
+
+test('the FAQ starts closed and opens one question at a time', async ({ page }) => {
+	await page.goto('/en/learn/blog/mounjaro-vs-wegovy');
+
+	const questions = page.locator('#faqs [data-slot="accordion-trigger"]');
+	await expect(questions.first()).toHaveAttribute('aria-expanded', 'false');
+
+	await questions.first().click();
+	await expect(questions.first()).toHaveAttribute('aria-expanded', 'true');
+
+	// One accordion, not four disclosures: opening the second closes the first.
+	await questions.nth(1).click();
+	await expect(questions.nth(1)).toHaveAttribute('aria-expanded', 'true');
+	await expect(questions.first()).toHaveAttribute('aria-expanded', 'false');
+});
+
+/**
+ * One article is both the newest and the oldest, so it has no neighbours and the band is not
+ * drawn. The rendered case cannot be proven here: the fixture is generated from the real
+ * dataset by `scripts/generate-sanity-fixture.mjs`, so a second article added by hand would be
+ * dropped the next time it runs. `neighboursOf` carries that side in `journal.test.ts`.
+ */
+test('a library of one draws no neighbours band', async ({ page }) => {
+	await page.goto('/en/learn/blog/mounjaro-vs-wegovy');
+
+	await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+	await expect(page.getByRole('navigation', { name: 'More from the Journal' })).toHaveCount(0);
+});

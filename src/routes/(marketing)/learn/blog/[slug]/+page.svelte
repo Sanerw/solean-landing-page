@@ -1,13 +1,11 @@
 <script lang="ts">
 	import ArticleHero from '$lib/features/learn/ArticleHero.svelte';
 	import ArticleContent from '$lib/features/learn/ArticleContent.svelte';
-	import ArticleFaq from '$lib/features/learn/ArticleFaq.svelte';
-	import ArticleSidebar from '$lib/features/learn/ArticleSidebar.svelte';
-	import ArticleSources from '$lib/features/learn/ArticleSources.svelte';
+	import ArticleNeighbours from '$lib/features/learn/ArticleNeighbours.svelte';
 	import ArticleToc from '$lib/features/learn/ArticleToc.svelte';
 	import { toArticle } from '$lib/features/learn/from-sanity';
 	import SiteHeader from '$lib/features/marketing/SiteHeader.svelte';
-	import { BLEED, CONTAINER } from '$lib/features/marketing/container';
+	import { BLEED, CONTAINER, PANEL_ROUND } from '$lib/features/marketing/container';
 	import LiveQuery from '$lib/sanity/LiveQuery.svelte';
 	import type { ArticleDetail } from '$lib/sanity/queries';
 	import type { PageProps } from './$types';
@@ -40,20 +38,33 @@
 			{@const article = toArticle(doc)}
 			<article>
 				<ArticleHero {article} next={data.neighbours.next} />
-				<div class={[CONTAINER, 'grid gap-12 py-16 lg:grid-cols-4 lg:py-24']}>
-					<ArticleToc items={article.toc} />
-					<ArticleContent {article} />
-					<ArticleSidebar {article} />
-				</div>
-				<div class={[CONTAINER, 'grid gap-12 pb-16 lg:grid-cols-4 lg:pb-24']}>
-					<div class="lg:col-span-3 lg:col-start-2">
-						<ArticleFaq {article} />
-						<div class="mt-16">
-							<ArticleSources {article} />
+
+				<!--
+					One panel, one reading column. The artboard sets the column against the contents
+					list and centres the pair, rather than running the text the width of the page:
+					the measure is a line length, so it does not grow with the viewport, and the
+					right margin the old sidebar filled is now margin.
+				-->
+				<section class={[BLEED, 'sm:pt-6']} aria-label={article.title}>
+					<div class={['bg-card', PANEL_ROUND]}>
+						<div class={[CONTAINER, 'py-12 lg:py-20']}>
+							<div class="mx-auto flex max-w-6xl flex-col lg:flex-row lg:gap-16">
+								<ArticleToc items={article.toc} />
+
+								<div class="min-w-0 flex-1">
+									<ArticleContent {article} />
+								</div>
+							</div>
 						</div>
 					</div>
-				</div>
+				</section>
 			</article>
 		{/if}
 	{/snippet}
 </LiveQuery>
+
+<!--
+	Outside the live query on purpose: the neighbours are not this article's content, so a
+	keystroke in the Studio should not send the library round again.
+-->
+<ArticleNeighbours previous={data.neighbours.previous} next={data.neighbours.next} />

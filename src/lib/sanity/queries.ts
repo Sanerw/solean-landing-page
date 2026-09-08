@@ -34,7 +34,6 @@ export const articleQuery = defineQuery(`*[_type == "article" && language == $la
 	nextReviewAt,
 	readTimeMinutes,
 	quickAnswer,
-	keyTakeaways,
 	howTheyWork,
 	expectedResults,
 	sideEffects,
@@ -81,7 +80,6 @@ export interface ArticleDetail extends ArticleListItem {
 	seoDescription?: string;
 	nextReviewAt?: string;
 	quickAnswer?: string[];
-	keyTakeaways?: string[];
 	howTheyWork?: string[];
 	expectedResults?: string[];
 	sideEffects?: { intro?: string; items?: string[] };

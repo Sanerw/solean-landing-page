@@ -60,7 +60,6 @@ export interface Article {
 	};
 	toc: readonly ArticleTocItem[];
 	quickAnswer: readonly string[];
-	keyTakeaways: readonly string[];
 	comparison: {
 		profiles: readonly [ArticleTreatmentProfile, ArticleTreatmentProfile];
 	};
