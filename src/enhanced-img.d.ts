@@ -51,3 +51,10 @@ declare module '*?enhanced&imgSizes=100vw&w=120;240;540;768;1080;1366&quality=90
 	const value: Picture;
 	export default value;
 }
+
+declare module '*?enhanced&w=400;600;800;1200;1600&quality=90' {
+	import type { Picture } from '@sveltejs/enhanced-img';
+
+	const value: Picture;
+	export default value;
+}

@@ -1,6 +1,6 @@
 # Solean - Project Overview
 
-<!-- blueprint:source-hash 5908975d56e9fcb3a37df93e9a939f7bce0f8ac5c9d486dafc59b85869396f1b -->
+<!-- blueprint:source-hash e54fb0e3a42c94b98c33fcc248a82675bc66f31c737b7df806dd6b3e2adad87c -->
 
 > The Solean front end: a marketing site and a doctor-led GLP-1 funnel that runs
 > on RxScale's Anamnesis API and hands the order to Shopify by creating a cart
@@ -45,7 +45,7 @@ happens inside RxScale, not on a Solean screen.
 
 ## Features
 
-Twenty-four in build-plan order. The first twenty-three are complete; 24 is
+Twenty-five in build-plan order. The first twenty-four are complete; 25 is
 next.
 
 1. **Design system and core UI components** (done) - semantic tokens, two fonts,
@@ -134,7 +134,7 @@ next.
     `src/lib/server/brevo/` and `BREVO_API_KEY` are deleted in the same feature,
     so the app is never wired to two mail vendors at once.
 
-24. **Own questions, mapped onto RxScale** (next) - the questionnaire's content
+24. **Own questions, mapped onto RxScale** (done) - the questionnaire's content
     moves into this repository, built from the Pencil export at
     `blueprint/reference/questionnaire-flow-export.html`. RxScale keeps every
     clinical judgement and gains a new role: contract. Four sub-features, each
@@ -158,6 +158,28 @@ next.
     - **24e** the added screens and the design pass: the seven answers the export
       never asks for, medication history rebuilt to its artboards, copy in both
       languages, browser coverage, accessibility.
+
+25. **Treatment detail pages** (next) - `/treatments/[slug]` for the three
+    catalogue treatments, built from the Pencil treatment export at
+    `blueprint/reference/treatment-export.html` and its two captured artboards.
+    The product pages left the deferred backlog because a design arrived for
+    them; the treatments index, about, contact and clinician profiles are still
+    undrawn and still deferred. Copy and prices are one typed fixture in this
+    repository, in German and English, built the way the nav and the footer are,
+    so a price change is a deploy. The prices are display copy like every other
+    marketing price here: Shopify still owns the amount charged, and the
+    recommendation screen still reads its own figures from RxScale. Two
+    sub-features, each leaving a page you can open.
+    - **25a** the route, the content module, and the product hero: the typed
+      definition of the three treatments, `/treatments/[slug]` with its 404 for
+      an unknown slug, and the hero as the artboards draw it, gallery panel and
+      badges, breadcrumb, title, rating, introduction, dose selector,
+      clinician-guidance note, consultation offer card, and the sticky
+      consultation bar the narrow artboard carries.
+    - **25b** the sections below the fold: the plan comparison as a table on the
+      wide artboard and stacked cards on the narrow one, how it works, the FAQ
+      accordion, and the three treatment links in the navigation dropdown made
+      real so the page is reachable.
 
 Dropped to the deferred backlog with this plan change: Solean's own checkout
 (account, shipping, payment), the pricing engine, add-on selection, and the
@@ -214,6 +236,7 @@ configured, and what may travel was not re-opened.
 | Questionnaire uid, store domain, variant id, question names | Config | One module per concern. Nothing on the checkout path is a secret |
 | Order, payment, prescription, delivery | Shopify, then RxScale by webhook | Not modelled here. RxScale is never told about the order by us |
 | Learn article and its reviewer | Sanity | Published editorial copy, one document per language. Read at request time, never cached past the response |
+| Treatment page copy and prices | Solean, from feature 25 | One typed fixture in the repository, in German and English, built from Paraglide messages the way the nav and the footer are. Display copy: a price change is a deploy, and Shopify still owns the amount charged |
 | Visitor contact details, once typed | Customer.io, EU region | Forwarded when the question is answered, before any submission, so a reminder can be sent. The e-mail, the name, the telephone number when given, a stage marker and the locale. Nothing else |
 
 ### steps[] (Solean)
@@ -329,7 +352,7 @@ point that also carries Sanity UI's stylesheet, and that stylesheet declares a
 
 ```
 src/routes/                   routing, load, endpoints, screen composition
-src/lib/features/             marketing, learn, questionnaire
+src/lib/features/             marketing, learn, treatments, questionnaire
 src/lib/domain/               Money, Treatment and the catalogue
 src/lib/components/ui/        shadcn primitives
 src/lib/components/brand/     global brand visuals
@@ -511,6 +534,7 @@ the intended halo. It is the one recorded exception, not a precedent.
 | --- | --- |
 | `/` | Landing page: hero, product story, social proof, FAQ, footer |
 | `/learn/blog/[slug]` | Learn article with ToC, comparison, related content |
+| `/treatments/[slug]` | Treatment detail page: product hero with dose selector and offer card, plan comparison, how it works, FAQ, and a sticky consultation bar on a narrow screen |
 | `/privacy`, `/terms`, `/returns`, `/legal-notice` | The four policy documents, in German, copied from what Solean publishes |
 | `/questionnaire/[step]` | Every survey page, interlude, and the two completion screens: the plan choice, then the order |
 | `GET /api/recommendation` | Server endpoint: what RxScale recommends for one anamnesis, trimmed for the screen |
@@ -667,6 +691,14 @@ recurring billing terms; a delivery estimate ignoring clinical approval; copy
 naming Juniper or Voy; duplicated testimonials. Resolutions in
 `project-plan.md` section 9. The checkout and order-status inconsistencies no
 longer apply: both surfaces belong to RxScale and Shopify.
+
+The treatment export at `blueprint/reference/treatment-export.html` carries two
+of its own, both about prices and doses disagreeing across one page.
+
+| Defect | Resolution |
+| --- | --- |
+| The narrow artboard offers injection doses (0.25mg, 0.5mg, 1mg, 1.7mg) on a screen titled Wegovy Pill, where the wide artboard offers 1.5mg, 4mg, 9mg and 25mg | The wide artboard's doses are the pill's. Every treatment's doses come from the content module, so the two widths of one page cannot disagree |
+| Two pill doses priced identically at 172.73 EUR, an offer card reading "From 124 EUR per month", and a comparison row starting at 124 EUR | One source: the comparison figures. The offer card's "from" line is derived from the cheapest plan rather than typed a second time |
 
 The questionnaire export at `blueprint/reference/questionnaire-flow-export.html`
 repeats the counter error in a second form, "Question 9 of 10" over nine question

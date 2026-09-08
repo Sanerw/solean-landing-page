@@ -16,6 +16,14 @@
 		 * 6.78 on a dark one, so neither tone can serve both grounds.
 		 */
 		surface?: 'default' | 'dark';
+		/**
+		 * The stars restate a score that is already printed beside them, so they carry no
+		 * information of their own. That changes two things: they are hidden from assistive tech
+		 * rather than announcing the score twice, and the 3:1 floor below does not apply to them,
+		 * because it governs a meaningful graphic and these are duplication. They take the
+		 * reference's own gold, `--primary`, which is what the artboards draw.
+		 */
+		decorative?: boolean;
 		class?: string;
 	}
 
@@ -25,6 +33,7 @@
 		size = 'default',
 		treatment = 'badge',
 		surface = 'default',
+		decorative = false,
 		class: className
 	}: Props = $props();
 
@@ -41,7 +50,7 @@
 	const label = $derived(`${Number(rating.toFixed(1))} out of ${max} stars`);
 
 	const inlineFill = $derived(
-		surface === 'dark' ? 'fill-primary' : 'fill-highlight-foreground'
+		surface === 'dark' || decorative ? 'fill-primary' : 'fill-highlight-foreground'
 	);
 	// The empty mark has to recede on its own ground, and --border is a near-white hairline:
 	// over a photograph it reads brighter than the gold it is meant to sit behind.
@@ -51,7 +60,12 @@
 		'M12 2.5l2.94 5.96 6.58.96-4.76 4.64 1.12 6.55L12 17.55l-5.88 3.09 1.12-6.55L2.48 9.42l6.58-.96L12 2.5z';
 </script>
 
-<span class={['inline-flex items-center', rowGap, className]} role="img" aria-label={label}>
+<span
+	class={['inline-flex items-center', rowGap, className]}
+	role={decorative ? 'presentation' : 'img'}
+	aria-hidden={decorative ? 'true' : undefined}
+	aria-label={decorative ? undefined : label}
+>
 	{#each Array.from({ length: max }) as _, i (i)}
 		{#if treatment === 'badge'}
 			<!-- The reference's trust badge draws each star as a filled square holding a white

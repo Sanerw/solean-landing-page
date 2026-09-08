@@ -508,6 +508,26 @@ claims are not approved production content.
     rebuilt to its artboards, copy in German and English, browser coverage and the
     accessibility pass.
 
+- [ ] 25. **Treatment detail pages** - `/treatments/[slug]` for the three catalogue
+  treatments, built from the Pencil treatment export in `blueprint/reference/`.
+  The product hero with its gallery, dose selector and consultation offer card;
+  the plan comparison across 3, 6, 9 and 12 months; how it works; the FAQ; and
+  the mobile sticky consultation bar. Copy and prices are one typed fixture in
+  the repository, in German and English, built the way the nav and the footer
+  are, so a price change is a deploy. The prices are display copy like every
+  other marketing price on this site: Shopify still owns the amount charged and
+  the recommendation screen still reads its own figures from RxScale.
+  - [x] 25a. **Route, content module and the product hero** - the typed
+    definition of the three treatments, the `/treatments/[slug]` route with its
+    404 for an unknown slug, and the hero as the artboards draw it: gallery
+    panel with its badges and caption, breadcrumb, title, rating, introduction,
+    the dose selector, the clinician-guidance note, the consultation offer card,
+    and the sticky consultation bar the narrow artboard carries.
+  - [ ] 25b. **Comparison, how it works, FAQ and the nav links** - the plan
+    comparison as a table on the wide artboard and stacked cards on the narrow
+    one, the how-it-works section, the FAQ accordion, and the three treatment
+    links in the navigation dropdown made real so the page is reachable.
+
 ## Testing
 
 **Decided, then deferred at 9a.** The plan was to run `/tests` before feature 9;
@@ -540,7 +560,6 @@ Not in scope. Listed without checkboxes so `/feature` never selects them.
 - Phone in `buyerIdentity`
 - Querying the Shopify catalogue ourselves, and computing a recommendation here
 - Authentication and a member account area
-- Undesigned routes: treatments index, product pages, about, contact,
-  clinician profile pages
+- Undesigned routes: treatments index, about, contact, clinician profile pages
 - Dark mode
 - Clinician-facing tooling

@@ -346,6 +346,7 @@ Pages:
 ```
 /
 /learn/blog/[slug]
+/treatments/[slug]
 /questionnaire/[step]
 ```
 
@@ -676,6 +677,8 @@ The export contains errors that must not be transcribed as requirements:
 | Duplicate testimonial (Amy R. and Maya R., both 22 kg, Wegovy injection) | One testimonial per person in fixtures |
 | The questionnaire export reads "Question 9 of 10" over nine question screens, and ends on "All 8 steps complete" | Same resolution as the row above, and it now applies to a second export. The counter is computed from the step plan, never transcribed from an artboard |
 | The men's export asks about pregnancy and breastfeeding | Kept: the model gates those questions on `Gender = 'female'`, so the branching decides who sees them, not the landing page the visitor arrived from |
+| The treatment export's narrow artboard offers injection doses (0.25mg, 0.5mg, 1mg, 1.7mg) on a screen titled Wegovy Pill, where its wide artboard offers 1.5mg, 4mg, 9mg and 25mg | The wide artboard's doses are the pill's. Every treatment's doses come from the content module, so the two widths of one page cannot disagree |
+| The same export prices two pill doses identically at EUR 172.73, offers "From EUR 124 per month" on the card above, and starts the pill's comparison row at EUR 124 | One source: the comparison figures. The offer card's "from" line is derived from the cheapest plan rather than typed a second time |
 
 Marketing medical copy is mock content, not approved production content. From
 feature 24 the questionnaire's wording is ours to write and ours to keep
@@ -710,9 +713,10 @@ Explicitly excluded, and not to be added as implementation tasks now:
 - Dark mode
 - Multi-language routing and translated content. The language `Select` exposes
   English as selected and Deutsch as a disabled placeholder
-- Undesigned routes linked from nav and footer (treatments index, product pages,
-  about, contact, legal pages, clinician profiles, member account). Links remain
-  inert
+- Undesigned routes linked from nav and footer (treatments index, about,
+  contact, clinician profiles, member account). Links remain inert. The legal
+  pages left this list at feature 18 and the treatment product pages leave it at
+  feature 25, both because a design arrived; the rest are still undrawn
 - Clinician-facing screens
 
 ## 11. Open decisions
