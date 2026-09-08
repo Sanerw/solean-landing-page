@@ -23,6 +23,10 @@
 	// A block this app cannot draw is always logged and only drawn where somebody can act on it:
 	// an editor in the Presentation tool, or a developer. A reader gets the rest of the article.
 	const showFailures = $derived(dev || data.previewEnabled);
+
+	// The neighbours band closes the reading panel rather than opening its own, so the panel keeps
+	// its bottom corners only when there is no band to hand them to.
+	const hasNeighbours = $derived(Boolean(data.neighbours.previous || data.neighbours.next));
 </script>
 
 <svelte:head>
@@ -53,7 +57,7 @@
 					right margin the old sidebar filled is now margin.
 				-->
 				<section class={[BLEED, 'sm:pt-6']} aria-label={article.title}>
-					<div class={['bg-card', PANEL_ROUND]}>
+					<div class={['bg-card', hasNeighbours ? 'sm:rounded-t-xl' : PANEL_ROUND]}>
 						<div class={[CONTAINER, 'py-12 lg:py-20']}>
 							<div class="mx-auto flex max-w-6xl flex-col lg:flex-row lg:gap-16">
 								<ArticleToc items={tocFrom(article.body)} />

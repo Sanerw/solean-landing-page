@@ -33,7 +33,15 @@
 		/>
 	{/if}
 
-	<p class="flex flex-wrap items-center gap-x-2 text-xs font-semibold text-muted-foreground">
+	<!--
+		Gold, uppercase, bold and tracked, as the artboard writes it. The gold is
+		`--highlight-foreground` and not the export's own `#B07E12`: that value measures 3.45:1 on
+		this card's white and fails AA, which is the whole reason the token sits at `#906100`.
+		See `design-system.md` section 1b.
+	-->
+	<p
+		class="flex flex-wrap items-center gap-x-2 text-xs font-bold uppercase tracking-wider text-highlight-foreground"
+	>
 		<span>{article.category}</span>
 		{#if article.readTimeMinutes}
 			<span aria-hidden="true">&middot;</span>
@@ -41,11 +49,20 @@
 		{/if}
 	</p>
 
-	<h3 class="text-balance font-display text-xl font-medium leading-tight text-foreground">
+	<!--
+		Two lines narrow, one line wide, because that is what the two artboards draw. A single
+		line at 390 would cut most of these titles mid-word; a second line at 1440 steps the row
+		out of alignment.
+	-->
+	<h3
+		class="line-clamp-2 text-balance font-display text-xl font-medium leading-tight text-foreground lg:line-clamp-1"
+	>
 		{article.title}
 	</h3>
 
-	<p class="text-sm text-muted-foreground">{article.summary}</p>
+	<!-- Two lines, so the "Read article" links share a baseline across the row rather than
+	     stepping down with whatever length each summary happens to be. -->
+	<p class="line-clamp-2 text-sm text-muted-foreground">{article.summary}</p>
 
 	<span
 		aria-hidden="true"

@@ -2,7 +2,7 @@
 	import { m } from '$lib/paraglide/messages';
 	import ChevronLeftIcon from '@lucide/svelte/icons/chevron-left';
 	import ChevronRightIcon from '@lucide/svelte/icons/chevron-right';
-	import { BLEED, CONTAINER, PANEL_ROUND } from '$lib/features/marketing/container';
+	import { BLEED, CONTAINER } from '$lib/features/marketing/container';
 	import { ROUTES } from '$lib/features/marketing/content';
 	import { localizeHref } from '$lib/paraglide/runtime';
 	import type { ArticleLink } from './journal';
@@ -21,8 +21,13 @@
 	published, and an empty band promising more to read would be the page lying.
 -->
 {#if previous || next}
-	<nav class={[BLEED, 'sm:pt-6']} aria-label={m.learn_neighbours_label()}>
-		<div class={['bg-card', PANEL_ROUND]}>
+	<!--
+		No gap above it and no rounded top: the band is the foot of the article's own panel, not a
+		second one under it. The artboard runs white from beneath the hero to the footer, and the
+		page squares the reading panel's bottom corners to meet this whenever a band follows.
+	-->
+	<nav class={BLEED} aria-label={m.learn_neighbours_label()}>
+		<div class="bg-card sm:rounded-b-xl">
 			<div class={[CONTAINER, 'flex flex-col gap-8 py-10 sm:flex-row sm:items-center sm:gap-16']}>
 				{#if previous}
 					<a

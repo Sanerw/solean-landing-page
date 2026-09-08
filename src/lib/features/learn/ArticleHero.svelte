@@ -104,7 +104,7 @@
 					</p>
 
 					<div
-						class="mt-2 flex w-full flex-wrap items-center justify-between gap-x-6 gap-y-3 text-sm font-semibold text-background lg:text-base"
+						class="mt-2 flex w-full flex-wrap items-center justify-between gap-x-6 gap-y-3 text-sm font-semibold text-background"
 					>
 						<div class="flex items-center gap-x-6 gap-y-2">
 							{#if article.review.reviewer.name}
@@ -128,7 +128,7 @@
 									{:else}
 										<span
 											aria-hidden="true"
-											class="flex size-10 items-center justify-center rounded-full bg-surface-warm text-foreground sm:size-11"
+											class="flex size-8 items-center justify-center rounded-full bg-surface-warm text-foreground sm:size-9"
 										>
 											<StethoscopeIcon class="size-5" />
 										</span>
