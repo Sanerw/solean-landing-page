@@ -3,12 +3,19 @@ import type { ArticleDetail } from '$lib/sanity/queries';
 
 // The mapper reaches the Sanity image builder, which reads `$env/static/public`. Vitest runs
 // outside SvelteKit, so the module is stubbed rather than the env faked: what matters here is
-// the mapping, and a URL builder has its own tests upstream.
-vi.mock('$lib/sanity/image', () => ({
-	urlFor: () => ({
-		width: () => ({ height: () => ({ url: () => 'https://cdn.example/image.jpg' }) })
-	})
-}));
+// the mapping, and the builder has its own tests upstream. The stubs echo the ladder they were
+// handed, so a test can assert which frame the mapper asked for.
+vi.mock('$lib/sanity/image', () => {
+	const built = (source: { alt?: string }, widths: readonly number[]) => ({
+		src: 'https://cdn.example/image.jpg',
+		srcset: widths.map((width) => `https://cdn.example/image.jpg?w=${width} ${width}w`).join(', '),
+		alt: source.alt ?? '',
+		width: widths[widths.length - 1],
+		height: 100
+	});
+
+	return { picture: built, croppedPicture: built };
+});
 
 const { articleToc, toArticle } = await import('./from-sanity');
 
@@ -106,21 +113,23 @@ describe('toArticle', () => {
 		).toThrow(/not in the catalogue/);
 	});
 
-	it('leaves the hero null when the document has no image', () => {
-		expect(toArticle(article()).hero.src).toBeNull();
+	// An article without a photograph loses the photograph, not the hero: the badge, the title
+	// and the metadata still have to draw over the panel.
+	it('leaves the hero undefined when the document has no image', () => {
+		expect(toArticle(article()).hero).toBeUndefined();
 	});
 
-	it('leaves the reviewer portrait null when there is none', () => {
+	it('leaves the reviewer portrait undefined when there is none', () => {
 		const mapped = toArticle(
 			article({ reviewer: { _id: 'c1', name: 'Dr. Juraj Galan', role: 'Consulting physician' } })
 		);
 
-		expect(mapped.review.reviewer.portraitUrl).toBeNull();
+		expect(mapped.review.reviewer.portrait).toBeUndefined();
 		expect(mapped.review.reviewer.name).toBe('Dr. Juraj Galan');
 	});
 
-	it('builds a URL for the hero and the portrait when both are set', () => {
-		const image = { asset: { _ref: 'image-abc-805x650-jpg' }, alt: 'Syringes' };
+	it('builds the hero on the panel ladder and the portrait on the avatar one', () => {
+		const image = { asset: { _ref: 'image-abc-1920x1080-jpg' }, alt: 'Syringes' };
 		const mapped = toArticle(
 			article({
 				hero: image,
@@ -128,9 +137,19 @@ describe('toArticle', () => {
 			})
 		);
 
-		expect(mapped.hero.src).toBe('https://cdn.example/image.jpg');
-		expect(mapped.hero.alt).toBe('Syringes');
-		expect(mapped.review.reviewer.portraitUrl).toBe('https://cdn.example/image.jpg');
+		expect(mapped.hero?.src).toBe('https://cdn.example/image.jpg');
+		expect(mapped.hero?.alt).toBe('Syringes');
+		// The full-bleed frame, not the 805px box the hero used to be. A ladder topping out
+		// below the panel's own width is what the density test exists to catch.
+		expect(mapped.hero?.srcset).toContain('?w=1920 1920w');
+		expect(mapped.review.reviewer.portrait?.srcset).toContain('?w=120 120w');
+	});
+
+	// The chips are never empty, so the hero's row cannot be. The rule itself is `tagsOf`'s,
+	// tested in `journal.test.ts`; this is the mapper reaching it at all.
+	it('falls the tags back to the category when the document carries none', () => {
+		expect(toArticle(article()).tags).toEqual(['Treatment comparison']);
+		expect(toArticle(article({ tags: ['Weight loss'] })).tags).toEqual(['Weight loss']);
 	});
 
 	it('fills the optional sections with empty values rather than undefined', () => {
@@ -140,6 +159,5 @@ describe('toArticle', () => {
 		expect(mapped.keyTakeaways).toEqual([]);
 		expect(mapped.sideEffects).toEqual({ intro: '', items: [] });
 		expect(mapped.sourcesSummary).toBe('');
-		expect(mapped.shortTitle).toBe('Mounjaro vs Wegovy');
 	});
 });

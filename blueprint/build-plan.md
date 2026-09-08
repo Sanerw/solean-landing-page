@@ -528,6 +528,45 @@ claims are not approved production content.
     one, the how-it-works section, the FAQ accordion, and the three treatment
     links in the navigation dropdown made real so the page is reachable.
 
+- [ ] 26. **The Journal redesigned** - the Learn article rebuilt to the September
+  2026 Pencil export, the Journal's featured card aligned to the same treatment,
+  and the article's body turned from eight fixed sections into blocks an editor
+  composes. The split hero becomes one photograph under a gradient carrying the
+  badge, the title, the lead, the reviewer, the read time and the article's tags,
+  with a way back to the Journal and a way on to the next article. Below it the
+  page narrows to a centred reading column beside its contents list, and the
+  right-hand column goes entirely: key takeaways, the eligibility card and the
+  editorial-standards note are all dropped, which leaves the article with no call
+  into the questionnaire, deliberately and on review. The foot of the page gains
+  the previous and next article, derived from the Journal's own order rather than
+  picked by hand. Sanity gains `tags` and a composed body, and loses every field
+  nothing renders.
+  - [x] 26a. **The card and the hero** - `tags` on the article document, the hero
+    photograph rebuilt as a full-bleed frame with a width ladder of its own, the
+    new hero with its badge, tags, reviewer, read time and its two pills, the
+    article's neighbours read from the Journal's own order, and the Journal's
+    featured card aligned to the same treatment. The body below the hero is
+    untouched, so the page keeps working.
+  - [ ] 26b. **The body and the neighbours** - the centred contents list and
+    reading column, the sections restyled to the artboard (the gold rule on the
+    quick answer, the comparison table, the side-effect list, the maker cards,
+    the FAQ and the review note), the right-hand column deleted with
+    `keyTakeaways` out of Sanity, and the previous/next band at the foot. Each
+    section becomes a component taking the shape it draws rather than the whole
+    article, because 26c turns those same components into block renderers.
+  - [ ] 26c. **A body an editor composes** - the eight fixed section fields
+    become one ordered `body` of blocks: prose, callout, comparison table, cards,
+    checklist, accordion and sources. Not every article compares two treatments
+    or needs a table, and a document that models one article's shape as its
+    fields cannot carry a second. Each block type is one Studio object and one
+    renderer here, keyed by `_type` through a registry that fails visibly on an
+    unmapped block rather than skipping it silently. The contents list is derived
+    from the blocks that carry a heading. The existing article is migrated into
+    blocks in both languages, and `related`, `keyTakeaways` and the old section
+    fields leave the schema, because a field nothing renders is a trap for
+    whoever fills it. The page does not change visually: this feature is the
+    model, proven by the page looking the same after it.
+
 ## Testing
 
 **Decided, then deferred at 9a.** The plan was to run `/tests` before feature 9;

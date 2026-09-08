@@ -13,6 +13,7 @@ export const articlesQuery = defineQuery(`*[_type == "article" && language == $l
 		_id,
 		title,
 		category,
+		tags,
 		summary,
 		slug,
 		reviewedAt,
@@ -24,8 +25,8 @@ export const articlesQuery = defineQuery(`*[_type == "article" && language == $l
 export const articleQuery = defineQuery(`*[_type == "article" && language == $language && slug.current == $slug][0]{
 	_id,
 	title,
-	shortTitle,
 	category,
+	tags,
 	summary,
 	slug,
 	hero,
@@ -64,6 +65,8 @@ export interface ArticleListItem {
 	_id: string;
 	title: string;
 	category: string;
+	/** The chips a reader sees. `category` is the one value the Journal's filter keys on. */
+	tags?: string[];
 	summary: string;
 	slug: { current: string };
 	reviewedAt: string;
@@ -74,7 +77,6 @@ export interface ArticleListItem {
 }
 
 export interface ArticleDetail extends ArticleListItem {
-	shortTitle?: string;
 	seoTitle?: string;
 	seoDescription?: string;
 	nextReviewAt?: string;

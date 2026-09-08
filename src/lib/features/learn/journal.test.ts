@@ -1,8 +1,15 @@
 import { describe, expect, it } from 'vitest';
-import { categoriesOf, inCategory, splitJournal, type JournalArticle } from './journal';
+import {
+	categoriesOf,
+	inCategory,
+	neighboursOf,
+	splitJournal,
+	tagsOf,
+	type JournalArticle
+} from './journal';
 
 function article(slug: string, category = 'Treatment comparison'): JournalArticle {
-	return { id: slug, slug, title: slug, category, summary: '' };
+	return { id: slug, slug, title: slug, category, tags: [category], summary: '' };
 }
 
 describe('splitJournal', () => {
@@ -50,5 +57,81 @@ describe('inCategory', () => {
 
 	it('answers an unknown category with nothing rather than with everything', () => {
 		expect(inCategory(articles, 'Healthy habits')).toEqual([]);
+	});
+});
+
+describe('tagsOf', () => {
+	it('shows the tags an editor wrote, in the order they wrote them', () => {
+		expect(tagsOf({ tags: ['Weight loss', 'Nutrition', 'GLP-1'], category: 'Guides' })).toEqual([
+			'Weight loss',
+			'Nutrition',
+			'GLP-1'
+		]);
+	});
+
+	// Every article published before the field existed, which is all of them today. The chip row
+	// is part of the artboard, so it falls back rather than drawing an empty row.
+	it('falls back to the category when the field is absent', () => {
+		expect(tagsOf({ category: 'Treatment comparison' })).toEqual(['Treatment comparison']);
+	});
+
+	it('falls back when the field is there and empty', () => {
+		expect(tagsOf({ tags: [], category: 'Treatment comparison' })).toEqual([
+			'Treatment comparison'
+		]);
+	});
+
+	it('drops a blank row rather than drawing an empty chip', () => {
+		expect(tagsOf({ tags: ['Weight loss', '   ', ''], category: 'Guides' })).toEqual([
+			'Weight loss'
+		]);
+	});
+
+	// Preview fills every string with zero-width markers, so a tag an editor emptied is not
+	// empty to `trim()`. It is empty to a reader, which is the question being asked.
+	it('reads a tag of nothing but preview markers as blank', () => {
+		expect(tagsOf({ tags: ['\u200b\u2060'], category: 'Guides' })).toEqual(['Guides']);
+	});
+
+	it('keeps the markers on a tag it does show, so click-to-edit survives', () => {
+		const marked = 'Weight loss\u200b';
+
+		expect(tagsOf({ tags: [marked], category: 'Guides' })).toEqual([marked]);
+	});
+});
+
+describe('neighboursOf', () => {
+	const [newest, middle, oldest] = [article('a'), article('b'), article('c')];
+	const journal = [newest, middle, oldest];
+
+	// Direction follows the Journal's own page, which is newest first: "next" is the next one
+	// down it, and therefore the older article.
+	it('gives both neighbours in the middle of the library', () => {
+		expect(neighboursOf(journal, 'b')).toEqual({ previous: newest, next: oldest });
+	});
+
+	it('leaves the newest article with nothing before it', () => {
+		expect(neighboursOf(journal, 'a')).toEqual({ previous: undefined, next: middle });
+	});
+
+	it('leaves the oldest article with nothing after it', () => {
+		expect(neighboursOf(journal, 'c')).toEqual({ previous: middle, next: undefined });
+	});
+
+	// The state the site is in: one article, so the band at the foot has nothing to draw.
+	it('gives a single article neither', () => {
+		expect(neighboursOf([newest], 'a')).toEqual({ previous: undefined, next: undefined });
+	});
+
+	// An unpublished draft being previewed is not in the published list.
+	it('gives an unknown slug neither, rather than the ends of the list', () => {
+		expect(neighboursOf(journal, 'not-published')).toEqual({});
+	});
+
+	it('never re-sorts: the order it is handed is the order it walks', () => {
+		expect(neighboursOf([oldest, newest, middle], 'a')).toEqual({
+			previous: oldest,
+			next: middle
+		});
 	});
 });

@@ -1,6 +1,6 @@
 # Solean - Project Overview
 
-<!-- blueprint:source-hash e54fb0e3a42c94b98c33fcc248a82675bc66f31c737b7df806dd6b3e2adad87c -->
+<!-- blueprint:source-hash 145398fa770a08b38870be21ecf0ffc144e46e68f72f502467196232f4fd463c -->
 
 > The Solean front end: a marketing site and a doctor-led GLP-1 funnel that runs
 > on RxScale's Anamnesis API and hands the order to Shopify by creating a cart
@@ -45,7 +45,7 @@ happens inside RxScale, not on a Solean screen.
 
 ## Features
 
-Twenty-five in build-plan order. The first twenty-four are complete; 25 is
+Twenty-six in build-plan order. The first twenty-five are complete; 26 is
 next.
 
 1. **Design system and core UI components** (done) - semantic tokens, two fonts,
@@ -159,7 +159,7 @@ next.
       never asks for, medication history rebuilt to its artboards, copy in both
       languages, browser coverage, accessibility.
 
-25. **Treatment detail pages** (next) - `/treatments/[slug]` for the three
+25. **Treatment detail pages** (done) - `/treatments/[slug]` for the three
     catalogue treatments, built from the Pencil treatment export at
     `blueprint/reference/treatment-export.html` and its two captured artboards.
     The product pages left the deferred backlog because a design arrived for
@@ -180,6 +180,36 @@ next.
       wide artboard and stacked cards on the narrow one, how it works, the FAQ
       accordion, and the three treatment links in the navigation dropdown made
       real so the page is reachable.
+
+26. **The Journal redesigned** (next) - the Learn article rebuilt to the
+    September 2026 Pencil export at `blueprint/reference/journal-export.html`,
+    the Journal's featured card aligned to the same treatment, and the article's
+    body turned from eight fixed sections into blocks an editor composes. The
+    split hero becomes one photograph under a gradient; below it the page narrows
+    to a centred reading column beside its contents list; the right-hand column
+    goes entirely, which leaves the article with no call into the questionnaire,
+    deliberately and on review; and the foot of the page gains the previous and
+    next article, taken from the Journal's own order rather than picked by hand.
+    Three sub-features, each leaving a page you can open.
+    - **26a** the card and the hero: `tags` on the article document, the hero
+      photograph as a full-bleed frame with a width ladder of its own, the new
+      hero with its badge, tags, reviewer, read time and its two pills, the
+      article's neighbours read from the Journal order, and the Journal's
+      featured card aligned to the same treatment.
+    - **26b** the body and the neighbours: the centred contents list and reading
+      column, the sections restyled to the artboard, the right-hand column
+      deleted with `keyTakeaways` out of Sanity, and the previous/next band.
+      Each section becomes a component taking the shape it draws rather than the
+      whole article, because 26c turns those same components into block
+      renderers.
+    - **26c** a body an editor composes: the fixed section fields become one
+      ordered `body` of blocks, keyed by `_type` through a registry that fails
+      visibly on an unmapped block. Not every article compares two treatments or
+      needs a table, and a document that models one article's shape as its fields
+      cannot carry a second. The existing article is migrated in both languages,
+      and every field nothing renders leaves the schema. The page does not change
+      visually: the model is the feature, proven by the page looking the same
+      after it.
 
 Dropped to the deferred backlog with this plan change: Solean's own checkout
 (account, shipping, payment), the pricing engine, add-on selection, and the
@@ -275,7 +305,7 @@ Paraglide compiles the message catalogues from it at build time.
 
 | Type | Fields | Read by |
 | --- | --- | --- |
-| `article` | `language`, `title`, `shortTitle`, `slug`, `category`, `summary`, `hero` (image + alt), `reviewer` (ref to `clinician`), `reviewedAt`, `nextReviewAt`, `readTimeMinutes`, `quickAnswer[]`, `keyTakeaways[]`, `treatmentProfiles[]`, `howTheyWork[]`, `expectedResults[]`, `sideEffects{intro, items[]}`, `faqs[]`, `sourcesSummary`, `sources[]`, `related[]`, SEO overrides | `/learn/blog/[slug]` |
+| `article` | `language`, `title`, `shortTitle`, `slug`, `category`, `tags[]` (26a), `summary`, `hero` (image + alt), `reviewer` (ref to `clinician`), `reviewedAt`, `nextReviewAt`, `readTimeMinutes`, and from 26c one ordered `body[]` of blocks (prose, callout, table, cards, checklist, accordion, sources) in place of `quickAnswer[]`, `treatmentProfiles[]`, `howTheyWork[]`, `expectedResults[]`, `sideEffects{}`, `faqs[]`, `sourcesSummary`, `sources[]`. `keyTakeaways[]` and `related[]` leave the schema, plus SEO overrides | `/learn`, `/learn/blog/[slug]` |
 | `clinician` | `language`, `name`, `role`, `description`, `portrait` | as an article's reviewer |
 | `homePage` | localized singleton at `homePage-de` / `homePage-en`: announcement, hero, article teaser, trust band, bento, results band, projection wording, medical framing, stories, team, FAQ, and every photograph | `/` |
 | `testimonial` | `language`, `name`, `memberLabel`, `quote`, `kgLost`, `rating`, `treatmentId`, `verified`, `photo` | `/` and the questionnaire's motivation screen |
@@ -285,6 +315,13 @@ treatment by the catalogue id (`mounjaro`, `wegovy`, `wegovy-pill`) and adds the
 article's own framing (active ingredient, manufacturer, frequency, main action,
 manufacturer note). Treatments themselves stay in `src/lib/domain`, because they
 are commerce data keyed to Shopify variants.
+
+**Feature 26c retires it.** A profile models one article's shape, so the
+comparison table and the maker cards become blocks any article can hold: rows an
+editor names, cards an editor writes. What is lost with it is the one row that
+read the catalogue, the result claim, so from 26c every figure in a comparison
+table is typed by hand and nothing detects a divergence from `src/lib/domain`.
+That is the same standing as every other marketing price on this site.
 
 ### What stays in the repository
 
@@ -533,7 +570,8 @@ the intended halo. It is the one recorded exception, not a precedent.
 | Route | What's there |
 | --- | --- |
 | `/` | Landing page: hero, product story, social proof, FAQ, footer |
-| `/learn/blog/[slug]` | Learn article with ToC, comparison, related content |
+| `/learn` | The Journal: the newest article as a featured card, the rest as a filterable band |
+| `/learn/blog/[slug]` | Learn article: photographic hero, contents list beside a centred reading column, and the neighbouring articles at the foot |
 | `/treatments/[slug]` | Treatment detail page: product hero with dose selector and offer card, plan comparison, how it works, FAQ, and a sticky consultation bar on a narrow screen |
 | `/privacy`, `/terms`, `/returns`, `/legal-notice` | The four policy documents, in German, copied from what Solean publishes |
 | `/questionnaire/[step]` | Every survey page, interlude, and the two completion screens: the plan choice, then the order |

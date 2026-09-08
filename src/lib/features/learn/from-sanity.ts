@@ -1,7 +1,8 @@
 import { m } from '$lib/paraglide/messages';
 import { findTreatment } from '$lib/domain';
-import { urlFor } from '$lib/sanity/image';
+import { croppedPicture, picture } from '$lib/sanity/image';
 import type { ArticleDetail } from '$lib/sanity/queries';
+import { AVATAR_WIDTHS, PANEL_WIDTHS, tagsOf } from './journal';
 import type {
 	Article,
 	ArticleSectionId,
@@ -121,22 +122,21 @@ export function toArticle(article: ArticleDetail): Article {
 		slug: article.slug.current,
 		category: article.category,
 		title: article.title,
-		shortTitle: article.shortTitle ?? article.title,
 		sourcesSummary: article.sourcesSummary ?? '',
 		summary: article.summary,
-		hero: {
-			src: article.hero?.asset ? urlFor(article.hero).width(805).height(650).url() : null,
-			alt: article.hero?.alt ?? ''
-		},
+		tags: tagsOf(article),
+		// The same ladder the Journal's featured card carries, because it is the same frame: a
+		// photograph running the width of a bleed panel with the copy over it. One fixed URL was
+		// enough while the hero was a 805px box beside the text.
+		hero: article.hero?.asset ? picture(article.hero, PANEL_WIDTHS) : undefined,
 		review: {
 			reviewer: {
 				name: article.reviewer?.name ?? '',
 				role: article.reviewer?.role ?? '',
-				portraitUrl: article.reviewer?.portrait?.asset
-					? urlFor(article.reviewer.portrait).width(80).height(80).url()
-					: null
+				portrait: article.reviewer?.portrait?.asset
+					? croppedPicture(article.reviewer.portrait, AVATAR_WIDTHS, 1)
+					: undefined
 			},
-			updatedAt: article.reviewedAt,
 			nextReviewAt: article.nextReviewAt ?? '',
 			readTimeMinutes: article.readTimeMinutes ?? 0
 		},

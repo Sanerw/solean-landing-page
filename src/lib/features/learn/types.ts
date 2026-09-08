@@ -1,5 +1,6 @@
 import type { Treatment } from '$lib/domain';
 import type { FaqItem } from '$lib/features/marketing/content';
+import type { SanityPicture } from '$lib/sanity/image';
 
 export type ArticleSectionId =
 	| 'quick-answer'
@@ -29,12 +30,12 @@ export interface ArticleTreatmentProfile {
 /**
  * The doctor credited on an article. Deliberately not the marketing `Clinician`: that one
  * carries an `enhanced:img` import object built at compile time, and an article's reviewer
- * arrives from Sanity as a URL. The clinical-team carousel keeps its optimised images.
+ * arrives from Sanity. The clinical-team carousel keeps its optimised images.
  */
 export interface ArticleReviewer {
 	name: string;
 	role: string;
-	portraitUrl: string | null;
+	portrait?: SanityPicture;
 }
 
 export interface ArticleSource {
@@ -46,18 +47,14 @@ export interface Article {
 	slug: string;
 	category: string;
 	title: string;
-	/** The breadcrumb's last crumb: the headline is a sentence and truncates there. */
-	shortTitle: string;
 	/** Names the evidence in prose before the list, as the artboard does. */
 	sourcesSummary: string;
 	summary: string;
-	hero: {
-		src: string | null;
-		alt: string;
-	};
+	/** The chips over the hero. Never empty: `tagsOf` falls back to the category. */
+	tags: readonly string[];
+	hero?: SanityPicture;
 	review: {
 		reviewer: ArticleReviewer;
-		updatedAt: string;
 		nextReviewAt: string;
 		readTimeMinutes: number;
 	};

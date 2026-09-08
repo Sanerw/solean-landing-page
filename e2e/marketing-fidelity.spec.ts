@@ -653,10 +653,6 @@ test('the article follows its artboard below the hero', async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto('/en/learn/blog/mounjaro-vs-wegovy');
 
-	// The last crumb is a short name, not the truncated headline.
-	const crumb = page.locator('[data-slot="breadcrumb-page"]');
-	await expect(crumb).toHaveText('Mounjaro vs Wegovy');
-
 	// The comparison table opens on a blank corner: the row headers name the attributes.
 	// Blank to the eye, not to a screen reader, so the check is for drawn text alone.
 	const corner = page.locator('table thead th').first();
@@ -725,7 +721,10 @@ test('no marketing image is drawn larger than the pixels it carries', async ({ p
 			const asked = src.match(/[?&]w=(\d+)/);
 			if (!source || !asked) return { width: image.naturalWidth, height: image.naturalHeight };
 
-			const width = Number(asked[1]);
+			// Sanity does not upscale: `?w=1920` on an 805px asset answers with 805 pixels. Asking
+			// is not receiving, so the delivered width is the smaller of the two, and measuring the
+			// ask alone reports a stretched photograph as sharp.
+			const width = Math.min(Number(asked[1]), Number(source[1]));
 			const cropped = src.match(/[?&]h=(\d+)/);
 			return {
 				width,
@@ -752,9 +751,9 @@ test('no marketing image is drawn larger than the pixels it carries', async ({ p
 		return measured;
 	};
 
-	const read = async (width: number, height: number) => {
+	const read = async (width: number, height: number, path = '/en') => {
 		await page.setViewportSize({ width, height });
-		await page.goto('/en');
+		await page.goto(path);
 		await page.evaluate(() => window.scrollTo(0, document.body.scrollHeight));
 		await page.waitForLoadState('networkidle');
 		await page.evaluate(() => window.scrollTo(0, 0));
@@ -773,7 +772,25 @@ test('no marketing image is drawn larger than the pixels it carries', async ({ p
 
 	// Wide, the hero alone sits below: its export is narrower than the desktop frame it has to
 	// cover, so the shortfall is in the asset, not the markup. Everything else has its pixels.
+	// Wide, one landing photograph sits below: its asset is 1684px in a 1920px frame, so the
+	// shortfall is in the upload and no ladder reaches it. Everything else keeps its pixels.
+	// The exception used to read `!entry.startsWith('hero')`, which stopped matching anything
+	// the moment these files moved to Sanity and became content-hashed names.
 	const wide = await read(1920, 1080);
 	expect(soften(wide, 0.85)).toEqual([]);
-	expect(soften(wide, 0.95).filter((entry) => !entry.startsWith('hero'))).toEqual([]);
+	expect(soften(wide, 0.95).filter((entry) => !entry.includes('-1684x934'))).toEqual([]);
+
+	// The article's hero is the same full-bleed frame as the Journal's featured card, and it
+	// only moved onto a ladder wide enough for one in 26a, so this page is measured too.
+	const article = '/en/learn/blog/mounjaro-vs-wegovy';
+	expect(soften(await read(390, 844, article), 0.95)).toEqual([]);
+
+	// Pinned rather than passed. The article's photograph is an 805x650 asset, cropped for the
+	// 805px box the hero used to be, and this frame is 1768: it is drawn at 0.46x. Only a wider
+	// upload in the Studio fixes it, so the debt is recorded where it cannot be forgotten
+	// instead of being hidden under a lower floor. Replace the photograph and this fails, which
+	// is the moment to delete it.
+	const wideArticle = soften(await read(1920, 1080, article), 0.85);
+	expect(wideArticle).toHaveLength(1);
+	expect(wideArticle[0]).toContain('-805x650');
 });

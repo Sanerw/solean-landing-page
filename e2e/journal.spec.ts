@@ -77,3 +77,49 @@ test('the Journal fits the narrow frame', async ({ page }) => {
 	}));
 	expect(widths.scroll).toBe(widths.client);
 });
+
+/**
+ * The article's hero, which replaced the breadcrumb with two pills in 26a. The copy is Sanity's
+ * and is not asserted here; the wiring between the Journal and the article is this repository's.
+ */
+test('the hero leads back to the Journal in the reader own language', async ({ page }) => {
+	await page.goto('/en/learn/blog/mounjaro-vs-wegovy');
+
+	const back = page.getByRole('link', { name: 'Back to journal' });
+	await expect(back).toHaveAttribute('href', '/en/learn');
+
+	await back.click();
+	await expect(page).toHaveURL('/en/learn');
+
+	// The bare path is German, and a localised href is what keeps a German reader out of the
+	// English Journal.
+	await page.goto('/learn/blog/mounjaro-vs-wegovy');
+	await expect(page.getByRole('link', { name: 'Zurück zum Journal' })).toHaveAttribute(
+		'href',
+		'/learn'
+	);
+});
+
+/**
+ * One article is the state the site is in, so it is both the newest and the oldest and has no
+ * neighbours at all. The pill is not drawn rather than drawn dead, the same rule the articles
+ * band follows on the Journal itself.
+ */
+test('a library of one draws no next-article pill', async ({ page }) => {
+	await page.goto('/en/learn/blog/mounjaro-vs-wegovy');
+
+	await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+	await expect(page.getByRole('link', { name: 'Next article' })).toHaveCount(0);
+});
+
+test('the article fits the narrow frame', async ({ page }) => {
+	await page.setViewportSize({ width: 390, height: 844 });
+	await page.goto('/en/learn/blog/mounjaro-vs-wegovy');
+	await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
+
+	const widths = await page.evaluate(() => ({
+		client: document.documentElement.clientWidth,
+		scroll: document.documentElement.scrollWidth
+	}));
+	expect(widths.scroll).toBe(widths.client);
+});

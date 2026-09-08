@@ -39,7 +39,7 @@
 		{#if doc}
 			{@const article = toArticle(doc)}
 			<article>
-				<ArticleHero {article} />
+				<ArticleHero {article} next={data.neighbours.next} />
 				<div class={[CONTAINER, 'grid gap-12 py-16 lg:grid-cols-4 lg:py-24']}>
 					<ArticleToc items={article.toc} />
 					<ArticleContent {article} />
