@@ -169,7 +169,12 @@ test('every contents link points at a section the page actually has', async ({ p
 test('the FAQ starts closed and opens one question at a time', async ({ page }) => {
 	await page.goto('/en/learn/blog/mounjaro-vs-wegovy');
 
-	const questions = page.locator('#faqs [data-slot="accordion-trigger"]');
+	// Scoped by the section rather than by `#faqs`: from feature 26c the anchor is derived from
+	// the heading an editor typed, so an id spelled out here is one rename away from matching
+	// nothing and passing against an empty set.
+	const questions = page
+		.locator('section', { has: page.getByRole('heading', { name: 'Frequently asked questions' }) })
+		.locator('[data-slot="accordion-trigger"]');
 	await expect(questions.first()).toHaveAttribute('aria-expanded', 'false');
 
 	await questions.first().click();

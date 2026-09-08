@@ -528,7 +528,7 @@ claims are not approved production content.
     one, the how-it-works section, the FAQ accordion, and the three treatment
     links in the navigation dropdown made real so the page is reachable.
 
-- [ ] 26. **The Journal redesigned** - the Learn article rebuilt to the September
+- [x] 26. **The Journal redesigned** - the Learn article rebuilt to the September
   2026 Pencil export, the Journal's featured card aligned to the same treatment,
   and the article's body turned from eight fixed sections into blocks an editor
   composes. The split hero becomes one photograph under a gradient carrying the
@@ -554,7 +554,7 @@ claims are not approved production content.
     `keyTakeaways` out of Sanity, and the previous/next band at the foot. Each
     section becomes a component taking the shape it draws rather than the whole
     article, because 26c turns those same components into block renderers.
-  - [ ] 26c. **A body an editor composes** - the eight fixed section fields
+  - [x] 26c. **A body an editor composes** - the eight fixed section fields
     become one ordered `body` of blocks: prose, callout, comparison table, cards,
     checklist, accordion and sources. Not every article compares two treatments
     or needs a table, and a document that models one article's shape as its

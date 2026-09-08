@@ -1,4 +1,6 @@
 <script lang="ts">
+	import { rendererFor } from '$lib/features/learn/block-registry';
+	import { toBlocks } from '$lib/features/learn/blocks';
 	import { localizeHref } from '$lib/paraglide/runtime';
 	import LiveQuery from '$lib/sanity/LiveQuery.svelte';
 	import { urlFor } from '$lib/sanity/image';
@@ -43,73 +45,34 @@
 					/>
 				{/if}
 
-				{#if article.quickAnswer?.length}
-					<h2 class="font-display mt-12 text-xl">Quick answer</h2>
-					{#each article.quickAnswer as paragraph, index (index)}
-						<p class="mt-3">{paragraph}</p>
-					{/each}
-				{/if}
-
-				{#if article.treatmentProfiles?.length}
-					<h2 class="font-display mt-12 text-xl">At a glance</h2>
-					<div class="mt-4 overflow-x-auto">
-						<table class="w-full text-left text-sm">
-							<thead>
-								<tr class="border-border border-b">
-									<th class="py-2 pr-4 font-medium">Treatment</th>
-									<th class="py-2 pr-4 font-medium">Active ingredient</th>
-									<th class="py-2 pr-4 font-medium">Maker</th>
-									<th class="py-2 font-medium">Frequency</th>
-								</tr>
-							</thead>
-							<tbody>
-								{#each article.treatmentProfiles as profile (profile._key)}
-									<tr class="border-border border-b">
-										<td class="py-2 pr-4">{profile.treatmentId}</td>
-										<td class="py-2 pr-4">{profile.activeIngredient}</td>
-										<td class="py-2 pr-4">{profile.manufacturer}</td>
-										<td class="py-2">{profile.frequency}</td>
-									</tr>
-								{/each}
-							</tbody>
-						</table>
-					</div>
-				{/if}
-
-				{#if article.sideEffects?.items?.length}
-					<h2 class="font-display mt-12 text-xl">Side effects</h2>
-					{#if article.sideEffects.intro}
-						<p class="mt-3">{article.sideEffects.intro}</p>
-					{/if}
-					<ul class="mt-3 list-disc pl-5">
-						{#each article.sideEffects.items as item, index (index)}
-							<li>{item}</li>
-						{/each}
-					</ul>
-				{/if}
-
-				{#if article.faqs?.length}
-					<h2 class="font-display mt-12 text-xl">FAQs</h2>
-					{#each article.faqs as faq (faq._key)}
-						<h3 class="mt-6 font-medium">{faq.question}</h3>
-						<p class="text-muted-foreground mt-1">{faq.answer}</p>
-					{/each}
-				{/if}
-
-				{#if article.sources?.length}
-					<h2 class="font-display mt-12 text-xl">Sources</h2>
-					<ul class="mt-3 list-disc pl-5">
-						{#each article.sources as source (source._key)}
-							<li>
-								{#if source.href}
-									<a class="hover:underline" href={source.href}>{source.label}</a>
-								{:else}
-									{source.label}
+				<!--
+					The body as a model rather than as a page: what blocks the document holds, in
+					order, with the anchor each one derives and whether this app can draw it. The
+					article itself is at `/learn/blog/[slug]`; what is useful here is the shape.
+				-->
+				<h2 class="font-display mt-12 text-xl">Body</h2>
+				{#each toBlocks(article.body) as block, index (index)}
+					{@const found = rendererFor(block)}
+					<div class="border-border mt-3 rounded-lg border p-3 text-sm">
+						<p class="font-medium">
+							{block.kind === 'unsupported' ? block.type : block.kind}
+							{#if !found.entry}
+								<span class="text-destructive-text">no renderer: {found.reason}</span>
+							{/if}
+						</p>
+						{#if block.kind !== 'unsupported'}
+							<p class="text-muted-foreground mt-1">
+								{block.heading ?? 'no heading, continues the section above'}
+								{#if block.id}<code class="ml-2">#{block.id}</code>{/if}
+								{#if block.label && block.label !== block.heading}
+									<span class="ml-2">contents: {block.label}</span>
 								{/if}
-							</li>
-						{/each}
-					</ul>
-				{/if}
+							</p>
+						{/if}
+					</div>
+				{:else}
+					<p class="text-muted-foreground mt-3 text-sm">This article has no body yet.</p>
+				{/each}
 			{/if}
 		{/snippet}
 	</LiveQuery>

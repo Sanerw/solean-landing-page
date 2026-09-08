@@ -35,6 +35,13 @@ function query(name) {
 const articleQuery = query('articleQuery');
 const SLUG = 'mounjaro-vs-wegovy';
 
+// The four policy documents, keyed here exactly as `LEGAL_SLUGS` keys them in
+// `src/lib/features/legal/from-sanity.ts`. They were absent from this script until feature 26c,
+// so every regeneration silently deleted them from the fixture and took `legal-pages.spec.ts`
+// with it. A generator that writes a subset of the file it overwrites is a trap, so it writes
+// all of it now.
+const LEGAL_SLUGS = ['legal-notice', 'privacy', 'terms', 'returns'];
+
 async function run(groq, params) {
 	const url = new URL(`https://${projectId}.api.sanity.io/v${apiVersion}/data/query/${dataset}`);
 	url.searchParams.set('query', groq);
@@ -51,6 +58,7 @@ const articles = {};
 const homePages = {};
 const testimonials = {};
 const announcements = {};
+const legalPages = {};
 
 for (const language of ['de', 'en']) {
 	articles[language] = await run(articleQuery, { slug: SLUG, language });
@@ -63,12 +71,19 @@ for (const language of ['de', 'en']) {
 	announcements[language] = await run(query('announcementQuery'), { language });
 
 	testimonials[language] = await run(query('testimonialsQuery'), { language });
+
+	for (const slug of LEGAL_SLUGS) {
+		const page = await run(query('legalPageQuery'), { slug, language });
+		if (!page) throw new Error(`${language}: no legal page at "${slug}"`);
+		legalPages[`${slug}-${language}`] = page;
+	}
 }
 
 const out = resolve(root, 'e2e/fixtures/sanity-articles.json');
 mkdirSync(dirname(out), { recursive: true });
 writeFileSync(
 	out,
-	JSON.stringify({ slug: SLUG, articles, homePages, announcements, testimonials }, null, '\t') + '\n'
+	JSON.stringify({ slug: SLUG, articles, homePages, announcements, testimonials, legalPages }, null, '\t') +
+		'\n'
 );
-console.log(`wrote ${out} (article, home page and testimonials, de + en)`);
+console.log(`wrote ${out} (article, home page, testimonials and legal pages, de + en)`);

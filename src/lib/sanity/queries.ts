@@ -33,24 +33,22 @@ export const articleQuery = defineQuery(`*[_type == "article" && language == $la
 	reviewedAt,
 	nextReviewAt,
 	readTimeMinutes,
-	quickAnswer,
-	howTheyWork,
-	expectedResults,
-	sideEffects,
-	sourcesSummary,
-	reviewer->{ _id, name, role, description, portrait },
-	treatmentProfiles[]{
+	body[]{
 		_key,
-		treatmentId,
-		activeIngredient,
-		manufacturer,
-		frequency,
-		mainAction,
-		manufacturerNote
+		_type,
+		heading,
+		shortLabel,
+		paragraphs,
+		caption,
+		columns,
+		rows[]{ _key, label, cells },
+		cards[]{ _key, name, eyebrow, body },
+		intro,
+		items,
+		summary,
+		sources[]{ _key, label, href }
 	},
-	faqs[]{ _key, question, answer },
-	sources[]{ _key, label, href },
-	related[]->{ _id, title, category, slug },
+	reviewer->{ _id, name, role, description, portrait },
 	seoTitle,
 	seoDescription
 }`);
@@ -75,15 +73,35 @@ export interface ArticleListItem {
 	reviewer?: { name: string; portrait?: SanityImage };
 }
 
+/**
+ * One body block, projected as the union of every block type's fields, the way `legalPageQuery`
+ * projects its two. GROQ answers `null` for a field the member does not have, so the mapper
+ * narrows on `_type` and the projection stays one shape rather than seven conditional ones.
+ *
+ * `items` is the one name two block types share: an array of strings on a checklist and an
+ * array of questions on an accordion. `toBlocks` separates them.
+ */
+export interface SanityArticleBlock {
+	_key: string;
+	_type: string;
+	heading?: string;
+	shortLabel?: string;
+	paragraphs?: string[];
+	caption?: string;
+	columns?: string[];
+	rows?: { _key: string; label: string; cells?: string[] }[];
+	cards?: { _key: string; name: string; eyebrow: string; body: string }[];
+	intro?: string;
+	items?: (string | { _key: string; question: string; answer: string })[];
+	summary?: string;
+	sources?: { _key: string; label: string; href?: string }[];
+}
+
 export interface ArticleDetail extends ArticleListItem {
+	body?: SanityArticleBlock[];
 	seoTitle?: string;
 	seoDescription?: string;
 	nextReviewAt?: string;
-	quickAnswer?: string[];
-	howTheyWork?: string[];
-	expectedResults?: string[];
-	sideEffects?: { intro?: string; items?: string[] };
-	sourcesSummary?: string;
 	reviewer?: {
 		_id: string;
 		name: string;
@@ -91,18 +109,6 @@ export interface ArticleDetail extends ArticleListItem {
 		description?: string;
 		portrait?: SanityImage;
 	};
-	treatmentProfiles?: {
-		_key: string;
-		treatmentId: string;
-		activeIngredient: string;
-		manufacturer: string;
-		frequency?: string;
-		mainAction?: string;
-		manufacturerNote?: string;
-	}[];
-	faqs?: { _key: string; question: string; answer: string }[];
-	sources?: { _key: string; label: string; href?: string }[];
-	related?: { _id: string; title: string; category: string; slug: { current: string } }[];
 }
 
 /**

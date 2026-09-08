@@ -1,7 +1,4 @@
 <script lang="ts">
-	import { m } from '$lib/paraglide/messages';
-	import ShieldCheckIcon from '@lucide/svelte/icons/shield-check';
-	import { formatArticleDate } from './format-article-date';
 	import type { ArticleSource } from './types';
 
 	interface Props {
@@ -9,12 +6,9 @@
 		heading: string;
 		summary: string;
 		sources: readonly ArticleSource[];
-		/** The document's, not the section's: the note credits the article, not its evidence. */
-		reviewer: string;
-		nextReviewAt: string;
 	}
 
-	let { id, heading, summary, sources, reviewer, nextReviewAt }: Props = $props();
+	let { id, heading, summary, sources }: Props = $props();
 </script>
 
 <!--
@@ -24,6 +18,10 @@
 	The artboard carries the prose and the review note and no list. The list stays: this is a
 	medically reviewed article and its citations are evidence, not decoration. Dropping them
 	would be an editorial decision, not a visual one.
+
+	The review note itself moved to the page in 26c, where the document data it prints lives.
+	`ArticleReviewNote` draws it directly under the body, which for an article ending on its
+	sources is where it has always been.
 -->
 <section {id} class="scroll-mt-8" aria-labelledby="{id}-title">
 	<h2 id="{id}-title" class="font-display text-2xl font-semibold tracking-tight text-foreground">
@@ -52,17 +50,4 @@
 			{/each}
 		</ul>
 	{/if}
-
-	<div class="mt-6 flex items-center gap-3 rounded-sm bg-accent p-4">
-		<ShieldCheckIcon aria-hidden="true" class="size-6 shrink-0 text-foreground" />
-		<div>
-			<p class="font-display text-base font-semibold text-foreground">
-				{m.learn_reviewed_title()}
-			</p>
-			<p class="text-sm text-muted-foreground">
-				{m.learn_reviewed_body({ reviewer })}
-				<time datetime={nextReviewAt}>{formatArticleDate(nextReviewAt)}</time>.
-			</p>
-		</div>
-	</div>
 </section>

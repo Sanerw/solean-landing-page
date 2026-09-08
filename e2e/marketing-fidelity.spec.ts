@@ -4,6 +4,7 @@
  * English reference would be measuring the wrong page.
  */
 import { expect, test } from '@playwright/test';
+import { HOME } from './content';
 import { settledInView } from './motion';
 
 /**
@@ -116,18 +117,23 @@ test('the reference hero asset renders without narrow-screen overflow', async ({
 	// unused copy is display:none, which removes it rather than merely hiding it.
 	const heading = page.getByRole('heading', { level: 1 });
 	await expect(heading).toHaveCount(1);
-	await expect(heading).toHaveText('Feel healthier. Live more confidently.', {
-		useInnerText: true
-	});
+	await expect(heading).toHaveText(HOME.hero.mobileHeadline, { useInnerText: true });
 	expect(
 		await heading.evaluate(
 			(h) => h.getAttribute('aria-label') ?? (h as HTMLElement).innerText.trim()
 		)
-	).toBe('Feel healthier. Live more confidently.');
-	await expect(hero.getByText('Doctor-led weight loss', { exact: true })).toBeVisible();
+	).toBe(HOME.hero.mobileHeadline);
+	// One eyebrow drawn, not two. The wide and narrow branches both carry this line and the
+	// editor has since given them the same words, so counting the visible ones is what the
+	// assertion was always about: `toBeVisible` on a two-element match is a strict-mode error.
+	expect(
+		await hero
+			.getByText(HOME.hero.mobileEyebrow, { exact: true })
+			.evaluateAll((els) => els.filter((e) => (e as HTMLElement).offsetParent !== null).length)
+	).toBe(1);
 
 	// One route into the funnel, full width, with no second CTA.
-	const primary = hero.getByRole('link', { name: 'Check your eligibility' });
+	const primary = hero.getByRole('link', { name: HOME.hero.primaryCta });
 	await expect(primary).toBeVisible();
 	await expect(primary).toHaveAttribute('href', '/en/questionnaire');
 	expect((await primary.boundingBox())?.width).toBeGreaterThan(300);
@@ -181,12 +187,15 @@ test('the reference hero asset renders without narrow-screen overflow', async ({
 	// Desktop regression: the card frame, the struck headline, and both CTAs are intact.
 	expect((await hero.boundingBox())?.x).toBe(12);
 	await expect(hero).toHaveCSS('border-top-left-radius', '28px');
+	// Three fields, one headline, with the middle one struck through. Composed here rather than
+	// spelled out, so the assertion stays about the composition and not about the sentence.
+	const { headlineLead, headlineStruck, headlineTail } = HOME.hero;
 	await expect(page.getByRole('heading', { level: 1 })).toHaveText(
-		'Your pathway to lasting perfect shape happiness.',
+		`${headlineLead} ${headlineStruck} ${headlineTail}`,
 		{ useInnerText: true }
 	);
-	await expect(hero.locator('h1 s')).toHaveText('perfect shape');
-	await expect(hero.getByRole('link', { name: 'Explore treatments' })).toBeVisible();
+	await expect(hero.locator('h1 s')).toHaveText(headlineStruck);
+	await expect(hero.getByRole('link', { name: HOME.hero.secondaryCta })).toBeVisible();
 	await expect(page.getByTestId('hero-article-teaser')).toBeVisible();
 	await expect(hero.locator('img').first()).toHaveCSS('object-position', '50% 50%');
 });
@@ -211,8 +220,8 @@ test('keeps the Learn teaser compact and uses the reference divider', async ({ p
 
 	const teaser = page.getByTestId('hero-article-teaser');
 	await expect(teaser).toBeVisible();
-	await expect(teaser.getByText('Latest from Learn')).toHaveCSS('font-size', '10px');
-	await expect(teaser.getByText('Mounjaro vs Wegovy.')).toHaveCSS('font-size', '18px');
+	await expect(teaser.getByText(HOME.articleTeaser.eyebrow)).toHaveCSS('font-size', '10px');
+	await expect(teaser.getByText(HOME.articleTeaser.title)).toHaveCSS('font-size', '18px');
 
 	const divider = teaser.locator('div[aria-hidden="true"]');
 	await expect(divider).toHaveCSS('width', '42px');
@@ -397,7 +406,7 @@ test('dissolves the care artwork into the band and restores the review column', 
 	);
 	await expect(review).toHaveAttribute('target', '_blank');
 	await expect(review).toHaveAttribute('rel', /noopener/);
-	await band.getByRole('link', { name: 'Check your eligibility' }).focus();
+	await band.getByRole('link', { name: HOME.resultsBand.cta }).focus();
 	await page.keyboard.press('Tab');
 	await expect(review).toBeFocused();
 	expect(await review.evaluate((element) => element.matches(':focus-visible'))).toBe(true);
@@ -567,9 +576,9 @@ test('the narrow landing sections follow the artboard', async ({ page }) => {
 
 	// The band opens on its own heading and closes that block with a full-width CTA.
 	const band = page.getByLabel('Care built in');
-	await expect(band.getByText('Care built in', { exact: true })).toBeVisible();
+	await expect(band.getByText(HOME.resultsBand.eyebrow, { exact: true })).toBeVisible();
 	await expect(band.locator('ul').first()).toBeHidden();
-	const bandCta = band.getByRole('link', { name: /Check your eligibility/ });
+	const bandCta = band.getByRole('link', { name: HOME.resultsBand.cta });
 	expect((await bandCta.boundingBox())?.width).toBe(358);
 
 	// Panels meet both edges, square.
@@ -582,7 +591,7 @@ test('the narrow landing sections follow the artboard', async ({ page }) => {
 	}
 
 	// The projection drops its horizon tabs and its pair of CTAs.
-	const projection = page.getByLabel(/Projected progress/i);
+	const projection = page.getByLabel(HOME.projection.title);
 	expect(await projection.getByRole('link').evaluateAll(visible)).toBe(0);
 	expect(await projection.getByRole('tablist').evaluateAll(visible)).toBe(0);
 
