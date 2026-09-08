@@ -34,7 +34,19 @@
 	}
 </script>
 
-<header class={variant === 'solid' ? 'bg-card' : 'bg-transparent'}>
+<!--
+	`relative z-50`, so the dropdown is painted above whatever the page puts under the header.
+	`NavigationMenu.Content` is `md:absolute` with no z-index of its own, so it competed on DOM
+	order alone: any positioned element later in the page won, and on the treatment page the
+	product gallery covered the open menu. The stacking belongs here rather than on the panel,
+	because it is the header that has to outrank the page.
+-->
+<header
+	class={[
+		'relative z-50',
+		variant === 'solid' ? 'bg-card' : 'bg-transparent'
+	]}
+>
 	<div
 		class={[
 			CONTAINER,

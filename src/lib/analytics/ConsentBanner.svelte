@@ -24,14 +24,39 @@
 	$effect(() => {
 		hydrated = true;
 	});
+
+	/**
+	 * The gate's own height, published so that anything else anchored to the bottom of the
+	 * viewport can sit above it rather than underneath it. The treatment page's consultation bar
+	 * is the first such element: it was rendering invisibly behind this banner, which reads as a
+	 * missing button rather than as a covered one.
+	 *
+	 * A custom property rather than a shared store, because what a consumer needs is a length in
+	 * CSS, and the only alternative is every consumer importing analytics state to position
+	 * itself.
+	 */
+	let bannerHeight = $state(0);
+	const showing = $derived(analyticsConfigured() && analyticsConsent.undecided);
+
+	$effect(() => {
+		const root = document.documentElement;
+		// Keyed on `showing`, not on the height alone. The element carrying `bind:clientHeight`
+		// lives inside the `{#if}` while this component does not, so the last measured height
+		// survives the gate being answered and would leave consumers offset against a banner
+		// that is no longer there.
+		root.style.setProperty('--consent-gate-height', showing ? `${bannerHeight}px` : '0px');
+
+		return () => root.style.removeProperty('--consent-gate-height');
+	});
 </script>
 
-{#if analyticsConfigured() && analyticsConsent.undecided}
+{#if showing}
 	<div
 		role="dialog"
 		aria-modal="false"
 		aria-labelledby="consent-title"
 		class="fixed inset-x-0 bottom-0 z-50 p-4 sm:p-6"
+		bind:clientHeight={bannerHeight}
 	>
 		<div
 			class="mx-auto flex max-w-3xl flex-col gap-4 rounded-xl border border-border bg-background p-6 sm:flex-row sm:items-center sm:gap-6"

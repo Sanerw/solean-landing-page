@@ -38,21 +38,28 @@
 	{#each doses as dose (dose.label)}
 		<RadioGroupPrimitive.Item
 			value={dose.label}
-			class="group flex flex-col items-center justify-center gap-0.5 border-l border-border px-2 py-2.5 text-center outline-none transition-colors first:border-l-0 hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset data-checked:bg-foreground data-checked:hover:bg-foreground md:py-3"
+			class="group flex flex-col items-center justify-center gap-1 border-l border-border px-2 py-4 text-center outline-none transition-colors first:border-l-0 hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset data-checked:bg-foreground data-checked:hover:bg-foreground md:py-3"
 		>
 			<span
-				class="text-sm font-bold text-foreground group-data-checked:text-background md:text-base"
+				class="text-base font-bold text-foreground group-data-checked:text-background"
 			>
 				{dose.label}
 			</span>
 			<!--
 				Part of the option's own accessible name, not decoration: the price is half of what
 				the person is choosing between, so a screen reader has to reach it too.
+
+				The narrow artboard prints the bare figure, and it is right to: four segments across
+				390px cannot hold "/ month" without wrapping every price onto two lines. `sr-only`
+				rather than hidden, so the unit still reaches a screen reader at every width and the
+				option is never announced as an unqualified number.
 			-->
 			<span
-				class="text-xs font-medium text-muted-foreground group-data-checked:text-background/80"
+				class="text-sm font-medium text-muted-foreground group-data-checked:text-background/80 md:text-xs"
 			>
-				{m.treatment_price_per_month({ price: formatPrice(dose.monthlyPrice) })}
+				{formatPrice(dose.monthlyPrice)}<span class="sr-only md:not-sr-only"
+					>&nbsp;{m.treatment_price_unit()}</span
+				>
 			</span>
 		</RadioGroupPrimitive.Item>
 	{/each}

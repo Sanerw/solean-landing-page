@@ -10,7 +10,11 @@
 </script>
 
 <!-- Top-level links share Trigger's compact geometry. Dropdown links use natural
-     content height so richer product rows stay readable without dominating the header. -->
+     content height so richer product rows stay readable without dominating the header.
+
+     A dropdown row is rounded at the panel's own radius rather than the pill radius a
+     top-level link carries: at 36px a hovered row inside a 20px panel reads as a pill
+     floating in it rather than as a row of it. -->
 <NavigationMenuPrimitive.Link
 	bind:ref
 	data-slot="navigation-menu-link"
@@ -18,7 +22,7 @@
 		"flex h-9 items-center gap-1.5 rounded-full px-4.5 py-2.5 text-sm font-medium text-foreground outline-none transition-colors",
 		"hover:bg-accent focus:bg-accent data-active:bg-accent data-active:text-accent-foreground",
 		"focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
-		"in-data-[slot=navigation-menu-content]:h-auto in-data-[slot=navigation-menu-content]:rounded-2xl in-data-[slot=navigation-menu-content]:p-3 in-data-[slot=navigation-menu-content]:tracking-normal",
+		"in-data-[slot=navigation-menu-content]:h-auto in-data-[slot=navigation-menu-content]:rounded-lg in-data-[slot=navigation-menu-content]:p-3 in-data-[slot=navigation-menu-content]:tracking-normal",
 		"[&_svg:not([class*='size-'])]:size-4",
 		"group-data-[surface=dark]/navigation-menu:text-background",
 		"group-data-[surface=dark]/navigation-menu:hover:bg-background/10 group-data-[surface=dark]/navigation-menu:hover:text-background",

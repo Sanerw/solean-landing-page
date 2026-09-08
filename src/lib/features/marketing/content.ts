@@ -1,6 +1,6 @@
 import { m } from '$lib/paraglide/messages';
 import { localizeHref } from '$lib/paraglide/runtime';
-import { TREATMENTS } from '$lib/domain';
+import { TREATMENTS, treatmentDisplayName } from '$lib/domain';
 import {
 	buildWeightProjection,
 	PROJECTION_HORIZON_OPTIONS,
@@ -66,12 +66,15 @@ export function navItems(): readonly NavItem[] {
 		{ label: m.nav_home(), href: localizeHref(ROUTES.home) },
 		{
 			label: m.nav_treatments(),
+			// The parent stays inert: the three products have pages from feature 25, the index
+			// that would sit above them is still undrawn, and a link to it would be a 404.
 			href: '/treatments',
 			inert: true,
 			children: TREATMENTS.map((treatment) => ({
-				label: treatment.form === 'tablet' ? treatment.name : `${treatment.name} Injection`,
-				href: `/treatments/${treatment.id}`,
-				inert: true,
+				// From the domain, not rebuilt here, so this menu and the page it opens cannot
+				// disagree about a product's name.
+				label: treatmentDisplayName(treatment),
+				href: localizeHref(`/treatments/${treatment.id}`),
 				description:
 					treatment.form === 'tablet' ? m.nav_treatment_tablet() : m.nav_treatment_injection()
 			}))

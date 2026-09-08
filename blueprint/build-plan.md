@@ -508,7 +508,7 @@ claims are not approved production content.
     rebuilt to its artboards, copy in German and English, browser coverage and the
     accessibility pass.
 
-- [ ] 25. **Treatment detail pages** - `/treatments/[slug]` for the three catalogue
+- [x] 25. **Treatment detail pages** - `/treatments/[slug]` for the three catalogue
   treatments, built from the Pencil treatment export in `blueprint/reference/`.
   The product hero with its gallery, dose selector and consultation offer card;
   the plan comparison across 3, 6, 9 and 12 months; how it works; the FAQ; and
@@ -523,7 +523,7 @@ claims are not approved production content.
     panel with its badges and caption, breadcrumb, title, rating, introduction,
     the dose selector, the clinician-guidance note, the consultation offer card,
     and the sticky consultation bar the narrow artboard carries.
-  - [ ] 25b. **Comparison, how it works, FAQ and the nav links** - the plan
+  - [x] 25b. **Comparison, how it works, FAQ and the nav links** - the plan
     comparison as a table on the wide artboard and stacked cards on the narrow
     one, the how-it-works section, the FAQ accordion, and the three treatment
     links in the navigation dropdown made real so the page is reachable.

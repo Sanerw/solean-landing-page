@@ -13,7 +13,16 @@
 	variant, and other marketing pages render the solid variant at the top of their own
 	content. Putting it in the layout would force one of those to be wrong.
 -->
-<div class="flex min-h-svh flex-col bg-background">
+<!--
+	The trailing space is what a page's own fixed bottom bar reserves for itself. The treatment
+	page's consultation bar is the only one today; it publishes `--treatment-cta-height` while
+	it is mounted, and the property is absent everywhere else, so this resolves to zero on every
+	other page. Without it a fixed bar sits permanently over the footer's legal row.
+-->
+<div
+	class="flex min-h-svh flex-col bg-background"
+	style="padding-bottom: var(--treatment-cta-height, 0px)"
+>
 	<!-- <AnnouncementBar announcement={data.announcement} /> -->
 	<main class="flex-1">
 		{@render children()}

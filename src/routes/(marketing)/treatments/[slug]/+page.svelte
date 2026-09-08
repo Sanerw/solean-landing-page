@@ -8,7 +8,10 @@
 	import { RATING, ROUTES } from '$lib/features/marketing/content';
 	import { formatScore } from '$lib/features/marketing/reviews';
 	import ShieldCheckIcon from '@lucide/svelte/icons/shield-check';
-	import { findTreatmentPage, startingDose } from '$lib/features/treatments/content';
+	import { findTreatmentPage, startingDose, treatmentFaq } from '$lib/features/treatments/content';
+	import FaqSection from '$lib/features/marketing/FaqSection.svelte';
+	import PlanComparison from '$lib/features/treatments/PlanComparison.svelte';
+	import TreatmentHowItWorks from '$lib/features/treatments/TreatmentHowItWorks.svelte';
 	import TreatmentGallery from '$lib/features/treatments/TreatmentGallery.svelte';
 	import DoseSelector from '$lib/features/treatments/DoseSelector.svelte';
 	import ConsultationOffer from '$lib/features/treatments/ConsultationOffer.svelte';
@@ -38,6 +41,14 @@
 	const dose = $derived(
 		treatmentPage.doses.find((each) => each.label === chosen) ?? startingDose(treatmentPage)
 	);
+
+	// Shaped for `FaqSection`, which takes the same `FaqContent` the landing page's Sanity
+	// document satisfies. Built during render, so the questions follow the active locale.
+	const faq = $derived({
+		title: m.treatment_faq_heading(),
+		lead: m.treatment_faq_lead(),
+		items: treatmentFaq()
+	});
 </script>
 
 <svelte:head>
@@ -157,5 +168,11 @@
 		</div>
 	</div>
 </section>
+
+<PlanComparison slug={data.slug} />
+
+<TreatmentHowItWorks />
+
+<FaqSection {faq} compact />
 
 <StickyConsultationBar page={treatmentPage} />

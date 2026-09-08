@@ -47,7 +47,13 @@ export default defineConfig({
 			command: `pnpm build && pnpm preview --port ${PORT} --strictPort`,
 			url: `http://localhost:${PORT}`,
 			reuseExistingServer: !process.env.CI,
-			timeout: 120_000,
+			// The build, not the server, is what this waits for. It takes about 25 seconds on an
+			// idle machine and several minutes on a busy one, because `enhanced:img` encodes
+			// every panel source to avif, webp and jpeg at each width in its ladder and that
+			// work is CPU bound. At 120s a developer with a dev server already running failed
+			// the whole run before a single test executed, which reads as a broken suite rather
+			// than a slow one. The headroom costs nothing when the build is quick.
+			timeout: 300_000,
 			env: {
 				PUBLIC_RXSCALE_API_BASE_URL: `http://localhost:${FIXTURE_PORT}`,
 				PUBLIC_RXSCALE_QUESTIONNAIRE_UID: FIXTURE_UID,

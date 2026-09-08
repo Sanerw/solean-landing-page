@@ -1,11 +1,15 @@
 import { describe, expect, it } from 'vitest';
 import { TREATMENTS, eur } from '$lib/domain';
 import {
+	comparisonDurations,
+	comparisonRows,
 	findTreatmentPage,
 	firstMonthSaving,
 	formatPrice,
+	howItWorksSteps,
 	standardMonthly,
 	startingDose,
+	treatmentFaq,
 	treatmentPages
 } from './content';
 
@@ -138,5 +142,118 @@ describe('formatPrice', () => {
 
 	it('handles zero', () => {
 		expect(formatPrice(eur(0))).toBe('€0');
+	});
+});
+
+describe('comparisonRows', () => {
+	it('offers one row per catalogue treatment', () => {
+		const rows = comparisonRows('wegovy-pill');
+
+		expect([...rows.map((row) => row.slug)].sort()).toEqual(
+			[...TREATMENTS.map((treatment) => treatment.id)].sort()
+		);
+	});
+
+	// Cheapest first, which is how the artboard orders them and the only order a price
+	// comparison reads naturally in. Derived from the prices, so a price change reorders the
+	// table rather than leaving it stale.
+	it('orders the rows by ascending monthly price', () => {
+		const rows = comparisonRows('wegovy-pill');
+
+		expect(rows.map((row) => row.slug)).toEqual(['wegovy-pill', 'wegovy', 'mounjaro']);
+
+		const cheapest = rows.map((row) => row.plans[0].monthlyPrice.amount);
+		expect(cheapest).toEqual([...cheapest].sort((a, b) => a - b));
+	});
+
+	it('names each row from the catalogue rather than from its own copy', () => {
+		const rows = comparisonRows('wegovy-pill');
+
+		expect(rows.map((row) => row.name)).toEqual([
+			'Wegovy Pill',
+			'Wegovy Injection',
+			'Mounjaro Injection'
+		]);
+	});
+
+	// The thumbnail is the gallery's own art, so a treatment cannot show one picture in the
+	// hero and a different one in the comparison.
+	it('carries each treatment its own gallery photograph, where it has one', () => {
+		const rows = comparisonRows('wegovy-pill');
+
+		for (const row of rows) {
+			expect(row.photo, row.slug).toEqual(findTreatmentPage(row.slug)!.photo);
+		}
+	});
+
+	// The row a visitor is already on is the one that must not link to itself.
+	it('marks exactly one row as current', () => {
+		const rows = comparisonRows('wegovy');
+
+		expect(rows.filter((row) => row.isCurrent).map((row) => row.slug)).toEqual(['wegovy']);
+	});
+
+	// The route 404s before this is reached, so an unknown slug marks nothing rather than
+	// throwing: the comparison is still renderable, just with no row highlighted.
+	it('marks nothing for a slug that is not a treatment', () => {
+		expect(comparisonRows('nope').some((row) => row.isCurrent)).toBe(false);
+	});
+
+	// The durations are the table's columns. A ragged set has no table to render, so this is
+	// the assertion that stops one treatment gaining a plan the others do not have.
+	it('offers the same durations on every row', () => {
+		const rows = comparisonRows('wegovy-pill');
+		const first = rows[0].plans.map((plan) => plan.durationMonths);
+
+		for (const row of rows) {
+			expect(row.plans.map((plan) => plan.durationMonths), row.slug).toEqual(first);
+		}
+	});
+
+	it('reads its prices from the same pages the dose selector uses', () => {
+		const rows = comparisonRows('wegovy-pill');
+		const pill = rows.find((row) => row.slug === 'wegovy-pill')!;
+
+		expect(pill.plans).toEqual(findTreatmentPage('wegovy-pill')!.plans);
+	});
+});
+
+describe('comparisonDurations', () => {
+	it('reads the header off the rows, so it cannot drift from them', () => {
+		expect(comparisonDurations(comparisonRows('wegovy-pill'))).toEqual([3, 6, 9, 12]);
+	});
+
+	it('is empty rather than throwing when there are no rows', () => {
+		expect(comparisonDurations([])).toEqual([]);
+	});
+});
+
+describe('the section content', () => {
+	it('offers three how-it-works steps, each with a title and a body', () => {
+		const steps = howItWorksSteps();
+
+		expect(steps).toHaveLength(3);
+		for (const step of steps) {
+			expect(step.title).not.toBe('');
+			expect(step.body).not.toBe('');
+		}
+	});
+
+	// Seven, not six: the narrow artboard drops one for room, which is a layout accident
+	// rather than an editorial decision.
+	it('offers seven FAQ items, each answered', () => {
+		const faq = treatmentFaq();
+
+		expect(faq).toHaveLength(7);
+		for (const item of faq) {
+			expect(item.question).not.toBe('');
+			expect(item.answer).not.toBe('');
+		}
+	});
+
+	it('asks each question once', () => {
+		const questions = treatmentFaq().map((item) => item.question);
+
+		expect(new Set(questions).size).toBe(questions.length);
 	});
 });

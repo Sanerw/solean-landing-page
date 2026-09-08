@@ -44,3 +44,29 @@ export interface TreatmentPage {
 	firstMonth: Money;
 	clinicianNote: { title: string; body: string };
 }
+
+/**
+ * One treatment's line in the plan comparison. Load-bearing: a `/treatments` index would
+ * read the same rows.
+ */
+export interface ComparisonRow {
+	slug: string;
+	/** From `treatmentDisplayName`, never retyped. */
+	name: string;
+	formLabel: string;
+	/** The same art the gallery uses, or absent where a treatment has none yet. */
+	photo?: TreatmentPhoto;
+	plans: readonly Plan[];
+	/** The page being viewed: marked in the table, and never linked to itself. */
+	isCurrent: boolean;
+}
+
+export interface HowItWorksStep {
+	title: string;
+	body: string;
+}
+
+export interface FaqItem {
+	question: string;
+	answer: string;
+}

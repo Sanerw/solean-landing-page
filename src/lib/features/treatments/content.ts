@@ -1,7 +1,15 @@
 import { m } from '$lib/paraglide/messages';
-import injectionPen from '$lib/assets/panels/treatment-card-enhanced.webp?enhanced&w=400;600;800;1200;1600&quality=90';
-import { eur, type Money } from '$lib/domain';
-import type { Dose, Plan, PlanDuration, TreatmentPage } from './types';
+import injectionPen from '$lib/assets/panels/treatment-card-enhanced.webp?enhanced&w=400;600;800;1200&quality=90';
+import { eur, treatmentDisplayName, TREATMENTS, type Money } from '$lib/domain';
+import type {
+	ComparisonRow,
+	Dose,
+	FaqItem,
+	HowItWorksStep,
+	Plan,
+	PlanDuration,
+	TreatmentPage
+} from './types';
 
 /**
  * The discounted first month is the same figure for every treatment, and the saving shown
@@ -172,4 +180,70 @@ export function firstMonthSaving(page: TreatmentPage): Money {
 export function formatPrice(money: Money): string {
 	const euros = money.amount / 100;
 	return `€${Number.isInteger(euros) ? euros : euros.toFixed(2)}`;
+}
+
+/**
+ * Every treatment as a row of the comparison, cheapest first, which is how the artboard orders
+ * them and the only order a price comparison reads naturally in. Sorted rather than stored in
+ * order, so a price change reorders the table instead of leaving it stale.
+ *
+ * The plans come from `treatmentPages()`, so the comparison and the dose selector read one
+ * price list and cannot disagree.
+ *
+ * `isCurrent` is computed rather than stored: it is a property of the page being viewed, not
+ * of the treatment. The row it marks is the one that must not link to itself.
+ */
+export function comparisonRows(currentSlug: string): readonly ComparisonRow[] {
+	const pages = treatmentPages();
+
+	return TREATMENTS.flatMap((treatment) => {
+		const page = pages.find((each) => each.slug === treatment.id);
+		if (!page) return [];
+
+		return [
+			{
+				slug: page.slug,
+				name: treatmentDisplayName(treatment),
+				formLabel: page.formLabel,
+				photo: page.photo,
+				plans: page.plans,
+				isCurrent: page.slug === currentSlug
+			}
+		];
+	}).sort((a, b) => standardMonthlyOf(a) - standardMonthlyOf(b));
+}
+
+/** The figure the rows are ordered by: what a month costs on the shortest plan. */
+function standardMonthlyOf(row: ComparisonRow): number {
+	return row.plans[0]?.monthlyPrice.amount ?? 0;
+}
+
+/** The durations the comparison shows, read off the first row so the header cannot drift. */
+export function comparisonDurations(rows: readonly ComparisonRow[]): readonly PlanDuration[] {
+	return rows[0]?.plans.map((plan) => plan.durationMonths) ?? [];
+}
+
+export function howItWorksSteps(): readonly HowItWorksStep[] {
+	return [
+		{ title: m.treatment_step_1_title(), body: m.treatment_step_1_body() },
+		{ title: m.treatment_step_2_title(), body: m.treatment_step_2_body() },
+		{ title: m.treatment_step_3_title(), body: m.treatment_step_3_body() }
+	];
+}
+
+/**
+ * Seven questions, at both widths. The wide artboard lists seven and the narrow one six;
+ * dropping a question because one artboard ran out of room is a layout accident rather than an
+ * editorial decision, so the list is one and the layout adapts to it.
+ */
+export function treatmentFaq(): readonly FaqItem[] {
+	return [
+		{ question: m.treatment_faq_1_q(), answer: m.treatment_faq_1_a() },
+		{ question: m.treatment_faq_2_q(), answer: m.treatment_faq_2_a() },
+		{ question: m.treatment_faq_3_q(), answer: m.treatment_faq_3_a() },
+		{ question: m.treatment_faq_4_q(), answer: m.treatment_faq_4_a() },
+		{ question: m.treatment_faq_5_q(), answer: m.treatment_faq_5_a() },
+		{ question: m.treatment_faq_6_q(), answer: m.treatment_faq_6_a() },
+		{ question: m.treatment_faq_7_q(), answer: m.treatment_faq_7_a() }
+	];
 }

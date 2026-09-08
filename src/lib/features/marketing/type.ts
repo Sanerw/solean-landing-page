@@ -13,3 +13,17 @@ export const SECTION_LEAD = 'mt-4 max-w-2xl text-base text-muted-foreground md:t
 
 /** Heading inside a card, tile, or list row. */
 export const CARD_HEADING = 'font-display text-lg font-semibold text-foreground md:text-xl';
+
+/**
+ * What `FaqSection` needs, which is less than a Sanity document. The landing page passes the
+ * `homePage` document's own `faq` object and the treatment page passes a repository fixture;
+ * both satisfy this, and neither has to know about the other.
+ *
+ * The extra keys Sanity carries, `_key` on each item, are ignored rather than forbidden:
+ * an interface describes a minimum, so a richer object still fits.
+ */
+export interface FaqContent {
+	title: string;
+	lead: string;
+	items: readonly { question: string; answer: string }[];
+}

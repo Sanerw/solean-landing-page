@@ -52,7 +52,7 @@ declare module '*?enhanced&imgSizes=100vw&w=120;240;540;768;1080;1366&quality=90
 	export default value;
 }
 
-declare module '*?enhanced&w=400;600;800;1200;1600&quality=90' {
+declare module '*?enhanced&w=400;600;800;1200&quality=90' {
 	import type { Picture } from '@sveltejs/enhanced-img';
 
 	const value: Picture;
