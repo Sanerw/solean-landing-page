@@ -567,6 +567,31 @@ claims are not approved production content.
     whoever fills it. The page does not change visually: this feature is the
     model, proven by the page looking the same after it.
 
+- [ ] 27. **Treatment pages from Sanity** - the three `/treatments/[slug]` pages
+  read their copy, their photographs, their doses and their prices from the
+  Content Lake, in both languages, so a price change stops being a deploy. This
+  reverses feature 25's "copy and prices are one typed fixture, so a price change
+  is a deploy", deliberately and at the user's decision: editors get the words
+  and the figures, and Shopify still owns the amount actually charged.
+  The treatment ids and the Shopify variant stay in `src/lib/domain`. They are
+  the join, to commerce on one side and to editorial content that names a
+  treatment by its id on the other, and an editor who could rename an id could
+  break both. `dose`, `price` and `claim` leave the catalogue with this feature:
+  nothing has read them since 26c removed the comparison table's claim row.
+  What the page derives stays derived, because each one is a figure that would go
+  stale the moment a price moved: the starting dose, the standard monthly price,
+  the first-month saving, and the comparison table's rows and their order.
+  - [x] 27a. **The schema, the documents and the mapper** - the `treatment`
+    document keyed by `treatmentId`, the `treatmentsPage` singleton holding the
+    how-it-works steps and the FAQ the three pages share, the six documents
+    seeded from the current fixture, the query, the typed mapper and its tests.
+    Additive: the route still renders from the fixture, so nothing a visitor sees
+    changes.
+  - [ ] 27b. **The page reads Sanity** - the route switches over, the
+    photographs move to the CDN with a width ladder of their own,
+    `features/treatments/content.ts` and its 62 message keys go, and the browser
+    fixture is regenerated. The page does not change visually.
+
 ## Testing
 
 **Decided, then deferred at 9a.** The plan was to run `/tests` before feature 9;

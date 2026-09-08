@@ -162,7 +162,7 @@ whole site with a 500.
 | Entity | Owner | Holds |
 | --- | --- | --- |
 | `Money` | fixture | amount as integer minor units (cents), currency fixed to EUR |
-| `Treatment` | fixture | id, name, form (injection/tablet), dose, price, claim copy. Stays a fixture: it is commerce data keyed to Shopify variants, not editorial copy |
+| `Treatment` | fixture | id, name, form (injection/tablet). Stays a fixture: it is the join key, to the Shopify variant on one side and to editorial content that names a treatment by its id on the other. `dose`, `price` and `claim` leave it at feature 27, when the treatment pages move to Sanity; nothing has read them since 26c |
 | `article` | Sanity | the Learn article, one document per language, linked as translations |
 | `clinician` | Sanity | name, role, description, portrait. Referenced as an article's reviewer |
 | `homePage` | Sanity | localized singleton per locale: announcement, hero, teaser, trust band, bento, results band, projection wording, medical framing, stories, team, FAQ |

@@ -292,6 +292,56 @@ export interface HomePage {
 	faq?: { title: string; lead: string; items: { _key: string; question: string; answer: string }[] };
 }
 
+/**
+ * One treatment page, addressed by its fixed id rather than filtered by slug and language, the
+ * way the policy documents are: three known products on three known routes, each of which knows
+ * which document it serves, so a lookup would be a query that can return the wrong one.
+ */
+export const treatmentQuery = defineQuery(`*[_id == "treatment-" + $treatmentId + "-" + $language][0]{
+	treatmentId,
+	language,
+	formLabel,
+	isNew,
+	photo,
+	galleryCaption,
+	intro,
+	clinicianNote{ title, body },
+	doses[]{ _key, label, monthlyPriceCents },
+	plans[]{ _key, durationMonths, monthlyPriceCents, recommended },
+	firstMonthCents
+}`);
+
+/** What all three pages share, so the three cannot drift apart. */
+export const treatmentsPageQuery = defineQuery(`*[_id == "treatmentsPage-" + $language][0]{
+	howItWorks[]{ _key, title, body },
+	faqs[]{ _key, question, answer }
+}`);
+
+export interface SanityTreatment {
+	treatmentId: string;
+	language: string;
+	formLabel: string;
+	isNew?: boolean;
+	photo?: SanityImage;
+	galleryCaption: string;
+	intro: string;
+	clinicianNote?: { title: string; body: string };
+	/** Minor units, as `Money` is. The field name carries the unit so the Studio cannot be typed in euros. */
+	doses?: { _key: string; label: string; monthlyPriceCents: number }[];
+	plans?: {
+		_key: string;
+		durationMonths: number;
+		monthlyPriceCents: number;
+		recommended?: boolean;
+	}[];
+	firstMonthCents?: number;
+}
+
+export interface SanityTreatmentsPage {
+	howItWorks?: { _key: string; title: string; body: string }[];
+	faqs?: { _key: string; question: string; answer: string }[];
+}
+
 /** The questionnaire's motivation screen borrows one story, so it reads them server-side. */
 export const testimonialsQuery = defineQuery(
 	`*[_type == "testimonial" && language == $language]{

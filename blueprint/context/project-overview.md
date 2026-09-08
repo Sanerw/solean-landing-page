@@ -45,7 +45,7 @@ happens inside RxScale, not on a Solean screen.
 
 ## Features
 
-Twenty-six in build-plan order. The first twenty-five are complete; 26 is
+Twenty-seven in build-plan order. The first twenty-six are complete; 27 is
 next.
 
 1. **Design system and core UI components** (done) - semantic tokens, two fonts,
@@ -211,6 +211,20 @@ next.
       visually: the model is the feature, proven by the page looking the same
       after it.
 
+27. **Treatment pages from Sanity** (next) - the three `/treatments/[slug]`
+    pages read their copy, photographs, doses and prices from the Content Lake in
+    both languages, so a price change stops being a deploy. The treatment ids and
+    the Shopify variant stay in `src/lib/domain` as the join; `dose`, `claim` and
+    `price` leave the catalogue, having had no consumers since 26c. What the page
+    derives stays derived: the starting dose, the standard monthly price, the
+    first-month saving, and the comparison table's rows and their order.
+    - **27a** the `treatment` document, the `treatmentsPage` singleton for the
+      shared how-it-works and FAQ, six seeded documents, the query and the mapper.
+      Additive, so nothing a visitor sees changes.
+    - **27b** the route switches over, the photographs move to the CDN,
+      `features/treatments/content.ts` and its 62 message keys go, and the fixture
+      is regenerated. The page does not change visually.
+
 Dropped to the deferred backlog with this plan change: Solean's own checkout
 (account, shipping, payment), the pricing engine, add-on selection, and the
 doctor review and order status screens.
@@ -266,7 +280,7 @@ configured, and what may travel was not re-opened.
 | Questionnaire uid, store domain, variant id, question names | Config | One module per concern. Nothing on the checkout path is a secret |
 | Order, payment, prescription, delivery | Shopify, then RxScale by webhook | Not modelled here. RxScale is never told about the order by us |
 | Learn article and its reviewer | Sanity | Published editorial copy, one document per language. Read at request time, never cached past the response |
-| Treatment page copy and prices | Solean, from feature 25 | One typed fixture in the repository, in German and English, built from Paraglide messages the way the nav and the footer are. Display copy: a price change is a deploy, and Shopify still owns the amount charged |
+| Treatment page copy and prices | Sanity, from feature 27 | Copy, photographs, doses and prices per language, keyed by `treatmentId` to the catalogue. Feature 25 held them as a typed fixture where a price change was a deploy; 27 reverses that at the user's decision. Display copy either way: Shopify still owns the amount charged, and nothing detects a divergence between the two |
 | Visitor contact details, once typed | Customer.io, EU region | Forwarded when the question is answered, before any submission, so a reminder can be sent. The e-mail, the name, the telephone number when given, a stage marker and the locale. Nothing else |
 
 ### steps[] (Solean)
@@ -285,12 +299,17 @@ configured, and what may travel was not re-opened.
 
 Display only. Shopify owns the amount charged.
 
-### Treatment (domain, unchanged)
+### Treatment (domain)
 
-- `id`, `name`, `form` (`'injection' | 'tablet'`), `dose`, `claim`, `price`
-  (Money)
-- Read by the landing page bento and the learn comparison table. No longer
-  selected by the user: the recommendation is one configured SKU.
+- `id`, `name`, `form` (`'injection' | 'tablet'`), and until feature 27 also
+  `dose`, `claim` and `price` (Money)
+- What still reads it: the navigation dropdown, the treatment gallery's icon and
+  the comparison table's product names, all through `id`, `name` and `form`.
+- **`dose`, `claim` and `price` have no consumers.** The landing bento moved to
+  Sanity at feature 21 and 26c removed the comparison table's claim row, so they
+  are dead fields that leave with feature 27.
+- The catalogue is a join key rather than content: the Shopify variant on one
+  side, and editorial content naming a treatment by its id on the other.
 
 ### Editorial content (Sanity, from feature 20)
 
@@ -331,8 +350,11 @@ purpose.
 - **The chart's figures.** `projection` in Sanity carries the section's wording
   only; the reference weights and horizons are geometry.
 - **Payment and carrier logos.** Brand marks in the footer, on every page.
-- **The treatment catalogue.** Commerce data keyed to Shopify variants, in
-  `src/lib/domain`. Editorial content names a treatment by its id.
+- **The treatment ids and the Shopify variant.** `src/lib/domain` keeps `id`,
+  `name` and `form`, because they are the join: to commerce on one side and to
+  editorial content that names a treatment by its id on the other. From feature
+  27 the treatment pages' copy, photographs, doses and prices are Sanity's, and
+  the catalogue keeps none of them.
 
 The Learn article's related-guides block also stays a fixture for now.
 
