@@ -573,11 +573,14 @@ so an older pnpm resolving without the rule produces a lockfile the deploy rejec
 - Dev server: `pnpm dev` (http://localhost:5173)
 - Build: `pnpm build`
 - Preview production build: `pnpm preview`
-- Typecheck: `pnpm check` (runs `svelte-kit sync` then `svelte-check`)
+- Typecheck: `pnpm check` (compiles the messages, runs `svelte-kit sync`, then
+  `svelte-check`)
 - Typecheck (watch): `pnpm check:watch`
 - Unit tests: `pnpm test` (Vitest, `src/**/*.test.ts`)
 - Unit tests (watch): `pnpm test:watch`
 - Browser tests: `pnpm test:browser` (Playwright, Chromium)
+- Compile messages: `pnpm messages` (Paraglide, into the git-ignored
+  `src/lib/paraglide`)
 - Questionnaire fixture API: `pnpm fixture:questionnaire` (port 4319)
 - RxScale contract check: `pnpm check:model`
 
@@ -585,6 +588,31 @@ No lint or format command is configured, so `Verify` combines the three checks
 this project actually has, in the documented order: typecheck, unit tests, build.
 `.github/workflows/verify.yml` runs that same command on pull requests and on
 pushes to `main`, with `contents: read` and nothing else.
+
+**`src/lib/paraglide` is generated and git-ignored**, and two things write it: the
+Vite plugin, on dev, build and test, and `pnpm messages`, which is why `pnpm
+check` runs that first. Nothing else does, so a checkout that typechecks before
+it has ever built reports every message import as a missing module, which is what
+the first CI run was. Both surfaces read `project.inlang/paraglide.config.js` for
+the output directory and the locale strategy, and neither passes an option of its
+own: an option at either call site overrides that file, which is how the two
+would drift.
+
+That config file is **tracked against an ignore rule**, with `git add -f`.
+`project.inlang/.gitignore` is inlang's own, is not itself tracked, and ignores
+everything in the directory except `settings.json`, so an ordinary `git add`
+never sees `paraglide.config.js`. Being tracked already is what keeps it in the
+repository; drop it from the index and CI compiles to the default `src/paraglide`
+with the default strategy, which fails the typecheck the way an absent compile
+does.
+
+The workflow hands that run `PUBLIC_SANITY_PROJECT_ID` and
+`PUBLIC_SANITY_DATASET`, the only two variables the gate cannot run without.
+`src/lib/sanity/api.ts` imports them from `$env/static/public` deliberately, so an
+absent one fails the typecheck, three unit test files and the build rather than a
+request. They are public identifiers rather than secrets, and the values are the
+ones `.env.example` carries; locally they come from `.env`, so a clone without one
+fails exactly the way a runner without them does.
 
 **Browser tests are deliberately not in `Verify` or in CI.** They need a
 production build, two preview servers and the fixture server, and a Chromium

@@ -31,4 +31,14 @@ jobs:
       # The same command `AGENTS.md` documents, so a green run here means the same thing a
       # green run locally does. Browser tests are deliberately not in it: see the Commands
       # section of AGENTS.md.
+      #
+      # The two variables are the only ones the gate cannot run without, and both are public
+      # identifiers rather than secrets: `src/lib/sanity/api.ts` imports them from
+      # `$env/static/public` on purpose, so an absent one fails the build instead of a request.
+      # A runner has no `.env`, so they are named here, with the same values `.env.example`
+      # documents. Everything else this project reads is optional and stays unset, which is the
+      # deployment state a preview build has anyway.
       - run: pnpm verify
+        env:
+          PUBLIC_SANITY_PROJECT_ID: tzq5b2my
+          PUBLIC_SANITY_DATASET: production

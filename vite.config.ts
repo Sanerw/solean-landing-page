@@ -12,21 +12,11 @@ export default defineConfig({
 		// generated and git-ignored. `baseLocale` is German, set in project.inlang/settings.json,
 		// so the bare path serves the market's own language and English lives under `/en`.
 		//
-		// The order looks like the one this fix came to change, and its meaning is not the same.
-		// `url` is first because it has to be: Paraglide's default pattern ends in
-		// `toLocale(segment) || baseLocale`, so an unprefixed path answers German rather than
-		// "no locale", and whichever strategy leads therefore decides every request on its own.
-		// `cookie` behind it is never read, and is not decoration: `setLocale` writes it, which is
-		// how the language switcher's choice survives a navigation at all.
-		//
-		// Reading it is `entryRedirect` in src/hooks.server.ts, which is where the whole decision
-		// for an unprefixed address now lives, the remembered language and the browser's own.
-		// Locked by src/lib/i18n/locale-resolution.test.ts.
-		paraglideVitePlugin({
-			project: './project.inlang',
-			outdir: './src/lib/paraglide',
-			strategy: ['url', 'cookie', 'baseLocale']
-		}),
+		// The output directory and the strategy live in project.inlang/paraglide.config.js, which
+		// `paraglide-js compile` reads as well. `pnpm check` never runs Vite, so it compiles the
+		// messages itself and has to produce exactly what this plugin produces. An option passed
+		// here would override that file, so none is.
+		paraglideVitePlugin({ project: './project.inlang' }),
 		tailwindcss(),
 		enhancedImages(),
 		sveltekit({
