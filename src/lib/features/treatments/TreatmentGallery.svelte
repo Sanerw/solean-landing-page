@@ -36,11 +36,13 @@
 	the panel be half the page and still leave the consultation CTA above the fold on a 13 inch
 	screen, where a true half-width square is 630px tall on its own.
 
-	`--spacing-treatment-gallery` still caps the stacked case, so the square does not fill a
-	tablet's whole screen before a word of copy is reached.
+	Stacked, it takes the whole column. It used to be capped so the square could not fill a
+	tablet's screen before a word of copy was reached, which left the product's own panel
+	narrower than everything under it on exactly the widths where it is the page's first
+	impression.
 -->
 <div
-	class="relative mx-auto flex aspect-square w-full max-w-treatment-gallery flex-col overflow-hidden rounded-xl bg-surface-delivery sm:rounded-2xl sm:inset-ring-4 sm:inset-ring-card lg:aspect-auto lg:h-full lg:max-w-none"
+	class="relative flex aspect-square w-full flex-col overflow-hidden rounded-xl bg-surface-delivery sm:rounded-2xl sm:inset-ring-4 sm:inset-ring-card lg:aspect-auto lg:h-full"
 >
 	<!--
 		The insets are the artboard's own, as proportions rather than as its pixels: its asset is

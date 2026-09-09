@@ -178,15 +178,6 @@
 	--spacing-hero-bleed: calc(100svh - 4rem);
 	--spacing-hero-bleed-sm: calc(100svh - 3.25rem);
 
-	/*
-	 * The treatment gallery's ceiling. It is a square, so capping its width caps its height
-	 * too, and the whole product hero has to land inside one viewport: a 13 inch laptop is the
-	 * screen this page is read on, and a square sized off the column width alone pushes the
-	 * consultation CTA under the fold there. The `svh` half shrinks it on a short screen; the
-	 * `rem` half stops it growing without limit on a tall one.
-	 */
-	--spacing-treatment-gallery: min(28rem, 46svh);
-
 	--color-background: var(--background);
 	--color-foreground: var(--foreground);
 	--color-card: var(--card);
