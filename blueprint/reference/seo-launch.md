@@ -1,7 +1,8 @@
 # SEO launch configuration
 
-Feature 28a: the public origin, the launch switch, canonical and language links, and the two
-discovery endpoints. Metadata and Open Graph (28b), IndexNow (28c) and CI (28d) are separate.
+Features 28a and 28b: the public origin, the launch switch, canonical and language links, the
+two discovery endpoints, and the sharing and structured metadata built on top of them. IndexNow
+(28c) and CI (28d) are separate.
 
 Nothing here has been deployed, no environment variable has been set remotely, and no URL has
 been submitted to any search engine.
@@ -24,7 +25,7 @@ What the pre-launch deployment does:
 | Surface | Before launch |
 | --- | --- |
 | Every response | `X-Robots-Tag: noindex`, crawler-visible without JavaScript |
-| `<link rel="canonical">` and `hreflang` | Rendered, so they can be reviewed before launch |
+| `<link rel="canonical">`, `hreflang`, Open Graph, JSON-LD | Rendered, so they can be reviewed before launch |
 | `/robots.txt` | Served by a route; crawling open, no sitemap advertised |
 | `/sitemap.xml` | A well-formed but empty `urlset`, itself `noindex` |
 
@@ -61,6 +62,50 @@ tracking parameter, an alias host or a locale cookie cannot change what a page c
   claims a translation exists while naming none.
 - The questionnaire, the development surfaces, 404s and anything that failed emit neither.
 
+## Sharing and structured metadata
+
+Built from the same `data.seo` descriptor the canonical is, so `og:title` and the visible
+`<title>` are one string and cannot drift. The URL-bearing half is absent without an origin;
+the title and description are not, because a page must never lose its title to an SEO setting.
+
+`og:image` is a 1200x630 crop of the photograph the page already displays, taken around the
+hotspot an editor set. **It names `fm=jpg` rather than negotiating the format**, and that is
+load-bearing: several source assets are WebP, and a scraper handed WebP or AVIF stores nothing,
+leaving every tag correct and the card blank. A page with no photograph shares as a plain
+`summary` card rather than with a stand-in.
+
+The structured data is one `@graph` per page:
+
+| Node | Where | Built from |
+| --- | --- | --- |
+| `Organization` | every public page | the name, home URL, support e-mail and telephone the footer prints |
+| `Article` | an article | its headline, description, hero, `reviewedAt` as `datePublished`, `_updatedAt` as `dateModified`, and the reviewer the page credits |
+| `BreadcrumbList` | article and treatment pages | the trail the page itself draws |
+
+**A breadcrumb step the page does not link carries no `item`.** The treatment page renders
+"Treatments" as text because that index is undrawn and would answer 404, so the markup may not
+send a crawler where the page refuses to send a reader.
+
+**What is deliberately not claimed**, each refused for a reason rather than forgotten:
+
+| Not emitted | Why |
+| --- | --- |
+| `aggregateRating` | the visible figure is a *company* rating from Reviews.io shown beside a *product*, and it has a hardcoded fallback served when Reviews.io is down |
+| `sameAs` | the footer's social links are placeholders (`https://instagram.com`), not Solean profiles |
+| `Organization.logo`, a default `og:image` | both need a raster brand asset, and the logo is an inline SVG using `currentColor`. Creating one is new content |
+| `Product`, `Offer`, any price | prices are display copy; Shopify owns the amount charged and nothing detects a divergence |
+| `MedicalWebPage`, `Drug` | the marketing medical copy is unapproved mock content and the clinical judgement is RxScale's |
+| `FAQPage` | Google restricted FAQ rich results to government and health authorities in 2023 |
+
+Revisit `sameAs` when real profile URLs exist, and the logo and default card if a raster brand
+asset is ever produced. Neither needs a code change beyond the value.
+
+**The JSON-LD escaping is a security control.** `toJsonLd` escapes `<`, `>`, `&` and the two
+Unicode line terminators, so an editor who types `</script>` into a summary cannot close the
+element and have the rest of the document parsed as markup. It stays valid JSON. Proven both by
+`structured-data.test.ts` and, once, by serving that exact payload from the fixture and
+confirming no live element reached the document.
+
 ## Discovery endpoints
 
 `/robots.txt` and `/sitemap.xml` are routes, replacing the deleted `static/robots.txt`. Both
@@ -88,9 +133,11 @@ The final domain and launch date are not selected. Once chosen:
    does not update an existing deployment.
 3. Only after launch approval, set `SEO_INDEXING_ENABLED=true` and redeploy.
 
-Changing the origin changes every canonical, every alternate, every sitemap URL and the sitemap
-line in `robots.txt` together, which `e2e/seo-enabled.spec.ts` proves by serving the same build
-on a second origin.
+Changing the origin changes every canonical, every alternate, every sitemap URL, every `og:url`,
+every `@id` in the structured data and the sitemap line in `robots.txt` together, which
+`e2e/seo-enabled.spec.ts` proves by serving the same build on a second origin. The `og:image`
+URL is the one exception and stays on Sanity's CDN, because it is an asset rather than a page of
+this site.
 
 Do not disable Vercel's system environment variables: `VERCEL_ENV` is what keeps a preview
 deployment from indexing. Keep the old domain available when a real redirect migration is
@@ -103,6 +150,10 @@ pnpm check
 pnpm test
 pnpm test:browser e2e/seo.spec.ts e2e/seo-enabled.spec.ts
 ```
+
+The one claim no runner makes is how a shared link actually renders in a chat client. The tags
+can be proven; a third party's rendering cannot. Check that by hand against a real deployment
+once a domain is live, not against localhost, which no scraper can reach.
 
 The browser suite serves one build behind two ports: 4173 with indexing disabled, which is the
 approved deployment policy, and 4174 with it enabled, which is what launch day would look like.

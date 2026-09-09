@@ -598,7 +598,7 @@ claims are not approved production content.
   - [x] 28a. **Domain, indexing and discovery** - configurable canonical origin and
     launch switch, absolute canonical and existing-language alternates, environment-aware
     robots rules and a sitemap generated from published Sanity content.
-  - [ ] 28b. **Search and sharing metadata** - reuse the existing localized copy and
+  - [x] 28b. **Search and sharing metadata** - reuse the existing localized copy and
     images for Open Graph and appropriate Organization, Article and BreadcrumbList
     JSON-LD; include only facts supported by the visible pages.
   - [ ] 28c. **IndexNow publication notifications** - authenticated Sanity webhook,

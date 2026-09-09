@@ -12,6 +12,7 @@
 	import { analyticsConsent } from '$lib/analytics/consent.svelte';
 	import { trackPageView } from '$lib/analytics/events';
 	import { entersQuestionnaire } from '$lib/navigation/view-transition';
+	import { sharingTags } from '$lib/seo/metadata';
 	import type { LayoutProps } from './$types';
 
 	let { children, data }: LayoutProps = $props();
@@ -75,11 +76,15 @@
 	});
 
 	/**
-	 * Built on the server from the published inventory, so it is absent on the questionnaire,
-	 * the development surfaces and any page that failed. A guessed alternate is worse than
+	 * Built on the server, so it is absent on the questionnaire, the development surfaces and
+	 * any page that failed. Those keep their own `<title>`; a public page's is rendered here,
+	 * from the same value `og:title` reads, which is the only way the two cannot drift.
+	 *
+	 * `sharing` is the half that needs a configured origin. A guessed alternate is worse than
 	 * none: it tells a crawler a translation exists that it will then fail to fetch.
 	 */
 	const seo = $derived(page.status === 200 ? page.data.seo : null);
+	const sharing = $derived(seo?.sharing ?? null);
 </script>
 
 <svelte:head>
@@ -87,10 +92,26 @@
 	<link rel="preload" href={interTight} as="font" type="font/woff2" crossorigin="anonymous" />
 	<link rel="preload" href={dmSans} as="font" type="font/woff2" crossorigin="anonymous" />
 	{#if seo}
-		<link rel="canonical" href={seo.canonical} />
-		{#each seo.alternates as alternate (alternate.hreflang)}
+		<title>{seo.title}</title>
+		<meta name="description" content={seo.description} />
+	{/if}
+	{#if sharing}
+		<link rel="canonical" href={sharing.canonical} />
+		{#each sharing.alternates as alternate (alternate.hreflang)}
 			<link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />
 		{/each}
+	{/if}
+	{#each sharingTags(seo) as tag ((tag.property ?? tag.name) + tag.content)}
+		{#if tag.property}
+			<meta property={tag.property} content={tag.content} />
+		{:else}
+			<meta name={tag.name} content={tag.content} />
+		{/if}
+	{/each}
+	{#if seo?.jsonLd}
+		<!-- Built and escaped on the server, where the origin every `@id` needs is known. The
+		     escaping is what stops an editor's `</script>` closing this element; see `toJsonLd`. -->
+		{@html `<script type="application/ld+json">${seo.jsonLd}</script>`}
 	{/if}
 </svelte:head>
 

@@ -28,6 +28,7 @@ export const articlesQuery = defineQuery(`*[_type == "article" && language == $l
 
 export const articleQuery = defineQuery(`*[_type == "article" && language == $language && slug.current == $slug][0]{
 	_id,
+	_updatedAt,
 	title,
 	category,
 	tags,
@@ -102,6 +103,12 @@ export interface SanityArticleBlock {
 }
 
 export interface ArticleDetail extends ArticleListItem {
+	/**
+	 * When the document itself last changed, which is what `dateModified` means in the
+	 * structured data. `reviewedAt` is a different fact: the article's own review date, which
+	 * is what the Journal orders by. Both are carried, neither stands in for the other.
+	 */
+	_updatedAt?: string;
 	body?: SanityArticleBlock[];
 	seoTitle?: string;
 	seoDescription?: string;

@@ -1,6 +1,8 @@
 import { journalArticlesFrom } from '$lib/features/learn/journal';
+import { m } from '$lib/paraglide/messages';
 import { articlesQuery, type ArticleListItem } from '$lib/sanity/queries';
-import { seoLinks } from '$lib/server/seo/identity';
+import { ogImage } from '$lib/seo/og-image';
+import { pageSeo } from '$lib/server/seo/identity';
 import type { PageServerLoad } from './$types';
 
 /**
@@ -12,12 +14,17 @@ import type { PageServerLoad } from './$types';
  * articles, which is what an unpublished dataset should look like rather than a 500.
  */
 export const load: PageServerLoad = async ({ locals }) => {
-	const [articles, seo] = await Promise.all([
-		locals.sanity.loadQuery<ArticleListItem[] | null>(articlesQuery, {
-			language: locals.locale
-		}),
-		seoLinks(locals.locale, { kind: 'journal' })
-	]);
+	const articles = await locals.sanity.loadQuery<ArticleListItem[] | null>(articlesQuery, {
+		language: locals.locale
+	});
+
+	// The featured card's photograph, which is the newest article's: the query orders by the
+	// review date and `splitJournal` features the first, so this is the picture on the page.
+	const seo = await pageSeo(locals.locale, { kind: 'journal' }, {
+		title: m.title_journal({}, { locale: locals.locale }),
+		description: m.meta_journal({}, { locale: locals.locale }),
+		image: ogImage(articles.data?.[0]?.hero)
+	});
 
 	return { articles: journalArticlesFrom(articles.data ?? []), seo };
 };

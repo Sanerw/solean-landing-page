@@ -1,6 +1,8 @@
 import { cachedRating } from '$lib/features/marketing/rating-cache';
+import { m } from '$lib/paraglide/messages';
 import { homePageQuery, type HomePage } from '$lib/sanity/queries';
-import { seoLinks } from '$lib/server/seo/identity';
+import { ogImage } from '$lib/seo/og-image';
+import { pageSeo } from '$lib/server/seo/identity';
 import type { PageServerLoad } from './$types';
 
 /**
@@ -15,11 +17,19 @@ import type { PageServerLoad } from './$types';
  * instead.
  */
 export const load: PageServerLoad = async ({ fetch, locals }) => {
-	const [rating, home, seo] = await Promise.all([
+	const [rating, home] = await Promise.all([
 		cachedRating(fetch),
-		locals.sanity.loadQuery<HomePage | null>(homePageQuery, { language: locals.locale }),
-		seoLinks(locals.locale, { kind: 'home' })
+		locals.sanity.loadQuery<HomePage | null>(homePageQuery, { language: locals.locale })
 	]);
+
+	// After the query, because the sharing card is the hero photograph this page already draws.
+	// The inventory behind `pageSeo` is cached per server instance, so this is not a second
+	// round trip in the ordinary case.
+	const seo = await pageSeo(locals.locale, { kind: 'home' }, {
+		title: m.title_home({}, { locale: locals.locale }),
+		description: m.meta_home({}, { locale: locals.locale }),
+		image: ogImage(home.data?.hero?.image)
+	});
 
 	return { rating, home: home.data, seo };
 };

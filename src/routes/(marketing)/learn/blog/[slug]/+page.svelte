@@ -15,11 +15,6 @@
 
 	let { data }: PageProps = $props();
 
-	// The head reads the server's copy rather than the live one: `<svelte:head>` belongs at the
-	// top level of a component, and a title that follows every keystroke in the Studio would buy
-	// nothing a search engine ever sees.
-	const document = $derived(data.options.initial.data);
-
 	// A block this app cannot draw is always logged and only drawn where somebody can act on it:
 	// an editor in the Presentation tool, or a developer. A reader gets the rest of the article.
 	const showFailures = $derived(dev || data.previewEnabled);
@@ -28,11 +23,6 @@
 	// its bottom corners only when there is no band to hand them to.
 	const hasNeighbours = $derived(Boolean(data.neighbours.previous || data.neighbours.next));
 </script>
-
-<svelte:head>
-	<title>{document?.seoTitle ?? document?.title} | Solean</title>
-	<meta name="description" content={document?.seoDescription ?? document?.summary ?? ''} />
-</svelte:head>
 
 <!--
 	The landing page renders its header inside the hero card, which the bleed gutter insets

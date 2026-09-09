@@ -52,11 +52,6 @@
 	});
 </script>
 
-<svelte:head>
-	<title>{m.title_treatment({ name })}</title>
-	<meta name="description" content={m.meta_treatment({ name })} />
-</svelte:head>
-
 <!--
 	The header sits inside the page rather than in the marketing layout, the same way the learn
 	and legal pages carry it: the landing page renders the overlay variant inside its hero, so a

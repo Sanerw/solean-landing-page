@@ -102,3 +102,58 @@ test('the sitemap and the page agree about the canonical', async ({ request }) =
 		expect(canonical, `${location} should canonicalise to itself`).toBe(location);
 	}
 });
+
+/**
+ * The origin proof for feature 28b.
+ *
+ * This server differs from the pre-launch one in two settings only, so every absolute URL here
+ * naming 4174 while the other suite's name 4173 is the configuration reaching each generated
+ * address rather than a value hardcoded somewhere.
+ */
+test.describe('metadata follows the configured origin', () => {
+	test('every sharing URL names this deployment', async ({ request }) => {
+		const html = await (await request.get('/learn/blog/mounjaro-vs-wegovy')).text();
+		const content = (key: string) =>
+			html.match(new RegExp(`<meta property="${key}" content="([^"]*)"`))?.[1];
+
+		expect(content('og:url')).toBe(`${ORIGIN}/learn/blog/mounjaro-vs-wegovy`);
+		expect(html).not.toContain('localhost:4173');
+	});
+
+	test('every URL in the graph names this deployment, except the image CDN', async ({
+		request
+	}) => {
+		const html = await (await request.get('/treatments/mounjaro')).text();
+		const block = html.match(/<script type="application\/ld\+json">(.*?)<\/script>/s)![1];
+		const graph = JSON.parse(block);
+
+		// Every absolute URL the graph carries, wherever it is nested.
+		const urls: string[] = [];
+		JSON.stringify(graph, (key, value) => {
+			if (typeof value === 'string' && value.startsWith('http')) urls.push(value);
+
+			return value;
+		});
+
+		expect(urls.length).toBeGreaterThan(0);
+		for (const url of urls) {
+			// schema.org is the vocabulary, and the picture is a CDN asset rather than a page of
+			// this site, so neither moves with the origin. Everything else must.
+			if (url.startsWith('https://schema.org') || url.startsWith('https://cdn.sanity.io')) {
+				continue;
+			}
+			expect(url, `${url} should be on the configured origin`).toContain(ORIGIN);
+		}
+		expect(block).not.toContain('localhost:4173');
+	});
+
+	test('the article graph is still well formed once indexing is on', async ({ request }) => {
+		const html = await (await request.get('/en/learn/blog/mounjaro-vs-wegovy')).text();
+		const graph = JSON.parse(
+			html.match(/<script type="application\/ld\+json">(.*?)<\/script>/s)![1]
+		);
+		const types = (graph['@graph'] as { '@type': string }[]).map((node) => node['@type']);
+
+		expect(types).toEqual(['Organization', 'Article', 'BreadcrumbList']);
+	});
+});

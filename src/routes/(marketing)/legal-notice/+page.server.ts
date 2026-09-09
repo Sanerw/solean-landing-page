@@ -1,7 +1,7 @@
 import { error } from '@sveltejs/kit';
-import { LEGAL_SLUGS } from '$lib/features/legal/from-sanity';
+import { LEGAL_METADATA, LEGAL_SLUGS } from '$lib/features/legal/from-sanity';
 import { legalPageQuery, type SanityLegalPage } from '$lib/sanity/queries';
-import { seoLinks } from '$lib/server/seo/identity';
+import { pageSeo } from '$lib/server/seo/identity';
 import type { PageServerLoad } from './$types';
 
 export const load: PageServerLoad = async ({ locals }) => {
@@ -10,7 +10,11 @@ export const load: PageServerLoad = async ({ locals }) => {
 			slug: LEGAL_SLUGS.legalNotice,
 			language: locals.locale
 		}),
-		seoLinks(locals.locale, { kind: 'legal', slug: LEGAL_SLUGS.legalNotice })
+		pageSeo(
+			locals.locale,
+			{ kind: 'legal', slug: LEGAL_SLUGS.legalNotice },
+			LEGAL_METADATA[LEGAL_SLUGS.legalNotice][locals.locale]
+		)
 	]);
 
 	// A legal page with no text is not a page. Failing loudly is the same choice the home page

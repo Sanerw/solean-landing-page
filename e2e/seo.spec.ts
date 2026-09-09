@@ -181,3 +181,178 @@ test.describe('discovery endpoints before launch', () => {
 		});
 	});
 });
+
+/** Read off the raw body: a scraper runs no JavaScript, so the DOM is not what it sees. */
+function metaTags(html: string) {
+	return [...html.matchAll(/<meta\b[^>]*>/g)]
+		.map((tag) => tag[0])
+		.map((tag) => ({
+			key: tag.match(/(?:property|name)="([^"]*)"/)?.[1] ?? '',
+			content: (tag.match(/content="([^"]*)"/)?.[1] ?? '').replace(/&amp;/g, '&')
+		}));
+}
+
+async function sharing(request: { get: (path: string) => Promise<{ text(): Promise<string> }> }, path: string) {
+	const tags = metaTags(await (await request.get(path)).text());
+
+	return (key: string) => tags.filter((tag) => tag.key === key).map((tag) => tag.content);
+}
+
+test.describe('sharing metadata', () => {
+	test('a page describes itself with the title and URL it already claims', async ({ request }) => {
+		const html = await (await request.get('/learn/blog/mounjaro-vs-wegovy')).text();
+		const get = (key: string) =>
+			metaTags(html).filter((tag) => tag.key === key).map((tag) => tag.content);
+		const title = html.match(/<title>([^<]*)<\/title>/)?.[1];
+		const canonical = html.match(/<link[^>]*rel="canonical"[^>]*href="([^"]*)"/)?.[1];
+
+		expect(get('og:title')).toEqual([title]);
+		expect(get('og:url')).toEqual([canonical]);
+		expect(get('og:type')).toEqual(['article']);
+		expect(get('og:site_name')).toEqual(['Solean']);
+	});
+
+	test.describe('locales', () => {
+		test('German names itself and offers English', async ({ request }) => {
+			const get = await sharing(request, '/');
+
+			expect(get('og:locale')).toEqual(['de_DE']);
+			expect(get('og:locale:alternate')).toEqual(['en_GB']);
+		});
+
+		test('English names itself and offers German', async ({ request }) => {
+			const get = await sharing(request, '/en');
+
+			expect(get('og:locale')).toEqual(['en_GB']);
+			expect(get('og:locale:alternate')).toEqual(['de_DE']);
+		});
+	});
+
+	for (const path of ['/', '/learn', '/learn/blog/mounjaro-vs-wegovy', '/treatments/mounjaro']) {
+		test(`${path} shares the photograph it already displays`, async ({ request }) => {
+			const get = await sharing(request, path);
+			const [url] = get('og:image');
+
+			// Not fetched here on purpose: the URL is on Sanity's CDN, and a browser run that
+			// reached it would depend on a third party this suite is otherwise isolated from.
+			// `og-image.test.ts` pins the shape; the live 200 is checked by hand.
+			expect(url).toMatch(/^https:\/\/cdn\.sanity\.io\/images\//);
+			expect(url).toContain('w=1200');
+			expect(url).toContain('h=630');
+			expect(url).toContain('fit=crop');
+			// A scraper handed AVIF or WebP stores nothing, and the card renders blank with
+			// every tag still correct. This is the assertion that catches that silently.
+			expect(url).toContain('fm=jpg');
+			expect(url).not.toContain('auto=format');
+
+			expect(get('og:image:width')).toEqual(['1200']);
+			expect(get('og:image:height')).toEqual(['630']);
+			expect(get('og:image:alt')[0]).toBeTruthy();
+			expect(get('twitter:card')).toEqual(['summary_large_image']);
+		});
+	}
+
+	// The fixture publishes this treatment without a photograph, which is the case that must
+	// degrade to the plain card rather than to a broken one.
+	for (const path of ['/privacy', '/en/legal-notice', '/treatments/wegovy-pill']) {
+		test(`${path} shares as a plain card rather than inventing a picture`, async ({ request }) => {
+			const get = await sharing(request, path);
+
+			expect(get('og:image')).toEqual([]);
+			expect(get('og:image:width')).toEqual([]);
+			expect(get('twitter:card')).toEqual(['summary']);
+			// It still describes itself; only the picture is absent.
+			expect(get('og:title')[0]).toBeTruthy();
+		});
+	}
+});
+
+/**
+ * The graph, parsed rather than pattern-matched: a block that only looks right is worth
+ * nothing, and parsing is also what proves the escaping did not corrupt it.
+ */
+async function graphOf(
+	request: { get: (path: string) => Promise<{ text(): Promise<string> }> },
+	path: string
+) {
+	const html = await (await request.get(path)).text();
+	const blocks = [...html.matchAll(/<script type="application\/ld\+json">(.*?)<\/script>/gs)];
+
+	expect(blocks.length, 'exactly one JSON-LD block per page').toBeLessThanOrEqual(1);
+	if (!blocks.length) return null;
+
+	const parsed = JSON.parse(blocks[0][1]);
+	const nodes = parsed['@graph'] as Record<string, unknown>[];
+
+	return {
+		types: nodes.map((node) => node['@type']),
+		of: (type: string) => nodes.find((node) => node['@type'] === type)
+	};
+}
+
+test.describe('structured data', () => {
+	for (const path of ['/', '/en', '/learn', '/privacy', '/en/legal-notice', '/treatments/mounjaro']) {
+		test(`${path} identifies the organization behind the site`, async ({ request }) => {
+			const organization = (await graphOf(request, path))?.of('Organization');
+
+			// Every value here is printed in the footer of the page that carries it.
+			expect(organization).toMatchObject({
+				name: 'Solean',
+				contactPoint: {
+					email: 'support@solean.com',
+					telephone: '+49 40 87709420'
+				}
+			});
+			expect(organization).not.toHaveProperty('sameAs');
+			expect(organization).not.toHaveProperty('aggregateRating');
+		});
+	}
+
+	test('an article describes itself, its dates and its reviewer', async ({ request }) => {
+		const article = (await graphOf(request, '/learn/blog/mounjaro-vs-wegovy'))?.of('Article');
+
+		expect(article).toMatchObject({
+			inLanguage: 'de',
+			datePublished: '2026-08-14',
+			dateModified: '2026-09-08T20:30:47Z',
+			reviewedBy: { '@type': 'Person', name: 'Dr. Juraj Galan' }
+		});
+		// The headline is the article's own, without the suffix the page title wears.
+		expect(article?.headline).not.toContain('| Solean');
+	});
+
+	test('only an article is marked up as one', async ({ request }) => {
+		expect((await graphOf(request, '/learn'))?.types).toEqual(['Organization']);
+		expect((await graphOf(request, '/privacy'))?.types).toEqual(['Organization']);
+	});
+
+	test('the treatment trail does not link the index the page refuses to link', async ({
+		request
+	}) => {
+		const crumbs = (await graphOf(request, '/en/treatments/mounjaro'))?.of('BreadcrumbList')
+			?.itemListElement as Record<string, unknown>[];
+
+		expect(crumbs.map((crumb) => crumb.name)).toEqual(['Home', 'Treatments', 'Mounjaro Injection']);
+		expect(crumbs[1]).not.toHaveProperty('item');
+		expect(crumbs[0].item).toBe('http://localhost:4173/en');
+		expect(crumbs[2].item).toBe('http://localhost:4173/en/treatments/mounjaro');
+	});
+
+	test('every URL a trail does link is a page that answers', async ({ request }) => {
+		for (const path of ['/learn/blog/mounjaro-vs-wegovy', '/en/treatments/mounjaro']) {
+			const crumbs = (await graphOf(request, path))?.of('BreadcrumbList')
+				?.itemListElement as Record<string, unknown>[];
+
+			for (const crumb of crumbs.filter((crumb) => crumb.item)) {
+				const response = await request.get(crumb.item as string, { maxRedirects: 0 });
+				expect(response.status(), `${crumb.item} should be a page`).toBe(200);
+			}
+		}
+	});
+
+	for (const path of ['/questionnaire', '/dev/definition', '/this-page-does-not-exist']) {
+		test(`${path} carries no structured data`, async ({ request }) => {
+			expect(await graphOf(request, path)).toBeNull();
+		});
+	}
+});

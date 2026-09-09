@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { m } from '$lib/paraglide/messages';
 	import ArticlesBand from '$lib/features/learn/ArticlesBand.svelte';
 	import FeaturedArticleCard from '$lib/features/learn/FeaturedArticleCard.svelte';
 	import JournalHero from '$lib/features/learn/JournalHero.svelte';
@@ -12,11 +11,6 @@
 
 	const { featured, rest } = $derived(splitJournal(data.articles));
 </script>
-
-<svelte:head>
-	<title>{m.title_journal()}</title>
-	<meta name="description" content={m.meta_journal()} />
-</svelte:head>
 
 <!--
 	The header sits inside the page rather than in the marketing layout, the same way the legal

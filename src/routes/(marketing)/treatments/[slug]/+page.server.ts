@@ -1,14 +1,50 @@
 import { error } from '@sveltejs/kit';
+import { findTreatment, treatmentDisplayName } from '$lib/domain';
 import { cachedRating } from '$lib/features/marketing/rating-cache';
+import { m } from '$lib/paraglide/messages';
+import type { Locale } from '$lib/paraglide/runtime';
 import { toSharedSections, toTreatmentPages } from '$lib/features/treatments/from-sanity';
 import {
 	treatmentsQuery,
 	treatmentsPageQuery,
+	type SanityImage,
 	type SanityTreatment,
 	type SanityTreatmentsPage
 } from '$lib/sanity/queries';
-import { seoLinks } from '$lib/server/seo/identity';
+import { ogImage } from '$lib/seo/og-image';
+import { pageSeo } from '$lib/server/seo/identity';
 import type { PageServerLoad } from './$types';
+
+/**
+ * The page's own title, description and sharing card, which name the treatment.
+ *
+ * The name comes from the catalogue, which owns it, exactly as the rendered page does. The
+ * slug is known to exist by the time this runs: the load answers an unknown one with a 404
+ * before asking for metadata.
+ */
+function treatmentSeo(locale: Locale, slug: string, photo: SanityImage | undefined) {
+	const treatment = findTreatment(slug);
+	const name = treatment ? treatmentDisplayName(treatment) : slug;
+
+	return pageSeo(
+		locale,
+		{ kind: 'treatment', slug },
+		{
+			title: m.title_treatment({ name }, { locale }),
+			description: m.meta_treatment({ name }, { locale }),
+			image: ogImage(photo),
+			// The trail the page draws above its title. "Treatments" carries no path on purpose:
+			// the page renders it as text rather than a link, because that index is undrawn and
+			// would answer 404, and the markup may not send a crawler where the page will not
+			// send a reader.
+			breadcrumb: [
+				{ name: m.nav_home({}, { locale }), path: '/' },
+				{ name: m.nav_treatments({}, { locale }) },
+				{ name, path: `/treatments/${slug}` }
+			]
+		}
+	);
+}
 
 /**
  * The rating is read here, not in the browser, for the reasons the landing page's load
@@ -23,15 +59,14 @@ import type { PageServerLoad } from './$types';
  * resolved here rather than during render, and `locals.locale` decides the language.
  */
 export const load: PageServerLoad = async ({ params, fetch, locals }) => {
-	const [rating, treatments, shared, seo] = await Promise.all([
+	const [rating, treatments, shared] = await Promise.all([
 		cachedRating(fetch),
 		locals.sanity.loadQuery<SanityTreatment[] | null>(treatmentsQuery, {
 			language: locals.locale
 		}),
 		locals.sanity.loadQuery<SanityTreatmentsPage | null>(treatmentsPageQuery, {
 			language: locals.locale
-		}),
-		seoLinks(locals.locale, { kind: 'treatment', slug: params.slug })
+		})
 	]);
 
 	const pages = toTreatmentPages(treatments.data);
@@ -42,6 +77,15 @@ export const load: PageServerLoad = async ({ params, fetch, locals }) => {
 	if (!page) {
 		error(404, 'No such treatment');
 	}
+
+	// After the 404, because a slug nobody published is not a page to describe. The photograph
+	// is read off the document rather than the mapped page: the mapped one carries a width
+	// ladder built for the gallery frame, and a scraper needs one fixed crop instead.
+	const seo = await treatmentSeo(
+		locals.locale,
+		params.slug,
+		treatments.data?.find((document) => document.treatmentId === params.slug)?.photo
+	);
 
 	return {
 		slug: params.slug,

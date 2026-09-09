@@ -6,7 +6,10 @@ import {
 	type ArticleDetail,
 	type ArticleListItem
 } from '$lib/sanity/queries';
-import { seoLinks } from '$lib/server/seo/identity';
+import { m } from '$lib/paraglide/messages';
+import { plain } from '$lib/sanity/plain';
+import { ogImage } from '$lib/seo/og-image';
+import { pageSeo } from '$lib/server/seo/identity';
 import type { PageServerLoad } from './$types';
 
 /**
@@ -21,15 +24,44 @@ import type { PageServerLoad } from './$types';
  */
 export const load: PageServerLoad = async ({ locals, params: { slug } }) => {
 	const params = { slug, language: locals.locale };
-	const [initial, library, seo] = await Promise.all([
+	const [initial, library] = await Promise.all([
 		locals.sanity.loadQuery<ArticleDetail | null>(query, params),
-		locals.sanity.loadQuery<ArticleListItem[] | null>(articlesQuery, { language: locals.locale }),
-		seoLinks(locals.locale, { kind: 'article', slug })
+		locals.sanity.loadQuery<ArticleListItem[] | null>(articlesQuery, { language: locals.locale })
 	]);
 
 	if (!initial.data) {
 		error(404, 'Article not found');
 	}
+
+	// After the 404, because the title is the document's own: an article nobody published has
+	// no title to give. `plain` because these two strings end up in `content` attributes, and a
+	// preview marker inside one travels to whatever scrapes it.
+	const document = initial.data;
+	const seo = await pageSeo(
+		locals.locale,
+		{ kind: 'article', slug },
+		{
+			title: `${plain(document.seoTitle ?? document.title)} | Solean`,
+			description: plain(document.seoDescription ?? document.summary ?? ''),
+			type: 'article',
+			image: ogImage(document.hero),
+			article: {
+				// The article's own headline, without the site suffix the `<title>` wears.
+				headline: plain(document.title),
+				description: plain(document.seoDescription ?? document.summary ?? ''),
+				...(document.reviewedAt ? { published: document.reviewedAt } : {}),
+				...(document._updatedAt ? { modified: document._updatedAt } : {}),
+				...(document.reviewer?.name ? { reviewer: plain(document.reviewer.name) } : {})
+			},
+			// The trail the page draws: it carries a "back to the Journal" link, and the header's
+			// logo goes home. Every step here is a link a reader can actually follow.
+			breadcrumb: [
+				{ name: m.nav_home({}, { locale: locals.locale }), path: '/' },
+				{ name: m.nav_learn({}, { locale: locals.locale }), path: '/learn' },
+				{ name: plain(document.title), path: `/learn/blog/${slug}` }
+			]
+		}
+	);
 
 	const { previous, next } = neighboursOf(journalArticlesFrom(library.data ?? []), slug);
 	const link = (article?: { title: string; slug: string }) =>

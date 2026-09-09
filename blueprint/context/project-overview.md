@@ -45,9 +45,9 @@ happens inside RxScale, not on a Solean screen.
 
 ## Features
 
-Twenty-eight in build-plan order. Features 1 to 27 are complete, and so is 28a;
-28b is next. Feature 28 delivers technical SEO/GEO without changing visible
-content or UI/UX.
+Twenty-eight in build-plan order. Features 1 to 27 are complete, and so are 28a
+and 28b; 28c is next. Feature 28 delivers technical SEO/GEO without changing
+visible content or UI/UX.
 
 1. **Design system and core UI components** (done) - semantic tokens, two fonts,
    radii, brand foundations, thirteen adapted shadcn primitives on a showcase at
@@ -226,7 +226,7 @@ content or UI/UX.
       `features/treatments/content.ts` and its 62 message keys go, and the fixture
       is regenerated. The page does not change visually.
 
-28. **SEO and GEO foundations without UI changes** (28a done) - domain configuration,
+28. **SEO and GEO foundations without UI changes** (28a, 28b done) - domain configuration,
     explicit launch controls, published-page discovery and SEO/GEO metadata.
     - **28a** (done) the public origin, noindex policy, canonical/hreflang links,
       published-content sitemap and robots endpoint. Initial deployment:
@@ -236,8 +236,18 @@ content or UI/UX.
       than from matching slugs, so the five article pairs that carry no metadata
       are each served without one. `blueprint/reference/seo-launch.md` is the
       runbook for the eventual domain switch.
-    - **28b** Open Graph and appropriate Organization, Article and BreadcrumbList
-      JSON-LD based only on information already visible on the pages.
+    - **28b** (done) Open Graph, Twitter cards and one `@graph` per page carrying
+      Organization, Article and BreadcrumbList, built only from what the page
+      already shows. `og:title` and the visible `<title>` are one string, so they
+      cannot drift. The sharing card is a 1200x630 crop of the page's own
+      photograph, named `fm=jpg` rather than content-negotiated, because a
+      scraper handed WebP stores nothing and the card renders blank with every
+      tag still correct. What is deliberately not claimed, each for a recorded
+      reason: `aggregateRating` (the visible figure is a company rating shown
+      beside a product, with a hardcoded fallback), `sameAs` (the social links
+      are placeholders), `Organization.logo` and a default card (no raster brand
+      asset exists), prices, and any medical vocabulary. The JSON-LD escaping is
+      a security control: an editor's `</script>` cannot close the element.
     - **28c** authenticated Sanity publication notifications to IndexNow, including
       removal, bounded requests and key verification; off until configured and launched.
     - **28d** repeatable SEO checks, a Verify command and GitHub checks through `/ci`,

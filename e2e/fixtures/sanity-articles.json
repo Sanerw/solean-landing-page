@@ -3,6 +3,7 @@
 	"articles": {
 		"de": {
 			"_id": "GNi82xCo1eRS3egKAh1fX9",
+			"_updatedAt": "2026-09-08T20:30:47Z",
 			"body": [
 				{
 					"_key": "quick-answer",
@@ -280,6 +281,7 @@
 		},
 		"en": {
 			"_id": "GNi82xCo1eRS3egKAh1fkc",
+			"_updatedAt": "2026-09-08T20:30:47Z",
 			"body": [
 				{
 					"_key": "quick-answer",

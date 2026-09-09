@@ -15,6 +15,50 @@ export const LEGAL_SLUGS = {
 	returns: 'returns'
 } as const;
 
+/**
+ * The four documents' own titles and descriptions, in both languages.
+ *
+ * They are literals rather than message keys because that is what they have always been: each
+ * page carried its own pair inline. They move here so the server load can hand one value to the
+ * visible `<title>` and to `og:title` at once, which is the only way the two cannot drift.
+ *
+ * The German wording is the document's own name, so an English reader gets an English label on
+ * a German text. That is deliberate and unchanged: the policies are the German legal texts.
+ */
+export const LEGAL_METADATA = {
+	'legal-notice': {
+		de: { title: 'Impressum | Solean', description: 'Impressum von Solean.' },
+		en: { title: 'Legal notice | Solean', description: 'Legal notice of Solean.' }
+	},
+	privacy: {
+		de: { title: 'Datenschutzerklärung | Solean', description: 'Datenschutzerklärung von Solean.' },
+		en: { title: 'Privacy policy | Solean', description: 'Privacy policy of Solean.' }
+	},
+	terms: {
+		de: {
+			title: 'AGB | Solean',
+			description: 'Allgemeine Geschäftsbedingungen von Solean.'
+		},
+		en: {
+			title: 'Terms and conditions | Solean',
+			description: 'General terms and conditions of Solean.'
+		}
+	},
+	returns: {
+		de: {
+			title: 'Widerrufsrecht | Solean',
+			description: 'Widerrufsbelehrung und Muster-Widerrufsformular von Solean.'
+		},
+		en: {
+			title: 'Right of withdrawal | Solean',
+			description: 'Withdrawal instructions and model withdrawal form of Solean.'
+		}
+	}
+} as const satisfies Record<
+	(typeof LEGAL_SLUGS)[keyof typeof LEGAL_SLUGS],
+	Record<'de' | 'en', { title: string; description: string }>
+>;
+
 function line(source: { spans?: SanityLegalSpan[] } | undefined): LegalLine {
 	return (source?.spans ?? []).map((span) => ({
 		text: span.text,

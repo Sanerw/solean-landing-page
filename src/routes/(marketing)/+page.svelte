@@ -1,5 +1,4 @@
 <script lang="ts">
-	import { m } from '$lib/paraglide/messages';
 	import BentoGrid from '$lib/features/marketing/BentoGrid.svelte';
 	import ClinicalTeamSection from '$lib/features/marketing/ClinicalTeamSection.svelte';
 	import FaqSection from '$lib/features/marketing/FaqSection.svelte';
@@ -27,14 +26,6 @@
 	// unreachable, so this is a type narrowing rather than a fallback.
 	const home = $derived(data.home!);
 </script>
-
-<svelte:head>
-	<title>{m.title_home()}</title>
-	<meta
-		name="description"
-		content={m.meta_home()}
-	/>
-</svelte:head>
 
 <!--
 	Every section is guarded on its own content. A page composed of optional documents must
