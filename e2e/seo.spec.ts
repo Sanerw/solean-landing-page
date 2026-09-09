@@ -356,3 +356,66 @@ test.describe('structured data', () => {
 		});
 	}
 });
+
+/**
+ * The key route is the first dynamic segment at the top level of this site, so the two static
+ * discovery routes sharing that level are asserted rather than assumed: SvelteKit sorts static
+ * ahead of dynamic, but that is its behaviour and not this app's.
+ *
+ * The harness runs with `INDEXNOW_KEY` blank, which is also the pre-launch production state, so
+ * every key answers 404 here.
+ */
+test.describe('IndexNow key verification', () => {
+	test('no key is served when none is configured', async ({ request }) => {
+		expect((await request.get('/a1b2c3d4e5f60718293a4b5c6d7e8f90.txt')).status()).toBe(404);
+		expect((await request.get('/anything-else.txt')).status()).toBe(404);
+	});
+
+	test('the dynamic key route does not shadow the discovery endpoints', async ({ request }) => {
+		const robots = await request.get('/robots.txt');
+		const sitemap = await request.get('/sitemap.xml');
+
+		expect(robots.status()).toBe(200);
+		expect(await robots.text()).toContain('User-agent: *');
+		expect(sitemap.status()).toBe(200);
+		expect(await sitemap.text()).toContain('<urlset');
+	});
+});
+
+/**
+ * The endpoint's status contract, with IndexNow unconfigured, which is both the harness state
+ * and the pre-launch production state.
+ *
+ * What this cannot prove is that nothing left the server: the outbound call is made by the
+ * `webServer` process, so `page.on('request')` never sees it and an assertion claiming
+ * "nothing reached IndexNow" would pass whether the guard works or not. That is the trap
+ * `AGENTS.md` records for Customer.io. `client.test.ts` is what actually holds that line.
+ */
+test.describe('the IndexNow webhook', () => {
+	test('refuses an unsigned call', async ({ request }) => {
+		const response = await request.post('/api/indexnow', {
+			data: { type: 'article', slug: 'mounjaro-vs-wegovy', language: 'de' }
+		});
+
+		expect(response.status()).toBe(401);
+	});
+
+	test('refuses a call carrying a made-up signature', async ({ request }) => {
+		const response = await request.post('/api/indexnow', {
+			headers: { 'sanity-webhook-signature': `t=${Date.now()},v1=bm90LWEtc2lnbmF0dXJl` },
+			data: { type: 'article', slug: 'x', language: 'de' }
+		});
+
+		expect(response.status()).toBe(401);
+	});
+
+	test('refuses a GET, so the route cannot be triggered from a browser address bar', async ({
+		request
+	}) => {
+		expect((await request.get('/api/indexnow')).status()).toBe(405);
+	});
+
+	test('is not advertised for crawling', async ({ request }) => {
+		expect(await (await request.get('/robots.txt')).text()).toContain('Disallow: /api/');
+	});
+});

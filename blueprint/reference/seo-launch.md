@@ -1,8 +1,8 @@
 # SEO launch configuration
 
-Features 28a and 28b: the public origin, the launch switch, canonical and language links, the
-two discovery endpoints, and the sharing and structured metadata built on top of them. IndexNow
-(28c) and CI (28d) are separate.
+Features 28a, 28b and 28c: the public origin, the launch switch, canonical and language links,
+the two discovery endpoints, the sharing and structured metadata built on top of them, and the
+IndexNow publication notifications. CI and the performance baseline (28d) are separate.
 
 Nothing here has been deployed, no environment variable has been set remotely, and no URL has
 been submitted to any search engine.
@@ -124,6 +124,79 @@ thing: that deployment really does publish nothing, and it is `noindex` througho
 `/preview/`. A blanket `Disallow: /` would hide the `noindex` header it was meant to enforce and
 leave an already-indexed URL with no way out of the index. Robots is not access control.
 
+## IndexNow publication notifications
+
+**Google does not participate in IndexNow and never has.** This reaches Bing, Yandex, Seznam,
+Naver and Yep. Google discovery stays with the sitemap, so do not expect Google results to move
+because this is switched on.
+
+Two settings, and they are different kinds of thing:
+
+| Variable | Kind | Notes |
+| --- | --- | --- |
+| `INDEXNOW_KEY` | a **public identifier** | Served verbatim at `/{key}.txt`, which is the entire ownership proof. Anyone who fetches that file has it. 8 to 128 characters of `A-Za-z0-9-`; anything else reads as absent, because a key IndexNow would refuse on every submission is worse than no key |
+| `SANITY_WEBHOOK_SECRET` | a **real secret** | Sanity signs each webhook body with it. Never served anywhere, never logged. An absent secret refuses every call rather than letting them through |
+
+Nothing is submitted unless **all** of these hold: a valid key, a valid `PUBLIC_SITE_URL`,
+`SEO_INDEXING_ENABLED=true`, a non-preview deployment, and a webhook that arrived on the
+configured origin. That last one is what stops a webhook pointed at a preview deployment
+publishing on the production domain's behalf.
+
+### The webhook, and the three strings a person types into the Sanity dashboard
+
+The projection lives in Sanity, not here, the way the Customer.io campaign does. This repository
+guarantees only that it understands one shape. Create a GROQ-powered webhook with:
+
+| Field | Value |
+| --- | --- |
+| URL | `https://<the public domain>/api/indexnow` |
+| Trigger | Create, Update, Delete |
+| Filter | `_type in ["article", "treatment", "legalPage", "homePage"]` |
+| Projection | `{_type, _id, "slug": slug.current, language}` |
+| Secret | the same value as `SANITY_WEBHOOK_SECRET` |
+
+`homePage` and `treatment` documents have no `slug` field, and that is fine: the projection
+answers `null` and the derivation does not need one for those types.
+
+**The payload supplies an identity, never a URL.** The endpoint turns type, slug and language
+into a path through the same helpers the canonical and the sitemap use, so a mistyped projection
+or a hostile caller can at worst name a real URL on our own origin for a page that may not
+exist. A `url` or `urlList` field in the payload is ignored outright.
+
+An article publish notifies its own URL **and** the Journal, because publishing one changes the
+index that lists it. A `clinician`, a `testimonial` or an unknown type notifies nothing, which
+is the common case and not an error. A draft is refused even if the dashboard filter lets one
+through.
+
+### What it does when things go wrong
+
+| Situation | Answer |
+| --- | --- |
+| Unsigned, wrongly signed, tampered, or replayed after five minutes | `401` |
+| Not JSON, or JSON that is not an object | `400` |
+| Understood, but IndexNow refused or was unreachable | `204`, logged server-side |
+
+The first two are `401` and `400` on purpose, so a webhook wired up wrongly shows as failing in
+Sanity's own delivery log instead of reporting success forever. The third is `204` because
+Sanity retries a failed delivery, and retrying against a rate-limited service makes it worse;
+the sitemap advertises every page regardless.
+
+Submissions are bounded: at most 20 URLs per call, and one URL stays quiet for five minutes
+after it has been submitted, so an editor fixing a typo in three quick publishes produces one
+notification rather than three.
+
+### Switching it on, after the domain launches
+
+In this order, and not before `SEO_INDEXING_ENABLED=true`:
+
+1. Generate a key (any UUID with the dashes removed will do) and set `INDEXNOW_KEY`.
+2. Set `SANITY_WEBHOOK_SECRET` to a fresh random value.
+3. Redeploy, then confirm `https://<domain>/<key>.txt` answers 200 with exactly the key.
+4. Create the webhook in Sanity with the table above, using the same secret.
+5. Publish one document and check Sanity's delivery log shows `204`.
+
+A key change means the old key file stops resolving, so change the key and redeploy together.
+
 ## Future domain
 
 The final domain and launch date are not selected. Once chosen:
@@ -140,7 +213,7 @@ URL is the one exception and stays on Sanity's CDN, because it is an asset rathe
 this site.
 
 Do not disable Vercel's system environment variables: `VERCEL_ENV` is what keeps a preview
-deployment from indexing. Keep the old domain available when a real redirect migration is
+deployment from indexing and from notifying IndexNow. Keep the old domain available when a real redirect migration is
 approved; do not guess mappings from solean.com or change its configuration.
 
 ## Verification

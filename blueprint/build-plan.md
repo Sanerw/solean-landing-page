@@ -601,7 +601,7 @@ claims are not approved production content.
   - [x] 28b. **Search and sharing metadata** - reuse the existing localized copy and
     images for Open Graph and appropriate Organization, Article and BreadcrumbList
     JSON-LD; include only facts supported by the visible pages.
-  - [ ] 28c. **IndexNow publication notifications** - authenticated Sanity webhook,
+  - [x] 28c. **IndexNow publication notifications** - authenticated Sanity webhook,
     validated public URLs, key verification and bounded server-side notifications for
     published changes and removals; disabled until configured and indexing is enabled.
   - [ ] 28d. **Verification and launch handoff** - repeatable SEO checks in the existing

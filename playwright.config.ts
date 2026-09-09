@@ -105,7 +105,13 @@ export default defineConfig({
 				// set would make that an accident rather than the intent. An unconfigured deployment
 				// is what the reminder spec asserts against.
 				CUSTOMERIO_SITE_ID: '',
-				CUSTOMERIO_TRACK_API_KEY: ''
+				CUSTOMERIO_TRACK_API_KEY: '',
+				// Blank for the same reason as the pair above, and just as load-bearing: Vite
+				// reads `.env` for anything this block does not override, so a developer with a
+				// real key configured locally would otherwise have every run submit localhost
+				// URLs to a live service on somebody else's infrastructure.
+				INDEXNOW_KEY: '',
+				SANITY_WEBHOOK_SECRET: ''
 			}
 		},
 		{
@@ -126,7 +132,11 @@ export default defineConfig({
 				PUBLIC_SANITY_API_HOST: FIXTURE_SANITY_API_HOST,
 				PUBLIC_MIXPANEL_TOKEN: FIXTURE_MIXPANEL_TOKEN,
 				CUSTOMERIO_SITE_ID: '',
-				CUSTOMERIO_TRACK_API_KEY: ''
+				CUSTOMERIO_TRACK_API_KEY: '',
+				// The launched server has indexing on, so this is the one place a real key would
+				// actually reach IndexNow. Blank, and deliberately so.
+				INDEXNOW_KEY: '',
+				SANITY_WEBHOOK_SECRET: ''
 			}
 		}
 	]

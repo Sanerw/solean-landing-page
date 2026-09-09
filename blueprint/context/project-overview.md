@@ -45,8 +45,8 @@ happens inside RxScale, not on a Solean screen.
 
 ## Features
 
-Twenty-eight in build-plan order. Features 1 to 27 are complete, and so are 28a
-and 28b; 28c is next. Feature 28 delivers technical SEO/GEO without changing
+Twenty-eight in build-plan order. Features 1 to 27 are complete, and so are 28a,
+28b and 28c; 28d is next. Feature 28 delivers technical SEO/GEO without changing
 visible content or UI/UX.
 
 1. **Design system and core UI components** (done) - semantic tokens, two fonts,
@@ -226,7 +226,7 @@ visible content or UI/UX.
       `features/treatments/content.ts` and its 62 message keys go, and the fixture
       is regenerated. The page does not change visually.
 
-28. **SEO and GEO foundations without UI changes** (28a, 28b done) - domain configuration,
+28. **SEO and GEO foundations without UI changes** (28a-28c done) - domain configuration,
     explicit launch controls, published-page discovery and SEO/GEO metadata.
     - **28a** (done) the public origin, noindex policy, canonical/hreflang links,
       published-content sitemap and robots endpoint. Initial deployment:
@@ -248,8 +248,16 @@ visible content or UI/UX.
       are placeholders), `Organization.logo` and a default card (no raster brand
       asset exists), prices, and any medical vocabulary. The JSON-LD escaping is
       a security control: an editor's `</script>` cannot close the element.
-    - **28c** authenticated Sanity publication notifications to IndexNow, including
-      removal, bounded requests and key verification; off until configured and launched.
+    - **28c** (done) authenticated Sanity publication notifications to IndexNow.
+      A webhook signed with `SANITY_WEBHOOK_SECRET` and verified with Web Crypto;
+      `INDEXNOW_KEY` served at `/{key}.txt` as the ownership proof, which makes it
+      a public identifier rather than a credential. **The payload supplies a
+      document identity, never a URL**, so a mistyped projection cannot make this
+      app name another host. Bounded at 20 URLs with a five-minute per-URL
+      collapse. Off unless a key, a valid origin, `SEO_INDEXING_ENABLED` and a
+      non-preview deployment all hold. **Google does not participate in IndexNow**;
+      this reaches Bing, Yandex, Seznam, Naver and Yep, and Google discovery stays
+      with the sitemap.
     - **28d** repeatable SEO checks, a Verify command and GitHub checks through `/ci`,
       measured performance baseline and the domain-launch/search-console runbook.
 

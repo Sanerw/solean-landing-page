@@ -157,3 +157,29 @@ test.describe('metadata follows the configured origin', () => {
 		expect(types).toEqual(['Organization', 'Article', 'BreadcrumbList']);
 	});
 });
+
+/**
+ * The launched deployment is the one where a real key would actually reach IndexNow, so the
+ * refusals matter more here than on the pre-launch server. `INDEXNOW_KEY` is blank on this
+ * server too, deliberately.
+ */
+test.describe('IndexNow once indexing is approved', () => {
+	test('still serves no key file, because none is configured', async ({ request }) => {
+		expect((await request.get('/a1b2c3d4e5f60718293a4b5c6d7e8f90.txt')).status()).toBe(404);
+	});
+
+	test('still refuses an unsigned webhook', async ({ request }) => {
+		const response = await request.post('/api/indexnow', {
+			data: { type: 'article', slug: 'mounjaro-vs-wegovy', language: 'de' }
+		});
+
+		expect(response.status()).toBe(401);
+	});
+
+	test('the discovery endpoints are unaffected by the key route', async ({ request }) => {
+		const robots = await (await request.get('/robots.txt')).text();
+
+		expect(robots).toContain(`Sitemap: ${ORIGIN}/sitemap.xml`);
+		expect((await request.get('/sitemap.xml')).status()).toBe(200);
+	});
+});

@@ -500,6 +500,46 @@ on 2026-09-03.
 **Customer.io creates the person as `Subscribed`.** Relevant to the campaign rather than to this
 code, and consistent with the reach decision above.
 
+## Search engine notifications: IndexNow
+
+From feature 28c a Sanity publish can ask the participating search engines to recrawl one page.
+**Google is not one of them** and never has been: this reaches Bing, Yandex, Seznam, Naver and
+Yep, and Google discovery stays with the sitemap. Do not add a second notification vendor or a
+Google-specific ping; the Indexing API is documented for job postings and livestreams only.
+
+| Detail | Value |
+| --- | --- |
+| Endpoint | `POST https://api.indexnow.org/indexnow`, server only |
+| Our endpoint | `POST /api/indexnow`, called by a Sanity GROQ-powered webhook |
+| Auth in | Sanity's HMAC signature over the raw body, verified with Web Crypto |
+| Auth out | `INDEXNOW_KEY`, echoed at `/{key}.txt` as the ownership proof |
+| Gates | a valid key, a valid `PUBLIC_SITE_URL`, `SEO_INDEXING_ENABLED=true`, a non-preview deployment, and a webhook on the configured origin |
+
+Four things that are easy to undo by accident:
+
+- **`INDEXNOW_KEY` is a public identifier and `SANITY_WEBHOOK_SECRET` is a secret.** The first
+  is served verbatim to anyone who asks, because that is the ownership proof. The second is
+  never served and never logged. Hardening the wrong one protects nothing.
+- **The webhook payload supplies an identity, never a URL.** `urlsToNotify` derives the path
+  from type, slug and language through the same helpers the canonical and the sitemap use, so a
+  mistyped projection cannot make this app name somebody else's host. A `url` field in the body
+  is ignored. `notify-urls.test.ts` fails if that changes.
+- **The raw body is read once, before parsing.** The signature covers those exact bytes, so
+  `request.json()` first and re-serialising would never verify.
+- **The status policy is deliberately not `/api/reminder`'s.** That one answers 204 to nearly
+  everything because a failed marketing mail may never disturb a medical questionnaire. This one
+  is called by a machine with a delivery log, so unsigned is 401 and malformed is 400; a webhook
+  wired up wrongly has to be visible rather than silently successful. What IndexNow itself
+  answered is not in the status, because Sanity retries a failed delivery and retrying against a
+  rate-limited service makes it worse.
+
+**The browser suite cannot prove the outbound guard**, for the same reason it cannot prove
+Customer.io's: the call is made by the `webServer` process, so `page.on('request')` never sees
+it. `src/lib/server/indexnow/client.test.ts` is what holds that line, asserting that an
+unconfigured or pre-launch deployment makes no `fetch` call at all. `INDEXNOW_KEY` and
+`SANITY_WEBHOOK_SECRET` are blanked on **both** Playwright servers for the reason the Customer.io
+pair are: Vite still reads `.env` for anything the config does not override.
+
 ## Automatic verification
 
 Automatic GitHub checks are a separate explicit setup. `/onboard` and `/adopt`
