@@ -178,7 +178,7 @@ export const homePageQuery = defineQuery(`*[_id == "homePage-" + $language][0]{
 		testimonials[]->{ _id, name, memberLabel, quote, kgLost, rating, treatmentId, verified, photo }
 	},
 	clinicalTeam{
-		title, lead, carouselLabel, learnMore,
+		title, lead, carouselLabel,
 		clinicians[]->{ _id, name, role, description, portrait }
 	},
 	faq{ title, lead, items[]{ _key, question, answer } }
@@ -280,7 +280,6 @@ export interface HomePage {
 		title: string;
 		lead: string;
 		carouselLabel: string;
-		learnMore: string;
 		clinicians: { _id: string; name: string; role: string; description: string; portrait?: SanityImage }[];
 	};
 	faq?: { title: string; lead: string; items: { _key: string; question: string; answer: string }[] };

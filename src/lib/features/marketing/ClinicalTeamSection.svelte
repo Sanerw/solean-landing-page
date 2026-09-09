@@ -37,7 +37,7 @@
 		<Carousel.Content class="mt-10 max-sm:order-2">
 			{#each CLINICIANS as clinician (clinician.name)}
 				<Carousel.Item class="basis-full md:basis-1/2 lg:basis-1/3">
-					<ClinicianCard {clinician} learnMore={CLINICAL_TEAM.learnMore} />
+					<ClinicianCard {clinician} />
 				</Carousel.Item>
 			{/each}
 		</Carousel.Content>

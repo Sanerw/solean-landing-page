@@ -98,3 +98,47 @@ test('every page offers both locales to a search engine, and none of the links r
 	await page.goto('/');
 	await expect(page.locator('link[hreflang="en"]')).toHaveAttribute('href', '/en');
 });
+
+/**
+ * The rule this fix added, in a browser rather than in a unit test: an address that names no
+ * language is answered from the visitor rather than from `baseLocale` alone. The unit tests in
+ * `src/lib/i18n/locale-resolution.test.ts` cover the table; these two cover the wiring, which
+ * is a server hook, a 307 and a cookie the client writes.
+ */
+test.describe('a browser that asks for English', () => {
+	test.use({ locale: 'en-GB' });
+
+	test('is met in English at an address that names none', async ({ page }) => {
+		const response = await page.goto('/');
+
+		expect(response?.status()).toBe(200);
+		await expect(page).toHaveURL('/en');
+		await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+	});
+
+	// German is the bare path, so it is the one language a link cannot pin: the old prefix moves
+	// to the unprefixed address, which is then answered from the visitor like any other. The
+	// prefix that can be pinned is `/en`, and the test above proves a German browser keeps it.
+	test('is carried on to English by way of the old German prefix', async ({ page }) => {
+		await page.goto('/de/privacy');
+
+		await expect(page).toHaveURL('/en/privacy');
+		await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+	});
+});
+
+// The bug this fix closes, end to end: the choice used to be written and never read, so a link
+// without a prefix served German to somebody reading the site in English.
+test('the chosen language outranks the browser, and follows an unprefixed link', async ({
+	page
+}) => {
+	await page.goto('/learn/blog/mounjaro-vs-wegovy');
+
+	await page.getByLabel(LANGUAGE_CONTROL).first().click();
+	await page.getByRole('option', { name: 'English' }).click();
+	await expect(page).toHaveURL('/en/learn/blog/mounjaro-vs-wegovy');
+
+	await page.goto('/learn');
+	await expect(page).toHaveURL('/en/learn');
+	await expect(page.locator('html')).toHaveAttribute('lang', 'en');
+});

@@ -20,6 +20,12 @@ export default defineConfig({
 	reporter: 'list',
 	use: {
 		baseURL: `http://localhost:${PORT}`,
+		// A German browser, because the site now reads `Accept-Language` and Chromium's own
+		// default is `en-US`. Without this every bare path, which is to say every German
+		// address the suite asserts, would answer 307 to its `/en` twin. The German specs
+		// navigate as the market does; the English ones by the prefix, which outranks the
+		// header for a visitor who has chosen nothing.
+		locale: 'de-DE',
 		storageState: CONSENT_DENIED_STATE,
 		// Kept for a failure only: a trace per passing run is a lot of disk for no information.
 		trace: 'retain-on-failure'

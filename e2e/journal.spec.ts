@@ -8,6 +8,7 @@
  * chrome the repository owns and the wiring between the two.
  */
 import { expect, test } from '@playwright/test';
+import { forgetLanguage } from './locale';
 
 test('the Journal renders in both languages and opens the article', async ({ page }) => {
 	await page.goto('/en/learn');
@@ -28,7 +29,9 @@ test('the Journal renders in both languages and opens the article', async ({ pag
 	await expect(page).toHaveURL('/en/learn/blog/mounjaro-vs-wegovy');
 
 	// The bare path is German, and the localised href is what keeps a German reader out of the
-	// English article.
+	// English article. A visitor who has just been served English is not that reader, and is
+	// sent back to `/en`, so this half arrives as somebody who has read nothing yet.
+	await forgetLanguage(page);
 	await page.goto('/learn');
 	await expect(page.getByRole('heading', { level: 1 })).toHaveText(
 		'Klare Orientierung für ein gesünderes Leben.'
@@ -92,7 +95,9 @@ test('the hero leads back to the Journal in the reader own language', async ({ p
 	await expect(page).toHaveURL('/en/learn');
 
 	// The bare path is German, and a localised href is what keeps a German reader out of the
-	// English Journal.
+	// English Journal. As above, the German half is a fresh arrival: the language just read
+	// would otherwise follow the visitor onto the unprefixed address.
+	await forgetLanguage(page);
 	await page.goto('/learn/blog/mounjaro-vs-wegovy');
 	await expect(page.getByRole('link', { name: 'Zurück zum Journal' })).toHaveAttribute(
 		'href',

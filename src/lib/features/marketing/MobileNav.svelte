@@ -111,7 +111,7 @@
 			<!-- The dialog still needs its name; the logo carries it visually. -->
 			<Sheet.Title class="sr-only">Menu</Sheet.Title>
 			<a
-				href={ROUTES.home}
+				href={localizeHref(ROUTES.home)}
 				aria-label={m.a11y_home()}
 				class="rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-primary focus-visible:ring-offset-2 focus-visible:ring-offset-foreground"
 				onclick={() => (open = false)}

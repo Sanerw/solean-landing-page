@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { forgetLanguage } from './locale';
 
 /**
  * The three treatment pages, reached the way a visitor reaches them. What is asserted is that
@@ -458,6 +459,9 @@ test('the navigation dropdown reaches a treatment page in both locales', async (
 	await page.getByRole('link', { name: /Wegovy Pill/ }).first().click();
 	await expect(page).toHaveURL(/\/en\/treatments\/wegovy-pill$/);
 
+	// The German half is a fresh arrival: the English just read would otherwise follow this
+	// visitor onto the unprefixed address, which is the point of the rule, not a fault of it.
+	await forgetLanguage(page);
 	await page.goto('/');
 	await page.getByRole('button', { name: 'Behandlungen' }).first().click();
 	await page.getByRole('link', { name: /Wegovy Pill/ }).first().click();

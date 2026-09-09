@@ -28,7 +28,7 @@
 			},
 			size: {
 				sm: "h-10 rounded-full px-4 text-sm",
-				default: "h-12 rounded-full px-6 text-base",
+				default: "h-14 rounded-full px-6 text-base",
 				// h-17 compiles to 4.25rem = 68px, the reference's pill height.
 				lg: "h-17 rounded-full px-8 text-lg",
 				icon: "size-10 rounded-full",

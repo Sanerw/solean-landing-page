@@ -46,7 +46,9 @@
 				{#each RESULTS_BAND.benefits as benefit (benefit.title)}
 					{@const Icon = ICONS[benefit.icon]}
 					<li class="flex items-start gap-3">
-						<Icon aria-hidden="true" class="mt-0.5 size-5 shrink-0 text-foreground" />
+						<!-- Sized against the whole two-line block rather than the heading alone, which is
+						     what the reference draws and what the 20px icon was too light to do. -->
+						<Icon aria-hidden="true" class="mt-0.5 size-8 shrink-0 text-foreground" />
 						<div>
 							<h3 class="text-sm font-semibold text-foreground">{benefit.title}</h3>
 							<p class="mt-1 text-sm text-muted-foreground">{benefit.body}</p>

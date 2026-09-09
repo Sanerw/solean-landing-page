@@ -16,11 +16,9 @@
 <!--
 	The panel is the product's ground, its chips, its photograph and its caption.
 
-	It is a column rather than a picture with things laid over it, because the artboard is one:
-	the asset sits inset at 720 inside an 828 panel and the caption sits on the ground beneath
-	it, not on the photograph. `object-contain` keeps that arrangement whatever shape the art is,
-	and it is why the caption stays readable instead of landing on whatever the picture happens
-	to be at that corner.
+	The photograph fills it and everything else lies over it. The artboard insets the asset on
+	its own ground, but on review that ground read as a grey frame around the picture, so the
+	panel is now the picture and the white ring is the only edge left.
 
 	The photograph is the one part that may be missing, and only the injections have one. The
 	tablet page draws the ground, the chips and the caption without it, which is a complete
@@ -42,33 +40,23 @@
 	impression.
 -->
 <div
-	class="relative flex aspect-square w-full flex-col overflow-hidden rounded-xl bg-surface-delivery sm:rounded-2xl sm:inset-ring-4 sm:inset-ring-card lg:aspect-auto lg:h-full"
+	class="relative aspect-square w-full overflow-hidden rounded-xl bg-surface-delivery sm:rounded-2xl sm:inset-ring-4 sm:inset-ring-card lg:aspect-auto lg:h-full"
 >
-	<!--
-		The insets are the artboard's own, as proportions rather than as its pixels: its asset is
-		720 square inside an 804 by 828 panel, which is 5.2% in from each side, 6.5% down from the
-		top, and 16px clear of the caption. The picture is most of the panel there, not a stamp in
-		the middle of it.
+	{#if page.photo}
+		<img
+			src={page.photo.picture.src}
+			srcset={page.photo.picture.srcset}
+			width={page.photo.picture.width}
+			height={page.photo.picture.height}
+			alt={page.photo.alt}
+			sizes="(min-width: 1024px) 46vw, 100vw"
+			class="absolute inset-0 size-full object-cover"
+		/>
+	{/if}
 
-		The chips overlap the top of it, deliberately: the badge runs to y=70 and the asset starts
-		at y=54. An earlier pass pushed the picture down to clear them, which shrank it and is not
-		what the artboard draws.
-	-->
-	<div class="flex min-h-0 flex-1 items-center justify-center px-5 pb-2 pt-6 md:px-8 md:pb-3 md:pt-10">
-		{#if page.photo}
-			<img
-				src={page.photo.picture.src}
-				srcset={page.photo.picture.srcset}
-				width={page.photo.picture.width}
-				height={page.photo.picture.height}
-				alt={page.photo.alt}
-				sizes="(min-width: 1024px) 46vw, 100vw"
-				class="size-full rounded-xl object-cover"
-			/>
-		{/if}
-	</div>
-
-	<p class="px-6 pb-3 text-center text-xs font-semibold text-muted-foreground md:pb-4">
+	<p
+		class="absolute inset-x-0 bottom-0 px-6 pb-3 text-center text-xs font-semibold text-muted-foreground md:pb-4"
+	>
 		{page.galleryCaption}
 	</p>
 

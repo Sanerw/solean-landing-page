@@ -42,10 +42,7 @@
 	because it is the header that has to outrank the page.
 -->
 <header
-	class={[
-		'relative z-50',
-		variant === 'solid' ? 'bg-card' : 'bg-transparent'
-	]}
+	class="relative z-50 bg-transparent"
 >
 	<div
 		class={[
@@ -108,7 +105,7 @@
 
 		<!-- Centred by the equal flex-1 columns either side, not by absolute positioning. -->
 		<a
-			href={ROUTES.home}
+			href={localizeHref(ROUTES.home)}
 			aria-label={m.a11y_home()}
 			class={[
 				'shrink-0 rounded-sm outline-none focus-visible:ring-2 focus-visible:ring-offset-2',
