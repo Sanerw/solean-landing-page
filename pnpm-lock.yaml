@@ -29,6 +29,9 @@ importers:
       '@playwright/test':
         specifier: ^1.62.1
         version: 1.62.1
+      '@sanity/client':
+        specifier: 7.26.2
+        version: 7.26.2
       '@sanity/image-url':
         specifier: ^2.1.1
         version: 2.1.1

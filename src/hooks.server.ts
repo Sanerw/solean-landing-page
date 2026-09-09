@@ -1,15 +1,12 @@
 import { redirect, type Handle } from '@sveltejs/kit';
 import { sequence } from '@sveltejs/kit/hooks';
-import { handlePreviewMode, handleQueryLoader, setServerClient } from '@sanity/sveltekit';
-import { deLocalizeUrl } from '$lib/paraglide/runtime';
 import { paraglideMiddleware } from '$lib/paraglide/server';
 import { entryRedirect } from '$lib/i18n/entry-locale';
 import { legacyGermanPath } from '$lib/i18n/legacy-paths';
+import { variesBy } from '$lib/i18n/vary';
 import { serverClient } from '$lib/sanity/client.server';
-
-setServerClient(serverClient);
-
-const VARIES_BY = 'Accept-Language, Cookie';
+import { isPreviewRequest } from '$lib/sanity/preview-request';
+import { loadPublishedQuery } from '$lib/sanity/query.server';
 
 /**
  * The middleware resolves the locale from the URL, strips the prefix before SvelteKit routes
@@ -40,7 +37,7 @@ const handleLocale: Handle = ({ event, resolve }) => {
 			// on the site made from request headers rather than from the URL.
 			return new Response(null, {
 				status: 307,
-				headers: { location: preferred.href, vary: VARIES_BY }
+				headers: { location: preferred.href, vary: variesBy(event.url) }
 			});
 		}
 	}
@@ -58,20 +55,55 @@ const handleLocale: Handle = ({ event, resolve }) => {
 		});
 
 		// The other half of the rule above: this page was served rather than redirected because
-		// of those two headers, so a shared cache may not hand it to somebody who sends others.
-		// Both are named, not just the language: a 307 produced for a remembered English would
-		// otherwise be replayed to a German visitor who happens to send the same Accept-Language.
-		if (event.url.pathname === deLocalizeUrl(event.url).pathname) {
-			response.headers.append('Vary', VARIES_BY);
-		}
+		// of the headers `variesBy` names, so a shared cache may not hand it to somebody who
+		// sends others. Unconditional now, where it once covered the prefix-less addresses only:
+		// from the moment these pages carry `s-maxage`, an `/en/...` response cached without
+		// `Vary: Cookie` would be replayed to a visitor whose remembered German should have
+		// bounced them off it.
+		response.headers.append('Vary', variesBy(event.url));
 
 		return response;
 	});
 };
 
-// Locale first, so the Sanity handles and everything they resolve run with it already set.
-export const handle = sequence(
-	handleLocale,
-	handlePreviewMode({ client: serverClient, preview: { redirect } }),
-	handleQueryLoader()
-);
+/**
+ * Built once per server instance, on the first request that is actually previewing. Everything
+ * it imports is the Studio, so this is the one place allowed to reach for it.
+ *
+ * `handlePreviewMode` mints its preview secret when it is constructed, which used to happen at
+ * boot and now happens here. The property that matters is unchanged: one secret per instance,
+ * so a preview cookie does not survive a new one.
+ */
+let previewHandle: Promise<Handle> | undefined;
+
+function sanityPreview(): Promise<Handle> {
+	previewHandle ??= import('@sanity/sveltekit').then(
+		({ handlePreviewMode, handleQueryLoader, setServerClient }) => {
+			setServerClient(serverClient);
+
+			return sequence(
+				handlePreviewMode({ client: serverClient, preview: { redirect } }),
+				handleQueryLoader()
+			);
+		}
+	);
+
+	return previewHandle;
+}
+
+/**
+ * Preview gets the vendor's handles, with drafts, the source map and the overlays. Everybody
+ * else gets the two fields this app actually reads.
+ */
+const handleSanity: Handle = async ({ event, resolve }) => {
+	if (isPreviewRequest(event.url.pathname, event.request.headers.get('cookie'))) {
+		return (await sanityPreview())({ event, resolve });
+	}
+
+	event.locals.sanity = { previewEnabled: false, loadQuery: loadPublishedQuery };
+
+	return resolve(event);
+};
+
+// Locale first, so the Sanity handle and everything it resolves run with it already set.
+export const handle = sequence(handleLocale, handleSanity);

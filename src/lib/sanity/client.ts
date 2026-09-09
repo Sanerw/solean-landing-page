@@ -1,4 +1,4 @@
-import { createClient } from '@sanity/sveltekit';
+import { createClient } from '@sanity/client';
 import { apiHost, apiVersion, dataset, projectId, studioUrl } from '$lib/sanity/api';
 
 /**
@@ -6,10 +6,11 @@ import { apiHost, apiVersion, dataset, projectId, studioUrl } from '$lib/sanity/
  * markers the Presentation tool turns into click-to-edit overlays; they are only emitted when a
  * request actually runs in preview, so ordinary reads carry no extra bytes.
  *
- * Importing `@sanity/sveltekit` pulls its whole single entry point, Sanity UI stylesheet
- * included, so nothing that renders on an ordinary page may import this module eagerly. Server
- * modules are fine; on the client it is loaded only inside the preview branch of the root
- * layout. See the comment there.
+ * Built from `@sanity/client` rather than the re-export in `@sanity/sveltekit`. The two are the
+ * same function, but that package has one entry point and it statically imports the Studio:
+ * `PerspectiveProvider`, `WorkspaceLoader`, React, Sanity UI and its stylesheet. Reaching for
+ * it here put all of that in the server bundle, where evaluating it cost 354 ms of every cold
+ * start, and would put the stylesheet on any page that imported this module.
  */
 export const client = createClient({
 	projectId,

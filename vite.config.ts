@@ -38,9 +38,25 @@ export default defineConfig({
 			// Pinned rather than left to adapter-auto, which would install this same adapter part way
 			// through the Vercel build and rewrite the lockfile while it runs. A static build is not an
 			// option: `/api/checkout` has to execute server-side.
-			adapter: adapter()
+			//
+			// The region is named because the default is `iad1`, Washington, and everything this
+			// render talks to is in Europe: the visitors, and the Content Lake it reads on the way.
+			// Measured on 2026-09-09, `x-vercel-id` read `arn1::iad1`, so a request entering in
+			// Stockholm crossed the Atlantic and back before a byte was written. One region is
+			// available on every plan; only a list of them is an Enterprise feature.
+			adapter: adapter({ regions: ['fra1'] })
 		})
 	],
+	ssr: {
+		// Bundled, not left as a bare import for the runtime to resolve. Two versions of this
+		// package are in the tree: ours and `@sanity/sveltekit`'s at 7.26.2, and the Studio's at
+		// 8.4.0 through `sanity`. Externalising the specifier collapses them onto whichever one
+		// sits at the root, and the Studio then fails to start on an export 7.x does not have
+		// (`isTimeoutError`), taking `/preview/enable` down with it. Bundling keeps each importer
+		// on the copy it resolved, which is what happened before this app depended on the package
+		// directly.
+		noExternal: ['@sanity/client']
+	},
 	test: {
 		// Unit tests only, beside the source they cover. `e2e/` is Playwright's and would be
 		// collected by the default glob, then fail on an import Vitest cannot provide.
