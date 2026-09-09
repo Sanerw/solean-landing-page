@@ -84,20 +84,9 @@ test('the switcher moves between locales without losing the page', async ({ page
 	await expect(page.getByLabel('Sprache').first()).toBeVisible();
 });
 
-test('every page offers both locales to a search engine, and none of the links redirect', async ({
-	page
-}) => {
-	await page.goto('/en/privacy');
-
-	const alternates = page.locator('link[rel="alternate"]');
-	await expect(alternates).toHaveCount(3);
-	await expect(page.locator('link[hreflang="de"]')).toHaveAttribute('href', '/privacy');
-	await expect(page.locator('link[hreflang="en"]')).toHaveAttribute('href', '/en/privacy');
-
-	// The root is the case a trailing slash used to spoil, which answered 308.
-	await page.goto('/');
-	await expect(page.locator('link[hreflang="en"]')).toHaveAttribute('href', '/en');
-});
+// The alternates moved to `seo.spec.ts` with feature 28a: they are absolute now, and built
+// from the published inventory rather than guessed from the path, so what they claim is an
+// SEO question rather than a routing one. The redirect-free root is asserted there too.
 
 /**
  * The rule this fix added, in a browser rather than in a unit test: an address that names no

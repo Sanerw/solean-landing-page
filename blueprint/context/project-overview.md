@@ -1,6 +1,6 @@
 # Solean - Project Overview
 
-<!-- blueprint:source-hash 145398fa770a08b38870be21ecf0ffc144e46e68f72f502467196232f4fd463c -->
+<!-- blueprint:source-hash 06bd72d83925cf87c1c7b60d4a8953da6f18857a5171b9f3d0e8f9392d8a5666 -->
 
 > The Solean front end: a marketing site and a doctor-led GLP-1 funnel that runs
 > on RxScale's Anamnesis API and hands the order to Shopify by creating a cart
@@ -45,8 +45,9 @@ happens inside RxScale, not on a Solean screen.
 
 ## Features
 
-Twenty-seven in build-plan order. The first twenty-six are complete; 27 is
-next.
+Twenty-eight in build-plan order. Features 1 to 27 are complete, and so is 28a;
+28b is next. Feature 28 delivers technical SEO/GEO without changing visible
+content or UI/UX.
 
 1. **Design system and core UI components** (done) - semantic tokens, two fonts,
    radii, brand foundations, thirteen adapted shadcn primitives on a showcase at
@@ -181,7 +182,7 @@ next.
       accordion, and the three treatment links in the navigation dropdown made
       real so the page is reachable.
 
-26. **The Journal redesigned** (next) - the Learn article rebuilt to the
+26. **The Journal redesigned** (done) - the Learn article rebuilt to the
     September 2026 Pencil export at `blueprint/reference/journal-export.html`,
     the Journal's featured card aligned to the same treatment, and the article's
     body turned from eight fixed sections into blocks an editor composes. The
@@ -211,7 +212,7 @@ next.
       visually: the model is the feature, proven by the page looking the same
       after it.
 
-27. **Treatment pages from Sanity** (next) - the three `/treatments/[slug]`
+27. **Treatment pages from Sanity** (done) - the three `/treatments/[slug]`
     pages read their copy, photographs, doses and prices from the Content Lake in
     both languages, so a price change stops being a deploy. The treatment ids and
     the Shopify variant stay in `src/lib/domain` as the join; `dose`, `claim` and
@@ -224,6 +225,23 @@ next.
     - **27b** the route switches over, the photographs move to the CDN,
       `features/treatments/content.ts` and its 62 message keys go, and the fixture
       is regenerated. The page does not change visually.
+
+28. **SEO and GEO foundations without UI changes** (28a done) - domain configuration,
+    explicit launch controls, published-page discovery and SEO/GEO metadata.
+    - **28a** (done) the public origin, noindex policy, canonical/hreflang links,
+      published-content sitemap and robots endpoint. Initial deployment:
+      `https://solean-web.vercel.app`, with indexing disabled until launch. An
+      alternate is emitted only for a translation that is actually published, and
+      article equivalence comes from the Studio's `translation.metadata` rather
+      than from matching slugs, so the five article pairs that carry no metadata
+      are each served without one. `blueprint/reference/seo-launch.md` is the
+      runbook for the eventual domain switch.
+    - **28b** Open Graph and appropriate Organization, Article and BreadcrumbList
+      JSON-LD based only on information already visible on the pages.
+    - **28c** authenticated Sanity publication notifications to IndexNow, including
+      removal, bounded requests and key verification; off until configured and launched.
+    - **28d** repeatable SEO checks, a Verify command and GitHub checks through `/ci`,
+      measured performance baseline and the domain-launch/search-console runbook.
 
 Dropped to the deferred backlog with this plan change: Solean's own checkout
 (account, shipping, payment), the pricing engine, add-on selection, and the
@@ -635,26 +653,54 @@ single choice to `RadioGroup`, multiple choice to `Checkbox`, dropdown to
 `vite.config.ts` rather than left to `adapter-auto`, which would install the same
 adapter part way through a build.
 
+**SEO deployment policy (feature 28).** The current deployment is
+`https://solean-web.vercel.app`; the future public domain has not been selected.
+`PUBLIC_SITE_URL` owns the absolute origin used by SEO metadata, the sitemap and
+IndexNow. It is independent of the Shopify store domain and RxScale shop identifier.
+`SEO_INDEXING_ENABLED` is an explicit server-side launch switch, disabled by default.
+The pre-launch deployment stays `noindex` until launch approval, decided by the
+user on 2026-09-09.
+Preview deployments, draft previews and internal routes remain non-indexable even
+when the public deployment is enabled. Feature 28 preserves visible content and UI/UX.
+
+The host choice is settled; what it brings with it is env configuration:
+
 | Variable | Visibility | Purpose |
 | --- | --- | --- |
 | `PUBLIC_SHOPIFY_STORE_DOMAIN` | public | the shop the cart is created in, the myshopify domain. Not the identifier below |
 | `SHOPIFY_VARIANT_ID` | server only | fallback only: the plan offered when RxScale recommends nothing |
-| `SHOPIFY_STOREFRONT_TOKEN` | server only, optional | sent when configured |
+| `SHOPIFY_STOREFRONT_TOKEN` | server only, optional | sent when configured, see section 11 |
 | `SHOPIFY_STOREFRONT_API_VERSION` | server only, optional | defaults to `2025-01` |
-| `PUBLIC_RXSCALE_QUESTIONNAIRE_UID` | public | the questionnaire the submission is filed against. From feature 24 it no longer fetches a model on the visitor's path |
-| `PUBLIC_RXSCALE_SHOP_IDENTIFIER` | public | the shop the recommendation is keyed by. The storefront hostname (`solean.com`), not the myshopify domain, which is refused |
+| `PUBLIC_RXSCALE_QUESTIONNAIRE_UID` | public | the questionnaire to fetch |
+| `PUBLIC_RXSCALE_SHOP_IDENTIFIER` | public | the shop the recommendation is keyed by, the storefront hostname |
 | `PUBLIC_SANITY_PROJECT_ID` | public | the Content Lake project, `tzq5b2my` |
 | `PUBLIC_SANITY_DATASET` | public | `production` |
-| `PUBLIC_SANITY_API_VERSION` | public | pinned, not floating |
+| `PUBLIC_SANITY_API_VERSION` | public | pinned, not floating, so a query cannot change behaviour without a code change |
 | `PUBLIC_SANITY_STUDIO_URL` | public | where the Presentation tool lives, for the click-to-edit overlays |
 | `SANITY_API_READ_TOKEN` | server only | reads drafts. Without it the site serves published content and preview stays off, which is not an error |
 | `CUSTOMERIO_SITE_ID` | server only | the Customer.io workspace the reminder events are written into |
 | `CUSTOMERIO_TRACK_API_KEY` | server only | the other half of the Basic credential. Either one absent means this deployment sends no reminders, which is a valid state |
+| `PUBLIC_SITE_URL` | public | absolute SEO origin; initially `https://solean-web.vercel.app`, replaced at domain launch |
+| `SEO_INDEXING_ENABLED` | server only | explicit launch switch; defaults to false; does not enable preview or internal-route indexing |
 
 > TODO: set the variables in the Vercel project and run a deploy. Handle it
 > through `/release vercel`.
 
+
 ## Open questions
+
+### Plan drift recorded during feature 28 intake
+
+The approved feature 28 policy is unambiguous: preserve UI/UX and keep indexing
+disabled until launch. The final domain and launch date are not selected.
+
+Historical plan prose predates completed work: the build plan's Testing paragraph
+still describes tests as deferred, although AGENTS.md documents Vitest and Playwright;
+project-plan sections still describe runtime questions, an English-only UI, fixture
+marketing content and email-only reminders. Completed features 19-27 and the current
+AGENTS.md describe the implemented behavior. These unrelated passages were not rewritten
+as part of SEO intake. Follow the current AGENTS.md for verification and data permissions;
+this SEO feature does not change those contracts.
 
 Resolve each before the feature named, then re-run `/overview` if a plan changes.
 

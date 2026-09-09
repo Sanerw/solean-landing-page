@@ -638,6 +638,16 @@ and no hover-only interactions.
 `vite.config.ts` rather than left to `adapter-auto`, which would install the same
 adapter part way through a build.
 
+**SEO deployment policy (feature 28).** The current deployment is
+`https://solean-web.vercel.app`; the future public domain has not been selected.
+`PUBLIC_SITE_URL` owns the absolute origin used by SEO metadata, the sitemap and
+IndexNow. It is independent of the Shopify store domain and RxScale shop identifier.
+`SEO_INDEXING_ENABLED` is an explicit server-side launch switch, disabled by default.
+The pre-launch deployment stays `noindex` until launch approval, decided by the
+user on 2026-09-09.
+Preview deployments, draft previews and internal routes remain non-indexable even
+when the public deployment is enabled. Feature 28 preserves visible content and UI/UX.
+
 The host choice is settled; what it brings with it is env configuration:
 
 | Variable | Visibility | Purpose |
@@ -655,6 +665,8 @@ The host choice is settled; what it brings with it is env configuration:
 | `SANITY_API_READ_TOKEN` | server only | reads drafts. Without it the site serves published content and preview stays off, which is not an error |
 | `CUSTOMERIO_SITE_ID` | server only | the Customer.io workspace the reminder events are written into |
 | `CUSTOMERIO_TRACK_API_KEY` | server only | the other half of the Basic credential. Either one absent means this deployment sends no reminders, which is a valid state |
+| `PUBLIC_SITE_URL` | public | absolute SEO origin; initially `https://solean-web.vercel.app`, replaced at domain launch |
+| `SEO_INDEXING_ENABLED` | server only | explicit launch switch; defaults to false; does not enable preview or internal-route indexing |
 
 > TODO: set the variables in the Vercel project and run a deploy. Handle it
 > through `/release vercel`.

@@ -13,6 +13,13 @@ import {
 
 const PORT = 4173;
 
+/**
+ * The same build, served a second time with indexing switched on. The launch policy is read at
+ * runtime, so no second build is needed and none is wanted: two `vite build` runs writing one
+ * output directory is a race. `seo-enabled.spec.ts` is the only spec pointed at this port.
+ */
+const LAUNCHED_PORT = 4174;
+
 export default defineConfig({
 	testDir: 'e2e',
 	fullyParallel: true,
@@ -32,7 +39,19 @@ export default defineConfig({
 	},
 	// Chromium alone. The prototype makes no cross-browser claim, and two more engines would
 	// triple the download and the run for coverage nothing currently depends on.
-	projects: [{ name: 'chromium', use: { ...devices['Desktop Chrome'] } }],
+	projects: [
+		{
+			name: 'chromium',
+			use: { ...devices['Desktop Chrome'] },
+			testIgnore: 'seo-enabled.spec.ts'
+		},
+		{
+			// What the site does on the day indexing is approved, proven without approving it.
+			name: 'seo-enabled',
+			testMatch: 'seo-enabled.spec.ts',
+			use: { ...devices['Desktop Chrome'], baseURL: `http://localhost:${LAUNCHED_PORT}` }
+		}
+	],
 	webServer: [
 		// The questionnaire model comes from the fixture, never the live RxScale API: the run
 		// must be deterministic and must not put traffic on someone else's production service.
@@ -62,6 +81,8 @@ export default defineConfig({
 			timeout: 300_000,
 			env: {
 				PUBLIC_RXSCALE_API_BASE_URL: `http://localhost:${FIXTURE_PORT}`,
+				PUBLIC_SITE_URL: `http://localhost:${PORT}`,
+				SEO_INDEXING_ENABLED: 'false',
 				PUBLIC_RXSCALE_QUESTIONNAIRE_UID: FIXTURE_UID,
 				// The checkout handoff, pointed at the same fixture. Without this the endpoint
 				// would either refuse for want of configuration or, worse, create a cart in the
@@ -83,6 +104,27 @@ export default defineConfig({
 				// blanked: the client treats a half-configured pair as unconfigured, but leaving one
 				// set would make that an accident rather than the intent. An unconfigured deployment
 				// is what the reminder spec asserts against.
+				CUSTOMERIO_SITE_ID: '',
+				CUSTOMERIO_TRACK_API_KEY: ''
+			}
+		},
+		{
+			// No build of its own: it waits for the one above and serves the same output. The
+			// two differ only in the launch switch and the origin, which is the whole point.
+			command: `node e2e/wait-for-server.mjs http://localhost:${PORT} && pnpm preview --port ${LAUNCHED_PORT} --strictPort`,
+			url: `http://localhost:${LAUNCHED_PORT}`,
+			reuseExistingServer: !process.env.CI,
+			timeout: 300_000,
+			env: {
+				PUBLIC_RXSCALE_API_BASE_URL: `http://localhost:${FIXTURE_PORT}`,
+				PUBLIC_SITE_URL: `http://localhost:${LAUNCHED_PORT}`,
+				SEO_INDEXING_ENABLED: 'true',
+				PUBLIC_RXSCALE_QUESTIONNAIRE_UID: FIXTURE_UID,
+				PUBLIC_SHOPIFY_STORE_DOMAIN: FIXTURE_STORE_DOMAIN,
+				SHOPIFY_VARIANT_ID: FIXTURE_VARIANT_ID,
+				PUBLIC_RXSCALE_SHOP_IDENTIFIER: FIXTURE_SHOP_IDENTIFIER,
+				PUBLIC_SANITY_API_HOST: FIXTURE_SANITY_API_HOST,
+				PUBLIC_MIXPANEL_TOKEN: FIXTURE_MIXPANEL_TOKEN,
 				CUSTOMERIO_SITE_ID: '',
 				CUSTOMERIO_TRACK_API_KEY: ''
 			}

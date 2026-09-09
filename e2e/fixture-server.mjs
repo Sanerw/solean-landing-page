@@ -20,6 +20,9 @@ const SANITY_FIXTURE_PATH = join(dirname(fileURLToPath(import.meta.url)), 'fixtu
 /** Sanity's read endpoint, which the app is pointed at through PUBLIC_SANITY_API_HOST. */
 const SANITY_QUERY = /^\/v[\d-]+\/data\/query\/[^/]+$/;
 
+/** Fixed, so a sitemap built from this server is byte-identical between runs. */
+const FIXTURE_UPDATED_AT = '2026-09-01T12:00:00Z';
+
 const PREFIXES = ['/api/v2/anamnesis', '/api/v3-1/anamnesis', '/v4/anamnesis'];
 
 const RECOMMENDATION_PATH = /^\/api\/(?:v2|v3-1)\/anamnesis\/([^/]+)\/recommendation$/;
@@ -188,6 +191,48 @@ function send(response, status, body) {
 }
 
 /**
+ * Which pages exist, in the shape the inventory query projects. The one article carries its
+ * translation metadata because the real document does; nothing else here is linked, which is
+ * also what the live dataset looks like.
+ */
+function inventory(fixture) {
+	const languages = Object.keys(fixture.articles);
+	const translations = languages.map((locale) => ({
+		locale,
+		slug: fixture.articles[locale]?.slug?.current ?? null
+	}));
+
+	return {
+		home: Object.keys(fixture.homePages).map((language) => ({
+			language,
+			_updatedAt: FIXTURE_UPDATED_AT
+		})),
+		articles: languages.map((language) => ({
+			language,
+			slug: fixture.articles[language]?.slug?.current ?? null,
+			_updatedAt: FIXTURE_UPDATED_AT,
+			translations
+		})),
+		treatments: Object.entries(fixture.treatments).flatMap(([language, documents]) =>
+			documents.map(({ treatmentId }) => ({
+				treatmentId,
+				language,
+				_updatedAt: FIXTURE_UPDATED_AT
+			}))
+		),
+		legal: Object.keys(fixture.legalPages).map((key) => {
+			const language = key.slice(key.lastIndexOf('-') + 1);
+
+			return {
+				slug: key.slice(0, key.lastIndexOf('-')),
+				language,
+				_updatedAt: FIXTURE_UPDATED_AT
+			};
+		})
+	};
+}
+
+/**
  * Answers the GROQ queries the marketing pages and the Learn article make, off a response the
  * real dataset produced. Matching on the shape of the query rather than parsing GROQ: there are
  * a handful of them, and a parser here would be a second implementation of Sanity to keep
@@ -206,6 +251,14 @@ async function sanityQuery(url) {
 
 	const fixture = JSON.parse(await readFile(SANITY_FIXTURE_PATH, 'utf8'));
 	const language = param('$language');
+
+	// The discovery inventory, which asks about every type at once and takes no language. It is
+	// derived from the same fixture the pages are served from, so a run cannot canonicalise a
+	// page this server would answer with a 404. Tested first: it names types the branches below
+	// match on, so any of them would answer it with the wrong shape.
+	if (query.includes('translation.metadata')) {
+		return inventory(fixture);
+	}
 
 	// The announcement bar and the landing page both address the home page by its fixed id, so
 	// the narrower projection has to be recognised first.

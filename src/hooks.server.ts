@@ -7,6 +7,7 @@ import { variesBy } from '$lib/i18n/vary';
 import { serverClient } from '$lib/sanity/client.server';
 import { isPreviewRequest } from '$lib/sanity/preview-request';
 import { loadPublishedQuery } from '$lib/sanity/query.server';
+import { handleSeo } from '$lib/server/seo/handle';
 
 /**
  * The middleware resolves the locale from the URL, strips the prefix before SvelteKit routes
@@ -105,5 +106,5 @@ const handleSanity: Handle = async ({ event, resolve }) => {
 	return resolve(event);
 };
 
-// Locale first, so the Sanity handle and everything it resolves run with it already set.
-export const handle = sequence(handleLocale, handleSanity);
+// SEO wraps responses; locale still resolves before Sanity reads any content.
+export const handle = sequence(handleSeo, handleLocale, handleSanity);

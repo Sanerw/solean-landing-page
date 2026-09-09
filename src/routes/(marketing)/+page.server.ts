@@ -1,5 +1,6 @@
 import { cachedRating } from '$lib/features/marketing/rating-cache';
 import { homePageQuery, type HomePage } from '$lib/sanity/queries';
+import { seoLinks } from '$lib/server/seo/identity';
 import type { PageServerLoad } from './$types';
 
 /**
@@ -14,10 +15,11 @@ import type { PageServerLoad } from './$types';
  * instead.
  */
 export const load: PageServerLoad = async ({ fetch, locals }) => {
-	const [rating, home] = await Promise.all([
+	const [rating, home, seo] = await Promise.all([
 		cachedRating(fetch),
-		locals.sanity.loadQuery<HomePage | null>(homePageQuery, { language: locals.locale })
+		locals.sanity.loadQuery<HomePage | null>(homePageQuery, { language: locals.locale }),
+		seoLinks(locals.locale, { kind: 'home' })
 	]);
 
-	return { rating, home: home.data };
+	return { rating, home: home.data, seo };
 };

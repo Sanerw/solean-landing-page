@@ -11,7 +11,6 @@
 	import ConsentBanner from '$lib/analytics/ConsentBanner.svelte';
 	import { analyticsConsent } from '$lib/analytics/consent.svelte';
 	import { trackPageView } from '$lib/analytics/events';
-	import { alternatesFor } from '$lib/i18n/alternates';
 	import { entersQuestionnaire } from '$lib/navigation/view-transition';
 	import type { LayoutProps } from './$types';
 
@@ -75,18 +74,24 @@
 		trackPageView(page.url.pathname);
 	});
 
-	// One alternate per locale for the page being viewed, plus x-default.
-	const links = $derived(alternatesFor(page.url.pathname));
+	/**
+	 * Built on the server from the published inventory, so it is absent on the questionnaire,
+	 * the development surfaces and any page that failed. A guessed alternate is worse than
+	 * none: it tells a crawler a translation exists that it will then fail to fetch.
+	 */
+	const seo = $derived(page.status === 200 ? page.data.seo : null);
 </script>
 
 <svelte:head>
 	<link rel="icon" href={favicon} type="image/x-icon" />
 	<link rel="preload" href={interTight} as="font" type="font/woff2" crossorigin="anonymous" />
 	<link rel="preload" href={dmSans} as="font" type="font/woff2" crossorigin="anonymous" />
-	{#each links.alternates as alternate (alternate.locale)}
-		<link rel="alternate" hreflang={alternate.locale} href={alternate.href} />
-	{/each}
-	<link rel="alternate" hreflang="x-default" href={links.canonical} />
+	{#if seo}
+		<link rel="canonical" href={seo.canonical} />
+		{#each seo.alternates as alternate (alternate.hreflang)}
+			<link rel="alternate" hreflang={alternate.hreflang} href={alternate.href} />
+		{/each}
+	{/if}
 </svelte:head>
 
 {#if preview}

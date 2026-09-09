@@ -2,6 +2,7 @@
 // for information about these interfaces
 import type { QueryParams } from '@sanity/client';
 import type { Locale } from '$lib/paraglide/runtime';
+import type { PageLinks } from '$lib/seo/links';
 
 declare global {
 	namespace App {
@@ -21,7 +22,14 @@ declare global {
 				loadQuery: <T>(query: string, params?: QueryParams) => Promise<{ data: T }>;
 			};
 		}
-		// interface PageData {}
+		interface PageData {
+			/**
+			 * Set by the server load of every published public page, and by nothing else. The
+			 * root layout renders the canonical and language links from it, so a route that
+			 * does not set it emits neither.
+			 */
+			seo?: PageLinks | null;
+		}
 		// interface PageState {}
 		// interface Platform {}
 	}

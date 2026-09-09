@@ -575,6 +575,13 @@ runner starts on port 4173 and stops again, so no server needs to be running
 first. Specs live in `e2e/`. They are deliberately not part of any `Verify`
 command or GitHub workflow; adding that slower gate is a separate decision.
 
+From feature 28a the same build is also served on port 4174 with
+`SEO_INDEXING_ENABLED=true`, and the `seo-enabled` Playwright project is the only
+one pointed at it. The launch policy is read from `$env/dynamic` at runtime, so
+the two servers share one build deliberately: a second `vite build` writing the
+same output directory would be a race, which is why that server waits for the
+first through `e2e/wait-for-server.mjs` rather than building again.
+
 `pnpm fixture:questionnaire` serves `e2e/fixtures/questionnaire-model.json` as
 the RxScale anamnesis API on port 4319, under `/api/v2/anamnesis`,
 `/api/v3-1/anamnesis` and the documented `/v4/anamnesis` prefix.

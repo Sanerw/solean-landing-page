@@ -7,6 +7,7 @@ import {
 	type SanityTreatment,
 	type SanityTreatmentsPage
 } from '$lib/sanity/queries';
+import { seoLinks } from '$lib/server/seo/identity';
 import type { PageServerLoad } from './$types';
 
 /**
@@ -22,14 +23,15 @@ import type { PageServerLoad } from './$types';
  * resolved here rather than during render, and `locals.locale` decides the language.
  */
 export const load: PageServerLoad = async ({ params, fetch, locals }) => {
-	const [rating, treatments, shared] = await Promise.all([
+	const [rating, treatments, shared, seo] = await Promise.all([
 		cachedRating(fetch),
 		locals.sanity.loadQuery<SanityTreatment[] | null>(treatmentsQuery, {
 			language: locals.locale
 		}),
 		locals.sanity.loadQuery<SanityTreatmentsPage | null>(treatmentsPageQuery, {
 			language: locals.locale
-		})
+		}),
+		seoLinks(locals.locale, { kind: 'treatment', slug: params.slug })
 	]);
 
 	const pages = toTreatmentPages(treatments.data);
@@ -48,6 +50,7 @@ export const load: PageServerLoad = async ({ params, fetch, locals }) => {
 		// entries because a Map does not survive serialisation to the browser.
 		treatments: [...pages.values()],
 		shared: toSharedSections(shared.data),
-		rating
+		rating,
+		seo
 	};
 };

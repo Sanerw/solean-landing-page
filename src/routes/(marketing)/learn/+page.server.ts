@@ -1,5 +1,6 @@
 import { journalArticlesFrom } from '$lib/features/learn/journal';
 import { articlesQuery, type ArticleListItem } from '$lib/sanity/queries';
+import { seoLinks } from '$lib/server/seo/identity';
 import type { PageServerLoad } from './$types';
 
 /**
@@ -11,9 +12,12 @@ import type { PageServerLoad } from './$types';
  * articles, which is what an unpublished dataset should look like rather than a 500.
  */
 export const load: PageServerLoad = async ({ locals }) => {
-	const articles = await locals.sanity.loadQuery<ArticleListItem[] | null>(articlesQuery, {
-		language: locals.locale
-	});
+	const [articles, seo] = await Promise.all([
+		locals.sanity.loadQuery<ArticleListItem[] | null>(articlesQuery, {
+			language: locals.locale
+		}),
+		seoLinks(locals.locale, { kind: 'journal' })
+	]);
 
-	return { articles: journalArticlesFrom(articles.data ?? []) };
+	return { articles: journalArticlesFrom(articles.data ?? []), seo };
 };

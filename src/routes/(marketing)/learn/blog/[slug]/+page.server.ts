@@ -6,6 +6,7 @@ import {
 	type ArticleDetail,
 	type ArticleListItem
 } from '$lib/sanity/queries';
+import { seoLinks } from '$lib/server/seo/identity';
 import type { PageServerLoad } from './$types';
 
 /**
@@ -20,9 +21,10 @@ import type { PageServerLoad } from './$types';
  */
 export const load: PageServerLoad = async ({ locals, params: { slug } }) => {
 	const params = { slug, language: locals.locale };
-	const [initial, library] = await Promise.all([
+	const [initial, library, seo] = await Promise.all([
 		locals.sanity.loadQuery<ArticleDetail | null>(query, params),
-		locals.sanity.loadQuery<ArticleListItem[] | null>(articlesQuery, { language: locals.locale })
+		locals.sanity.loadQuery<ArticleListItem[] | null>(articlesQuery, { language: locals.locale }),
+		seoLinks(locals.locale, { kind: 'article', slug })
 	]);
 
 	if (!initial.data) {
@@ -40,6 +42,7 @@ export const load: PageServerLoad = async ({ locals, params: { slug } }) => {
 		query,
 		params,
 		options: { initial },
-		neighbours: { previous: link(previous), next: link(next) }
+		neighbours: { previous: link(previous), next: link(next) },
+		seo
 	};
 };
