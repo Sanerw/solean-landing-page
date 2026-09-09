@@ -1,0 +1,34 @@
+name: Verify
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+# Nothing here writes. A check that can only read is a check that cannot be turned
+# into a way to change the repository.
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      # The version `package.json#packageManager` pins, so the pnpm that installs here is the
+      # one that wrote the lockfile. pnpm 11 refuses a lockfile entry published less than a day
+      # ago, and that check runs against the committed lockfile.
+      - uses: pnpm/action-setup@v4
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: 22
+          cache: pnpm
+
+      - run: pnpm install --frozen-lockfile
+
+      # The same command `AGENTS.md` documents, so a green run here means the same thing a
+      # green run locally does. Browser tests are deliberately not in it: see the Commands
+      # section of AGENTS.md.
+      - run: pnpm verify

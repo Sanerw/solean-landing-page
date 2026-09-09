@@ -16,7 +16,9 @@ const PORT = 4173;
 /**
  * The same build, served a second time with indexing switched on. The launch policy is read at
  * runtime, so no second build is needed and none is wanted: two `vite build` runs writing one
- * output directory is a race. `seo-enabled.spec.ts` is the only spec pointed at this port.
+ * output directory is a race. `seo-enabled.spec.ts` and `seo-sweep.spec.ts` are the specs
+ * pointed at this port: the sweep needs a populated sitemap, which only the launched policy
+ * produces.
  */
 const LAUNCHED_PORT = 4174;
 
@@ -43,12 +45,12 @@ export default defineConfig({
 		{
 			name: 'chromium',
 			use: { ...devices['Desktop Chrome'] },
-			testIgnore: 'seo-enabled.spec.ts'
+			testIgnore: ['seo-enabled.spec.ts', 'seo-sweep.spec.ts']
 		},
 		{
 			// What the site does on the day indexing is approved, proven without approving it.
 			name: 'seo-enabled',
-			testMatch: 'seo-enabled.spec.ts',
+			testMatch: ['seo-enabled.spec.ts', 'seo-sweep.spec.ts'],
 			use: { ...devices['Desktop Chrome'], baseURL: `http://localhost:${LAUNCHED_PORT}` }
 		}
 	],

@@ -45,9 +45,10 @@ happens inside RxScale, not on a Solean screen.
 
 ## Features
 
-Twenty-eight in build-plan order. Features 1 to 27 are complete, and so are 28a,
-28b and 28c; 28d is next. Feature 28 delivers technical SEO/GEO without changing
-visible content or UI/UX.
+Twenty-eight in build-plan order, **all complete**. Feature 28 delivered technical
+SEO/GEO without changing visible content or UI/UX. What remains before launch is
+not a build item: choosing the domain, setting the variables in Vercel, deploying,
+and following `blueprint/reference/seo-launch.md`.
 
 1. **Design system and core UI components** (done) - semantic tokens, two fonts,
    radii, brand foundations, thirteen adapted shadcn primitives on a showcase at
@@ -226,7 +227,7 @@ visible content or UI/UX.
       `features/treatments/content.ts` and its 62 message keys go, and the fixture
       is regenerated. The page does not change visually.
 
-28. **SEO and GEO foundations without UI changes** (28a-28c done) - domain configuration,
+28. **SEO and GEO foundations without UI changes** (done) - domain configuration,
     explicit launch controls, published-page discovery and SEO/GEO metadata.
     - **28a** (done) the public origin, noindex policy, canonical/hreflang links,
       published-content sitemap and robots endpoint. Initial deployment:
@@ -258,8 +259,17 @@ visible content or UI/UX.
       non-preview deployment all hold. **Google does not participate in IndexNow**;
       this reaches Bing, Yandex, Seznam, Naver and Yep, and Google discovery stays
       with the sitemap.
-    - **28d** repeatable SEO checks, a Verify command and GitHub checks through `/ci`,
-      measured performance baseline and the domain-launch/search-console runbook.
+    - **28d** (done) one sweep over every URL the sitemap lists, holding each to the
+      shared invariants and each language to its own title and description
+      uniqueness; `pnpm verify` (typecheck, unit tests, build) with a matching
+      GitHub workflow, the browser suite deliberately outside both; a measured
+      performance baseline in `blueprint/reference/performance-baseline.md` that
+      records what its numbers are **not**; and the launch-day runbook with its
+      ordered switch-on, its reversal procedure and the gaps carried forward.
+      **The sweep failed on its first run** over the three treatment page pairs,
+      which share a title across languages because a product name does not
+      translate; the assertion was wrong, not the site, and uniqueness is now
+      asserted within a language.
 
 Dropped to the deferred backlog with this plan change: Solean's own checkout
 (account, shipping, payment), the pricing engine, add-on selection, and the

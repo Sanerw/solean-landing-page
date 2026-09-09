@@ -569,6 +569,7 @@ writes the lockfile is the version Vercel installs with. pnpm 11 refuses a lockf
 less than a day ago, and that check runs against the committed lockfile, not just fresh resolution,
 so an older pnpm resolving without the rule produces a lockfile the deploy rejects.
 
+- **Verify: `pnpm verify`** (typecheck, unit tests, build - the umbrella gate)
 - Dev server: `pnpm dev` (http://localhost:5173)
 - Build: `pnpm build`
 - Preview production build: `pnpm preview`
@@ -580,8 +581,20 @@ so an older pnpm resolving without the rule produces a lockfile the deploy rejec
 - Questionnaire fixture API: `pnpm fixture:questionnaire` (port 4319)
 - RxScale contract check: `pnpm check:model`
 
-No lint or format command is configured. No `Verify` command and no automatic
-GitHub checks exist yet.
+No lint or format command is configured, so `Verify` combines the three checks
+this project actually has, in the documented order: typecheck, unit tests, build.
+`.github/workflows/verify.yml` runs that same command on pull requests and on
+pushes to `main`, with `contents: read` and nothing else.
+
+**Browser tests are deliberately not in `Verify` or in CI.** They need a
+production build, two preview servers and the fixture server, and a Chromium
+download on a cold runner; the whole suite takes about four minutes against
+`pnpm verify`'s twenty seconds. Verify is the fast gate that a person runs before
+every commit, and making it slow is how it stops being run. Adding the browser
+suite as a separate, slower CI job is a real option and a separate decision.
+
+Making the GitHub check *required* is a remote ruleset setting, applied after the
+workflow is pushed. It is not part of this repository.
 
 `pnpm check:model` asks RxScale whether their questionnaire still matches
 `src/lib/features/questionnaire/rxscale/model-snapshot.json`, the copy feature 24
@@ -621,6 +634,13 @@ one pointed at it. The launch policy is read from `$env/dynamic` at runtime, so
 the two servers share one build deliberately: a second `vite build` writing the
 same output directory would be a race, which is why that server waits for the
 first through `e2e/wait-for-server.mjs` rather than building again.
+
+`node scripts/measure-baseline.mjs` measures the local production preview and prints the table
+recorded in `blueprint/reference/performance-baseline.md`. It is not in `Verify` and not in any
+browser project: it needs a preview server somebody started, it reaches the Sanity CDN for
+photographs, and its numbers depend on the machine. It is a measurement, not a gate, and the
+document records what those numbers are **not** - not the deployed site's, not a Lighthouse
+score, and not a complete account of image weight.
 
 `pnpm fixture:questionnaire` serves `e2e/fixtures/questionnaire-model.json` as
 the RxScale anamnesis API on port 4319, under `/api/v2/anamnesis`,

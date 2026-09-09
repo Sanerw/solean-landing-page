@@ -1,8 +1,12 @@
 # SEO launch configuration
 
-Features 28a, 28b and 28c: the public origin, the launch switch, canonical and language links,
-the two discovery endpoints, the sharing and structured metadata built on top of them, and the
-IndexNow publication notifications. CI and the performance baseline (28d) are separate.
+Feature 28 in full: the public origin, the launch switch, canonical and language links, the two
+discovery endpoints, the sharing and structured metadata, the IndexNow publication
+notifications, and the checks and runbook that close it.
+
+**Nothing in this document has been done.** No domain is chosen, no environment variable is set
+remotely, no property is verified with any search engine, and no URL has been submitted. This is
+the sequence to follow when somebody decides to launch.
 
 Nothing here has been deployed, no environment variable has been set remotely, and no URL has
 been submitted to any search engine.
@@ -196,6 +200,90 @@ In this order, and not before `SEO_INDEXING_ENABLED=true`:
 5. Publish one document and check Sanity's delivery log shows `204`.
 
 A key change means the old key file stops resolving, so change the key and redeploy together.
+
+## Launch day, in order
+
+Each step is reversible until step 6, which is the one that asks to be indexed.
+
+**1. Choose the domain and point it at the deployment.** DNS and the Vercel domain
+configuration. Nothing in this repository changes.
+
+**2. Set `PUBLIC_SITE_URL` to the new HTTPS origin** and redeploy. Changing a Vercel
+environment variable does not update an existing deployment. Leave `SEO_INDEXING_ENABLED`
+unset or `false`.
+
+**3. Verify the deployment while it is still `noindex`:**
+
+| Check | Expected |
+| --- | --- |
+| `curl -I https://<domain>/` | `x-robots-tag: noindex` |
+| `curl https://<domain>/robots.txt` | `User-agent: *`, no `Sitemap:` line |
+| `curl https://<domain>/sitemap.xml` | a `<urlset>` with no `<url>` entries |
+| view-source on `/` | one `<link rel="canonical">` naming the new domain, `hreflang` pairs, `og:` tags, one JSON-LD block |
+| any page's `og:image` | fetches 200 as `image/jpeg` |
+
+If the canonical still names the old origin, the deployment did not pick up the variable.
+
+**4. Verify the property with the search engines.** Both accept a DNS TXT record, which is the
+right choice here because it survives a redeploy and is not tied to a file this repository would
+have to serve:
+
+- **Google Search Console**: add a Domain property, add the TXT record it gives you. Google does
+  not use IndexNow, so this is the only channel that tells Google anything.
+- **Bing Webmaster Tools**: import from Search Console, or add the site and use its TXT record.
+
+Do not use the HTML-file verification method for either. This app has no static file route for
+it, and adding one would put a verification token in version control.
+
+**5. Turn indexing on.** Set `SEO_INDEXING_ENABLED=true` and redeploy. Then re-run the checks in
+step 3 and expect the opposite: no `x-robots-tag` on a public page, a `Sitemap:` line in
+`robots.txt`, and a populated `sitemap.xml`. The questionnaire, `/dev/*` and 404s must still
+carry `noindex`; if they do not, stop and set the flag back.
+
+**6. Submit the sitemap.** In Search Console, Sitemaps, submit `sitemap.xml`. In Bing Webmaster
+Tools, the same. This is the point at which the site is asking to be indexed.
+
+**7. Switch on IndexNow**, following the section above: generate a key, set both variables,
+redeploy, confirm the key file, create the Sanity webhook, publish one document and check the
+delivery log reads 204.
+
+**8. After a week**, check Search Console's Pages report for what was indexed and what was
+excluded, and its Enhancements section for how the structured data was read. Expect
+`Organization`, `Article` and `BreadcrumbList` to be recognised. There is no rich result to
+expect from any of them; they describe the site, they do not decorate it.
+
+## Reversing it
+
+If indexing has to be undone, the order matters and the reversal is not instant.
+
+1. Set `SEO_INDEXING_ENABLED=false` and redeploy. Every page returns to `noindex` and the
+   sitemap empties.
+2. **Do not add `Disallow: /` to robots.txt.** A crawler that is not allowed to fetch a page
+   cannot read the `noindex` header on it, so a blanket block leaves anything already indexed in
+   the index with no way to remove it. This is the single most common way a site makes its own
+   removal impossible.
+3. Use Search Console's Removals tool for anything urgent. It hides a URL for about six months,
+   which is a stopgap while the `noindex` is recrawled.
+4. Removal is a recrawl, not a switch. Expect days to weeks.
+
+## Known gaps carried into launch
+
+Recorded so nobody discovers them as surprises.
+
+- **Five of the six article pairs carry no `hreflang`.** Only `mounjaro-vs-wegovy` has
+  `translation.metadata` in the Studio; the other five slugs exist as ten documents linked by
+  nothing. Each is served without an alternate, deliberately, because guessing equivalence from
+  a matching slug would claim a translation nobody declared. **Linking them in Sanity is an edit,
+  not a deploy**, and is the highest-value SEO action available before launch.
+- **No `Organization.logo` and no default `og:image`.** Both need a raster brand asset and the
+  logo is an inline SVG. The four legal pages therefore share without a picture.
+- **No `sameAs`.** The footer's social links are placeholders.
+- **The privacy policy describes neither Mixpanel, session replay, nor heatmaps.** Recorded in
+  `AGENTS.md` and deliberately not fixed locally, because that document is a verbatim mirror of
+  Solean's own. It is a launch blocker in the legal sense rather than the technical one.
+- **Google will not see IndexNow.** Its discovery is the sitemap and ordinary crawling.
+- **The performance numbers in `performance-baseline.md` are local.** The deployed figures are
+  unmeasured until there is a deployment.
 
 ## Future domain
 

@@ -592,7 +592,7 @@ claims are not approved production content.
     `features/treatments/content.ts` and its 62 message keys go, and the browser
     fixture is regenerated. The page does not change visually.
 
-- [ ] 28. **SEO and GEO foundations without UI changes** - configurable public domain,
+- [x] 28. **SEO and GEO foundations without UI changes** - configurable public domain,
   controlled indexing, published-content discovery, metadata, structured data and
   repeatable verification, preserving visible content and every user flow.
   - [x] 28a. **Domain, indexing and discovery** - configurable canonical origin and
@@ -604,7 +604,7 @@ claims are not approved production content.
   - [x] 28c. **IndexNow publication notifications** - authenticated Sanity webhook,
     validated public URLs, key verification and bounded server-side notifications for
     published changes and removals; disabled until configured and indexing is enabled.
-  - [ ] 28d. **Verification and launch handoff** - repeatable SEO checks in the existing
+  - [x] 28d. **Verification and launch handoff** - repeatable SEO checks in the existing
     test harness, one Verify command and matching GitHub checks through /ci, a measured
     performance baseline and a domain-launch/search-console runbook.
 
