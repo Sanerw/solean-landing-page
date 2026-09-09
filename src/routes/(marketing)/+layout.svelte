@@ -1,7 +1,5 @@
 <script lang="ts">
-	// Temporarily hidden, not removed: the bar's copy still comes from Sanity and the
-	// layout load still reads it, so putting it back is uncommenting these two lines.
-	// import AnnouncementBar from '$lib/features/marketing/AnnouncementBar.svelte';
+	import AnnouncementBar from '$lib/features/marketing/AnnouncementBar.svelte';
 	import SiteFooter from '$lib/features/marketing/SiteFooter.svelte';
 	import type { LayoutProps } from './$types';
 
@@ -23,7 +21,7 @@
 	class="flex min-h-svh flex-col bg-background"
 	style="padding-bottom: var(--treatment-cta-height, 0px)"
 >
-	<!-- <AnnouncementBar announcement={data.announcement} /> -->
+	<AnnouncementBar announcement={data.announcement} />
 	<main class="flex-1">
 		{@render children()}
 	</main>

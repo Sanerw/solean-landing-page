@@ -17,6 +17,7 @@ const fixture = JSON.parse(
 	readFileSync(fileURLToPath(new URL('fixtures/sanity-articles.json', import.meta.url)), 'utf8')
 ) as {
 	homePages: Record<string, HomeCopy>;
+	announcements: Record<string, { text: string }>;
 };
 
 interface HomeCopy {
@@ -45,3 +46,6 @@ export function homeCopy(language: 'de' | 'en' = 'en'): HomeCopy {
 
 /** English, because the fidelity specs run against `/en`. */
 export const HOME = homeCopy('en');
+
+/** The announcement bar's one line, read out of the fixture for the same reason. */
+export const ANNOUNCEMENT = fixture.announcements.en.text;

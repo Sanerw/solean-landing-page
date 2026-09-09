@@ -1,38 +1,30 @@
 <script lang="ts">
 	import { m } from '$lib/paraglide/messages';
 	import type { Announcement } from '$lib/sanity/queries';
-	import CountdownTimer from './CountdownTimer.svelte';
 
 	const { announcement }: { announcement: Announcement | null } = $props();
 </script>
 
 <!--
-	Nothing rather than an empty bar when the offer is unset. The bar sits above every marketing
+	Nothing rather than an empty bar when the line is unset. The bar sits above every marketing
 	page, including the legal ones, so a missing announcement must not cost them a blank strip.
 -->
-{#if announcement}
+{#if announcement?.text}
 	<aside
 		data-site-announcement
 		class="bg-announcement text-announcement-foreground"
 		aria-label={m.a11y_announcement()}
 	>
+		<!-- One line, the same words at every width: the artboards change the type size and the
+		     bar's height, not the copy, so there is no narrow variant to keep in step. -->
 		<div
-			class="mx-auto flex h-16 w-full items-center justify-between gap-3 px-4 py-2 text-left sm:h-11 sm:justify-center sm:gap-24 sm:px-9 sm:py-0 sm:text-center"
+			class="mx-auto flex h-16 w-full items-center justify-center px-4 py-2 sm:h-13 sm:px-14 sm:py-0"
 		>
-			<div class="flex min-w-0 flex-col gap-0.5 sm:hidden">
-				<span class="text-xs font-bold tracking-wide">{announcement.mobileTitle}</span>
-				<span class="text-xs">{announcement.mobileDetail}</span>
-			</div>
-
-			<p class="hidden leading-normal sm:block">
-				<span class="block text-xs font-bold tracking-wide">{announcement.title}</span>
-				<span class="mt-0.5 block text-xs">
-					<span class="font-bold">{announcement.prefix}</span>{' '}
-					<span><span class="font-bold text-primary">{announcement.amount}</span>{announcement.suffix}</span>
-				</span>
+			<p
+				class="text-center text-xs font-bold uppercase leading-normal tracking-wider sm:text-sm sm:tracking-widest"
+			>
+				{announcement.text}
 			</p>
-
-			<CountdownTimer class="shrink-0" />
 		</div>
 	</aside>
 {/if}

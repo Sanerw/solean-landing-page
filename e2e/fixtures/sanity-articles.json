@@ -1356,20 +1356,10 @@
 	},
 	"announcements": {
 		"de": {
-			"amount": "Fragebogen starten",
-			"mobileDetail": "Jetzt auch als Tablette — Fragebogen starten",
-			"mobileTitle": "NEU: EINE TABLETTE. KEINE NADEL.",
-			"prefix": "Die GLP-1-Behandlung gibt es jetzt auch als Tablette. Ärztlich geprüft.",
-			"suffix": "",
-			"title": "NEU: EINE TABLETTE. KEINE NADEL."
+			"text": "WEGOVY PILLE JETZT VERFÜGBAR · ÄRZTLICH BEGLEITET"
 		},
 		"en": {
-			"amount": "Start the questionnaire",
-			"mobileDetail": "Now also as a tablet — start the questionnaire",
-			"mobileTitle": "NEW: A TABLET. NO NEEDLE.",
-			"prefix": "GLP-1 treatment now also comes as a tablet. Clinically reviewed.",
-			"suffix": "",
-			"title": "NEW: A TABLET. NO NEEDLE."
+			"text": "WEGOVY PILL NOW AVAILABLE · CLINICIAN-LED CARE"
 		}
 	},
 	"testimonials": {

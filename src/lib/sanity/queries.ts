@@ -151,9 +151,7 @@ export interface SanityLegalPage {
 
 /** The announcement bar shows on every marketing page, so the layout reads it on its own. */
 export const announcementQuery = defineQuery(
-	`*[_id == "homePage-" + $language][0].announcement{
-		title, prefix, amount, suffix, mobileTitle, mobileDetail
-	}`
+	`*[_id == "homePage-" + $language][0].announcement{ text }`
 );
 
 /** The landing page, addressed by its fixed id rather than looked up by language. */
@@ -187,12 +185,8 @@ export const homePageQuery = defineQuery(`*[_id == "homePage-" + $language][0]{
 }`);
 
 export interface Announcement {
-	title: string;
-	prefix: string;
-	amount: string;
-	suffix: string;
-	mobileTitle: string;
-	mobileDetail: string;
+	/** One line, the same at every width. */
+	text: string;
 }
 
 interface IconBenefit {

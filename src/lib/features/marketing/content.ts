@@ -100,14 +100,6 @@ export const LANGUAGES = [
 	{ value: 'de', label: 'Deutsch', short: 'DE' }
 ] as const;
 
-export interface AnnouncementContent {
-	title: string;
-	prefix: string;
-	amount: string;
-	suffix: string;
-	/** The narrow bar sets the offer as two plain lines, so it needs no emphasis split. */
-	mobile: { title: string; detail: string };
-}
 
 /**
  * The figures shown when Reviews.io cannot be reached. They are the platform's own, read from

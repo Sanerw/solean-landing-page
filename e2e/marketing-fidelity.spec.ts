@@ -4,31 +4,16 @@
  * English reference would be measuring the wrong page.
  */
 import { expect, test } from '@playwright/test';
-import { HOME } from './content';
+import { ANNOUNCEMENT, HOME } from './content';
 import { settledInView } from './motion';
 
-/**
- * The offer bar is commented out of the marketing layout, deliberately and reversibly: the
- * copy still comes from Sanity and the layout load still reads it, so restoring the bar is
- * uncommenting two lines. This coverage is parked the same way rather than deleted, so it
- * comes back with it.
- */
-test.skip('the narrow announcement bar sets the offer as one plain line', async ({ page }) => {
+test('the narrow announcement bar carries its one line at 64px', async ({ page }) => {
 	await page.setViewportSize({ width: 375, height: 812 });
 	await page.goto('/en');
 
 	const announcement = page.getByRole('complementary', { name: 'Wegovy Pill offer' });
 	await expect(announcement).toHaveCSS('height', '64px');
-	await expect(announcement.getByText('WEGOVY PILL — NOW AVAILABLE', { exact: true })).toBeVisible();
-	const detail = announcement.getByText('Order today + get a free \u20ac50 gift', { exact: true });
-	await expect(detail).toBeVisible();
-	// The narrow bar sets the offer as one plain line: no gold amount, no bold lead-in.
-	await expect(detail).toHaveCSS('font-weight', '400');
-	for (const unit of ['D', 'H', 'M']) {
-		await expect(announcement.getByText(unit, { exact: true })).toBeVisible();
-	}
-	await expect(announcement.getByText('secs', { exact: true })).toBeHidden();
-	await expect(announcement.getByText(':', { exact: true }).first()).toBeHidden();
+	await expect(announcement.getByText(ANNOUNCEMENT, { exact: true })).toBeVisible();
 });
 
 test('the reference hero asset renders without narrow-screen overflow', async ({ page }) => {
@@ -103,12 +88,14 @@ test('the reference hero asset renders without narrow-screen overflow', async ({
 	expect(heroBox?.width).toBe(375);
 	await expect(hero).toHaveCSS('border-top-left-radius', '0px');
 
-	// The hero fills exactly one screen, so the fold lands at its edge rather than inside it.
-	// It used to take the viewport minus the offer bar; with the bar commented out of the
-	// layout it takes the height the bar used to hold, which is what `--spacing-hero-bleed`
-	// now says. Read from the page rather than repeating the literal.
+	// The bar and the hero together fill exactly one screen: the hero takes the viewport minus
+	// the announcement bar, so the fold lands at the hero's edge rather than inside it. Read
+	// from the page rather than repeating the literals set above.
 	const viewportHeight = await page.evaluate(() => window.innerHeight);
-	expect(Math.round(heroBox!.height)).toBe(viewportHeight);
+	const barBox = await page
+		.getByRole('complementary', { name: 'Wegovy Pill offer' })
+		.boundingBox();
+	expect(Math.round(barBox!.height + heroBox!.height)).toBe(viewportHeight);
 
 	// The narrow frame carries the headline a step up the scale from the wide one.
 	await expect(page.getByRole('heading', { level: 1 })).toHaveCSS('font-size', '48px');
@@ -178,7 +165,7 @@ test('the reference hero asset renders without narrow-screen overflow', async ({
 
 	await page.setViewportSize({ width: 1440, height: 900 });
 
-	// The wide bar's own 44px height is parked with the rest of the offer-bar coverage above.
+	// The wide bar's own 52px height is asserted with the rest of its coverage below.
 
 	// The wide composition darkens exactly as the narrow one does: one ramp, not two.
 	await expect(scrim).toHaveCount(1);
@@ -200,18 +187,15 @@ test('the reference hero asset renders without narrow-screen overflow', async ({
 	await expect(hero.locator('img').first()).toHaveCSS('object-position', '50% 50%');
 });
 
-/** Parked with the offer bar, alongside the narrow-bar coverage above. */
-test.skip('the wide announcement bar sets the offer with its seconds', async ({ page }) => {
+// The same words as the narrow bar, in a shorter strip: the artboards change the type size and
+// the height, not the copy, so a second locator would be measuring the same string twice.
+test('the wide announcement bar keeps that line in a 52px strip', async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 900 });
 	await page.goto('/en');
 
 	const announcement = page.getByRole('complementary', { name: 'Wegovy Pill offer' });
-	await expect(announcement).toHaveCSS('height', '44px');
-	await expect(announcement.getByText('WEGOVY PILL NOW AVAILABLE', { exact: true })).toBeVisible();
-	await expect(
-		announcement.getByText('Order today and get a free €50 gift.', { exact: true })
-	).toBeVisible();
-	await expect(announcement.getByText('secs', { exact: true })).toBeVisible();
+	await expect(announcement).toHaveCSS('height', '52px');
+	await expect(announcement.getByText(ANNOUNCEMENT, { exact: true })).toBeVisible();
 });
 
 test('keeps the Learn teaser compact and uses the reference divider', async ({ page }) => {
@@ -424,6 +408,7 @@ test('the mobile menu opens as the reference full-screen panel', async ({ page }
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto('/en');
 
+	const announcementBar = page.getByRole('complementary', { name: 'Wegovy Pill offer' });
 	const trigger = page.getByRole('button', { name: 'Open menu' });
 	const closedLogo = await page.getByLabel('Solean, home').locator('svg').first().boundingBox();
 	const closedTrigger = await trigger.boundingBox();
@@ -432,16 +417,19 @@ test('the mobile menu opens as the reference full-screen panel', async ({ page }
 	const panel = page.getByRole('dialog');
 	await expect(panel).toBeVisible();
 
-	// Full viewport on the deep green ground. It used to start below the offer bar, which is
-	// commented out of the layout now, so there is nothing above it to sit under. Polled,
-	// because the panel is still sliding in when it first becomes visible.
+	// Sits under the announcement bar on the deep green ground, not over the whole viewport.
+	// Polled, because the panel is still sliding in when it first becomes visible.
+	const barHeight = (await announcementBar.boundingBox())!.height;
+	expect(barHeight).toBe(64);
 	await expect
 		.poll(async () => {
 			const box = await panel.boundingBox();
 			return { x: box?.x, y: box?.y, width: box?.width };
 		})
-		.toEqual({ x: 0, y: 0, width: 390 });
+		.toEqual({ x: 0, y: barHeight, width: 390 });
 	await expect(panel).toHaveCSS('background-color', 'rgb(23, 56, 36)');
+	// The bar stays readable: the scrim starts at the panel, not above it.
+	expect((await announcementBar.boundingBox())?.y).toBe(0);
 
 	// The logo and the button do not move when the menu opens.
 	expect(await panel.getByLabel('Solean, home').locator('svg').boundingBox()).toMatchObject(closedLogo!);
@@ -502,11 +490,7 @@ test('the mobile menu opens as the reference full-screen panel', async ({ page }
 	await expect(page.getByRole('button', { name: 'Treatments' })).toBeVisible();
 });
 
-// Parked with the offer bar itself, for the reason given above: every assertion here measures
-// the menu against the bar's visible height, and there is no bar to measure.
-test.skip('the mobile menu follows only the visible part of the announcement bar', async ({
-	page
-}) => {
+test('the mobile menu follows only the visible part of the announcement bar', async ({ page }) => {
 	async function expectMenuTop(width: number, scrollY: number, expectedTop: number) {
 		await page.setViewportSize({ width, height: 844 });
 		await page.goto('/en');
@@ -529,8 +513,8 @@ test.skip('the mobile menu follows only the visible part of the announcement bar
 	await expectMenuTop(390, 70, 0);
 	await page.keyboard.press('Escape');
 
-	// The same calculation follows the shorter 44px tablet bar.
-	await expectMenuTop(768, 22, 22);
+	// The same calculation follows the shorter 52px tablet bar, half of it scrolled away.
+	await expectMenuTop(768, 26, 26);
 	await page.keyboard.press('Escape');
 
 	// An unset announcement renders no aside, represented here by removing that optional node.
