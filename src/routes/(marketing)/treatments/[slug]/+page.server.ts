@@ -1,6 +1,12 @@
 import { error } from '@sveltejs/kit';
 import { cachedRating } from '$lib/features/marketing/rating-cache';
-import { findTreatmentPage } from '$lib/features/treatments/content';
+import { toSharedSections, toTreatmentPages } from '$lib/features/treatments/from-sanity';
+import {
+	treatmentsQuery,
+	treatmentsPageQuery,
+	type SanityTreatment,
+	type SanityTreatmentsPage
+} from '$lib/sanity/queries';
 import type { PageServerLoad } from './$types';
 
 /**
@@ -10,15 +16,38 @@ import type { PageServerLoad } from './$types';
  * instance the landing page uses, so a visitor moving between the two pages reads one set of
  * figures and Reviews.io is not called twice.
  *
- * The page itself is resolved here only to decide whether it exists. What is returned is the
- * slug, because the copy is built from messages during render: baking the strings into the
- * load payload would freeze them to the locale of whichever request produced them, and would
- * send every string over the wire for no gain.
+ * Every treatment is read, not just the one being viewed: the plan comparison lists them all,
+ * and one response is what stops the table and the dose selector above it holding two
+ * different price lists. From feature 27b the copy and the prices are Sanity's, so they are
+ * resolved here rather than during render, and `locals.locale` decides the language.
  */
-export const load: PageServerLoad = async ({ params, fetch }) => {
-	if (!findTreatmentPage(params.slug)) {
+export const load: PageServerLoad = async ({ params, fetch, locals }) => {
+	const [rating, treatments, shared] = await Promise.all([
+		cachedRating(fetch),
+		locals.sanity.loadQuery<SanityTreatment[] | null>(treatmentsQuery, {
+			language: locals.locale
+		}),
+		locals.sanity.loadQuery<SanityTreatmentsPage | null>(treatmentsPageQuery, {
+			language: locals.locale
+		})
+	]);
+
+	const pages = toTreatmentPages(treatments.data);
+	const page = pages.get(params.slug);
+
+	// No document is the 404 now, where an absent fixture entry used to be. That also covers a
+	// treatment the catalogue knows but nobody has written a page for.
+	if (!page) {
 		error(404, 'No such treatment');
 	}
 
-	return { slug: params.slug, rating: await cachedRating(fetch) };
+	return {
+		slug: params.slug,
+		page,
+		// Ordered by the catalogue so the comparison's own sort has a stable input, and sent as
+		// entries because a Map does not survive serialisation to the browser.
+		treatments: [...pages.values()],
+		shared: toSharedSections(shared.data),
+		rating
+	};
 };

@@ -6,13 +6,19 @@
 	import { ROUTES } from '$lib/features/marketing/content';
 	import { SECTION_HEADING, SECTION_LEAD, SECTION_Y } from './type';
 	import { comparisonDurations, comparisonRows, formatPrice } from './content';
+	import type { SanityTreatmentPage } from './from-sanity';
 	import type { Plan } from './types';
 	import type { Money } from '$lib/domain';
 
-	const { slug }: { slug: string } = $props();
+	/**
+	 * Every treatment, not just this one: the table compares them, and taking them as a prop
+	 * rather than reading a module keeps the rows and the dose selector above on one response.
+	 */
+	const { slug, treatments }: { slug: string; treatments: readonly SanityTreatmentPage[] } =
+		$props();
 
 	// Read during render so the names and labels follow the active locale.
-	const rows = $derived(comparisonRows(slug));
+	const rows = $derived(comparisonRows(slug, treatments));
 	const durations = $derived(comparisonDurations(rows));
 
 	/** The artboard marks one column as the best value; the data decides which. */
@@ -122,8 +128,9 @@
 							     then the chip beside them rather than stacked under them. -->
 							<div class="flex items-center gap-3">
 								{#if row.photo}
-									<enhanced:img
-										src={row.photo.picture}
+									<img
+										src={row.photo.picture.src}
+										srcset={row.photo.picture.srcset}
 										alt=""
 										aria-hidden="true"
 										sizes="56px"
@@ -209,8 +216,9 @@
 				-->
 				<div class="flex items-center gap-3">
 					{#if row.photo}
-						<enhanced:img
-							src={row.photo.picture}
+						<img
+							src={row.photo.picture.src}
+							srcset={row.photo.picture.srcset}
 							alt=""
 							aria-hidden="true"
 							sizes="48px"

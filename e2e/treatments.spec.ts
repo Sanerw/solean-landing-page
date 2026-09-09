@@ -89,12 +89,14 @@ for (const treatment of GALLERY) {
 			// A product photograph is content, so it carries a real alternative text.
 			await expect(gallery.locator('img')).toHaveAccessibleName(/injection pen/i);
 
-			// Served through `enhanced:img`, so a phone is not sent the 1.4MB original. The ladder
-			// lives on the `source` elements, not on the fallback `img`, which is exactly the
-			// mistake this assertion made first time round.
-			const source = gallery.locator('picture source').first();
-			await expect(source).toHaveAttribute('srcset', /\d+w/);
-			await expect(source).toHaveAttribute('sizes', /46vw/);
+			// From feature 27b the photograph comes from Sanity's CDN with `auto=format`, so the
+			// ladder is a `w`-descriptor srcset on one `img` and there is no generated `<picture>`
+			// with a source per format. A phone is still not sent the original: the descriptors
+			// are what stop that, wherever they live.
+			const image = gallery.locator('img').first();
+			await expect(image).toHaveAttribute('srcset', /\d+w/);
+			await expect(image).toHaveAttribute('sizes', /46vw/);
+			await expect(gallery.locator('picture')).toHaveCount(0);
 		}
 	});
 }

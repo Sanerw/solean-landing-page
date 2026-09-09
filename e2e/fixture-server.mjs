@@ -225,6 +225,15 @@ async function sanityQuery(url) {
 		return fixture.legalPages[`${param('$slug')}-${language}`] ?? null;
 	}
 
+	// The singleton first: its id contains the word the list query filters on, so a list branch
+	// tested first would answer the shared sections with an array of treatments.
+	if (query.includes('treatmentsPage-')) {
+		return fixture.treatmentsPages[language] ?? null;
+	}
+	if (query.includes('_type == "treatment"')) {
+		return fixture.treatments[language] ?? [];
+	}
+
 	const article = fixture.articles[language] ?? null;
 
 	// The Journal asks for the list, the article page for one by slug, and the absence of a

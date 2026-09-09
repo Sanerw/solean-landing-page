@@ -3,126 +3,49 @@ import { TREATMENTS, eur } from '$lib/domain';
 import {
 	comparisonDurations,
 	comparisonRows,
-	findTreatmentPage,
 	firstMonthSaving,
-	formatPrice,
-	howItWorksSteps,
-	standardMonthly,
-	startingDose,
-	treatmentFaq,
-	treatmentPages
+	formatPrice
 } from './content';
-
-describe('findTreatmentPage', () => {
-	it('resolves a known slug', () => {
-		expect(findTreatmentPage('wegovy-pill')?.slug).toBe('wegovy-pill');
-	});
-
-	it('answers null for an unknown slug, which the route turns into a 404', () => {
-		expect(findTreatmentPage('nope')).toBeNull();
-	});
-
-	it('is not fooled by a slug that only looks like one', () => {
-		expect(findTreatmentPage('')).toBeNull();
-		expect(findTreatmentPage('WEGOVY-PILL')).toBeNull();
-	});
-});
+import type { TreatmentPage } from './types';
 
 /**
- * The whole point of keying pages by the catalogue id: the navigation builds
- * `/treatments/${treatment.id}` from `TREATMENTS`, so a treatment without a page is a dead
- * link in the dropdown and a treatment page without a catalogue entry has no name to print.
- * Both directions, so neither list can grow past the other unnoticed.
+ * The pages these helpers derive from are Sanity's from feature 27b, so the fixtures they were
+ * written against are gone. They are built here instead, carrying only the fields each helper
+ * reads: the point of these tests is the arithmetic and the ordering, not the copy.
+ *
+ * The prices are the live ones, so a figure changing in the Studio does not silently change
+ * what "55 EUR saving" means here.
  */
-describe('coverage against the catalogue', () => {
-	it('gives every catalogue treatment a page', () => {
-		for (const treatment of TREATMENTS) {
-			expect(findTreatmentPage(treatment.id), treatment.id).not.toBeNull();
-		}
-	});
+function page(slug: string, monthly: number, first = 6_900): TreatmentPage {
+	return {
+		slug,
+		formLabel: '',
+		isNew: false,
+		galleryCaption: '',
+		intro: '',
+		doses: [{ label: 'first', monthlyPrice: eur(monthly) }],
+		plans: [3, 6, 9, 12].map((durationMonths, index) => ({
+			durationMonths: durationMonths as 3 | 6 | 9 | 12,
+			monthlyPrice: eur(monthly - index * 500),
+			recommended: durationMonths === 6
+		})),
+		firstMonth: eur(first),
+		clinicianNote: { title: '', body: '' }
+	};
+}
 
-	it('gives every page a catalogue treatment', () => {
-		const ids = TREATMENTS.map((treatment) => treatment.id);
-		for (const page of treatmentPages()) {
-			expect(ids, page.slug).toContain(page.slug);
-		}
-	});
-});
-
-describe('every page', () => {
-	const pages = treatmentPages();
-
-	it.each(pages.map((page) => [page.slug, page] as const))(
-		'%s offers doses, each priced',
-		(_slug, page) => {
-			expect(page.doses.length).toBeGreaterThan(0);
-			for (const dose of page.doses) {
-				expect(dose.label).not.toBe('');
-				expect(dose.monthlyPrice.amount).toBeGreaterThan(0);
-			}
-		}
-	);
-
-	it.each(pages.map((page) => [page.slug, page] as const))(
-		'%s offers plans, ordered by ascending duration',
-		(_slug, page) => {
-			expect(page.plans.length).toBeGreaterThan(0);
-
-			const durations = page.plans.map((plan) => plan.durationMonths);
-			expect(durations).toEqual([...durations].sort((a, b) => a - b));
-		}
-	);
-
-	it.each(pages.map((page) => [page.slug, page] as const))(
-		'%s marks exactly one plan as the best value',
-		(_slug, page) => {
-			expect(page.plans.filter((plan) => plan.recommended)).toHaveLength(1);
-		}
-	);
-
-	// A first month that is not below the standard price is not an offer, and the saving
-	// derived from it would be zero or negative on a badge that says "save".
-	it.each(pages.map((page) => [page.slug, page] as const))(
-		'%s discounts the first month below every plan month',
-		(_slug, page) => {
-			for (const plan of page.plans) {
-				expect(page.firstMonth.amount).toBeLessThan(plan.monthlyPrice.amount);
-			}
-		}
-	);
-
-	// The selector sits directly above the comparison table on the same page. If the dose it
-	// opens on cost something other than the shortest plan, the page would quote two different
-	// standard prices within one screen, which is the defect the export itself carries.
-	it.each(pages.map((page) => [page.slug, page] as const))(
-		'%s prices its starting dose at the standard monthly price',
-		(_slug, page) => {
-			expect(startingDose(page).monthlyPrice).toEqual(standardMonthly(page));
-		}
-	);
-
-	it.each(pages.map((page) => [page.slug, page] as const))(
-		'%s gets cheaper per month the longer the plan runs',
-		(_slug, page) => {
-			const amounts = page.plans.map((plan) => plan.monthlyPrice.amount);
-			expect(amounts).toEqual([...amounts].sort((a, b) => b - a));
-		}
-	);
-});
+/** The three as the live documents price them, cheapest last so the ordering test has work to do. */
+const PAGES = [page('mounjaro', 16_900), page('wegovy', 14_900), page('wegovy-pill', 12_400)];
 
 describe('firstMonthSaving', () => {
 	// The figure the export prints on the Wegovy Pill badge, reached by subtraction rather
 	// than by being typed a second time.
 	it('is the standard month minus the first, 55 EUR on the pill', () => {
-		const page = findTreatmentPage('wegovy-pill')!;
-
-		expect(firstMonthSaving(page)).toEqual(eur(5_500));
+		expect(firstMonthSaving(page('wegovy-pill', 12_400))).toEqual(eur(5_500));
 	});
 
 	it('is larger on a dearer treatment, without a second stored label', () => {
-		const page = findTreatmentPage('mounjaro')!;
-
-		expect(firstMonthSaving(page)).toEqual(eur(10_000));
+		expect(firstMonthSaving(page('mounjaro', 16_900))).toEqual(eur(10_000));
 	});
 });
 
@@ -147,7 +70,7 @@ describe('formatPrice', () => {
 
 describe('comparisonRows', () => {
 	it('offers one row per catalogue treatment', () => {
-		const rows = comparisonRows('wegovy-pill');
+		const rows = comparisonRows('wegovy-pill', PAGES);
 
 		expect([...rows.map((row) => row.slug)].sort()).toEqual(
 			[...TREATMENTS.map((treatment) => treatment.id)].sort()
@@ -158,7 +81,7 @@ describe('comparisonRows', () => {
 	// comparison reads naturally in. Derived from the prices, so a price change reorders the
 	// table rather than leaving it stale.
 	it('orders the rows by ascending monthly price', () => {
-		const rows = comparisonRows('wegovy-pill');
+		const rows = comparisonRows('wegovy-pill', PAGES);
 
 		expect(rows.map((row) => row.slug)).toEqual(['wegovy-pill', 'wegovy', 'mounjaro']);
 
@@ -167,7 +90,7 @@ describe('comparisonRows', () => {
 	});
 
 	it('names each row from the catalogue rather than from its own copy', () => {
-		const rows = comparisonRows('wegovy-pill');
+		const rows = comparisonRows('wegovy-pill', PAGES);
 
 		expect(rows.map((row) => row.name)).toEqual([
 			'Wegovy Pill',
@@ -179,16 +102,16 @@ describe('comparisonRows', () => {
 	// The thumbnail is the gallery's own art, so a treatment cannot show one picture in the
 	// hero and a different one in the comparison.
 	it('carries each treatment its own gallery photograph, where it has one', () => {
-		const rows = comparisonRows('wegovy-pill');
+		const rows = comparisonRows('wegovy-pill', PAGES);
 
 		for (const row of rows) {
-			expect(row.photo, row.slug).toEqual(findTreatmentPage(row.slug)!.photo);
+	expect(row.photo, row.slug).toEqual(PAGES.find((each) => each.slug === row.slug)!.photo);
 		}
 	});
 
 	// The row a visitor is already on is the one that must not link to itself.
 	it('marks exactly one row as current', () => {
-		const rows = comparisonRows('wegovy');
+		const rows = comparisonRows('wegovy', PAGES);
 
 		expect(rows.filter((row) => row.isCurrent).map((row) => row.slug)).toEqual(['wegovy']);
 	});
@@ -196,13 +119,13 @@ describe('comparisonRows', () => {
 	// The route 404s before this is reached, so an unknown slug marks nothing rather than
 	// throwing: the comparison is still renderable, just with no row highlighted.
 	it('marks nothing for a slug that is not a treatment', () => {
-		expect(comparisonRows('nope').some((row) => row.isCurrent)).toBe(false);
+		expect(comparisonRows('nope', PAGES).some((row) => row.isCurrent)).toBe(false);
 	});
 
 	// The durations are the table's columns. A ragged set has no table to render, so this is
 	// the assertion that stops one treatment gaining a plan the others do not have.
 	it('offers the same durations on every row', () => {
-		const rows = comparisonRows('wegovy-pill');
+		const rows = comparisonRows('wegovy-pill', PAGES);
 		const first = rows[0].plans.map((plan) => plan.durationMonths);
 
 		for (const row of rows) {
@@ -211,49 +134,19 @@ describe('comparisonRows', () => {
 	});
 
 	it('reads its prices from the same pages the dose selector uses', () => {
-		const rows = comparisonRows('wegovy-pill');
+		const rows = comparisonRows('wegovy-pill', PAGES);
 		const pill = rows.find((row) => row.slug === 'wegovy-pill')!;
 
-		expect(pill.plans).toEqual(findTreatmentPage('wegovy-pill')!.plans);
+		expect(pill.plans).toEqual(PAGES.find((each) => each.slug === 'wegovy-pill')!.plans);
 	});
 });
 
 describe('comparisonDurations', () => {
 	it('reads the header off the rows, so it cannot drift from them', () => {
-		expect(comparisonDurations(comparisonRows('wegovy-pill'))).toEqual([3, 6, 9, 12]);
+		expect(comparisonDurations(comparisonRows('wegovy-pill', PAGES))).toEqual([3, 6, 9, 12]);
 	});
 
 	it('is empty rather than throwing when there are no rows', () => {
 		expect(comparisonDurations([])).toEqual([]);
-	});
-});
-
-describe('the section content', () => {
-	it('offers three how-it-works steps, each with a title and a body', () => {
-		const steps = howItWorksSteps();
-
-		expect(steps).toHaveLength(3);
-		for (const step of steps) {
-			expect(step.title).not.toBe('');
-			expect(step.body).not.toBe('');
-		}
-	});
-
-	// Seven, not six: the narrow artboard drops one for room, which is a layout accident
-	// rather than an editorial decision.
-	it('offers seven FAQ items, each answered', () => {
-		const faq = treatmentFaq();
-
-		expect(faq).toHaveLength(7);
-		for (const item of faq) {
-			expect(item.question).not.toBe('');
-			expect(item.answer).not.toBe('');
-		}
-	});
-
-	it('asks each question once', () => {
-		const questions = treatmentFaq().map((item) => item.question);
-
-		expect(new Set(questions).size).toBe(questions.length);
 	});
 });

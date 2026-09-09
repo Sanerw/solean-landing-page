@@ -70,11 +70,20 @@
 					<!-- The oldest article has nothing after it, so the pill is not drawn rather than
 					     drawn dead. -->
 					{#if next}
+						<!--
+							Drawn from `sm` up. Buttons are `whitespace-nowrap` and `shrink-0`, so the
+							two labels cannot share a 390px row in German: "Zurück zum Journal" beside
+							"Nächster Artikel" is 34 characters and ran off the edge. The way back is
+							what a reader reaches for at the top of an article, so it keeps the row to
+							itself there. Nothing is lost: the previous and next articles have their
+							own band at the foot of every page.
+						-->
 						<Button
 							href={localizeHref(ROUTES.learnArticle(next.slug))}
 							variant="secondary"
 							size="sm"
 							surface="dark"
+							class="max-sm:hidden"
 						>
 							{m.learn_next_article()}
 							<ArrowRightIcon aria-hidden="true" />

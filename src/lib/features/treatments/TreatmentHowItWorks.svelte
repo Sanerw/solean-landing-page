@@ -12,12 +12,13 @@
 		PANEL_Y
 	} from '$lib/features/marketing/container';
 	import { ROUTES } from '$lib/features/marketing/content';
-	import { howItWorksSteps } from './content';
+	import type { HowItWorksStep } from './types';
 	import { SECTION_HEADING, SECTION_LEAD } from './type';
 	import visual from '$lib/assets/panels/how-it-works-enhanced.webp?enhanced&w=400;600;800;1200&quality=90';
 
 	// Read during render so the copy follows the active locale.
-	const steps = $derived(howItWorksSteps());
+	/** The steps are Sanity's from 27b, and shared by all three pages, so the route reads them. */
+	const { steps }: { steps: readonly HowItWorksStep[] } = $props();
 </script>
 
 <!--

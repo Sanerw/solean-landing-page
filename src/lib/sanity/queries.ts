@@ -311,6 +311,28 @@ export const treatmentQuery = defineQuery(`*[_id == "treatment-" + $treatmentId 
 	firstMonthCents
 }`);
 
+/**
+ * Every treatment in one language.
+ *
+ * The page needs all three even though it draws one: the plan comparison lists every treatment
+ * so a reader can see what the others cost, and it reads their plans off this same response.
+ * One query rather than three reads, so the table and the dose selector above it cannot end up
+ * holding two different price lists.
+ */
+export const treatmentsQuery = defineQuery(`*[_type == "treatment" && language == $language]{
+	treatmentId,
+	language,
+	formLabel,
+	isNew,
+	photo,
+	galleryCaption,
+	intro,
+	clinicianNote{ title, body },
+	doses[]{ _key, label, monthlyPriceCents },
+	plans[]{ _key, durationMonths, monthlyPriceCents, recommended },
+	firstMonthCents
+}`);
+
 /** What all three pages share, so the three cannot drift apart. */
 export const treatmentsPageQuery = defineQuery(`*[_id == "treatmentsPage-" + $language][0]{
 	howItWorks[]{ _key, title, body },

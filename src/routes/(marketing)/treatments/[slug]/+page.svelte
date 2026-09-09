@@ -8,7 +8,7 @@
 	import { RATING, ROUTES } from '$lib/features/marketing/content';
 	import { formatScore } from '$lib/features/marketing/reviews';
 	import ShieldCheckIcon from '@lucide/svelte/icons/shield-check';
-	import { findTreatmentPage, startingDose, treatmentFaq } from '$lib/features/treatments/content';
+	import { startingDose } from '$lib/features/treatments/content';
 	import FaqSection from '$lib/features/marketing/FaqSection.svelte';
 	import PlanComparison from '$lib/features/treatments/PlanComparison.svelte';
 	import TreatmentHowItWorks from '$lib/features/treatments/TreatmentHowItWorks.svelte';
@@ -21,9 +21,10 @@
 
 	let { data }: PageProps = $props();
 
-	// Resolved during render, not in the load, so the copy follows the active locale. The load
-	// already proved the slug exists, so both of these are narrowing rather than fallbacks.
-	const treatmentPage = $derived(findTreatmentPage(data.slug)!);
+	// The page is Sanity's from feature 27b, resolved in the load where the locale and the
+	// preview token live. The name still comes from the catalogue, which owns it along with the
+	// Shopify variant; the load already proved the slug exists, so this is narrowing.
+	const treatmentPage = $derived(data.page);
 	const name = $derived(treatmentDisplayName(findTreatment(data.slug)!));
 
 	// Null when Reviews.io could not be reached, which the platform's own figures answer, the
@@ -47,7 +48,7 @@
 	const faq = $derived({
 		title: m.treatment_faq_heading(),
 		lead: m.treatment_faq_lead(),
-		items: treatmentFaq()
+		items: data.shared.faqs
 	});
 </script>
 
@@ -169,9 +170,9 @@
 	</div>
 </section>
 
-<PlanComparison slug={data.slug} />
+<PlanComparison slug={data.slug} treatments={data.treatments} />
 
-<TreatmentHowItWorks />
+<TreatmentHowItWorks steps={data.shared.howItWorks} />
 
 <FaqSection {faq} compact />
 

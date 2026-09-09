@@ -16283,5 +16283,525 @@
 			"slug": "returns",
 			"title": "Right of withdrawal"
 		}
+	},
+	"treatments": {
+		"de": [
+			{
+				"clinicianNote": {
+					"body": "Beginne niedrig und erhöhe nur, wenn deine Ärztin oder dein Arzt es empfiehlt.",
+					"title": "Ärztlich begleitete Dosierung"
+				},
+				"doses": [
+					{
+						"_key": "dose-2.5mg",
+						"label": "2.5mg",
+						"monthlyPriceCents": 16900
+					},
+					{
+						"_key": "dose-5mg",
+						"label": "5mg",
+						"monthlyPriceCents": 19400
+					},
+					{
+						"_key": "dose-7.5mg",
+						"label": "7.5mg",
+						"monthlyPriceCents": 22400
+					},
+					{
+						"_key": "dose-10mg",
+						"label": "10mg",
+						"monthlyPriceCents": 25400
+					}
+				],
+				"firstMonthCents": 6900,
+				"formLabel": "Wöchentliche Injektion",
+				"galleryCaption": "Tirzepatid-Injektion · ärztlich verordnet",
+				"intro": "Eine verschreibungspflichtige Injektion zur einmal wöchentlichen Anwendung, die auf zwei Appetitwege wirkt, neben Ernährung, Bewegung und ärztlicher Begleitung.",
+				"isNew": false,
+				"language": "de",
+				"photo": {
+					"_type": "image",
+					"alt": "Ein Solean-Injektionspen neben seiner Verpackung",
+					"asset": {
+						"_ref": "image-60103e1a0c1ea806ed8f83c9a2624c6517c193a2-1315x1196-webp",
+						"_type": "reference"
+					}
+				},
+				"plans": [
+					{
+						"_key": "plan-3",
+						"durationMonths": 3,
+						"monthlyPriceCents": 16900,
+						"recommended": false
+					},
+					{
+						"_key": "plan-6",
+						"durationMonths": 6,
+						"monthlyPriceCents": 16400,
+						"recommended": true
+					},
+					{
+						"_key": "plan-9",
+						"durationMonths": 9,
+						"monthlyPriceCents": 15900,
+						"recommended": false
+					},
+					{
+						"_key": "plan-12",
+						"durationMonths": 12,
+						"monthlyPriceCents": 15400,
+						"recommended": false
+					}
+				],
+				"treatmentId": "mounjaro"
+			},
+			{
+				"clinicianNote": {
+					"body": "Beginne niedrig und erhöhe nur, wenn deine Ärztin oder dein Arzt es empfiehlt.",
+					"title": "Ärztlich begleitete Dosierung"
+				},
+				"doses": [
+					{
+						"_key": "dose-0.25mg",
+						"label": "0.25mg",
+						"monthlyPriceCents": 14900
+					},
+					{
+						"_key": "dose-0.5mg",
+						"label": "0.5mg",
+						"monthlyPriceCents": 17400
+					},
+					{
+						"_key": "dose-1mg",
+						"label": "1mg",
+						"monthlyPriceCents": 20400
+					},
+					{
+						"_key": "dose-1.7mg",
+						"label": "1.7mg",
+						"monthlyPriceCents": 23400
+					}
+				],
+				"firstMonthCents": 6900,
+				"formLabel": "Wöchentliche Injektion",
+				"galleryCaption": "Semaglutid-Injektion · ärztlich verordnet",
+				"intro": "Eine verschreibungspflichtige Injektion zur einmal wöchentlichen Anwendung, die dein Gewichtsmanagement neben Ernährung, Bewegung und ärztlicher Begleitung unterstützt.",
+				"isNew": false,
+				"language": "de",
+				"photo": {
+					"_type": "image",
+					"alt": "Ein Solean-Injektionspen neben seiner Verpackung",
+					"asset": {
+						"_ref": "image-60103e1a0c1ea806ed8f83c9a2624c6517c193a2-1315x1196-webp",
+						"_type": "reference"
+					}
+				},
+				"plans": [
+					{
+						"_key": "plan-3",
+						"durationMonths": 3,
+						"monthlyPriceCents": 14900,
+						"recommended": false
+					},
+					{
+						"_key": "plan-6",
+						"durationMonths": 6,
+						"monthlyPriceCents": 14400,
+						"recommended": true
+					},
+					{
+						"_key": "plan-9",
+						"durationMonths": 9,
+						"monthlyPriceCents": 13900,
+						"recommended": false
+					},
+					{
+						"_key": "plan-12",
+						"durationMonths": 12,
+						"monthlyPriceCents": 13400,
+						"recommended": false
+					}
+				],
+				"treatmentId": "wegovy"
+			},
+			{
+				"clinicianNote": {
+					"body": "Beginne niedrig und erhöhe nur, wenn deine Ärztin oder dein Arzt es empfiehlt.",
+					"title": "Ärztlich begleitete Dosierung"
+				},
+				"doses": [
+					{
+						"_key": "dose-1.5mg",
+						"label": "1.5mg",
+						"monthlyPriceCents": 12400
+					},
+					{
+						"_key": "dose-4mg",
+						"label": "4mg",
+						"monthlyPriceCents": 14900
+					},
+					{
+						"_key": "dose-9mg",
+						"label": "9mg",
+						"monthlyPriceCents": 17900
+					},
+					{
+						"_key": "dose-25mg",
+						"label": "25mg",
+						"monthlyPriceCents": 20900
+					}
+				],
+				"firstMonthCents": 6900,
+				"formLabel": "Tägliche Tablette",
+				"galleryCaption": "Semaglutid-Tablette · ärztlich verordnet",
+				"intro": "Eine verschreibungspflichtige Tablette zur einmal täglichen Einnahme, die dein Gewichtsmanagement neben Ernährung, Bewegung und ärztlicher Begleitung unterstützt.",
+				"isNew": true,
+				"language": "de",
+				"photo": null,
+				"plans": [
+					{
+						"_key": "plan-3",
+						"durationMonths": 3,
+						"monthlyPriceCents": 12400,
+						"recommended": false
+					},
+					{
+						"_key": "plan-6",
+						"durationMonths": 6,
+						"monthlyPriceCents": 11900,
+						"recommended": true
+					},
+					{
+						"_key": "plan-9",
+						"durationMonths": 9,
+						"monthlyPriceCents": 11400,
+						"recommended": false
+					},
+					{
+						"_key": "plan-12",
+						"durationMonths": 12,
+						"monthlyPriceCents": 10900,
+						"recommended": false
+					}
+				],
+				"treatmentId": "wegovy-pill"
+			}
+		],
+		"en": [
+			{
+				"clinicianNote": {
+					"body": "Start low and adjust only when your prescriber recommends it.",
+					"title": "Clinician-guided dosing"
+				},
+				"doses": [
+					{
+						"_key": "dose-2.5mg",
+						"label": "2.5mg",
+						"monthlyPriceCents": 16900
+					},
+					{
+						"_key": "dose-5mg",
+						"label": "5mg",
+						"monthlyPriceCents": 19400
+					},
+					{
+						"_key": "dose-7.5mg",
+						"label": "7.5mg",
+						"monthlyPriceCents": 22400
+					},
+					{
+						"_key": "dose-10mg",
+						"label": "10mg",
+						"monthlyPriceCents": 25400
+					}
+				],
+				"firstMonthCents": 6900,
+				"formLabel": "Weekly injection",
+				"galleryCaption": "Tirzepatide injection · clinician prescribed",
+				"intro": "A once-weekly prescription injection that acts on two appetite pathways, alongside nutrition, movement and clinician-led care.",
+				"isNew": false,
+				"language": "en",
+				"photo": {
+					"_type": "image",
+					"alt": "A Solean injection pen lying beside its box",
+					"asset": {
+						"_ref": "image-60103e1a0c1ea806ed8f83c9a2624c6517c193a2-1315x1196-webp",
+						"_type": "reference"
+					}
+				},
+				"plans": [
+					{
+						"_key": "plan-3",
+						"durationMonths": 3,
+						"monthlyPriceCents": 16900,
+						"recommended": false
+					},
+					{
+						"_key": "plan-6",
+						"durationMonths": 6,
+						"monthlyPriceCents": 16400,
+						"recommended": true
+					},
+					{
+						"_key": "plan-9",
+						"durationMonths": 9,
+						"monthlyPriceCents": 15900,
+						"recommended": false
+					},
+					{
+						"_key": "plan-12",
+						"durationMonths": 12,
+						"monthlyPriceCents": 15400,
+						"recommended": false
+					}
+				],
+				"treatmentId": "mounjaro"
+			},
+			{
+				"clinicianNote": {
+					"body": "Start low and adjust only when your prescriber recommends it.",
+					"title": "Clinician-guided dosing"
+				},
+				"doses": [
+					{
+						"_key": "dose-0.25mg",
+						"label": "0.25mg",
+						"monthlyPriceCents": 14900
+					},
+					{
+						"_key": "dose-0.5mg",
+						"label": "0.5mg",
+						"monthlyPriceCents": 17400
+					},
+					{
+						"_key": "dose-1mg",
+						"label": "1mg",
+						"monthlyPriceCents": 20400
+					},
+					{
+						"_key": "dose-1.7mg",
+						"label": "1.7mg",
+						"monthlyPriceCents": 23400
+					}
+				],
+				"firstMonthCents": 6900,
+				"formLabel": "Weekly injection",
+				"galleryCaption": "Semaglutide injection · clinician prescribed",
+				"intro": "A once-weekly prescription injection designed to support weight management alongside nutrition, movement and clinician-led care.",
+				"isNew": false,
+				"language": "en",
+				"photo": {
+					"_type": "image",
+					"alt": "A Solean injection pen lying beside its box",
+					"asset": {
+						"_ref": "image-60103e1a0c1ea806ed8f83c9a2624c6517c193a2-1315x1196-webp",
+						"_type": "reference"
+					}
+				},
+				"plans": [
+					{
+						"_key": "plan-3",
+						"durationMonths": 3,
+						"monthlyPriceCents": 14900,
+						"recommended": false
+					},
+					{
+						"_key": "plan-6",
+						"durationMonths": 6,
+						"monthlyPriceCents": 14400,
+						"recommended": true
+					},
+					{
+						"_key": "plan-9",
+						"durationMonths": 9,
+						"monthlyPriceCents": 13900,
+						"recommended": false
+					},
+					{
+						"_key": "plan-12",
+						"durationMonths": 12,
+						"monthlyPriceCents": 13400,
+						"recommended": false
+					}
+				],
+				"treatmentId": "wegovy"
+			},
+			{
+				"clinicianNote": {
+					"body": "Start low and adjust only when your prescriber recommends it.",
+					"title": "Clinician-guided dosing"
+				},
+				"doses": [
+					{
+						"_key": "dose-1.5mg",
+						"label": "1.5mg",
+						"monthlyPriceCents": 12400
+					},
+					{
+						"_key": "dose-4mg",
+						"label": "4mg",
+						"monthlyPriceCents": 14900
+					},
+					{
+						"_key": "dose-9mg",
+						"label": "9mg",
+						"monthlyPriceCents": 17900
+					},
+					{
+						"_key": "dose-25mg",
+						"label": "25mg",
+						"monthlyPriceCents": 20900
+					}
+				],
+				"firstMonthCents": 6900,
+				"formLabel": "Daily tablet",
+				"galleryCaption": "Semaglutide tablet · clinician prescribed",
+				"intro": "A once-daily prescription tablet designed to support weight management alongside nutrition, movement and clinician-led care.",
+				"isNew": true,
+				"language": "en",
+				"photo": null,
+				"plans": [
+					{
+						"_key": "plan-3",
+						"durationMonths": 3,
+						"monthlyPriceCents": 12400,
+						"recommended": false
+					},
+					{
+						"_key": "plan-6",
+						"durationMonths": 6,
+						"monthlyPriceCents": 11900,
+						"recommended": true
+					},
+					{
+						"_key": "plan-9",
+						"durationMonths": 9,
+						"monthlyPriceCents": 11400,
+						"recommended": false
+					},
+					{
+						"_key": "plan-12",
+						"durationMonths": 12,
+						"monthlyPriceCents": 10900,
+						"recommended": false
+					}
+				],
+				"treatmentId": "wegovy-pill"
+			}
+		]
+	},
+	"treatmentsPages": {
+		"de": {
+			"faqs": [
+				{
+					"_key": "faq-1",
+					"answer": "Medikamente zur Gewichtsabnahme sind klinisch geprüft und werden nur verordnet, wenn sie ärztlich für dich als geeignet eingeschätzt werden. Häufige Nebenwirkungen sind Übelkeit, Verstopfung, Durchfall oder ein verringerter Appetit; sie lassen oft nach, sobald sich dein Körper daran gewöhnt. Deine Ärztin oder dein Arzt erklärt dir die Risiken, begleitet deinen Verlauf und meldet sich, wenn Beschwerden anhalten oder stark sind.",
+					"question": "Sind die Behandlungen sicher, und mit welchen Nebenwirkungen muss ich rechnen?"
+				},
+				{
+					"_key": "faq-2",
+					"answer": "Eine gewisse Gewichtszunahme nach dem Absetzen ist häufig, denn das Medikament wirkt nur, solange du es nimmst. Was das Ergebnis trägt, sind die Gewohnheiten, die du währenddessen aufbaust: Ernährung, Bewegung und Schlaf. Deine Ärztin oder dein Arzt bespricht mit dir, wie eine Behandlung ausklingt, statt sie abrupt zu beenden.",
+					"question": "Nehme ich wieder zu, wenn ich das Medikament absetze?"
+				},
+				{
+					"_key": "faq-3",
+					"answer": "Die Eignung ist eine ärztliche Entscheidung, kein Formular. Der Fragebogen fragt nach deinem Gewicht, deiner Krankengeschichte und deinen Medikamenten, und die Antworten werden ärztlich geprüft. Ist eine Behandlung für dich nicht geeignet, zahlst du dafür nichts.",
+					"question": "Bin ich geeignet?"
+				},
+				{
+					"_key": "faq-4",
+					"answer": "Ja. Alles läuft online, deine Behandlung kommt in neutraler Verpackung ohne medizinische Aufschrift, und von außen ist nicht erkennbar, was darin ist.",
+					"question": "Bleibt meine Behandlung privat?"
+				},
+				{
+					"_key": "faq-5",
+					"answer": "Der Monatspreis umfasst die ärztliche Prüfung, dein Rezept, das Medikament selbst und den Versand. Es gibt keine getrennte Beratungsgebühr, und der Fragebogen kostet nichts.",
+					"question": "Was ist im Preis enthalten?"
+				},
+				{
+					"_key": "faq-6",
+					"answer": "Die meisten spüren in den ersten Wochen eine Veränderung des Appetits. Die Gewichtsabnahme selbst verläuft allmählich und wird über Monate gemessen, nicht über Tage. Die Dosis beginnt in der Regel niedrig und wird nur erhöht, wenn deine Ärztin oder dein Arzt es empfiehlt.",
+					"question": "Wie schnell sehe ich Ergebnisse?"
+				},
+				{
+					"_key": "faq-7",
+					"answer": "Diese Medikamente dämpfen den Appetit, sie nehmen ihn nicht weg. Die meisten essen weiterhin normal und genießen Essen, werden aber früher satt und denken seltener ans Essen.",
+					"question": "Verliere ich den Appetit ganz, oder kann ich Essen weiter genießen?"
+				}
+			],
+			"howItWorks": [
+				{
+					"_key": "step-1",
+					"body": "Fülle den Online-Fragebogen aus, ohne Termin bei Praxis oder Apotheke.",
+					"title": "Beantworte ein paar Fragen."
+				},
+				{
+					"_key": "step-2",
+					"body": "Ärztinnen und Ärzte prüfen deine Angaben und finden die passende Option für dich.",
+					"title": "Erhalte deine Verordnung."
+				},
+				{
+					"_key": "step-3",
+					"body": "Diskrete Verpackung, direkt an deine Adresse.",
+					"title": "Deine Behandlung wird geliefert."
+				}
+			]
+		},
+		"en": {
+			"faqs": [
+				{
+					"_key": "faq-1",
+					"answer": "Weight-loss medicines are clinically tested and prescribed only when a doctor considers them suitable for you. Common side effects can include nausea, constipation, diarrhoea or reduced appetite, and they often improve as your body adjusts. Your clinician will explain the risks, monitor your progress and advise you if symptoms persist or feel severe.",
+					"question": "Are treatments safe, and what side effects should I expect?"
+				},
+				{
+					"_key": "faq-2",
+					"answer": "Some weight regain is common after stopping, because the medicine works while you take it. The habits you build during treatment, around food, movement and sleep, are what carry the result forward, and your clinician will talk you through how to end a course rather than stopping abruptly.",
+					"question": "Will I regain weight if I stop taking it?"
+				},
+				{
+					"_key": "faq-3",
+					"answer": "Eligibility is a clinical decision, not a form. The questionnaire asks about your weight, your medical history and any medicines you take, and a clinician reviews the answers. If a treatment is not suitable for you, you are not charged for it.",
+					"question": "Am I eligible?"
+				},
+				{
+					"_key": "faq-4",
+					"answer": "Yes. Everything happens online, your treatment arrives in plain packaging with no medical branding on the outside, and nothing identifies the contents to anyone handling the parcel.",
+					"question": "Can I keep my treatment private?"
+				},
+				{
+					"_key": "faq-5",
+					"answer": "The monthly price covers the clinical review, your prescription, the medication itself and delivery. There is no separate consultation fee and no charge for the questionnaire.",
+					"question": "What is included in the price?"
+				},
+				{
+					"_key": "faq-6",
+					"answer": "Most people notice a change in appetite within the first weeks, while weight change is gradual and measured over months rather than days. Your dose usually starts low and increases only when your clinician recommends it.",
+					"question": "How quickly will I see results?"
+				},
+				{
+					"_key": "faq-7",
+					"answer": "These medicines reduce appetite rather than remove it. Most people still eat normally and enjoy food, but feel full sooner and think about eating less often.",
+					"question": "Will I lose my appetite completely, or still be able to enjoy food?"
+				}
+			],
+			"howItWorks": [
+				{
+					"_key": "step-1",
+					"body": "Take the online quiz, with no GP or pharmacy visit required.",
+					"title": "Answer quick questions."
+				},
+				{
+					"_key": "step-2",
+					"body": "Clinicians review your history and find the right option for you.",
+					"title": "Get prescribed treatment."
+				},
+				{
+					"_key": "step-3",
+					"body": "Discreet packaging, delivered directly to your door.",
+					"title": "Your treatment is delivered."
+				}
+			]
+		}
 	}
 }

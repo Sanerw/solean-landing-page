@@ -8,10 +8,43 @@
 	import ArrowUpRightIcon from '@lucide/svelte/icons/arrow-up-right';
 	import MenuIcon from '@lucide/svelte/icons/menu';
 	import XIcon from '@lucide/svelte/icons/x';
-	import { navItems, ROUTES } from './content';
+	import { FEATURED_TREATMENT_SLUG, navItems, ROUTES } from './content';
 
 	// Read during render so the labels follow the active locale.
-	const NAV_ITEMS = $derived(navItems());
+	/**
+	 * Three rows on a phone: Home, Treatments and Learn.
+	 *
+	 * The desktop header keeps all five. What the panel drops are the two that promise nothing:
+	 * About Us is inert, so it rendered as grey text a thumb cannot use, and FAQ is an anchor
+	 * back into the landing page rather than a destination of its own. Filtered by label so the
+	 * desktop nav stays the single source of what exists.
+	 */
+	const MOBILE_LABELS = $derived<readonly string[]>([
+		m.nav_home(),
+		m.nav_treatments(),
+		m.nav_learn()
+	]);
+
+	/**
+	 * Treatments leads somewhere here, where on desktop it is a dropdown trigger.
+	 *
+	 * The panel has no room for a submenu and does not draw one, so inheriting the desktop's
+	 * `inert` left the middle of a three-row menu as grey text a thumb could not use. It opens
+	 * the product the index would have led with, which is what the landing page's own
+	 * "Explore treatments" does while that index is undrawn.
+	 */
+	const NAV_ITEMS = $derived(
+		navItems()
+			.filter((item) => MOBILE_LABELS.includes(item.label))
+			.map((item) =>
+				item.label === m.nav_treatments()
+					? {
+							label: item.label,
+							href: localizeHref(ROUTES.treatment(FEATURED_TREATMENT_SLUG))
+						}
+					: item
+			)
+	);
 	import LanguageSelect from './LanguageSelect.svelte';
 
 	// Read during render so the copy follows the active locale.

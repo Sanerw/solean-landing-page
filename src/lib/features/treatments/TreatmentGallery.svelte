@@ -54,8 +54,11 @@
 	-->
 	<div class="flex min-h-0 flex-1 items-center justify-center px-5 pb-2 pt-6 md:px-8 md:pb-3 md:pt-10">
 		{#if page.photo}
-			<enhanced:img
-				src={page.photo.picture}
+			<img
+				src={page.photo.picture.src}
+				srcset={page.photo.picture.srcset}
+				width={page.photo.picture.width}
+				height={page.photo.picture.height}
 				alt={page.photo.alt}
 				sizes="(min-width: 1024px) 46vw, 100vw"
 				class="size-full rounded-xl object-cover"

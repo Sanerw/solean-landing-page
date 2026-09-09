@@ -1,21 +1,14 @@
 import { eur, findTreatment, type Money } from '$lib/domain';
-import { picture, type SanityPicture } from '$lib/sanity/image';
+import { picture } from '$lib/sanity/image';
 import type { SanityTreatment, SanityTreatmentsPage } from '$lib/sanity/queries';
 import type { FaqItem, HowItWorksStep, PlanDuration, TreatmentPage } from './types';
 
 /**
- * The page as Sanity supplies it: every field of `TreatmentPage` except the photograph, which
- * arrives as a CDN picture with a `w`-descriptor srcset rather than the `enhanced:img` import
- * the fixture holds.
- *
- * A separate type rather than a widened `TreatmentPhoto`, and the compiler is why: `enhanced:img`
- * accepts `string | Picture`, so a union would have broken `TreatmentGallery` and
- * `PlanComparison` the moment it was declared. Keeping the two apart is what makes 27a additive.
- * They become one at 27b, when the fixture goes and only this shape is left.
+ * 27a needed a shape of its own here, because the fixture's `enhanced:img` photograph and
+ * Sanity's CDN picture could not be one type while both were rendered. 27b removed the fixture,
+ * so they are one type again and this is the alias the callers already import.
  */
-export interface SanityTreatmentPage extends Omit<TreatmentPage, 'photo'> {
-	photo?: { picture: SanityPicture; alt: string };
-}
+export type SanityTreatmentPage = TreatmentPage;
 
 /**
  * One treatment page, from Sanity to the shape the route already renders.
@@ -44,8 +37,8 @@ function money(cents: number | undefined): Money {
 }
 
 /**
- * `null` rather than a throw, the way `findTreatmentPage` answers an unknown slug: the route
- * decides what a missing page means, and for this one it means a 404.
+ * `null` rather than a throw: the route decides what a missing page means, and for this one it
+ * means a 404.
  *
  * A document naming a `treatmentId` the catalogue does not have is refused here. It has no
  * product behind it, so it has no name, no form and no Shopify variant, and rendering it would
@@ -89,6 +82,26 @@ export function toTreatmentPage(document: SanityTreatment | null): SanityTreatme
 			body: document.clinicianNote?.body ?? ''
 		}
 	};
+}
+
+/**
+ * Every treatment the page needs, keyed by id. The plan comparison reads all of them whichever
+ * one is being viewed, so they arrive together and the page picks its own out of the map.
+ *
+ * A document naming an id the catalogue does not have is dropped rather than throwing: one
+ * bad document should cost its own row, not every treatment page on the site.
+ */
+export function toTreatmentPages(
+	documents: readonly SanityTreatment[] | null
+): Map<string, SanityTreatmentPage> {
+	const pages = new Map<string, SanityTreatmentPage>();
+
+	for (const document of documents ?? []) {
+		const page = toTreatmentPage(document);
+		if (page) pages.set(page.slug, page);
+	}
+
+	return pages;
 }
 
 /**

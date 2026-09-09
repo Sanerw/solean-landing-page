@@ -59,6 +59,8 @@ const homePages = {};
 const testimonials = {};
 const announcements = {};
 const legalPages = {};
+const treatments = {};
+const treatmentsPages = {};
 
 for (const language of ['de', 'en']) {
 	articles[language] = await run(articleQuery, { slug: SLUG, language });
@@ -72,6 +74,14 @@ for (const language of ['de', 'en']) {
 
 	testimonials[language] = await run(query('testimonialsQuery'), { language });
 
+	// Every treatment in one call, because that is how the page reads them: the plan comparison
+	// needs all three whichever one is being viewed.
+	treatments[language] = await run(query('treatmentsQuery'), { language });
+	if (!treatments[language]?.length) throw new Error(`${language}: no treatments`);
+
+	treatmentsPages[language] = await run(query('treatmentsPageQuery'), { language });
+	if (!treatmentsPages[language]) throw new Error(`${language}: no shared treatment sections`);
+
 	for (const slug of LEGAL_SLUGS) {
 		const page = await run(query('legalPageQuery'), { slug, language });
 		if (!page) throw new Error(`${language}: no legal page at "${slug}"`);
@@ -83,7 +93,10 @@ const out = resolve(root, 'e2e/fixtures/sanity-articles.json');
 mkdirSync(dirname(out), { recursive: true });
 writeFileSync(
 	out,
-	JSON.stringify({ slug: SLUG, articles, homePages, announcements, testimonials, legalPages }, null, '\t') +
-		'\n'
+	JSON.stringify(
+		{ slug: SLUG, articles, homePages, announcements, testimonials, legalPages, treatments, treatmentsPages },
+		null,
+		'\t'
+	) + '\n'
 );
-console.log(`wrote ${out} (article, home page, testimonials and legal pages, de + en)`);
+console.log(`wrote ${out} (article, home page, testimonials, legal pages and treatments, de + en)`);

@@ -447,30 +447,39 @@ test('the mobile menu opens as the reference full-screen panel', async ({ page }
 	expect(await panel.getByLabel('Solean, home').locator('svg').boundingBox()).toMatchObject(closedLogo!);
 	expect(await page.getByRole('button', { name: 'Close menu' }).boundingBox()).toMatchObject(closedTrigger!);
 
-	// Every label starts on the same line, whatever the width of its number.
+	// Three rows on a phone where the desktop header carries five. The two that promised
+	// nothing are gone: About Us is undrawn, and FAQ is an anchor back into the landing page
+	// rather than a destination of its own.
 	const labelLefts = await panel
 		.locator('nav li span.font-display')
 		.evaluateAll((els) => els.map((e) => e.getBoundingClientRect().left));
-	expect(labelLefts).toHaveLength(5);
+	expect(labelLefts).toHaveLength(3);
+	// Every label starts on the same line, whatever the width of its number.
 	expect(new Set(labelLefts).size).toBe(1);
 
 	// Treatments is one destination here, not a list of its products.
 	await expect(panel.getByText('Mounjaro Injection')).toHaveCount(0);
 
 	// Numbered rows in display type, one per nav item, in order.
-	await expect(panel.getByText(/^0[1-5]$/)).toHaveCount(5);
+	await expect(panel.getByText(/^0[1-3]$/)).toHaveCount(3);
 	const home = panel.getByRole('link', { name: /01\s*Home/ });
 	await expect(home).toBeVisible();
 	await expect(panel.getByText('Home', { exact: true })).toHaveCSS('font-size', '30px');
 
-	// Destinations and inert state are unchanged: Treatments and About Us promise nothing.
-	//
-	// Every one of them is prefixed. The locale lives in the path and German owns the bare
-	// one, so an unprefixed internal link does not mean "this page in the reader's language",
-	// it means the German page, and following it switches the language mid-visit.
+	// Every row leads somewhere, and every one of them is prefixed. The locale lives in the
+	// path and German owns the bare one, so an unprefixed internal link does not mean "this
+	// page in the reader's language", it means the German page, and following it switches the
+	// language mid-visit.
 	await expect(home).toHaveAttribute('href', '/en/');
 	await expect(panel.getByRole('link', { name: /Learn/ })).toHaveAttribute('href', '/en/learn');
-	await expect(panel.getByRole('link', { name: /Treatments/ })).toHaveCount(0);
+
+	// Treatments is a dropdown trigger on desktop and a destination here: the panel draws no
+	// submenu, so inheriting the trigger's inert flag left the middle row as grey text a thumb
+	// could not use. It opens the product the undrawn index would have led with.
+	await expect(panel.getByRole('link', { name: /Treatments/ })).toHaveAttribute(
+		'href',
+		'/en/treatments/wegovy-pill'
+	);
 	await expect(panel.getByRole('link', { name: /About Us/ })).toHaveCount(0);
 
 	// The CTA reaches the funnel and closes the panel behind it.

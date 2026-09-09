@@ -1,5 +1,5 @@
-import type { Picture } from '@sveltejs/enhanced-img';
 import type { Money } from '$lib/domain';
+import type { SanityPicture } from '$lib/sanity/image';
 
 export interface Dose {
 	/** As it is printed, "1.5mg". A label, never parsed back into a quantity. */
@@ -17,8 +17,11 @@ export interface Plan {
 }
 
 export interface TreatmentPhoto {
-	/** An `enhanced:img` import, so the ladder of widths is built at compile time. */
-	picture: Picture;
+	/**
+	 * A CDN picture with a `w`-descriptor srcset, from feature 27b. It was an `enhanced:img`
+	 * import whose ladder was built at compile time, which is what made a photograph a deploy.
+	 */
+	picture: SanityPicture;
 	alt: string;
 }
 
