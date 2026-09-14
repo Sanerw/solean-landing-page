@@ -28,8 +28,11 @@ import { mayTrack, type ConsentState } from './consent';
  * **The SDK is imported dynamically and only once a consented event is sent.** Two reasons,
  * and the second is the important one. It keeps roughly sixty kilobytes out of the bundle a
  * visitor downloads before deciding, and it means a visitor who declines never fetches the
- * analytics vendor's code at all: the refusal is honoured by the network tab, not only by a
- * flag inside a script that already ran. The session recorder is a second script, fetched
+ * analytics vendor's code: the refusal is honoured by the network tab, not only by a flag
+ * inside a script that already ran. **One request is the exception, from feature 29d**: the
+ * flags fetch in `flags.ts` asks which variant to render before the banner is answered. It
+ * carries no event and loads no bundle, which is why it is built by hand rather than taken
+ * from the SDK's own module. The session recorder is a second script, fetched
  * from `cdn.mxpnl.com` only once recording actually starts, so the same holds for it.
  */
 

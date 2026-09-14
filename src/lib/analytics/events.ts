@@ -120,6 +120,28 @@ export function trackAnamnesisSubmitted(surveyStepCount: number): void {
 	once('anamnesis_submitted', { survey_step_count: surveyStepCount });
 }
 
+/** One report per experiment, guarded like every other one-shot in this module. */
+const experimentsReported = new Set<string>();
+
+/**
+ * The visitor was shown a variant. This is what the panel's Experiments report reads, so the
+ * event name and both property names are Mixpanel's rather than ours, copied from the SDK
+ * source: its own flags module sends exactly this, and a report keyed on anything else would
+ * stay empty.
+ *
+ * Sent through `track`, so it inherits the consent gate like everything else. A visitor who
+ * declined therefore sees a variant and reports nothing, which is the whole shape of this
+ * feature: the assignment is made for everybody so that a late yes is measured honestly, and
+ * the measurement still only ever covers people who said yes.
+ */
+export function trackExperimentStarted(experiment: string, variant: string): void {
+	if (experimentsReported.has(experiment)) return;
+
+	if (track('$experiment_started', { 'Experiment name': experiment, 'Variant name': variant })) {
+		experimentsReported.add(experiment);
+	}
+}
+
 /**
  * The value moment: the cart exists at Shopify and the browser is leaving for the checkout.
  * Sent immediately, because the redirect follows it within the same tick.

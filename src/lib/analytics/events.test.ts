@@ -213,3 +213,47 @@ describe('trackQuestionnaireProgressed', () => {
 		);
 	});
 });
+
+describe('trackExperimentStarted', () => {
+	it('reports the assignment under the names the panel reads', async () => {
+		const { trackExperimentStarted } = await events();
+
+		trackExperimentStarted('hero_cta', 'b');
+
+		// Mixpanel's own, copied from the SDK: a report keyed on anything else stays empty.
+		expect(track).toHaveBeenCalledWith('$experiment_started', {
+			'Experiment name': 'hero_cta',
+			'Variant name': 'b'
+		});
+	});
+
+	it('reports one experiment once, however often the component renders', async () => {
+		const { trackExperimentStarted } = await events();
+
+		for (let i = 0; i < 3; i++) trackExperimentStarted('hero_cta', 'b');
+
+		expect(track).toHaveBeenCalledTimes(1);
+	});
+
+	it('reports two experiments separately', async () => {
+		const { trackExperimentStarted } = await events();
+
+		trackExperimentStarted('hero_cta', 'b');
+		trackExperimentStarted('offer_card', 'control');
+
+		expect(track).toHaveBeenCalledTimes(2);
+	});
+
+	it('does not spend the shot on a gate that refused it', async () => {
+		const { trackExperimentStarted } = await events();
+
+		// The hero renders before the banner is answered, which is the common case rather than
+		// an edge one: the assignment is made for everybody and only a yes is ever measured.
+		track.mockReturnValueOnce(false);
+
+		trackExperimentStarted('hero_cta', 'b');
+		trackExperimentStarted('hero_cta', 'b');
+
+		expect(track).toHaveBeenCalledTimes(2);
+	});
+});

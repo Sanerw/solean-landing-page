@@ -456,10 +456,77 @@ suite runs against a fixture shop that validates the cart's shape and is not Sho
 13 proved `_anamnesis_uid` with one live cart read back through a `cart(id:)` query, and the
 same manual check is the only real proof for this one.
 
+### Experiments
+
+From feature 29d marketing copy can be tested from the Mixpanel panel.
+`src/lib/analytics/flags.ts` asks which variant to render, `flags.svelte.ts` holds the answer
+as rune state, and `trackExperimentStarted` reports the assignment once consent stands.
+
+**No experiment is wired, deliberately.** 29d built the machinery and stopped there, at the
+user's decision on 2026-09-14, so nothing shipped switched on. The first one is three things:
+a name in `EXPERIMENTS`, a component that branches on `experiments.assignment(name)`, and its
+copy in the message catalogue. Until then the flags request is made and answers nothing, and
+no `$experiment_started` is sent at all.
+
+**The SDK's own flags module is deliberately off**, and `flags` must stay absent from
+`mixpanelInitOptions`. `mixpanel.flags` lives inside the bundle this project imports only
+after consent, so using it would put sixty kilobytes of vendor code on the page of somebody
+who then declines. Its fetch turned out to be a plain tokened `GET`
+(`/flags/?context=...&token=...`, `Authorization: Basic btoa(token + ':')`), so this app makes
+that one request itself. Enabling the SDK's module as well would fetch a second time under a
+different id, and the two would disagree about the assignment.
+
+**The fetch runs before the banner is answered, and that narrows a promise this file used to
+make in full.** A refusal is still honoured by the network tab for everything that measures:
+no event, no profile, no recorder, no bundle. What leaves is one question carrying the token
+and two ids generated in the tab.
+
+**What that buys is narrower than "all traffic", and the build plan's wording was loose.** A
+visitor who declines sends no events ever, so fetching early does not enlarge the measured
+population. What it fixes is the late consenter: somebody who answers the banner on
+questionnaire screen four has already seen a hero, and without an early assignment the variant
+recorded against them is not the one that was on screen when they decided to start. On a funnel
+whose first screen is the thing worth testing, that is the difference between a measurable
+experiment and a meaningless one.
+
+Four mechanics worth knowing before touching this.
+
+- **The fallback is the current UI in every branch.** No token, a failed fetch, the server
+  render and the first client frame all produce it. If any of those rendered something else,
+  the page would flicker on every load for every visitor, which is worse than no experiment.
+- **The bucketing id is generated per session and never stored.** Not `localStorage`, not a
+  cookie. Persisting an identifier before consent is precisely what the banner asks about, and
+  a variant assignment is not strictly necessary. It also matches how this app already defines
+  a session: the answers live in memory and a reload starts the questionnaire over.
+- **The exposure event is Mixpanel's, not ours.** `$experiment_started` with `Experiment name`
+  and `Variant name` is what the panel's report reads, copied from the SDK source. A report
+  keyed on anything else stays empty. It goes through `track`, so a declined visitor sees a
+  variant and reports nothing.
+- **Null and `control` are different answers.** `assignment()` returns null when the panel
+  assigned nothing, and a caller must report no exposure for it: `control` is a real arm whose
+  exposure the panel needs, while null means no experiment exists and reporting it would fill
+  the project with events about nothing. `analytics.spec.ts` asserts that silence.
+- **The panel owns the split, the repository owns the copy.** Adding a wording is a deploy,
+  because the site is bilingual and a string typed into the panel would be one language for
+  both. Changing the split, pausing a test and picking a winner are not deploys. The panel's
+  variants are Mixpanel's own default naming, `control` and `treatment`; any other key renders
+  the control, which is the safe direction for a typo.
+
+**Questionnaire wording is excluded and must stay excluded.** It is medical copy with no
+clinical sign-off, which is open question 14 in `project-overview.md`. A test that shows half
+of the patients a sentence no clinician approved is not a copy test.
+
+**What no test proves:** that the panel's Experiments report reads our `$experiment_started`.
+The name and both property names are copied from the SDK; only a real experiment in the panel
+confirms the report populates. Worth doing once with a throwaway experiment before relying on
+it.
+
 ### Consent
 
 `opt_out_tracking_by_default` is on, and the SDK is behind a dynamic import, so a visitor who
-declines never downloads the vendor's code at all. Consent is a first-party cookie read by
+declines never downloads the vendor's code. **One request is the exception, from feature 29d**:
+the flags fetch, which asks which variant to render and is described under Experiments above.
+No event, no recorder, no bundle. Consent is a first-party cookie read by
 `src/routes/+layout.server.ts`, so the banner is server-rendered and never flashes at someone
 who already answered.
 

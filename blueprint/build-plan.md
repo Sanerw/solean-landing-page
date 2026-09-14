@@ -609,7 +609,7 @@ claims are not approved production content.
     test harness, one Verify command and matching GitHub checks through /ci, a measured
     performance baseline and a domain-launch/search-console runbook.
 
-- [ ] 29. **Mixpanel: identity, funnel visibility and experiments** - the visitor stops
+- [x] 29. **Mixpanel: identity, funnel visibility and experiments** - the visitor stops
   being an anonymous id and becomes a profile the moment an e-mail is typed, the
   questionnaire reports how far people get without reporting what they answered, and
   marketing copy becomes testable from the Mixpanel panel without a deploy. Four
@@ -628,7 +628,7 @@ claims are not approved production content.
     `_anamnesis_uid` carrying the Mixpanel distinct id. Additive and invisible to a
     visitor: it makes an order joinable to the person who walked the funnel, so the
     deferred revenue import can be built later and still reach orders placed before it.
-  - [ ] 29d. **Experiments** - the SDK's feature flags, fetched before the consent banner
+  - [x] 29d. **Experiments** - the SDK's feature flags, fetched before the consent banner
     is answered in a narrow form that asks for a variant and sends nothing, so a test
     covers all traffic rather than the consenting subset. One real experiment on
     marketing copy. Questionnaire wording is excluded: it is medical copy with no

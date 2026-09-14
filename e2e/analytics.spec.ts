@@ -1,5 +1,6 @@
 import { expect, test, type Page } from '@playwright/test';
 import { walkAndSubmit, walkTo } from './answers';
+import { FIXTURE_VARIANT_ID } from './fixture';
 import { orderPlan } from './recommendation';
 
 /**
@@ -69,6 +70,12 @@ interface Traffic {
 	/** Posts to `record/`, which is session replay data and nothing else. */
 	replay: string[];
 	/**
+	 * Gets to `flags/`, which is the one request this app makes before the banner is answered.
+	 * Counted separately because it is the exception the Experiments section describes: it asks
+	 * which variant to render and carries no measurement at all.
+	 */
+	flags: string[];
+	/**
 	 * Posts to `engage/`, which is the profile rather than the funnel: the identify's `$set` and
 	 * the queued `$set_once` the SDK flushes with it. Kept apart from `events` because they are
 	 * a different privacy question. An event property is repeated on every row; a profile is one
@@ -79,7 +86,7 @@ interface Traffic {
 
 /** Intercepts Mixpanel's hosts, and watches our own origin for the recorder. */
 async function captureMixpanel(page: Page): Promise<Traffic> {
-	const traffic: Traffic = { events: [], recorder: [], replay: [], profiles: [] };
+	const traffic: Traffic = { events: [], recorder: [], replay: [], profiles: [], flags: [] };
 
 	page.on('response', (response) => {
 		const url = response.url();
@@ -91,6 +98,19 @@ async function captureMixpanel(page: Page): Promise<Traffic> {
 	for (const pattern of MIXPANEL_HOSTS) {
 		await page.route(pattern, async (route) => {
 			const url = route.request().url();
+
+			if (url.includes('/flags')) {
+				traffic.flags.push(url);
+
+				// Answered with no flags, so every spec below renders the control unless it says
+				// otherwise. A test whose UI depended on the panel would fail on a panel change.
+				await route.fulfill({
+					status: 200,
+					contentType: 'application/json',
+					body: JSON.stringify({ flags: {} })
+				});
+				return;
+			}
 
 			if (url.includes('/record')) {
 				traffic.replay.push(url);
@@ -140,7 +160,9 @@ function awaitEvent(traffic: Traffic, event: string) {
 	return expect.poll(() => names(traffic.events), FLUSH).toContain(event);
 }
 
-test('nothing reaches Mixpanel before the visitor has answered the banner', async ({ page }) => {
+test('nothing but the variant question reaches Mixpanel before the banner is answered', async ({
+	page
+}) => {
 	const traffic = await captureMixpanel(page);
 
 	await page.goto('/');
@@ -154,6 +176,10 @@ test('nothing reaches Mixpanel before the visitor has answered the banner', asyn
 	expect(traffic.events).toEqual([]);
 	expect(traffic.recorder).toEqual([]);
 	expect(traffic.replay).toEqual([]);
+
+	// The one exception, from feature 29d, and the assertion is that it is the only one. It
+	// asks which variant to render; nothing is measured and no bundle is loaded.
+	expect(traffic.flags.length).toBeGreaterThan(0);
 });
 
 test('declining is remembered, and stays silent across a navigation', async ({ page }) => {
@@ -168,7 +194,7 @@ test('declining is remembered, and stays silent across a navigation', async ({ p
 
 	expect(traffic.events).toEqual([]);
 	// A refusal has to reach the recorder too, not only the events: a declined visitor must
-	// not even fetch its bundle.
+	// not even fetch its bundle. The variant question is unaffected and is asserted above.
 	expect(traffic.recorder).toEqual([]);
 	expect(traffic.replay).toEqual([]);
 	await expect(page.getByRole('button', { name: 'Ablehnen' })).toBeHidden();
@@ -268,7 +294,10 @@ test('the funnel sends its three events, carrying nothing about the person', asy
 	for (const entry of traffic.events) {
 		const payload = chosenProperties([entry]);
 
-		for (const leak of ['jonas@example.com', 'anamnesis_uid', 'anam-', 'variant']) {
+		// The Shopify variant by its value, not by the word: `$experiment_started` carries a
+		// property called `Variant name`, and matching the word made this assertion weaker than
+		// it looked as well as wrong. A leak would be the id itself.
+		for (const leak of ['jonas@example.com', 'anamnesis_uid', 'anam-', FIXTURE_VARIANT_ID]) {
 			expect(payload, `${entry.event} must not carry ${leak}`).not.toContain(leak);
 		}
 	}
@@ -455,4 +484,28 @@ test('every screen the walk shows reports itself, and none reports an answer', a
 	for (const answer of ['jonas', '1990', 'nierenerkrankung', 'anam-']) {
 		expect(payload).not.toContain(answer);
 	}
+});
+
+test('no experiment is wired, so none is reported', async ({ page }) => {
+	const traffic = await captureMixpanel(page);
+
+	await page.goto('/');
+	await expect(page.getByRole('button', { name: 'Einverstanden' })).toBeEnabled();
+	await page.getByRole('button', { name: 'Einverstanden' }).click();
+	await awaitEvent(traffic, 'page_viewed');
+
+	await page.goto('/learn');
+	await page.waitForTimeout(1000);
+
+	/**
+	 * Feature 29d built the machinery and wired nothing to it, deliberately. Until somebody
+	 * turns an experiment on, the assignment is null rather than `control`, and nothing is
+	 * reported: a deployment with no experiment running must not fill the project with events
+	 * about an experiment that does not exist.
+	 */
+	expect(names(traffic.events)).not.toContain('$experiment_started');
+
+	// The question is still asked, because that is what makes turning one on a panel change
+	// rather than a deploy.
+	expect(traffic.flags.length).toBeGreaterThan(0);
 });

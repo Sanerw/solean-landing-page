@@ -12,6 +12,7 @@
 	import { analyticsConsent } from '$lib/analytics/consent.svelte';
 	import { trackPageView } from '$lib/analytics/events';
 	import { recordFirstVisit } from '$lib/analytics/identity';
+	import { experiments } from '$lib/analytics/flags.svelte';
 	import { entersQuestionnaire } from '$lib/navigation/view-transition';
 	import { sharingTags } from '$lib/seo/metadata';
 	import type { LayoutProps } from './$types';
@@ -71,6 +72,17 @@
 	 * already run and been dropped for want of consent; without the decision as a dependency
 	 * the first page view, the arrival itself, is the one view never recorded.
 	 */
+	/**
+	 * The variant assignment, asked for once and deliberately **not** behind the consent
+	 * decision: somebody who answers the banner on a later screen has to have been in a stable
+	 * variant since they arrived, or the exposure recorded against them is not the page they
+	 * actually saw. It sends nothing and loads no vendor code, which is what makes that
+	 * affordable.
+	 */
+	$effect(() => {
+		experiments.start();
+	});
+
 	$effect(() => {
 		analyticsConsent.state;
 		trackPageView(page.url.pathname);
