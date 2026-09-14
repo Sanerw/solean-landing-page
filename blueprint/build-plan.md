@@ -620,7 +620,7 @@ claims are not approved production content.
     documents as settled, so it rewrites both rather than leaving them contradicted.
     Establishes the identity key Customer.io already uses, which is what lets a Mixpanel
     cohort drive one of its campaigns.
-  - [ ] 29b. **Questionnaire drop-off** - `questionnaire_progressed` carrying the screen
+  - [x] 29b. **Questionnaire drop-off** - `questionnaire_progressed` carrying the screen
     number and the screen total, never a screen id and never an answer, so a funnel
     report can show where people leave a flow whose paths are derived from what they
     answered.

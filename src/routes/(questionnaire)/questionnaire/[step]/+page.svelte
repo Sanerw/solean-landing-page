@@ -10,7 +10,11 @@
 	import SubmissionAlert from '$lib/features/questionnaire/SubmissionAlert.svelte';
 	import { answerStore } from '$lib/features/questionnaire/answers/store.svelte';
 	import { analyticsConsent } from '$lib/analytics/consent.svelte';
-	import { trackAnamnesisSubmitted, trackQuestionnaireStarted } from '$lib/analytics/events';
+	import {
+		trackAnamnesisSubmitted,
+		trackQuestionnaireProgressed,
+		trackQuestionnaireStarted
+	} from '$lib/analytics/events';
 	import { readEmail, readWeightKg, weightScreenId } from '$lib/features/questionnaire/answers';
 	import {
 		submitAnamnesis,
@@ -101,6 +105,22 @@
 	const step = $derived(walk.steps.find((candidate) => candidate.id === data.stepId) ?? null);
 	const stepIndex = $derived(step ? walk.steps.indexOf(step) : -1);
 	const progress = $derived(progressFor(walk, data.stepId));
+
+	/**
+	 * How far the visitor got, one event per screen entered. The drop between two of them is
+	 * somebody who saw a screen and never reached the next, which is the only thing that says
+	 * where this funnel loses people.
+	 *
+	 * Screens only: an interlude asks nothing and carries no number, so reporting one would
+	 * repeat the previous screen's position under a different id. The same dependencies as the
+	 * entry event above, for the same reason.
+	 */
+	$effect(() => {
+		analyticsConsent.state;
+		if (!hydrated || redirecting || step?.kind !== 'screen') return;
+
+		trackQuestionnaireProgressed(step.id, step.screenNumber, walk.screenTotal);
+	});
 
 	/** Position comes from the walk alone: a step outside it is never shown. */
 	function neighbourHref(direction: 1 | -1): string | null {

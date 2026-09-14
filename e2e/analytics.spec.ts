@@ -110,6 +110,26 @@ async function captureMixpanel(page: Page): Promise<Traffic> {
 const names = (captured: Captured[]) => captured.map((entry) => entry.event);
 
 /**
+ * An event's properties minus the identity Mixpanel stamps on every one of them.
+ *
+ * Since `identify` runs at the details screen, the e-mail is the `distinct_id` and rides on
+ * everything sent afterwards. That is the 2026-09-14 decision working, not a leak, so a
+ * privacy assertion has to measure what this app chooses to send: these three keys are the
+ * identity, and everything else is ours.
+ */
+const IDENTITY_KEYS = ['distinct_id', '$user_id', '$identified_id'];
+
+function chosenProperties(captured: Captured[]): string {
+	const stripped = captured.map((entry) =>
+		Object.fromEntries(
+			Object.entries(entry.properties).filter(([key]) => !IDENTITY_KEYS.includes(key))
+		)
+	);
+
+	return JSON.stringify(stripped).toLowerCase();
+}
+
+/**
  * Mixpanel batches, and its default flush interval is five seconds, so an assertion on the
  * default expect timeout races the library rather than the app. The batch is persisted and
  * retried, so a slow flush delays an event; it does not lose one.
@@ -245,12 +265,8 @@ test('the funnel sends its three events, carrying nothing about the person', asy
 	 * send: no property built here may carry the address, while the identity Mixpanel attaches
 	 * is expected and named.
 	 */
-	const identityKeys = ['distinct_id', '$user_id', '$identified_id'];
 	for (const entry of traffic.events) {
-		const chosen = Object.fromEntries(
-			Object.entries(entry.properties).filter(([key]) => !identityKeys.includes(key))
-		);
-		const payload = JSON.stringify(chosen).toLowerCase();
+		const payload = chosenProperties([entry]);
 
 		for (const leak of ['jonas@example.com', 'anamnesis_uid', 'anam-', 'variant']) {
 			expect(payload, `${entry.event} must not carry ${leak}`).not.toContain(leak);
@@ -390,5 +406,53 @@ test('the address identifies the visitor, and the arrival travels with it', asyn
 	const payload = JSON.stringify(traffic.profiles).toLowerCase();
 	for (const leak of ['nierenerkrankung', 'anam-', '/questionnaire']) {
 		expect(payload).not.toContain(leak);
+	}
+});
+
+test('every screen the walk shows reports itself, and none reports an answer', async ({
+	page
+}) => {
+	const traffic = await captureMixpanel(page);
+
+	await page.goto('/');
+	await expect(page.getByRole('button', { name: 'Einverstanden' })).toBeEnabled();
+	await page.getByRole('button', { name: 'Einverstanden' }).click();
+	await awaitEvent(traffic, 'page_viewed');
+
+	// Past the first three screens, which are the ones every walk contains whatever the answers
+	// branch to, so the expected order below is not a scenario-specific one.
+	await walkTo(page, 'medical-conditions');
+	await awaitEvent(traffic, 'questionnaire_progressed');
+
+	const progressed = () =>
+		traffic.events.filter((entry) => entry.event === 'questionnaire_progressed');
+	await expect.poll(() => progressed().length, FLUSH).toBeGreaterThanOrEqual(4);
+
+	// In the order they were entered. A funnel is built by filtering this one event per screen,
+	// so the drop between two steps is only meaningful if each screen reports once, on arrival.
+	const ids = progressed().map((entry) => entry.properties.screen_id);
+	expect(ids.slice(0, 4)).toEqual([
+		'about-you',
+		'your-details',
+		'medication-history',
+		'medical-conditions'
+	]);
+
+	// The position the progress bar shows, from the same walk, so the two cannot disagree.
+	expect(progressed().map((entry) => entry.properties.screen_number).slice(0, 4)).toEqual([
+		1, 2, 3, 4
+	]);
+
+	const totals = new Set(progressed().map((entry) => entry.properties.screen_total));
+	expect(totals.size).toBe(1);
+
+	/**
+	 * The boundary. A screen id names the question that was asked; nothing here may name the
+	 * reply. The three values below are what this walk actually typed and clicked, so their
+	 * absence is measured rather than assumed.
+	 */
+	const payload = chosenProperties(progressed());
+	for (const answer of ['jonas', '1990', 'nierenerkrankung', 'anam-']) {
+		expect(payload).not.toContain(answer);
 	}
 });

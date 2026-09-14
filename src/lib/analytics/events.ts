@@ -73,6 +73,45 @@ export function trackQuestionnaireStarted(entryStepId: string): void {
 }
 
 /**
+ * One-shot per screen rather than per event name, which is why it has a set of its own: this
+ * event is meant to fire a dozen times in a walk, once for each screen, and exactly once for
+ * each. The name is still one constant, never composed.
+ */
+const screensReported = new Set<string>();
+
+/**
+ * The visitor reached a questionnaire screen. Sent on entry rather than on Continue, because
+ * somebody who opens a screen and abandons it never presses Continue, and they are precisely
+ * who this event exists to count.
+ *
+ * **It names the screen, decided on 2026-09-14.** The build plan wrote this event as the
+ * number alone, inheriting `isTrackablePath`'s rule. Two facts overruled it: the screen id
+ * already travels, on the heatmap's `$mp_web_page_view` and on `questionnaire_started`'s own
+ * `entry_step_id`; and four of the twelve screens are conditional, so screen five is a
+ * different question for different people and an index alone says how far somebody got rather
+ * than what stopped them.
+ *
+ * The id names the question asked, never the reply. No answer value travels with it.
+ */
+export function trackQuestionnaireProgressed(
+	screenId: string,
+	screenNumber: number,
+	screenTotal: number
+): void {
+	if (screensReported.has(screenId)) return;
+
+	// Marked only once it is away, the rule `once` follows and for the same reason: a screen
+	// spent against a gate the visitor has not yet answered would never be reported again.
+	if (track('questionnaire_progressed', {
+		screen_id: screenId,
+		screen_number: screenNumber,
+		screen_total: screenTotal
+	})) {
+		screensReported.add(screenId);
+	}
+}
+
+/**
  * RxScale accepted the submission and a doctor will read the record. The count is of survey
  * steps in the plan the branching produced, which is a shape of questionnaire rather than
  * anything about the answers.

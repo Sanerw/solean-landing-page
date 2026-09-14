@@ -150,3 +150,66 @@ describe('the privacy boundary', () => {
 		}
 	});
 });
+
+describe('trackQuestionnaireProgressed', () => {
+	it('names the screen, its position and the walk it belongs to', async () => {
+		const { trackQuestionnaireProgressed } = await events();
+
+		trackQuestionnaireProgressed('medication-history', 3, 12);
+
+		expect(track).toHaveBeenCalledWith('questionnaire_progressed', {
+			screen_id: 'medication-history',
+			screen_number: 3,
+			screen_total: 12
+		});
+	});
+
+	it('reports one screen once, however often the effect re-runs', async () => {
+		const { trackQuestionnaireProgressed } = await events();
+
+		// Svelte re-runs the effect on any dependency change, and going back to a screen is a
+		// navigation like any other. Neither is a second visit worth counting.
+		for (let i = 0; i < 4; i++) trackQuestionnaireProgressed('about-you', 1, 12);
+
+		expect(track).toHaveBeenCalledTimes(1);
+	});
+
+	it('reports each screen of the walk, because the drop-off is between them', async () => {
+		const { trackQuestionnaireProgressed } = await events();
+
+		trackQuestionnaireProgressed('about-you', 1, 12);
+		trackQuestionnaireProgressed('your-details', 2, 12);
+
+		expect(track).toHaveBeenCalledTimes(2);
+		expect(track.mock.calls.map(([, properties]) => properties?.screen_id)).toEqual([
+			'about-you',
+			'your-details'
+		]);
+	});
+
+	it('does not spend a screen on a gate that refused it', async () => {
+		const { trackQuestionnaireProgressed } = await events();
+
+		// Nothing is sent before consent, so a visitor who answers the banner while standing on a
+		// screen has to be reported on the next attempt rather than lost with the first.
+		track.mockReturnValueOnce(false);
+
+		trackQuestionnaireProgressed('about-you', 1, 12);
+		trackQuestionnaireProgressed('about-you', 1, 12);
+
+		expect(track).toHaveBeenCalledTimes(2);
+	});
+
+	it('carries a walk total of its own, because the walk length varies', async () => {
+		const { trackQuestionnaireProgressed } = await events();
+
+		// Four of the twelve screens are conditional, so a total is a property of one visitor's
+		// walk rather than a constant of the questionnaire.
+		trackQuestionnaireProgressed('disclaimers', 8, 8);
+
+		expect(track).toHaveBeenCalledWith(
+			'questionnaire_progressed',
+			expect.objectContaining({ screen_number: 8, screen_total: 8 })
+		);
+	});
+});

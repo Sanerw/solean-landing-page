@@ -208,9 +208,9 @@ Add a function to `events.ts` and call that. Never call `track` from a component
 build an event name from a variable: Mixpanel is case-sensitive and treats a typo as a new
 event forever. Names are `snake_case`, and one name means one thing.
 
-Current events: `page_viewed`, `questionnaire_started`, `anamnesis_submitted`,
-`checkout_started` (the value moment). Super properties `platform` and `locale` are registered
-at init, so no event repeats them.
+Current events: `page_viewed`, `questionnaire_started`, `questionnaire_progressed`,
+`anamnesis_submitted`, `checkout_started` (the value moment). Super properties `platform` and
+`locale` are registered at init, so no event repeats them.
 
 ### What may never be sent
 
@@ -226,7 +226,7 @@ through `identity.ts`, never as an event property, and the Identity section belo
 of what changed. `events.ts` still carries position in the funnel and nothing that describes
 the human walking it.
 
-Three consequences that are easy to undo by accident:
+Four consequences that are easy to undo by accident:
 
 - **`autocapture` is off in `client.ts` and must stay off.** It reports the text of clicked
   elements, which on a questionnaire step is the wording of a medical question and the answer
@@ -234,11 +234,20 @@ Three consequences that are easy to undo by accident:
   `capture_text_content` lives in the autocapture config, and `Autocapture.getFullConfig()`
   returns `{}` while `autocapture` is `false`, so `$el_text` is unreachable rather than merely
   defaulted off. `client.test.ts` fails if this moves.
-- **Our own `page_viewed` is never sent for a `/questionnaire` path.** The model branches on
-  `visibleIf`, so which steps a person sees is derived from what they answered: the path is
-  the answer. `isTrackablePath` enforces this and is unit tested. It no longer means no
-  questionnaire path reaches Mixpanel at all; the heatmap's `$mp_web_page_view` carries the
-  full URL, which the Heatmaps section below explains and which was accepted with it.
+- **Our own `page_viewed` is never sent for a `/questionnaire` path**, and that rule is now
+  narrower than it looks. `isTrackablePath` governs `page_viewed` alone, and it is unit tested.
+  It has never meant that no questionnaire path reaches Mixpanel: the heatmap's
+  `$mp_web_page_view` carries the full URL, accepted with the replay on 2026-09-03, and
+  `questionnaire_started` has always carried `entry_step_id`.
+- **The funnel events name the screen on purpose, from 2026-09-14.**
+  `questionnaire_progressed` carries `screen_id`, `screen_number` and `screen_total`, so a
+  Mixpanel funnel filtered by `screen_id` shows which question loses people. The build plan
+  wrote it as the number alone; the user overruled that, and the two reasons are worth keeping.
+  The id already travelled, in the two places above, so nothing new is disclosed. And four of
+  the twelve screens are conditional, so a walk runs eight to twelve screens and screen five is
+  a different question for different people: an index says how far somebody got and never what
+  stopped them. **A screen id names the question asked, never the reply**, which is the line
+  that did not move and which `analytics.spec.ts` measures against a real walk.
 - **Every questionnaire surface carries `mp-sensitive`.** See Heatmaps below. Without it a
   click sends the answer's own wording as an event property.
 
