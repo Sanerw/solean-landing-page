@@ -16,3 +16,15 @@ export const EMAIL_QUESTION_NAME = 'EMail';
  * constant and is never assembled from parts.
  */
 export const ANAMNESIS_ATTRIBUTE_KEY = '_anamnesis_uid';
+
+/**
+ * The Mixpanel identity the order was placed by, so a purchase can be joined back to the
+ * person who walked the funnel. **Nothing reads it yet**, and that is the point: its consumer
+ * is the deferred Shopify `orders/paid` webhook, and an order placed before that exists still
+ * carries the key, so the import can reach it retroactively.
+ *
+ * Underscored like the anamnesis key, which is Shopify's convention for an attribute the
+ * customer should not see: theirs is plumbing for RxScale, this one is plumbing for us, and
+ * neither belongs on somebody's order confirmation.
+ */
+export const MIXPANEL_ATTRIBUTE_KEY = '_mixpanel_distinct_id';

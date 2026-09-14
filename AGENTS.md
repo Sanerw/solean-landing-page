@@ -418,6 +418,44 @@ cart and the RxScale recommendation ship as the German market whatever this repo
 decides currency and tax and needs a product decision, which is open question 5 in
 `project-overview.md`.
 
+### The order's join key
+
+From feature 29c a cart carries a second order attribute, `_mixpanel_distinct_id`, beside
+the `_anamnesis_uid` the checkout has always set. **Nothing reads it yet**, and that is the
+feature rather than an omission: its consumer is the deferred Shopify `orders/paid` webhook,
+and an order placed before that webhook exists still carries the key, so the revenue import
+can reach it retroactively. Without it, revenue history would begin on the day the webhook
+ships.
+
+Four things that are easy to undo by accident.
+
+- **The two attributes have opposite standing.** The anamnesis is mandatory and a missing one
+  refuses the cart, because RxScale reads the record off the order. The distinct id is best
+  effort: no consent, an SDK still importing, or a value that fails validation all end in an
+  omitted attribute and never in a refused order. `/api/checkout` may not be the reason a
+  checkout fails.
+- **The value is the e-mail address**, because the distinct id is since 29a. It is worth
+  sending anyway rather than joining on the address later: the `buyerIdentity` prefill is
+  dropped when the shop refuses it, and the address somebody types at Shopify's own checkout
+  need not be the one they answered the questionnaire with. This is the id Mixpanel actually
+  measured the session under.
+- **The underscore hides it from the customer.** Shopify does not show an underscore-prefixed
+  attribute on the order the buyer sees, which is why both keys carry one.
+- **`visitorDistinctId` is synchronous and may answer null.** It reads an SDK that is already
+  loaded and never awaits the import, because its caller is the checkout click. The visitor
+  who consents on the recommendation screen itself therefore orders without a join key, which
+  is the right side of the trade against delaying a purchase.
+
+`safeDistinctId` is the boundary: `/api/checkout` is public, so the value is trimmed, capped
+at 100 characters and dropped when empty or carrying a control character. `cart.test.ts`
+asserts the exact attribute set at both arities, so a field added to `CartRequest` later fails
+a test instead of reaching the shop.
+
+**What no test here proves:** that the attribute lands on a real Shopify order. The browser
+suite runs against a fixture shop that validates the cart's shape and is not Shopify. Feature
+13 proved `_anamnesis_uid` with one live cart read back through a `cart(id:)` query, and the
+same manual check is the only real proof for this one.
+
 ### Consent
 
 `opt_out_tracking_by_default` is on, and the SDK is behind a dynamic import, so a visitor who

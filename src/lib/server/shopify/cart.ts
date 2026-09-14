@@ -1,6 +1,10 @@
 import { env } from '$env/dynamic/private';
 import { env as publicEnv } from '$env/dynamic/public';
-import { ANAMNESIS_ATTRIBUTE_KEY, CHECKOUT_COUNTRY_CODE } from '$lib/config/checkout';
+import {
+	ANAMNESIS_ATTRIBUTE_KEY,
+	CHECKOUT_COUNTRY_CODE,
+	MIXPANEL_ATTRIBUTE_KEY
+} from '$lib/config/checkout';
 
 /**
  * The Shopify Storefront cart the handoff redirects to. RxScale is not called on this path:
@@ -35,10 +39,16 @@ export type CheckoutResult =
 	| { ok: true; checkoutUrl: string }
 	| { ok: false; reason: CheckoutFailure };
 
-interface CartRequest {
+export interface CartRequest {
 	anamnesisUid: string;
 	email: string;
 	variantId: string;
+	/**
+	 * Optional, and that is the contract rather than an oversight. A visitor who declined
+	 * analytics has no distinct id at all, and a deployment with no Mixpanel token never had
+	 * one, so an order without this attribute is complete rather than broken.
+	 */
+	mixpanelDistinctId?: string;
 }
 
 export interface CartInput {
@@ -59,7 +69,33 @@ export interface CartInput {
  * ignores a mismatch without a word. The e-mail is a prefill and never a condition: Shopify
  * collects the address at checkout, so an order without one is complete rather than
  * unreachable.
+ *
+ * The analytics identity rides beside the uid, at the order level for the same reason and
+ * with the opposite standing: the uid is mandatory and blocks the order when absent, while
+ * this one is best effort and is simply left out.
  */
+/**
+ * The longest a Mixpanel distinct id is worth carrying. It is an e-mail address or a uuid,
+ * and anything appreciably longer is somebody filling an order attribute rather than
+ * identifying a session.
+ */
+const DISTINCT_ID_MAX = 100;
+
+/**
+ * The analytics join key as it may be taken from a public request. Unusable values are
+ * dropped rather than refused, which is the rule `/api/reminder` follows and which matters
+ * more here: a junk value costs a join key, and a refusal costs the sale. This endpoint may
+ * never be the reason a checkout fails.
+ */
+export function safeDistinctId(value: string): string | undefined {
+	const trimmed = value.trim();
+	if (!trimmed || trimmed.length > DISTINCT_ID_MAX) return undefined;
+
+	// A control character would be carried into an order attribute and read back by whatever
+	// parses it later, so it is dropped here rather than escaped somewhere downstream.
+	return /[\u0000-\u001f\u007f]/.test(trimmed) ? undefined : trimmed;
+}
+
 export function buildCartInput(
 	request: CartRequest
 ): { ok: false; reason: CheckoutFailure } | CartInput {
@@ -70,9 +106,14 @@ export function buildCartInput(
 	const buyerIdentity: CartInput['buyerIdentity'] = { countryCode: CHECKOUT_COUNTRY_CODE };
 	if (email) buyerIdentity.email = email;
 
+	const attributes = [{ key: ANAMNESIS_ATTRIBUTE_KEY, value: request.anamnesisUid }];
+
+	const distinctId = request.mixpanelDistinctId?.trim();
+	if (distinctId) attributes.push({ key: MIXPANEL_ATTRIBUTE_KEY, value: distinctId });
+
 	return {
 		lines: [{ merchandiseId: merchandiseId(request.variantId), quantity: 1 }],
-		attributes: [{ key: ANAMNESIS_ATTRIBUTE_KEY, value: request.anamnesisUid }],
+		attributes,
 		buyerIdentity
 	};
 }
@@ -204,19 +245,18 @@ function cartVariant(requested: string): string | null {
  * Creates the cart and returns the URL Shopify gives back, untouched. The upstream error body
  * is deliberately not passed on: the caller gets a name instead.
  */
-export async function createCart(
-	anamnesisUid: string,
-	email: string,
-	variantId: string
-): Promise<CheckoutResult> {
+export async function createCart(request: CartRequest): Promise<CheckoutResult> {
 	const storeDomain = configured(publicEnv.PUBLIC_SHOPIFY_STORE_DOMAIN);
 	if (!storeDomain) return { ok: false, reason: 'not-configured' };
-	if (!anamnesisUid.trim()) return { ok: false, reason: 'missing-anamnesis' };
+	if (!request.anamnesisUid.trim()) return { ok: false, reason: 'missing-anamnesis' };
 
-	const variant = cartVariant(variantId);
+	const variant = cartVariant(request.variantId);
 	if (!variant) return { ok: false, reason: 'not-configured' };
 
-	const input = buildCartInput({ anamnesisUid, email, variantId: variant });
+	// A record rather than four positional strings, which is what this was until feature 29c
+	// added a fourth: four arguments of one type accept a transposition without a word, and
+	// the cart would be wrong rather than refused.
+	const input = buildCartInput({ ...request, variantId: variant });
 	if ('ok' in input) return input;
 
 	const attempt = await postCart(storeDomain, input);
@@ -226,7 +266,9 @@ export async function createCart(
 	// A refusal carries no cart, so the order still costs exactly one.
 	if (attempt.emailRefused && input.buyerIdentity.email) {
 		// Rebuilt rather than edited, so the retry obeys the same rules as the first attempt.
-		const retry = buildCartInput({ anamnesisUid, email: '', variantId: variant });
+		// Spread from the same request, so the retry keeps the analytics identity: it is the
+		// same order, and only the address the shop refused is dropped.
+		const retry = buildCartInput({ ...request, email: '', variantId: variant });
 		if ('ok' in retry) return retry;
 
 		return (await postCart(storeDomain, retry)).result;

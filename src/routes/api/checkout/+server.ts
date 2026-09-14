@@ -1,5 +1,5 @@
 import { json } from '@sveltejs/kit';
-import { createCart, type CheckoutFailure } from '$lib/server/shopify/cart';
+import { createCart, safeDistinctId, type CheckoutFailure } from '$lib/server/shopify/cart';
 import type { RequestHandler } from './$types';
 
 /**
@@ -37,11 +37,14 @@ export const POST: RequestHandler = async ({ request }) => {
 		return json({ ok: false, reason: 'missing-anamnesis' }, { status: 400 });
 	}
 
-	const result = await createCart(
-		field(body, 'anamnesisUid'),
-		field(body, 'email'),
-		field(body, 'variantId')
-	);
+	const result = await createCart({
+		anamnesisUid: field(body, 'anamnesisUid'),
+		email: field(body, 'email'),
+		variantId: field(body, 'variantId'),
+		// Hostile input, because this endpoint is public. Dropped rather than refused when it
+		// is unusable: a junk value costs a join key, a 400 costs the sale.
+		mixpanelDistinctId: safeDistinctId(field(body, 'mixpanelDistinctId'))
+	});
 
 	return result.ok ? json(result) : json(result, { status: STATUS[result.reason] });
 };

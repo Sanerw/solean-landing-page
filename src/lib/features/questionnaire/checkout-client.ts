@@ -1,3 +1,5 @@
+import { visitorDistinctId } from '$lib/analytics/client';
+
 /**
  * The browser half of the handoff. It asks Solean's own endpoint for a checkout, never the
  * shop directly: the rules that make an order reviewable are enforced there.
@@ -52,6 +54,8 @@ export async function requestCheckout(
 	// request at all.
 	if (!anamnesisUid) return { ok: false, reason: 'missing-anamnesis' };
 
+	const distinctId = visitorDistinctId();
+
 	let response: Response;
 	try {
 		response = await fetch('/api/checkout', {
@@ -60,7 +64,11 @@ export async function requestCheckout(
 			body: JSON.stringify({
 				anamnesisUid,
 				...(email ? { email } : {}),
-				...(variantId ? { variantId } : {})
+				...(variantId ? { variantId } : {}),
+				// Read here rather than passed in, so the screen keeps one less concern. Best
+				// effort by design: no consent, or an SDK still importing, simply means the order
+				// carries no analytics key, never that it fails.
+				...(distinctId ? { mixpanelDistinctId: distinctId } : {})
 			})
 		});
 	} catch {

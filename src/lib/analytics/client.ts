@@ -183,6 +183,11 @@ function anchorHeatmapToRecording(mixpanel: Mixpanel): void {
 }
 
 let loading: Promise<Mixpanel | null> | null = null;
+/**
+ * The loaded SDK, held beside the promise so the distinct id can be read without awaiting.
+ * Null until the import resolves, which is an ordinary state rather than a failure.
+ */
+let ready: Mixpanel | null = null;
 let consent: ConsentState = null;
 
 /**
@@ -279,6 +284,8 @@ async function load(): Promise<Mixpanel | null> {
 
 	mixpanel.register({ platform: 'web', locale: getLocale() });
 
+	ready = mixpanel;
+
 	return mixpanel;
 }
 
@@ -364,4 +371,28 @@ export function setProfileOnce(properties: ProfileProperties): boolean {
 	return deliver((mixpanel) => {
 		mixpanel.people.set_once(properties);
 	});
+}
+
+/**
+ * The id Mixpanel keyed this session under, or null when there is not one to give.
+ *
+ * Synchronous on purpose. Its caller is the checkout click, which is the value moment: it may
+ * not wait on a sixty kilobyte import to attach an analytics key to an order. By the time
+ * somebody reaches the plan screen the SDK has been loaded for a dozen screens, so the answer
+ * is there. What that gives up is the visitor who consents on the recommendation screen
+ * itself, whose order then carries no id, and losing a join key is the right side of that
+ * trade against delaying a purchase.
+ *
+ * Since the identify of 2026-09-14 this is the visitor's e-mail address. It is worth sending
+ * anyway rather than joining on the address later: the checkout prefill is dropped when the
+ * shop refuses it, and the address somebody types at Shopify's own checkout need not be the
+ * one they answered the questionnaire with. This is the id the session was actually measured
+ * under.
+ */
+export function visitorDistinctId(): string | null {
+	if (!analyticsEnabled() || !mayTrack(consent) || !ready) return null;
+
+	const id = ready.get_distinct_id();
+
+	return typeof id === 'string' && id.length > 0 ? id : null;
 }

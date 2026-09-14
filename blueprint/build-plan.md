@@ -624,7 +624,7 @@ claims are not approved production content.
     number and the screen total, never a screen id and never an answer, so a funnel
     report can show where people leave a flow whose paths are derived from what they
     answered.
-  - [ ] 29c. **The distinct id on the cart** - a second order attribute beside
+  - [x] 29c. **The distinct id on the cart** - a second order attribute beside
     `_anamnesis_uid` carrying the Mixpanel distinct id. Additive and invisible to a
     visitor: it makes an order joinable to the person who walked the funnel, so the
     deferred revenue import can be built later and still reach orders placed before it.

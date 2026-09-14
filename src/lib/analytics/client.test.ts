@@ -15,6 +15,7 @@ const sdk = vi.hoisted(() => ({
 	track: vi.fn(),
 	identify: vi.fn(),
 	people: { set: vi.fn(), set_once: vi.fn() },
+	get_distinct_id: vi.fn(() => 'jonas@example.com'),
 	opt_in_tracking: vi.fn(),
 	opt_out_tracking: vi.fn(),
 	set_config: vi.fn(),
@@ -195,5 +196,64 @@ describe('identity', () => {
 				first_landing_path: '/'
 			})
 		);
+	});
+});
+
+/**
+ * The join key the deferred revenue import will read off an order. Its whole contract is that
+ * it never blocks a purchase, so every refusal below is a null rather than a throw.
+ */
+describe('visitorDistinctId', () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+		sdk.get_distinct_id.mockReturnValue('jonas@example.com');
+	});
+
+	it('gives nothing before anyone has consented', async () => {
+		const { visitorDistinctId } = await freshClient();
+
+		expect(visitorDistinctId()).toBeNull();
+	});
+
+	it('gives nothing after a refusal', async () => {
+		const { visitorDistinctId, setAnalyticsConsent } = await freshClient();
+
+		setAnalyticsConsent('denied');
+
+		expect(visitorDistinctId()).toBeNull();
+	});
+
+	it('gives nothing while the SDK is still importing', async () => {
+		const { visitorDistinctId, setAnalyticsConsent, track } = await freshClient();
+
+		setAnalyticsConsent('granted');
+		track('page_viewed', { path: '/' });
+
+		// The import has been started and has not resolved, which is the state a visitor is in
+		// if they consent on the screen that orders. An order with no join key beats a checkout
+		// click that waited for an analytics bundle.
+		expect(visitorDistinctId()).toBeNull();
+	});
+
+	it('gives the id once the SDK is up and consent stands', async () => {
+		const { visitorDistinctId, setAnalyticsConsent, track } = await freshClient();
+
+		setAnalyticsConsent('granted');
+		track('page_viewed', { path: '/' });
+		await vi.waitFor(() => expect(sdk.register).toHaveBeenCalled());
+
+		expect(visitorDistinctId()).toBe('jonas@example.com');
+	});
+
+	it('treats an id the SDK cannot give as no id', async () => {
+		const { visitorDistinctId, setAnalyticsConsent, track } = await freshClient();
+
+		setAnalyticsConsent('granted');
+		track('page_viewed', { path: '/' });
+		await vi.waitFor(() => expect(sdk.register).toHaveBeenCalled());
+
+		sdk.get_distinct_id.mockReturnValue('');
+
+		expect(visitorDistinctId()).toBeNull();
 	});
 });
