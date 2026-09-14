@@ -53,12 +53,23 @@ describe('the seam between their branching and ours', () => {
 		}
 	});
 
-	it('refuses none of these visitors', () => {
-		for (const [name, answers] of Object.entries(BRANCHES)) {
-			expect(theirErrors(answers), name).toEqual({});
-			expect(wouldBeAccepted(answers), name).toBe(true);
-		}
-	});
+	/**
+	 * A budget of its own, because this one is genuinely expensive rather than slow by mistake:
+	 * `theirErrors` re-parses the 37 kB snapshot on every call, and this builds fourteen
+	 * survey-core sessions out of it. It measures 2.5 s on an idle machine, which left it at
+	 * half of Vitest's 5 s default and made it the first thing to time out whenever the rest of
+	 * the suite happened to load the same worker pool.
+	 */
+	it(
+		'refuses none of these visitors',
+		() => {
+			for (const [name, answers] of Object.entries(BRANCHES)) {
+				expect(theirErrors(answers), name).toEqual({});
+				expect(wouldBeAccepted(answers), name).toBe(true);
+			}
+		},
+		20_000
+	);
 
 	it('does not ask a male visitor their pregnancy questions', () => {
 		// Their `visibleIf` is `{Gender} = 'female'`, so this proves the shadow is reading their

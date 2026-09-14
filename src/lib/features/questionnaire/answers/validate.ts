@@ -1,3 +1,4 @@
+import { isValidPhoneNumber } from 'libphonenumber-js/max';
 import { NONE_VALUE, OTHER_VALUE, type AnyQuestion } from '../definition/kinds';
 import { screenById, visibleQuestions } from '../definition/screens';
 import type { Answers, QuestionId } from './types';
@@ -36,16 +37,6 @@ export type ScreenErrors = Partial<Record<QuestionId, ValidationCode>>;
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
-
-/**
- * A telephone number as people write one: digits, and the separators a printed number uses.
- * Six digits is the shortest national number in use, so anything shorter is a typo rather
- * than a short number. Nothing stricter, because the format differs by country and this field
- * is never dialled: `DROPPED` in the mapper records that RxScale has no phone question and
- * the cart carries none either.
- */
-const PHONE = /^[+()\d\s./-]+$/;
-const PHONE_DIGITS = 6;
 
 /**
  * A name has at least one letter in it. Deliberately the weakest rule that still catches a
@@ -115,11 +106,13 @@ export function validateQuestion(
 		return 'invalid-email';
 	}
 
-	if (question.id === 'phone' && typeof value === 'string') {
-		const phone = value.trim();
-		const digits = phone.replace(/\D/g, '').length;
-
-		if (!PHONE.test(phone) || digits < PHONE_DIGITS) return 'invalid-phone';
+	// Against the country's own numbering plan, not against a character class. The stored
+	// answer is E.164, so the country is in the string and no default is passed: a number
+	// without one cannot be judged and is refused, which is what the selector exists to
+	// prevent. The field is still never dialled from here, but it is dialled from Customer.io,
+	// and a national-format number that reads as valid is one nobody can reach.
+	if (question.kind === 'phone' && typeof value === 'string') {
+		if (!isValidPhoneNumber(value.trim())) return 'invalid-phone';
 	}
 
 	if ((question.id === 'firstName' || question.id === 'lastName') && typeof value === 'string') {

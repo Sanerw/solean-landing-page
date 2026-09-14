@@ -45,6 +45,7 @@ export type QuestionKind =
 	| 'single'
 	| 'multi'
 	| 'text'
+	| 'phone'
 	| 'number'
 	| 'date'
 	| 'month'
@@ -64,7 +65,7 @@ type KindFor<Value> = [Value] extends [boolean]
 	: [Value] extends [string[]]
 		? 'multi'
 		: [Value] extends [string]
-			? 'text' | 'number' | 'month' | 'comment'
+			? 'text' | 'phone' | 'number' | 'month' | 'comment'
 			: 'single' | 'date';
 
 /** The `*Other` sibling that holds an "other" choice's free text, by naming convention. */

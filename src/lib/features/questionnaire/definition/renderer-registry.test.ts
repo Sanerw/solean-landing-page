@@ -9,8 +9,10 @@ const ALL_KINDS: QuestionKind[] = [
 	'single',
 	'multi',
 	'text',
+	'phone',
 	'number',
 	'date',
+	'month',
 	'comment',
 	'consent'
 ];

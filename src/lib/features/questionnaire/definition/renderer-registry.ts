@@ -6,6 +6,7 @@ import DateField from '../fields/DateField.svelte';
 import MonthInputField from '../fields/MonthInputField.svelte';
 import MultiChoiceField from '../fields/MultiChoiceField.svelte';
 import NumberInputField from '../fields/NumberInputField.svelte';
+import PhoneField from '../fields/PhoneField.svelte';
 import TextInputField from '../fields/TextInputField.svelte';
 import type { FieldProps } from './field-props';
 import type { AnyQuestion, QuestionKind } from './kinds';
@@ -36,6 +37,7 @@ const BY_KIND: Record<QuestionKind, RegistryEntry> = {
 	single: { renderer: ChoiceField, presentation: 'group' },
 	multi: { renderer: MultiChoiceField, presentation: 'group' },
 	text: { renderer: TextInputField, presentation: 'control' },
+	phone: { renderer: PhoneField, presentation: 'control' },
 	number: { renderer: NumberInputField, presentation: 'control' },
 	date: { renderer: DateField, presentation: 'control' },
 	month: { renderer: MonthInputField, presentation: 'control' },

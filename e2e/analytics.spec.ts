@@ -276,3 +276,42 @@ test('a heatmap click on a medical question carries no answer wording', async ({
 	expect(payload).not.toContain('h\u00fcftarthrose');
 	expect(payload).not.toContain('1990');
 });
+
+/**
+ * The country list portals to `document.body`, which puts it outside the shell that carries
+ * `mp-sensitive` for the rest of the questionnaire. This is the same defect the date picker
+ * had and the same way it was found: reading the SDK source did not catch the portal, a
+ * browser run did. Without the class on the list's own content, every open row reports its
+ * `role` and whatever else the SDK tracks, off a medical screen.
+ */
+test('the phone country list is portalled, and carries the class that keeps it quiet', async ({
+	page
+}) => {
+	const traffic = await captureMixpanel(page);
+
+	await page.goto('/');
+	await expect(page.getByRole('button', { name: 'Einverstanden' })).toBeEnabled();
+	await page.getByRole('button', { name: 'Einverstanden' }).click();
+	await awaitEvent(traffic, 'page_viewed');
+
+	const recorded = traffic.recorder.length;
+	await walkTo(page, 'your-details');
+	await expect.poll(() => traffic.recorder.length, FLUSH).toBeGreaterThan(recorded);
+
+	await page.getByRole('button', { name: 'Ländervorwahl' }).click();
+	await page.getByRole('option', { name: /Österreich/ }).click();
+	await awaitEvent(traffic, '$mp_click');
+
+	const onQuestionnaire = traffic.events.filter((entry) =>
+		String(entry.properties.$current_url ?? '').includes('/questionnaire')
+	);
+
+	expect(onQuestionnaire.some((entry) => entry.event === '$mp_click')).toBe(true);
+
+	for (const entry of onQuestionnaire) {
+		const elements = (entry.properties.$elements ?? []) as Record<string, unknown>[];
+		const attrs = elements.flatMap((el) => Object.keys(el).filter((k) => k.startsWith('$attr-')));
+
+		expect(attrs, `${entry.event} reported element attributes`).toEqual([]);
+	}
+});

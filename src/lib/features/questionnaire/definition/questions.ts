@@ -204,10 +204,12 @@ export const QUESTIONS: readonly AnyQuestion[] = [
 	// the cart does not carry one.
 	defineQuestion({
 		id: 'phone',
-		kind: 'text',
+		kind: 'phone',
 		label: m.qn_phone_label,
 		shortLabel: m.qn_phone_short,
 		description: m.qn_phone_description,
+		// The national part alone: the selector holds the country code beside the box.
+		placeholder: m.qn_phone_placeholder,
 		optional: true
 	}),
 

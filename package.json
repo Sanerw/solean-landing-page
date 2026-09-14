@@ -40,6 +40,7 @@
 		"clsx": "^2.1.1",
 		"embla-carousel-svelte": "^8.6.0",
 		"groq": "^6.12.0",
+		"libphonenumber-js": "^1.13.13",
 		"mixpanel-browser": "^2.82.1",
 		"shadcn-svelte": "^1.5.1",
 		"survey-core": "^3.0.2",

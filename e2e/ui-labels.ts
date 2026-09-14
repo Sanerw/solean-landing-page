@@ -8,6 +8,10 @@
  */
 export const UI = {
 	continue: 'Weiter',
+	phoneCountry: 'Ländervorwahl',
+	phoneCountrySearch: 'Land suchen',
+	phoneCountryEmpty: 'Kein Land gefunden.',
+	invalidPhone: 'Bitte gib eine gültige Telefonnummer ein.',
 	back: 'Zurück',
 	home: 'Start',
 	checkout: 'Zur Kasse',

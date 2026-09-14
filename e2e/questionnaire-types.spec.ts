@@ -175,9 +175,100 @@ test('the contact fields carry their own keyboard, hint and description', async 
 	// under the e-mail, so RxScale's confidentiality line is not transcribed there.
 	const phone = page.locator('#q-phone');
 	await expect(phone).toHaveAttribute('type', 'tel');
-	await expect(phone).toHaveAttribute('placeholder', '+49 151 234 56 78');
+	// The national part alone, and a number the rule actually accepts: the old example was
+	// short by a digit, so the field it was teaching turned red the moment it was copied.
+	await expect(phone).toHaveAttribute('placeholder', '0151 12345678');
 	await expect(phone).toHaveAttribute('aria-describedby', /q-phone-description/);
 	await expect(page.locator('#q-phone-description')).toHaveText(
 		'Erhalte Bestellupdates, exklusive Rabatte und Tipps per SMS. Jederzeit abbestellbar.'
 	);
+
+	await expect(page.getByRole('button', { name: UI.phoneCountry })).toHaveText(/\+49/);
+});
+
+/**
+ * The rule is libphonenumber's, against the country's own plan. What this proves in a browser
+ * is the half the unit tests cannot: that the selector and the box compose one number, and
+ * that a national number typed the way a German writes one is accepted rather than refused.
+ */
+test('the phone is judged against a real numbering plan', async ({ page }) => {
+	await walkTo(page, 'your-details');
+	await page.locator('#q-firstName').fill('Jonas');
+	await page.locator('#q-lastName').fill('Weber');
+	await page.locator('#q-email').fill('jonas@example.com');
+
+	// Digits the German plan cannot issue. The old character class accepted this.
+	await page.locator('#q-phone').fill('123456');
+	await page.getByRole('button', { name: UI.continue }).click();
+	await expect(page.getByText(UI.invalidPhone)).toBeVisible();
+	await expect(page).toHaveURL('/questionnaire/your-details');
+
+	await page.locator('#q-phone').fill('0151 12345678');
+	await page.getByRole('button', { name: UI.continue }).click();
+	await expect(page).not.toHaveURL('/questionnaire/your-details');
+});
+
+test('the country selector composes the number with the country chosen', async ({ page }) => {
+	await walkTo(page, 'your-details');
+	await page.locator('#q-firstName').fill('Jonas');
+	await page.locator('#q-lastName').fill('Weber');
+	await page.locator('#q-email').fill('jonas@example.com');
+
+	const selector = page.getByRole('button', { name: UI.phoneCountry });
+	await selector.click();
+	await page.getByRole('option', { name: /Österreich/ }).click();
+	await expect(selector).toHaveText(/\+43/);
+
+	// Picking a country is never the last thing anybody wants to do here, so the caret goes
+	// where the rest of the answer has to be typed.
+	await expect(page.locator('#q-phone')).toBeFocused();
+
+	// A Vienna landline, which is invalid under +49 and valid under +43: the number alone does
+	// not decide it, so this is the selector being read rather than ignored.
+	await page.locator('#q-phone').fill('1 5811234');
+	await page.getByRole('button', { name: UI.continue }).click();
+	await expect(page).not.toHaveURL('/questionnaire/your-details');
+});
+
+/**
+ * 245 countries is more than a list anybody scrolls. The filter matches the name a person
+ * reads and the code they may know instead, which is why the dial code is a keyword rather
+ * than only a column.
+ */
+test('the country list is filtered by name and by dial code', async ({ page }) => {
+	await walkTo(page, 'your-details');
+	await page.getByRole('button', { name: UI.phoneCountry }).click();
+
+	const search = page.getByPlaceholder(UI.phoneCountrySearch);
+	await search.fill('pol');
+	await expect(page.getByRole('option', { name: /Polen/ })).toBeVisible();
+	await expect(page.getByRole('option', { name: /Deutschland/ })).toBeHidden();
+
+	// Best first, and it is the Enter key that cares: alphabetically Französisch-Polynesien
+	// comes before Polen, so the row order is the difference between the right country and
+	// the wrong one.
+	await expect(page.getByRole('option').first()).toContainText('Polen');
+
+	await search.fill('+48');
+	await expect(page.getByRole('option', { name: /Polen/ })).toBeVisible();
+
+	await search.fill('zzzz');
+	await expect(page.getByText(UI.phoneCountryEmpty)).toBeVisible();
+
+	// The keyboard alone has to get from the filter to a chosen country and back to the number.
+	await search.fill('Schweiz');
+	await page.keyboard.press('ArrowDown');
+	await page.keyboard.press('Enter');
+	await expect(page.getByRole('button', { name: UI.phoneCountry })).toHaveText(/\+41/);
+	await expect(page.locator('#q-phone')).toBeFocused();
+});
+
+test('a valid number is tidied once, when the field is left', async ({ page }) => {
+	await walkTo(page, 'your-details');
+	await page.locator('#q-phone').fill('015112345678');
+	// Still exactly as typed: reformatting between keystrokes moves the caret.
+	await expect(page.locator('#q-phone')).toHaveValue('015112345678');
+
+	await page.locator('#q-email').click();
+	await expect(page.locator('#q-phone')).toHaveValue('01511 2345678');
 });

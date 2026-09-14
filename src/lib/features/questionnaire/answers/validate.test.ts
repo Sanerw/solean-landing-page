@@ -77,15 +77,35 @@ describe('none and other', () => {
 });
 
 describe('the contact fields', () => {
-	it('accepts a phone number written the way people write one', () => {
-		for (const phone of ['+49 151 234 56 78', '0151/2345678', '(030) 123-4567']) {
+	// The stored answer is E.164, which the control composes: the country is part of the
+	// string by the time the rule sees it.
+	it('accepts a real number from any country, mobile or landline', () => {
+		for (const phone of [
+			'+4915112345678',
+			'+49 40 87709420',
+			'+436641234567',
+			'+41791234567',
+			'+447400123456'
+		]) {
 			expect(check('phone', answering({ phone })), phone).toBeNull();
 		}
 	});
 
-	it('refuses letters and a number too short to be one', () => {
+	it('refuses letters, and digits the numbering plan cannot issue', () => {
 		expect(check('phone', answering({ phone: 'abc' }))).toBe('invalid-phone');
 		expect(check('phone', answering({ phone: '12345' }))).toBe('invalid-phone');
+		// The case that decides the metadata: `min` validates by length alone and accepts this,
+		// `max` knows Germany issues no such number. Switching back would pass this test wrongly.
+		expect(check('phone', answering({ phone: '+49123456' }))).toBe('invalid-phone');
+		expect(check('phone', answering({ phone: '+49 000 000 000' }))).toBe('invalid-phone');
+	});
+
+	// What the old character class accepted. A number in national form reads as valid and can
+	// never be reached from Customer.io, which is the defect this rule exists to close.
+	it('refuses a number that names no country', () => {
+		for (const phone of ['0151/2345678', '(030) 123-4567', '015112345678']) {
+			expect(check('phone', answering({ phone })), phone).toBe('invalid-phone');
+		}
 	});
 
 	// Optional, so an empty phone is still no error at all: the rule is about what was typed.
