@@ -178,6 +178,13 @@
 	--spacing-hero-bleed: calc(100svh - 4rem);
 	--spacing-hero-bleed-sm: calc(100svh - 3.25rem);
 
+	/* The widest the content inset is allowed to get, as `max-w-site`. The artboards are drawn
+	   on a 1920px canvas and nothing above it was ever designed, so without a cap a 2560 screen
+	   stretched every band to 2432px and ran body copy out to about 155 characters a line,
+	   against the 45 to 75 a reader wants. In `rem`, so it follows the root step: 1536px before
+	   the step and 1920px after it, which is the canvas. */
+	--container-site: 96rem;
+
 	--color-background: var(--background);
 	--color-foreground: var(--foreground);
 	--color-card: var(--card);
@@ -260,6 +267,44 @@
 		@apply font-sans;
 	}
 }
+
+/* The site is drawn on a 1920px canvas but stopped growing at 1280px: there is no `2xl:`
+   utility anywhere in the app, so every surface rendered around 0.6x its artboard on a large
+   desktop. Every Tailwind size is a `rem`, so stepping the root scales type, spacing, control
+   heights and radii together and keeps the proportions the artboards already encode. Doing it
+   with `2xl:` prefixes instead would mean editing ~150 class strings to say the same thing.
+
+   Both queries constrain height as well as width, which is unusual and load-bearing. The
+   product hero is built so the consultation CTA sits above the fold, and width alone cannot
+   honour that: measured on /treatments/[slug], 112.5% puts the CTA 4px below a 1536x864
+   viewport and 125% puts it 59px below a 1792x900 one, while both fit comfortably at
+   1920x1080. 1536x864 is what a 1920x1080 monitor reports at Windows 125% display scaling,
+   so it is a common screen rather than an edge case, and it keeps today's rendering.
+
+   Percentages, not pixels, so a reader who has set a larger default font size keeps it: this
+   multiplies their preference instead of replacing it.
+
+   Breakpoints do not move with this. Media queries resolve `rem` against the root element's
+   *initial* font size rather than its current one, so `2xl:` still means 1536px here and
+   there is no feedback loop between the step and the query that triggers it. */
+@media (min-width: 96rem) and (min-height: 56rem) {
+	html {
+		font-size: 112.5%;
+	}
+}
+
+@media (min-width: 112rem) and (min-height: 59rem) {
+	html {
+		font-size: 125%;
+	}
+}
+
+/* The first step's condition again, as a variant, for the rare utility that has to follow the
+   step rather than ride on it. `2xl:` is not that condition: it keys on width alone, so it
+   would also fire on a 1536x864 viewport, which the height guard deliberately leaves at
+   today's rendering. Written out rather than shared with the rule above because Tailwind
+   needs the condition literally; keep the two in step by hand. */
+@custom-variant scaled (@media (min-width: 96rem) and (min-height: 56rem));
 
 /* Chrome paints an autofilled field its own pale blue and does it with `!important`, so a
    background utility cannot reach it. An inset shadow tall enough to cover the box is the one

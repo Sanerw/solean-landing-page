@@ -1,5 +1,8 @@
-/** Shared content inset. Nested inside a bleed panel this is 1768px at 1920px. */
-export const CONTAINER = 'mx-auto w-full px-4 sm:px-6 lg:px-16';
+/** Shared content inset. Nested inside a bleed panel this is 1768px at 1920px.
+    `max-w-site` (see `--container-site` in layout.css) stops it spreading past the 1920px
+    canvas the artboards are drawn on; a bleed panel's ground still runs to the viewport edge,
+    because the cap is on the inset rather than on the panel. */
+export const CONTAINER = 'mx-auto w-full max-w-site px-4 sm:px-6 lg:px-16';
 
 /** Near-full-width reference panels sit 12px inside the viewport edge. The narrow
     artboard has no such gutter: its sections run edge to edge and square. */

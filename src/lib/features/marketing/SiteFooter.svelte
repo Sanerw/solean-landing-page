@@ -27,7 +27,7 @@
 	<div class="rounded-t-xl bg-muted py-12">
 		<div class={CONTAINER}>
 			<div class="flex flex-col items-start gap-6 sm:flex-row sm:items-center sm:justify-between">
-				<SoleanLogo class="text-foreground" />
+				<SoleanLogo size="chrome" class="text-foreground" />
 				<p class="text-xl font-medium text-foreground">{FOOTER_BRAND.tagline}</p>
 			</div>
 

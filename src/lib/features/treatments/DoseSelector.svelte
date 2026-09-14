@@ -29,6 +29,13 @@
 	adapted one is a fixed 20px circle with a dot and takes no children, which is the right
 	shape for a questionnaire option card and the wrong one for a segment that has to *be* the
 	control. The Root is still the adapted one, so the group's own wiring is unchanged.
+
+	`py-4 md:py-3 scaled:py-4` reads like a mistake and is not. `md:py-3` buys back the height
+	the `/ Monat` suffix costs when `md:not-sr-only` reveals it, which is why the tile is
+	tighter on a laptop than on a phone. On a large desktop there is no such shortage, and the
+	artboard draws a 93px tile against the 85px the tightened padding leaves, so the step puts
+	it back. `scaled:`, not `2xl:`: it has to follow the root font-size step defined in
+	layout.css, which is guarded on height as well as width.
 -->
 <RadioGroup.Root
 	bind:value
@@ -38,7 +45,7 @@
 	{#each doses as dose (dose.label)}
 		<RadioGroupPrimitive.Item
 			value={dose.label}
-			class="group flex flex-col items-center justify-center gap-1 border-l border-border px-2 py-4 text-center outline-none transition-colors first:border-l-0 hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset data-checked:bg-foreground data-checked:hover:bg-foreground md:py-3"
+			class="group flex flex-col items-center justify-center gap-1 border-l border-border px-2 py-4 text-center outline-none transition-colors first:border-l-0 hover:bg-accent focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset data-checked:bg-foreground data-checked:hover:bg-foreground md:py-3 scaled:py-4"
 		>
 			<span
 				class="text-base font-bold text-foreground group-data-checked:text-background"

@@ -36,8 +36,18 @@
 	<figcaption class="sr-only">{title}</figcaption>
 
 	<!-- mb-12 clears the value pill on the first point, which hangs about 40px above the
-	     plot's top edge, so the legend cannot collide with it. -->
-	<ul class={compact ? 'mb-12 flex list-none gap-4 p-0' : 'mb-12 flex list-none gap-6 p-0'} aria-hidden="true">
+	     plot's top edge, so the legend cannot collide with it.
+
+	     The wide branch centres from `lg` because that is where the marketing section centres
+	     its heading, lead and disclaimer, and a flex row ignores the `text-center` that moves
+	     the other three. `compact` is the questionnaire's interstitial, which is left-aligned
+	     and stays that way, so the two contexts do not have to agree. -->
+	<ul
+		class={compact
+			? 'mb-12 flex list-none gap-4 p-0'
+			: 'mb-12 flex list-none gap-6 p-0 lg:justify-center'}
+		aria-hidden="true"
+	>
 		<li class="flex items-center gap-2 text-sm text-muted-foreground">
 			<span class="block h-0.5 w-6 rounded-full bg-foreground"></span>
 			{seriesLabel}

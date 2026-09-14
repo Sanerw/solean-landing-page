@@ -1,0 +1,20 @@
+diff --git a/out/analyze.js b/out/analyze.js
+index 732308f05f415e02a3a79069844ea935c95ab9af..6e713de11ba19dae1b0208a5d771af818e195a93 100644
+--- a/out/analyze.js
++++ b/out/analyze.js
+@@ -288,6 +288,15 @@ async function analyze(id, code, job) {
+             ? wildcardPath.length
+             : wildcardPath.lastIndexOf(path_1.default.posix.sep, wildcardIndex);
+         const assetDirPath = wildcardPath.substring(0, dirIndex);
++        // An asset path the evaluator could not resolve at all becomes wildcards from the very
++        // first segment, and the glob below is then anchored at the filesystem root: '' on
++        // POSIX, 'C:' on Windows. That is never an asset directory, it is the whole machine, so
++        // nft walks every file on the drive. adapter-vercel makes it reachable by design, since
++        // it sets `base` to the root so tracing can follow pnpm's symlinks out of the project.
++        // Locally that cost a 4GB heap and then an EBUSY on C:\swapfile.sys.
++        if (assetDirPath === '' || /^[A-Za-z]:$/.test(assetDirPath)) {
++            return;
++        }
+         const patternPath = wildcardPath.slice(dirIndex);
+         const wildcardPattern = patternPath
+             .replace(static_eval_1.wildcardRegEx, (_match, index) => {

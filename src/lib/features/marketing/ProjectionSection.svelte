@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { CONTAINER, SECTION_Y } from './container';
-	import { SUB_HEADING } from './type';
+	import { SECTION_HEADING } from './type';
 	import {
 		DEFAULT_HORIZON_MONTH,
 		PROJECTION_COMPARISON,
@@ -27,8 +27,23 @@
 
 <section class={[CONTAINER, SECTION_Y]} aria-label={PROJECTION.title}>
 	<div class="grid gap-14 lg:grid-cols-2 lg:items-center lg:gap-16">
-		<div class="max-sm:order-2">
-			<h2 class={SUB_HEADING}>
+		<!--
+			Centred from `lg`, which is where the two columns appear: the artboard centres this
+			heading, its lead and the disclaimer over the chart, and the disclaimer was the only
+			one of the three that did. Stacked, the section reads as one left-aligned column like
+			every other band, so the centring starts with the column that justifies it.
+		-->
+		<div class="max-sm:order-2 lg:text-center">
+			<!--
+				`SECTION_HEADING`, not the `SUB_HEADING` the artboard draws here at roughly 40px
+				against its neighbour's 66px. Asked for on 2026-09-14: beside the medical framing
+				heading in the same row, the quieter scale read as a caption rather than a section.
+				A deliberate departure from the reference, so do not "restore" it.
+
+				Set here rather than by widening `SUB_HEADING`, which `BentoGrid` also uses and
+				which should keep the reference's quieter scale.
+			-->
+			<h2 class={SECTION_HEADING}>
 				{PROJECTION.title}
 			</h2>
 			<p class="mt-2 text-sm text-muted-foreground">{PROJECTION.lead}</p>

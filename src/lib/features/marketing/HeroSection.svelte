@@ -96,9 +96,16 @@
 					<span class="hidden sm:inline">{HERO.eyebrow}</span>
 				</p>
 
+				<!--
+					`xl:text-7xl`, where design-system.md's ladder says `text-8xl`. That table was
+					written for a fixed 16px root, and 6rem there is the artboard's 96px; with the
+					root step in layout.css the same class renders 120px at 1920 and overshoots by a
+					quarter. 4.5rem lands on 90px there, which is the figure the artboard draws.
+					Do not "restore" the documented value without also reading that step.
+				-->
 				<h1
 					id="hero-heading"
-					class="mt-4 max-w-5xl text-balance font-display text-5xl font-medium leading-none tracking-tight text-background sm:text-4xl lg:text-5xl xl:text-6xl"
+					class="mt-4 max-w-5xl text-balance font-display text-5xl font-medium leading-none tracking-tight text-background sm:text-4xl lg:text-5xl xl:text-7xl"
 				>
 					<!-- The narrow frame drops the struck phrase: at this measure the rule breaks
 					     across lines and reads as two struck words rather than one struck idea. -->

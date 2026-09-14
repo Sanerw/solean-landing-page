@@ -76,7 +76,7 @@
 			aria-label={m.q_logo_home()}
 			class="rounded-sm text-foreground outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
 		>
-			<SoleanLogo size="default" />
+			<SoleanLogo size="chrome" />
 		</a>
 
 		<Button
@@ -91,7 +91,14 @@
 	</nav>
 
 	<main class="flex-1 px-4 pb-8 sm:px-6 lg:px-8">
-		<div class="mx-auto w-full max-w-2xl">
+		<!--
+			`scaled:max-w-xl` is a narrowing, not a widening. `max-w-2xl` is 42rem, which the root
+			step turns into 840px on a large desktop, where the artboard draws this column at 649px.
+			A form has an optimal measure and 840px is past it. Stepping down to 36rem lands on 648px
+			at the first tier and 720px at the second, so the column grows a little with the type
+			instead of a quarter with it.
+		-->
+		<div class="mx-auto w-full max-w-2xl scaled:max-w-xl">
 			{#if progress}
 				<!--
 					`aria-labelledby`, not `aria-label`: the count is on the screen now, so naming the

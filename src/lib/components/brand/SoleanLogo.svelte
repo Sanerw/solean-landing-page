@@ -3,7 +3,7 @@
 
 	interface Props extends SVGAttributes<SVGElement> {
 		/** Rendered height; the existing 166:60 presentation frame drives the width. */
-		size?: 'sm' | 'default' | 'lg';
+		size?: 'sm' | 'default' | 'lg' | 'chrome';
 		title?: string;
 		class?: string;
 	}
@@ -13,7 +13,18 @@
 	const sizes = {
 		sm: 'h-[20.4px]',
 		default: 'h-[30.6px]',
-		lg: 'h-[51px]'
+		lg: 'h-[51px]',
+		/**
+		 * The mark in page chrome: the site header, the footer and the questionnaire's nav. The
+		 * artboards draw it about 150px wide on a desktop, which is 54px tall in this frame, and
+		 * only the header had that step: the other two sat at 30.6px, a little over half.
+		 *
+		 * Deliberately still in px, so it does not follow the root font-size step in layout.css.
+		 * The artboard's 150px is measured at 1920, where the root has already stepped to 125%, so
+		 * a rem value matching it there would overshoot by a quarter again at 2560. A brand mark
+		 * has an optical size rather than a typographic one.
+		 */
+		chrome: 'h-[30.6px] min-[1200px]:h-[51px]'
 	} as const;
 </script>
 

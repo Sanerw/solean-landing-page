@@ -15,6 +15,8 @@ export const UI = {
 	tryAgain: 'Erneut versuchen',
 	openCalendar: 'Kalender öffnen',
 	checkEligibility: 'Eignung prüfen',
+	/** The treatment page's offer card. The sticky bar carries the same words at narrow widths. */
+	consultationCta: 'Beratung starten',
 	chooseTreatment: 'Wähle deine Behandlung',
 	/** The card that stands for the prescription-only group on the first screen. */
 	prescriptionCard: 'Nur Rezept',

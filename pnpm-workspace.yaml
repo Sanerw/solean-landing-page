@@ -27,3 +27,6 @@ allowBuilds:
 # again like everything else.
 minimumReleaseAgeExclude:
   - '@sanity/types@6.12.0'
+
+patchedDependencies:
+  '@vercel/nft@1.11.0': patches/@vercel__nft@1.11.0.patch

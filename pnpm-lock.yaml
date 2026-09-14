@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@vercel/nft@1.11.0': 5462c48f461eef244600fa48cadef0faa4a41f7316789199852b9207ca3d91d8
+
 importers:
 
   .:
@@ -8406,7 +8409,7 @@ snapshots:
   '@sveltejs/adapter-vercel@6.3.4(@sveltejs/kit@2.70.3(@sveltejs/vite-plugin-svelte@7.3.0(svelte@5.57.0)(vite@8.2.2(@types/node@26.4.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0)))(svelte@5.57.0)(typescript@6.0.3)(vite@8.2.2(@types/node@26.4.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0)))(supports-color@8.1.1)':
     dependencies:
       '@sveltejs/kit': 2.70.3(@sveltejs/vite-plugin-svelte@7.3.0(svelte@5.57.0)(vite@8.2.2(@types/node@26.4.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0)))(svelte@5.57.0)(typescript@6.0.3)(vite@8.2.2(@types/node@26.4.0)(esbuild@0.28.2)(jiti@2.7.0)(tsx@4.23.13)(yaml@2.9.0))
-      '@vercel/nft': 1.11.0(supports-color@8.1.1)
+      '@vercel/nft': 1.11.0(patch_hash=5462c48f461eef244600fa48cadef0faa4a41f7316789199852b9207ca3d91d8)(supports-color@8.1.1)
       esbuild: 0.28.2
     transitivePeerDependencies:
       - encoding
@@ -8593,7 +8596,7 @@ snapshots:
       js-yaml: 3.13.1
       smol-toml: 1.5.2
 
-  '@vercel/nft@1.11.0(supports-color@8.1.1)':
+  '@vercel/nft@1.11.0(patch_hash=5462c48f461eef244600fa48cadef0faa4a41f7316789199852b9207ca3d91d8)(supports-color@8.1.1)':
     dependencies:
       '@mapbox/node-pre-gyp': 2.0.3(supports-color@8.1.1)
       '@rollup/pluginutils': 5.4.0
