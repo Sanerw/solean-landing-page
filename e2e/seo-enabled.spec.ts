@@ -51,13 +51,13 @@ test('the sitemap lists every published page, in both languages', async ({ reque
 		`${ORIGIN}/`,
 		`${ORIGIN}/en`,
 		`${ORIGIN}/en/learn`,
-		`${ORIGIN}/en/learn/blog/mounjaro-vs-wegovy`,
+		`${ORIGIN}/en/learn/mounjaro-vs-wegovy`,
 		`${ORIGIN}/en/legal-notice`,
 		`${ORIGIN}/en/privacy`,
 		`${ORIGIN}/en/returns`,
 		`${ORIGIN}/en/terms`,
 		`${ORIGIN}/learn`,
-		`${ORIGIN}/learn/blog/mounjaro-vs-wegovy`,
+		`${ORIGIN}/learn/mounjaro-vs-wegovy`,
 		`${ORIGIN}/legal-notice`,
 		`${ORIGIN}/privacy`,
 		`${ORIGIN}/returns`,
@@ -112,11 +112,11 @@ test('the sitemap and the page agree about the canonical', async ({ request }) =
  */
 test.describe('metadata follows the configured origin', () => {
 	test('every sharing URL names this deployment', async ({ request }) => {
-		const html = await (await request.get('/learn/blog/mounjaro-vs-wegovy')).text();
+		const html = await (await request.get('/learn/mounjaro-vs-wegovy')).text();
 		const content = (key: string) =>
 			html.match(new RegExp(`<meta property="${key}" content="([^"]*)"`))?.[1];
 
-		expect(content('og:url')).toBe(`${ORIGIN}/learn/blog/mounjaro-vs-wegovy`);
+		expect(content('og:url')).toBe(`${ORIGIN}/learn/mounjaro-vs-wegovy`);
 		expect(html).not.toContain('localhost:4173');
 	});
 
@@ -148,7 +148,7 @@ test.describe('metadata follows the configured origin', () => {
 	});
 
 	test('the article graph is still well formed once indexing is on', async ({ request }) => {
-		const html = await (await request.get('/en/learn/blog/mounjaro-vs-wegovy')).text();
+		const html = await (await request.get('/en/learn/mounjaro-vs-wegovy')).text();
 		const graph = JSON.parse(
 			html.match(/<script type="application\/ld\+json">(.*?)<\/script>/s)![1]
 		);

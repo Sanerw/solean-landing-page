@@ -9,8 +9,8 @@ describe('legacyGermanPath', () => {
 
 	it('keeps the rest of the path', () => {
 		expect(legacyGermanPath('/de/privacy')).toBe('/privacy');
-		expect(legacyGermanPath('/de/learn/blog/mounjaro-vs-wegovy')).toBe(
-			'/learn/blog/mounjaro-vs-wegovy'
+		expect(legacyGermanPath('/de/learn/mounjaro-vs-wegovy')).toBe(
+			'/learn/mounjaro-vs-wegovy'
 		);
 	});
 

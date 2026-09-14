@@ -1,8 +1,8 @@
 /**
- * The Journal at `/learn`. Before this page existed both `/learn` and `/learn/blog` were
- * redirects into the newest article, so the site had no index at all and a second article had
- * nowhere to appear. These assertions are mostly about that: the page exists, it is one page in
- * both languages, and the way in is a single link to the article.
+ * The Journal at `/learn`, with the articles directly under it. Before this page existed both
+ * `/learn` and the articles were redirects into the newest one, so the site had no index at all
+ * and a second article had nowhere to appear. These assertions are mostly about that: the page
+ * exists, it is one page in both languages, and the way in is a single link to the article.
  *
  * The article's own copy comes from Sanity and is not asserted here. What is asserted is the
  * chrome the repository owns and the wiring between the two.
@@ -22,11 +22,11 @@ test('the Journal renders in both languages and opens the article', async ({ pag
 	// than three to the same place. Its name has to say which article it opens.
 	const featured = page.locator('section[aria-labelledby="journal-heading"] a');
 	await expect(featured).toHaveCount(1);
-	await expect(featured).toHaveAttribute('href', '/en/learn/blog/mounjaro-vs-wegovy');
+	await expect(featured).toHaveAttribute('href', '/en/learn/mounjaro-vs-wegovy');
 	expect(await featured.getAttribute('aria-label')).toMatch(/^Read .+/);
 
 	await featured.click();
-	await expect(page).toHaveURL('/en/learn/blog/mounjaro-vs-wegovy');
+	await expect(page).toHaveURL('/en/learn/mounjaro-vs-wegovy');
 
 	// The bare path is German, and the localised href is what keeps a German reader out of the
 	// English article. A visitor who has just been served English is not that reader, and is
@@ -38,7 +38,7 @@ test('the Journal renders in both languages and opens the article', async ({ pag
 	);
 	await expect(page.locator('section[aria-labelledby="journal-heading"] a')).toHaveAttribute(
 		'href',
-		'/learn/blog/mounjaro-vs-wegovy'
+		'/learn/mounjaro-vs-wegovy'
 	);
 });
 
@@ -61,14 +61,6 @@ test('one article draws no articles band', async ({ page }) => {
 	await expect(page.getByRole('button', { name: 'All guides' })).toHaveCount(0);
 });
 
-test('/learn/blog is the Journal, not an article', async ({ page }) => {
-	await page.goto('/learn/blog');
-	await expect(page).toHaveURL('/learn');
-
-	await page.goto('/en/learn/blog');
-	await expect(page).toHaveURL('/en/learn');
-});
-
 test('the Journal fits the narrow frame', async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
 	await page.goto('/en/learn');
@@ -86,7 +78,7 @@ test('the Journal fits the narrow frame', async ({ page }) => {
  * and is not asserted here; the wiring between the Journal and the article is this repository's.
  */
 test('the hero leads back to the Journal in the reader own language', async ({ page }) => {
-	await page.goto('/en/learn/blog/mounjaro-vs-wegovy');
+	await page.goto('/en/learn/mounjaro-vs-wegovy');
 
 	const back = page.getByRole('link', { name: 'Back to journal' });
 	await expect(back).toHaveAttribute('href', '/en/learn');
@@ -98,7 +90,7 @@ test('the hero leads back to the Journal in the reader own language', async ({ p
 	// English Journal. As above, the German half is a fresh arrival: the language just read
 	// would otherwise follow the visitor onto the unprefixed address.
 	await forgetLanguage(page);
-	await page.goto('/learn/blog/mounjaro-vs-wegovy');
+	await page.goto('/learn/mounjaro-vs-wegovy');
 	await expect(page.getByRole('link', { name: 'Zurück zum Journal' })).toHaveAttribute(
 		'href',
 		'/learn'
@@ -111,7 +103,7 @@ test('the hero leads back to the Journal in the reader own language', async ({ p
  * band follows on the Journal itself.
  */
 test('a library of one draws no next-article pill', async ({ page }) => {
-	await page.goto('/en/learn/blog/mounjaro-vs-wegovy');
+	await page.goto('/en/learn/mounjaro-vs-wegovy');
 
 	await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 	await expect(page.getByRole('link', { name: 'Next article' })).toHaveCount(0);
@@ -119,7 +111,7 @@ test('a library of one draws no next-article pill', async ({ page }) => {
 
 test('the article fits the narrow frame', async ({ page }) => {
 	await page.setViewportSize({ width: 390, height: 844 });
-	await page.goto('/en/learn/blog/mounjaro-vs-wegovy');
+	await page.goto('/en/learn/mounjaro-vs-wegovy');
 	await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 
 	const widths = await page.evaluate(() => ({
@@ -137,7 +129,7 @@ test('the contents list sits beside the reading column, and not at all on a phon
 	page
 }) => {
 	await page.setViewportSize({ width: 1440, height: 900 });
-	await page.goto('/en/learn/blog/mounjaro-vs-wegovy');
+	await page.goto('/en/learn/mounjaro-vs-wegovy');
 
 	const contents = page.getByRole('navigation', { name: 'On this page' });
 	const heading = page.getByRole('heading', { name: 'Quick answer' });
@@ -157,7 +149,7 @@ test('the contents list sits beside the reading column, and not at all on a phon
 
 test('every contents link points at a section the page actually has', async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 900 });
-	await page.goto('/en/learn/blog/mounjaro-vs-wegovy');
+	await page.goto('/en/learn/mounjaro-vs-wegovy');
 
 	const hrefs = await page
 		.getByRole('navigation', { name: 'On this page' })
@@ -172,7 +164,7 @@ test('every contents link points at a section the page actually has', async ({ p
 });
 
 test('the FAQ starts closed and opens one question at a time', async ({ page }) => {
-	await page.goto('/en/learn/blog/mounjaro-vs-wegovy');
+	await page.goto('/en/learn/mounjaro-vs-wegovy');
 
 	// Scoped by the section rather than by `#faqs`: from feature 26c the anchor is derived from
 	// the heading an editor typed, so an id spelled out here is one rename away from matching
@@ -198,7 +190,7 @@ test('the FAQ starts closed and opens one question at a time', async ({ page }) 
  * dropped the next time it runs. `neighboursOf` carries that side in `journal.test.ts`.
  */
 test('a library of one draws no neighbours band', async ({ page }) => {
-	await page.goto('/en/learn/blog/mounjaro-vs-wegovy');
+	await page.goto('/en/learn/mounjaro-vs-wegovy');
 
 	await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 	await expect(page.getByRole('navigation', { name: 'More from the Journal' })).toHaveCount(0);

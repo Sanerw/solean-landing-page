@@ -31,7 +31,7 @@ export const ROUTES = {
 	home: '/',
 	questionnaire: '/questionnaire',
 	learn: '/learn',
-	learnArticle: (slug: string) => `/learn/blog/${slug}`,
+	learnArticle: (slug: string) => `/learn/${slug}`,
 	/**
 	 * One product page. A builder rather than four hand-assembled paths, because a path spelled
 	 * out at the call site is a path somebody forgets to localise, which is exactly how the two

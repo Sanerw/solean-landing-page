@@ -26,7 +26,7 @@ test('the old German prefix redirects rather than duplicating the page', async (
 
 // Every route family, because the reroute hook is what makes the prefix work and it is easy
 // to get right for one shape of path and wrong for another.
-for (const path of ['/', '/learn/blog/mounjaro-vs-wegovy', '/privacy', '/questionnaire']) {
+for (const path of ['/', '/learn/mounjaro-vs-wegovy', '/privacy', '/questionnaire']) {
 	test(`${path} is reachable under both locales`, async ({ page }) => {
 		const german = await page.goto(path);
 		expect(german?.status()).toBe(200);
@@ -69,17 +69,17 @@ test('English is complete under its prefix', async ({ page }) => {
 const LANGUAGE_CONTROL = /^(Language|Sprache)$/;
 
 test('the switcher moves between locales without losing the page', async ({ page }) => {
-	await page.goto('/learn/blog/mounjaro-vs-wegovy');
+	await page.goto('/learn/mounjaro-vs-wegovy');
 
 	await page.getByLabel(LANGUAGE_CONTROL).first().click();
 	await page.getByRole('option', { name: 'English' }).click();
-	await expect(page).toHaveURL('/en/learn/blog/mounjaro-vs-wegovy');
+	await expect(page).toHaveURL('/en/learn/mounjaro-vs-wegovy');
 	await expect(page.locator('html')).toHaveAttribute('lang', 'en');
 	await expect(page.getByLabel('Language').first()).toBeVisible();
 
 	await page.getByLabel(LANGUAGE_CONTROL).first().click();
 	await page.getByRole('option', { name: 'Deutsch' }).click();
-	await expect(page).toHaveURL('/learn/blog/mounjaro-vs-wegovy');
+	await expect(page).toHaveURL('/learn/mounjaro-vs-wegovy');
 	await expect(page.locator('html')).toHaveAttribute('lang', 'de');
 	await expect(page.getByLabel('Sprache').first()).toBeVisible();
 });
@@ -121,11 +121,11 @@ test.describe('a browser that asks for English', () => {
 test('the chosen language outranks the browser, and follows an unprefixed link', async ({
 	page
 }) => {
-	await page.goto('/learn/blog/mounjaro-vs-wegovy');
+	await page.goto('/learn/mounjaro-vs-wegovy');
 
 	await page.getByLabel(LANGUAGE_CONTROL).first().click();
 	await page.getByRole('option', { name: 'English' }).click();
-	await expect(page).toHaveURL('/en/learn/blog/mounjaro-vs-wegovy');
+	await expect(page).toHaveURL('/en/learn/mounjaro-vs-wegovy');
 
 	await page.goto('/learn');
 	await expect(page).toHaveURL('/en/learn');

@@ -122,7 +122,7 @@
 					<div class="flex items-center gap-3">
 						<p class="font-display text-4xl font-medium text-foreground">{formatScore(shown.score)}</p>
 						<div>
-							<StarRating rating={shown.score} treatment="outline" class="mt-1.5 text-foreground" />
+							<StarRating rating={shown.score} treatment="inline" decorative class="mt-1.5" />
 							<p class="mt-1 text-xs font-semibold text-muted-foreground">
 								{m.rating_reviews_on({
 									count: shown.total.toLocaleString(getLocale()),

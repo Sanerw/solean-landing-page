@@ -10,7 +10,7 @@ const seo: PageSeo = {
 	type: 'article',
 	locale: 'de',
 	sharing: {
-		canonical: `${ORIGIN}/learn/blog/mounjaro-vs-wegovy`,
+		canonical: `${ORIGIN}/learn/mounjaro-vs-wegovy`,
 		alternates: [],
 		image: { url: `${ORIGIN}/hero.jpg`, width: 1200, height: 630, alt: 'A hero' }
 	}
@@ -79,7 +79,7 @@ describe('structuredData', () => {
 			expect(graph({ article: article() }).of('Article')).toMatchObject({
 				headline: 'Mounjaro vs Wegovy',
 				inLanguage: 'de',
-				mainEntityOfPage: `${ORIGIN}/learn/blog/mounjaro-vs-wegovy`,
+				mainEntityOfPage: `${ORIGIN}/learn/mounjaro-vs-wegovy`,
 				image: [`${ORIGIN}/hero.jpg`]
 			});
 		});

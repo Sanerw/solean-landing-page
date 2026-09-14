@@ -345,7 +345,7 @@ Pages:
 
 ```
 /
-/learn/blog/[slug]
+/learn/[slug]
 /treatments/[slug]
 /questionnaire/[step]
 ```

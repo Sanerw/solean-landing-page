@@ -21,7 +21,7 @@ describe('isTrackablePath', () => {
 	it('sends marketing, learn and legal paths', async () => {
 		const { isTrackablePath } = await events();
 
-		for (const path of ['/', '/en', '/learn', '/learn/blog/mounjaro-vs-wegovy', '/privacy']) {
+		for (const path of ['/', '/en', '/learn', '/learn/mounjaro-vs-wegovy', '/privacy']) {
 			expect(isTrackablePath(path)).toBe(true);
 		}
 	});

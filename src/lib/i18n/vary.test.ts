@@ -15,6 +15,6 @@ describe('variesBy', () => {
 		// Accept-Language is not: naming it would split the cache per browser language string
 		// for a page whose content never changes with it.
 		expect(variesBy(url('/en'))).toBe('Cookie');
-		expect(variesBy(url('/en/learn/blog/mounjaro-vs-wegovy'))).toBe('Cookie');
+		expect(variesBy(url('/en/learn/mounjaro-vs-wegovy'))).toBe('Cookie');
 	});
 });

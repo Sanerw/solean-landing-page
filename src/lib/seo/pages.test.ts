@@ -14,8 +14,8 @@ describe('localePath', () => {
 	it.each([
 		['/', 'de', '/'],
 		['/', 'en', '/en'],
-		['/learn/blog/x', 'de', '/learn/blog/x'],
-		['/learn/blog/x', 'en', '/en/learn/blog/x']
+		['/learn/x', 'de', '/learn/x'],
+		['/learn/x', 'en', '/en/learn/x']
 	] as const)('localises %s for %s', (path, locale, expected) => {
 		expect(localePath(path, locale)).toBe(expected);
 	});
@@ -31,7 +31,7 @@ describe('pathFor', () => {
 	it.each([
 		[{ kind: 'home' } as const, '/'],
 		[{ kind: 'journal' } as const, '/learn'],
-		[{ kind: 'article', slug: 'a-b' } as const, '/learn/blog/a-b'],
+		[{ kind: 'article', slug: 'a-b' } as const, '/learn/a-b'],
 		[{ kind: 'treatment', slug: 'wegovy-pill' } as const, '/treatments/wegovy-pill'],
 		[{ kind: 'legal', slug: 'legal-notice' } as const, '/legal-notice']
 	])('addresses %o', (key, expected) => {
@@ -89,8 +89,8 @@ describe('toPageIdentities', () => {
 
 		expect(findIdentity(pages, { kind: 'article', slug: 'mounjaro-vs-wegovy' }, 'de')?.equivalents)
 			.toEqual([
-				{ locale: 'de', path: '/learn/blog/mounjaro-vs-wegovy' },
-				{ locale: 'en', path: '/learn/blog/mounjaro-versus-wegovy' }
+				{ locale: 'de', path: '/learn/mounjaro-vs-wegovy' },
+				{ locale: 'en', path: '/learn/mounjaro-versus-wegovy' }
 			]);
 	});
 
@@ -104,7 +104,7 @@ describe('toPageIdentities', () => {
 		});
 
 		expect(findIdentity(pages, { kind: 'article', slug: 'bmi-27-oder-30' }, 'de')?.equivalents)
-			.toEqual([{ locale: 'de', path: '/learn/blog/bmi-27-oder-30' }]);
+			.toEqual([{ locale: 'de', path: '/learn/bmi-27-oder-30' }]);
 	});
 
 	it('drops a translation whose target is not published', () => {
@@ -123,7 +123,7 @@ describe('toPageIdentities', () => {
 		});
 
 		expect(findIdentity(pages, { kind: 'article', slug: 'nur-deutsch' }, 'de')?.equivalents)
-			.toEqual([{ locale: 'de', path: '/learn/blog/nur-deutsch' }]);
+			.toEqual([{ locale: 'de', path: '/learn/nur-deutsch' }]);
 	});
 
 	it('dates the Journal from its newest article rather than the request', () => {

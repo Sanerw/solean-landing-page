@@ -368,10 +368,13 @@ test('dissolves the care artwork into the band and restores the review column', 
 	// The reference panel is 1896 x 740 at this width.
 	expect(columns.panelHeight / columns.panelWidth).toBeCloseTo(740 / 1896, 1);
 
-	const stars = band.getByRole('img', { name: /^[0-5](\.[0-9])? out of 5 stars$/ });
-	await expect(stars).toBeVisible();
+	// Decoration, not a rating. The score is printed beside them, so they restate it rather
+	// than carry it: they are filled in the hero's own gold and hidden from assistive tech,
+	// which had been announcing "4.9" and then "4.9 out of 5 stars" one after the other.
+	const stars = band.locator('span[role="presentation"][aria-hidden="true"]').first();
 	await expect(stars.locator('svg')).toHaveCount(5);
-	await expect(stars.locator('svg').first()).toHaveCSS('fill', 'none');
+	await expect(stars.locator('svg').first()).toHaveCSS('fill', 'rgb(226, 182, 79)');
+	await expect(band.getByRole('img', { name: /out of 5 stars$/ })).toHaveCount(0);
 
 	await expect(band.getByText(/^[0-9,]+ reviews on Reviews\.io$/)).toBeVisible();
 	await expect(band.getByText('Verified Solean member')).toBeVisible();
@@ -629,14 +632,14 @@ test('the article header sits exactly where the landing header does', async ({
 		await page.goto('/en');
 		const home = { header: await headerBox(), logo: await logoBox() };
 
-		await page.goto('/en/learn/blog/mounjaro-vs-wegovy');
+		await page.goto('/en/learn/mounjaro-vs-wegovy');
 		expect(await headerBox()).toMatchObject(home.header!);
 		expect(await logoBox()).toMatchObject(home.logo!);
 	}
 
 	// The menu trigger travels with it.
 	await page.setViewportSize({ width: 390, height: 844 });
-	await page.goto('/en/learn/blog/mounjaro-vs-wegovy');
+	await page.goto('/en/learn/mounjaro-vs-wegovy');
 	const articleTrigger = await page.getByRole('button', { name: 'Open menu' }).boundingBox();
 	await page.goto('/en');
 	expect(await page.getByRole('button', { name: 'Open menu' }).boundingBox()).toMatchObject(
@@ -653,7 +656,7 @@ test('the article header sits exactly where the landing header does', async ({
 
 test('the article follows its artboard below the hero', async ({ page }) => {
 	await page.setViewportSize({ width: 1440, height: 900 });
-	await page.goto('/en/learn/blog/mounjaro-vs-wegovy');
+	await page.goto('/en/learn/mounjaro-vs-wegovy');
 
 	// The comparison table opens on a blank corner: the row headers name the attributes.
 	// Blank to the eye, not to a screen reader, so the check is for drawn text alone.
@@ -783,7 +786,7 @@ test('no marketing image is drawn larger than the pixels it carries', async ({ p
 
 	// The article's hero is the same full-bleed frame as the Journal's featured card, and it
 	// only moved onto a ladder wide enough for one in 26a, so this page is measured too.
-	const article = '/en/learn/blog/mounjaro-vs-wegovy';
+	const article = '/en/learn/mounjaro-vs-wegovy';
 	expect(soften(await read(390, 844, article), 0.95)).toEqual([]);
 
 	// Pinned rather than passed. The article's photograph is an 805x650 asset, cropped for the

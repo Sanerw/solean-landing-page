@@ -41,7 +41,7 @@ test('the landing page has no serious accessibility violations', async ({ page }
 });
 
 test('the learn article has no serious accessibility violations', async ({ page }) => {
-	await page.goto('/learn/blog/mounjaro-vs-wegovy');
+	await page.goto('/learn/mounjaro-vs-wegovy');
 	await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 
 	expect(await violations(page)).toEqual([]);

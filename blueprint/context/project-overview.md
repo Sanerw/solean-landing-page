@@ -370,7 +370,7 @@ Paraglide compiles the message catalogues from it at build time.
 
 | Type | Fields | Read by |
 | --- | --- | --- |
-| `article` | `language`, `title`, `slug`, `category`, `tags[]` (26a), `summary`, `hero` (image + alt), `reviewer` (ref to `clinician`), `reviewedAt`, `nextReviewAt`, `readTimeMinutes`, `seoTitle`, `seoDescription`, and from 26c one ordered `body[]` of blocks (prose, callout, table, cards, checklist, accordion, sources) in place of `quickAnswer[]`, `treatmentProfiles[]`, `howTheyWork[]`, `expectedResults[]`, `sideEffects{}`, `faqs[]`, `sourcesSummary`, `sources[]`. `keyTakeaways[]`, `related[]` and the orphaned `shortTitle` leave with them; the SEO overrides stay, because `<svelte:head>` renders both | `/learn`, `/learn/blog/[slug]` |
+| `article` | `language`, `title`, `slug`, `category`, `tags[]` (26a), `summary`, `hero` (image + alt), `reviewer` (ref to `clinician`), `reviewedAt`, `nextReviewAt`, `readTimeMinutes`, `seoTitle`, `seoDescription`, and from 26c one ordered `body[]` of blocks (prose, callout, table, cards, checklist, accordion, sources) in place of `quickAnswer[]`, `treatmentProfiles[]`, `howTheyWork[]`, `expectedResults[]`, `sideEffects{}`, `faqs[]`, `sourcesSummary`, `sources[]`. `keyTakeaways[]`, `related[]` and the orphaned `shortTitle` leave with them; the SEO overrides stay, because `<svelte:head>` renders both | `/learn`, `/learn/[slug]` |
 | `clinician` | `language`, `name`, `role`, `description`, `portrait` | as an article's reviewer |
 | `homePage` | localized singleton at `homePage-de` / `homePage-en`: announcement, hero, article teaser, trust band, bento, results band, projection wording, medical framing, stories, team, FAQ, and every photograph | `/` |
 | `testimonial` | `language`, `name`, `memberLabel`, `quote`, `kgLost`, `rating`, `treatmentId`, `verified`, `photo` | `/` and the questionnaire's motivation screen |
@@ -639,7 +639,7 @@ the intended halo. It is the one recorded exception, not a precedent.
 | --- | --- |
 | `/` | Landing page: hero, product story, social proof, FAQ, footer |
 | `/learn` | The Journal: the newest article as a featured card, the rest as a filterable band |
-| `/learn/blog/[slug]` | Learn article: photographic hero, contents list beside a centred reading column, and the neighbouring articles at the foot |
+| `/learn/[slug]` | Learn article: photographic hero, contents list beside a centred reading column, and the neighbouring articles at the foot |
 | `/treatments/[slug]` | Treatment detail page: product hero with dose selector and offer card, plan comparison, how it works, FAQ, and a sticky consultation bar on a narrow screen |
 | `/privacy`, `/terms`, `/returns`, `/legal-notice` | The four policy documents, in German, copied from what Solean publishes |
 | `/questionnaire/[step]` | Every survey page, interlude, and the two completion screens: the plan choice, then the order |

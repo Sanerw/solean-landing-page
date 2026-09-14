@@ -9,11 +9,11 @@ const article: PageSeo = {
 	type: 'article',
 	locale: 'de',
 	sharing: {
-		canonical: `${ORIGIN}/learn/blog/mounjaro-vs-wegovy`,
+		canonical: `${ORIGIN}/learn/mounjaro-vs-wegovy`,
 		alternates: [
-			{ hreflang: 'de', href: `${ORIGIN}/learn/blog/mounjaro-vs-wegovy` },
-			{ hreflang: 'en', href: `${ORIGIN}/en/learn/blog/mounjaro-vs-wegovy` },
-			{ hreflang: 'x-default', href: `${ORIGIN}/learn/blog/mounjaro-vs-wegovy` }
+			{ hreflang: 'de', href: `${ORIGIN}/learn/mounjaro-vs-wegovy` },
+			{ hreflang: 'en', href: `${ORIGIN}/en/learn/mounjaro-vs-wegovy` },
+			{ hreflang: 'x-default', href: `${ORIGIN}/learn/mounjaro-vs-wegovy` }
 		]
 	}
 };
@@ -47,7 +47,7 @@ describe('sharingTags', () => {
 
 	it('points og:url at the canonical, never at anything else', () => {
 		expect(tagged(article).get('og:url')).toEqual([
-			'https://solean-web.vercel.app/learn/blog/mounjaro-vs-wegovy'
+			'https://solean-web.vercel.app/learn/mounjaro-vs-wegovy'
 		]);
 	});
 

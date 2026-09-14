@@ -7,10 +7,10 @@ const origin = 'https://solean-web.vercel.app';
 const translated: PageIdentity = {
 	id: 'article:x',
 	language: 'de',
-	path: '/learn/blog/x',
+	path: '/learn/x',
 	equivalents: [
-		{ locale: 'de', path: '/learn/blog/x' },
-		{ locale: 'en', path: '/learn/blog/x-en' }
+		{ locale: 'de', path: '/learn/x' },
+		{ locale: 'en', path: '/learn/x-en' }
 	]
 };
 
@@ -32,9 +32,9 @@ describe('pageLinks', () => {
 
 	it('makes each language canonical to itself', () => {
 		expect(pageLinks(origin, translated)?.canonical)
-			.toBe('https://solean-web.vercel.app/learn/blog/x');
-		expect(pageLinks(origin, { ...translated, language: 'en', path: '/learn/blog/x-en' })?.canonical)
-			.toBe('https://solean-web.vercel.app/en/learn/blog/x-en');
+			.toBe('https://solean-web.vercel.app/learn/x');
+		expect(pageLinks(origin, { ...translated, language: 'en', path: '/learn/x-en' })?.canonical)
+			.toBe('https://solean-web.vercel.app/en/learn/x-en');
 	});
 
 	it('addresses the root without a doubled slash', () => {
@@ -58,9 +58,9 @@ describe('pageLinks', () => {
 
 	it('offers absolute reciprocal alternates and an x-default on the base locale', () => {
 		expect(pageLinks(origin, translated)?.alternates).toEqual([
-			{ hreflang: 'de', href: 'https://solean-web.vercel.app/learn/blog/x' },
-			{ hreflang: 'en', href: 'https://solean-web.vercel.app/en/learn/blog/x-en' },
-			{ hreflang: 'x-default', href: 'https://solean-web.vercel.app/learn/blog/x' }
+			{ hreflang: 'de', href: 'https://solean-web.vercel.app/learn/x' },
+			{ hreflang: 'en', href: 'https://solean-web.vercel.app/en/learn/x-en' },
+			{ hreflang: 'x-default', href: 'https://solean-web.vercel.app/learn/x' }
 		]);
 	});
 
@@ -77,8 +77,8 @@ describe('pageLinks', () => {
 				...translated,
 				language: 'en',
 				equivalents: [
-					{ locale: 'de', path: '/learn/blog/x' },
-					{ locale: 'de', path: '/learn/blog/x' }
+					{ locale: 'de', path: '/learn/x' },
+					{ locale: 'de', path: '/learn/x' }
 				]
 			})?.alternates
 		).toEqual([]);
@@ -87,7 +87,7 @@ describe('pageLinks', () => {
 	it('changing the origin changes every URL it emits', () => {
 		const links = pageLinks('https://solean.com', translated);
 
-		expect(links?.canonical).toBe('https://solean.com/learn/blog/x');
+		expect(links?.canonical).toBe('https://solean.com/learn/x');
 		expect(links?.alternates.every((link) => link.href.startsWith('https://solean.com/'))).toBe(true);
 	});
 

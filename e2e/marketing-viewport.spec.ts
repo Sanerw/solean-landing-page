@@ -57,7 +57,7 @@ for (const viewport of NARROW) {
 
 	test(`the learn article fits at ${viewport.width}`, async ({ page }) => {
 		await page.setViewportSize(viewport);
-		await page.goto('/learn/blog/mounjaro-vs-wegovy');
+		await page.goto('/learn/mounjaro-vs-wegovy');
 
 		await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 		await page.getByRole('contentinfo').scrollIntoViewIfNeeded();
@@ -92,7 +92,7 @@ test('the comparison table scrolls inside itself rather than squashing or moving
 	page
 }) => {
 	await page.setViewportSize(NARROW[0]);
-	await page.goto('/learn/blog/mounjaro-vs-wegovy');
+	await page.goto('/learn/mounjaro-vs-wegovy');
 
 	const table = page.locator('table').first();
 	await table.scrollIntoViewIfNeeded();
@@ -131,7 +131,7 @@ test('the contents list is a desktop rail, and is not drawn on a phone', async (
 	const toc = page.getByRole('navigation', { name: UI.tableOfContents });
 
 	await page.setViewportSize(NARROW[0]);
-	await page.goto('/learn/blog/mounjaro-vs-wegovy');
+	await page.goto('/learn/mounjaro-vs-wegovy');
 	await expect(page.getByRole('heading', { level: 1 })).toBeVisible();
 	await expect(toc).toBeHidden();
 

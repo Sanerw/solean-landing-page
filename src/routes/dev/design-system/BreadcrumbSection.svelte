@@ -19,7 +19,7 @@
 			</Breadcrumb.Item>
 			<Breadcrumb.Separator />
 			<Breadcrumb.Item>
-				<Breadcrumb.Link href="/learn/blog">Blog</Breadcrumb.Link>
+				<Breadcrumb.Link href="/learn">Journal</Breadcrumb.Link>
 			</Breadcrumb.Item>
 			<Breadcrumb.Separator />
 			<Breadcrumb.Item>

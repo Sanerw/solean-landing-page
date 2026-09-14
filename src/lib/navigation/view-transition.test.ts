@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import { entersQuestionnaire } from './view-transition';
 
 const HOME = '/(marketing)';
-const ARTICLE = '/(marketing)/learn/blog/[slug]';
+const ARTICLE = '/(marketing)/learn/[slug]';
 const ENTRY = '/(questionnaire)/questionnaire';
 const STEP = '/(questionnaire)/questionnaire/[step]';
 

@@ -17,7 +17,7 @@ export function deploymentMayIndex(policy: IndexingPolicy, requestOrigin: string
 const PUBLIC_PAGE_ROUTES = new Set([
 	'/(marketing)',
 	'/(marketing)/learn',
-	'/(marketing)/learn/blog/[slug]',
+	'/(marketing)/learn/[slug]',
 	'/(marketing)/treatments/[slug]',
 	'/(marketing)/privacy',
 	'/(marketing)/terms',

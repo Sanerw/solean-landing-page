@@ -28,7 +28,7 @@ export function pathFor(key: PageKey): string {
 		case 'journal':
 			return '/learn';
 		case 'article':
-			return `/learn/blog/${key.slug}`;
+			return `/learn/${key.slug}`;
 		case 'treatment':
 			return `/treatments/${key.slug}`;
 		case 'legal':

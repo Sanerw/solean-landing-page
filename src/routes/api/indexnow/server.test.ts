@@ -81,7 +81,7 @@ describe('POST /api/indexnow', () => {
 			await call(publish);
 
 			expect(notify).toHaveBeenCalledWith(ORIGIN, [
-				`${ORIGIN}/learn/blog/mounjaro-vs-wegovy`,
+				`${ORIGIN}/learn/mounjaro-vs-wegovy`,
 				`${ORIGIN}/learn`
 			]);
 		});

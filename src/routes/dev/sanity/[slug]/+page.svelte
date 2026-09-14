@@ -48,7 +48,7 @@
 				<!--
 					The body as a model rather than as a page: what blocks the document holds, in
 					order, with the anchor each one derives and whether this app can draw it. The
-					article itself is at `/learn/blog/[slug]`; what is useful here is the shape.
+					article itself is at `/learn/[slug]`; what is useful here is the shape.
 				-->
 				<h2 class="font-display mt-12 text-xl">Body</h2>
 				{#each toBlocks(article.body) as block, index (index)}

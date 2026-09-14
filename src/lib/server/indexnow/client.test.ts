@@ -119,10 +119,10 @@ describe('notifying IndexNow', () => {
 			const submit = createNotifier(fetchImpl);
 
 			await submit(ORIGIN, [`${ORIGIN}/learn`]);
-			await submit(ORIGIN, [`${ORIGIN}/learn`, `${ORIGIN}/learn/blog/x`]);
+			await submit(ORIGIN, [`${ORIGIN}/learn`, `${ORIGIN}/learn/x`]);
 
 			expect(JSON.parse(fetchImpl.mock.calls[1][1].body).urlList)
-				.toEqual([`${ORIGIN}/learn/blog/x`]);
+				.toEqual([`${ORIGIN}/learn/x`]);
 		});
 
 		// A timed-out submission may well have arrived, so repeating it on the next publish is
@@ -160,7 +160,7 @@ describe('notifying IndexNow', () => {
 			launched();
 			const error = vi.spyOn(console, 'error').mockImplementation(() => {});
 
-			await createNotifier(ok(403))(ORIGIN, [`${ORIGIN}/learn/blog/secret-draft`]);
+			await createNotifier(ok(403))(ORIGIN, [`${ORIGIN}/learn/secret-draft`]);
 
 			const line = error.mock.calls[0].join(' ');
 			expect(line).not.toContain('secret-draft');

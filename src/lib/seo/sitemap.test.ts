@@ -98,12 +98,12 @@ describe('toSitemapXml', () => {
 			{
 				id: 'article:a&b',
 				language: 'de',
-				path: '/learn/blog/a&b<c',
-				equivalents: [{ locale: 'de', path: '/learn/blog/a&b<c' }]
+				path: '/learn/a&b<c',
+				equivalents: [{ locale: 'de', path: '/learn/a&b<c' }]
 			}
 		]);
 
-		expect(xml).toContain('<loc>https://solean-web.vercel.app/learn/blog/a&amp;b%3Cc</loc>');
+		expect(xml).toContain('<loc>https://solean-web.vercel.app/learn/a&amp;b%3Cc</loc>');
 
 		const emitted = [...xml.matchAll(/<loc>(.*?)<\/loc>/g)].map((match) => match[1]);
 		expect(emitted).toHaveLength(1);

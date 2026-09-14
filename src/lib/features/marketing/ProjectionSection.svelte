@@ -1,7 +1,7 @@
 <script lang="ts">
 	import * as Tabs from '$lib/components/ui/tabs';
 	import { CONTAINER, SECTION_Y } from './container';
-	import { SECTION_HEADING } from './type';
+	import { SECTION_HEADING, SECTION_LEAD } from './type';
 	import {
 		DEFAULT_HORIZON_MONTH,
 		PROJECTION_COMPARISON,
@@ -28,12 +28,14 @@
 <section class={[CONTAINER, SECTION_Y]} aria-label={PROJECTION.title}>
 	<div class="grid gap-14 lg:grid-cols-2 lg:items-center lg:gap-16">
 		<!--
-			Centred from `lg`, which is where the two columns appear: the artboard centres this
-			heading, its lead and the disclaimer over the chart, and the disclaimer was the only
-			one of the three that did. Stacked, the section reads as one left-aligned column like
-			every other band, so the centring starts with the column that justifies it.
+			Centred from `2xl`, not from `lg`. The artboard centres this heading, its lead and the
+			disclaimer over the chart, but it is drawn at the width the container finally reaches:
+			`--container-site` is 96rem, which is the same 1536px `2xl` names. Between `lg` and
+			there the column is narrower than the heading needs, so the centring only produced a
+			short orphaned second line hanging under a full one. Below that the section reads as
+			one left-aligned column like every other band.
 		-->
-		<div class="max-sm:order-2 lg:text-center">
+		<div class="max-sm:order-2 2xl:text-center">
 			<!--
 				`SECTION_HEADING`, not the `SUB_HEADING` the artboard draws here at roughly 40px
 				against its neighbour's 66px. Asked for on 2026-09-14: beside the medical framing
@@ -46,7 +48,7 @@
 			<h2 class={SECTION_HEADING}>
 				{PROJECTION.title}
 			</h2>
-			<p class="mt-2 text-sm text-muted-foreground">{PROJECTION.lead}</p>
+			<p class={SECTION_LEAD}>{PROJECTION.lead}</p>
 
 			<!--
 				One Tabs.Content per horizon rather than one shared chart outside the primitive:
@@ -82,7 +84,7 @@
 				</Tabs.List>
 			</Tabs.Root>
 
-			<p class="mt-4 text-center text-xs text-text-tertiary">{PROJECTION.disclaimer}</p>
+			<p class="mt-4 text-xs text-text-tertiary 2xl:text-center">{PROJECTION.disclaimer}</p>
 		</div>
 
 		<div class="max-sm:order-1">

@@ -58,7 +58,7 @@ export const load: PageServerLoad = async ({ locals, params: { slug } }) => {
 			breadcrumb: [
 				{ name: m.nav_home({}, { locale: locals.locale }), path: '/' },
 				{ name: m.nav_learn({}, { locale: locals.locale }), path: '/learn' },
-				{ name: plain(document.title), path: `/learn/blog/${slug}` }
+				{ name: plain(document.title), path: `/learn/${slug}` }
 			]
 		}
 	);

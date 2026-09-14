@@ -236,7 +236,8 @@ claims are not approved production content.
   Keyboard and mobile operable, with testimonial and team browsing on the
   adapted `Carousel`.
 
-- [x] 6. **Learn article** - `/learn/blog/[slug]` from a typed article fixture:
+- [x] 6. **Learn article** - `/learn/[slug]` from a typed article fixture (shipped
+  as `/learn/blog/[slug]`; the segment was dropped later):
   hero, medical-review metadata, body typography, table of contents, treatment
   comparison, related content. Static editorial content, so no service interface.
 

@@ -1,7 +1,7 @@
 import { expect, test } from '@playwright/test';
 
 test.describe('pre-launch indexing policy', () => {
-	for (const path of ['/', '/en', '/learn', '/learn/blog/mounjaro-vs-wegovy', '/privacy',
+	for (const path of ['/', '/en', '/learn', '/learn/mounjaro-vs-wegovy', '/privacy',
 		'/questionnaire', '/en/questionnaire', '/dev/definition']) {
 		test(`${path} is served with noindex before JavaScript runs`, async ({ request }) => {
 			const response = await request.get(path);
@@ -54,8 +54,8 @@ test.describe('canonical and language links', () => {
 		['/en', `${ORIGIN}/en`],
 		['/learn', `${ORIGIN}/learn`],
 		['/en/learn', `${ORIGIN}/en/learn`],
-		['/learn/blog/mounjaro-vs-wegovy', `${ORIGIN}/learn/blog/mounjaro-vs-wegovy`],
-		['/en/learn/blog/mounjaro-vs-wegovy', `${ORIGIN}/en/learn/blog/mounjaro-vs-wegovy`],
+		['/learn/mounjaro-vs-wegovy', `${ORIGIN}/learn/mounjaro-vs-wegovy`],
+		['/en/learn/mounjaro-vs-wegovy', `${ORIGIN}/en/learn/mounjaro-vs-wegovy`],
 		['/treatments/wegovy-pill', `${ORIGIN}/treatments/wegovy-pill`],
 		['/en/treatments/wegovy-pill', `${ORIGIN}/en/treatments/wegovy-pill`],
 		['/privacy', `${ORIGIN}/privacy`],
@@ -69,13 +69,13 @@ test.describe('canonical and language links', () => {
 	}
 
 	test('each language offers the other as an absolute reciprocal alternate', async ({ request }) => {
-		const german = await headLinks(await (await request.get('/learn/blog/mounjaro-vs-wegovy')).text(), 'alternate');
-		const english = await headLinks(await (await request.get('/en/learn/blog/mounjaro-vs-wegovy')).text(), 'alternate');
+		const german = await headLinks(await (await request.get('/learn/mounjaro-vs-wegovy')).text(), 'alternate');
+		const english = await headLinks(await (await request.get('/en/learn/mounjaro-vs-wegovy')).text(), 'alternate');
 
 		const expected = [
-			{ hreflang: 'de', href: `${ORIGIN}/learn/blog/mounjaro-vs-wegovy` },
-			{ hreflang: 'en', href: `${ORIGIN}/en/learn/blog/mounjaro-vs-wegovy` },
-			{ hreflang: 'x-default', href: `${ORIGIN}/learn/blog/mounjaro-vs-wegovy` }
+			{ hreflang: 'de', href: `${ORIGIN}/learn/mounjaro-vs-wegovy` },
+			{ hreflang: 'en', href: `${ORIGIN}/en/learn/mounjaro-vs-wegovy` },
+			{ hreflang: 'x-default', href: `${ORIGIN}/learn/mounjaro-vs-wegovy` }
 		];
 
 		expect(german).toEqual(expected);
@@ -113,7 +113,7 @@ test.describe('canonical and language links', () => {
 
 	// A page that does not exist has no canonical to claim, and neither does an internal one.
 	for (const path of [
-		'/learn/blog/never-published',
+		'/learn/never-published',
 		'/treatments/not-a-treatment',
 		'/this-page-does-not-exist',
 		'/questionnaire',
@@ -200,7 +200,7 @@ async function sharing(request: { get: (path: string) => Promise<{ text(): Promi
 
 test.describe('sharing metadata', () => {
 	test('a page describes itself with the title and URL it already claims', async ({ request }) => {
-		const html = await (await request.get('/learn/blog/mounjaro-vs-wegovy')).text();
+		const html = await (await request.get('/learn/mounjaro-vs-wegovy')).text();
 		const get = (key: string) =>
 			metaTags(html).filter((tag) => tag.key === key).map((tag) => tag.content);
 		const title = html.match(/<title>([^<]*)<\/title>/)?.[1];
@@ -228,7 +228,7 @@ test.describe('sharing metadata', () => {
 		});
 	});
 
-	for (const path of ['/', '/learn', '/learn/blog/mounjaro-vs-wegovy', '/treatments/mounjaro']) {
+	for (const path of ['/', '/learn', '/learn/mounjaro-vs-wegovy', '/treatments/mounjaro']) {
 		test(`${path} shares the photograph it already displays`, async ({ request }) => {
 			const get = await sharing(request, path);
 			const [url] = get('og:image');
@@ -309,7 +309,7 @@ test.describe('structured data', () => {
 	}
 
 	test('an article describes itself, its dates and its reviewer', async ({ request }) => {
-		const article = (await graphOf(request, '/learn/blog/mounjaro-vs-wegovy'))?.of('Article');
+		const article = (await graphOf(request, '/learn/mounjaro-vs-wegovy'))?.of('Article');
 
 		expect(article).toMatchObject({
 			inLanguage: 'de',
@@ -339,7 +339,7 @@ test.describe('structured data', () => {
 	});
 
 	test('every URL a trail does link is a page that answers', async ({ request }) => {
-		for (const path of ['/learn/blog/mounjaro-vs-wegovy', '/en/treatments/mounjaro']) {
+		for (const path of ['/learn/mounjaro-vs-wegovy', '/en/treatments/mounjaro']) {
 			const crumbs = (await graphOf(request, path))?.of('BreadcrumbList')
 				?.itemListElement as Record<string, unknown>[];
 

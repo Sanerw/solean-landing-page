@@ -48,12 +48,12 @@ describe('indexing policy', () => {
 
 	it.each([null, '/dev/definition', '/dev/design-system', '/dev/sanity/[slug]',
 		'/(questionnaire)/questionnaire', '/(questionnaire)/questionnaire/[step]',
-		'/api/reminder', '/api/checkout', '/preview/enable', '/(marketing)/learn/blog'])
+		'/api/reminder', '/api/checkout', '/preview/enable'])
 	('excludes internal, unknown and redirect routes: %s', (routeId) => {
 		expect(pageMayIndex(policy, { ...publicPage, routeId })).toBe(false);
 	});
 
-	it.each(['/(marketing)/learn', '/(marketing)/learn/blog/[slug]',
+	it.each(['/(marketing)/learn', '/(marketing)/learn/[slug]',
 		'/(marketing)/treatments/[slug]', '/(marketing)/privacy'])
 	('permits a successfully served public page: %s', (routeId) => {
 		expect(pageMayIndex(policy, { ...publicPage, routeId })).toBe(true);

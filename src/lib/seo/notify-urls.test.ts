@@ -67,11 +67,11 @@ describe('affectedPages', () => {
 describe('urlsToNotify', () => {
 	it('addresses the document in its own language', () => {
 		expect(urlsToNotify(ORIGIN, publish())).toEqual([
-			`${ORIGIN}/learn/blog/mounjaro-vs-wegovy`,
+			`${ORIGIN}/learn/mounjaro-vs-wegovy`,
 			`${ORIGIN}/learn`
 		]);
 		expect(urlsToNotify(ORIGIN, publish({ language: 'en' }))).toEqual([
-			`${ORIGIN}/en/learn/blog/mounjaro-vs-wegovy`,
+			`${ORIGIN}/en/learn/mounjaro-vs-wegovy`,
 			`${ORIGIN}/en/learn`
 		]);
 	});
@@ -101,6 +101,6 @@ describe('urlsToNotify', () => {
 
 	it('changing the origin changes every URL', () => {
 		expect(urlsToNotify('https://solean-web.vercel.app', publish())[0])
-			.toBe('https://solean-web.vercel.app/learn/blog/mounjaro-vs-wegovy');
+			.toBe('https://solean-web.vercel.app/learn/mounjaro-vs-wegovy');
 	});
 });
