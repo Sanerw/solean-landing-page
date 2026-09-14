@@ -135,6 +135,27 @@ whichever processor is configured, and only one ever is. What may travel, and th
 fact that typing the address and continuing is the whole consent step, were not
 re-opened.
 
+**Analytics joins the exception, decided 2026-09-14.** Mixpanel receives the same
+contact details as the reminder, at the same moment and for the same reason: the user
+asked to see who is in the funnel rather than only how many. The visitor stops being an
+anonymous id and becomes a named profile as soon as the address is typed. What may never
+travel did not move, and no answer, uid, medication or dose reaches analytics any more
+than before.
+
+What did move is what an analytics profile means here. Session replay is on for every
+page, the questionnaire included, so a recording of somebody answering questions about
+their health becomes searchable by their e-mail address rather than only by an anonymous
+id. That is the cost of the decision, it was named before the decision was taken, and it
+was taken knowingly. The privacy policy still describes none of it, for the reason
+`AGENTS.md` records: the document is a verbatim mirror of Solean's own and cannot be
+amended here.
+
+One smaller thing goes with it. From feature 29d the flag fetch runs before the banner is
+answered, so a visitor who declines does contact Mixpanel once, to ask which variant to
+render. Nothing is measured and nothing is recorded until consent. But the stronger claim
+this project used to make, that a refusal is honoured by the network tab and not only by
+a flag inside a script, no longer holds in full.
+
 What lives where:
 
 | Data | Owner | Notes |
@@ -146,6 +167,7 @@ What lives where:
 | Anamnesis uid | Browser session | Returned by the submission, required by the checkout call |
 | Questionnaire uid, store domain, variant id, question names | Config | One module, see section 5 |
 | Visitor e-mail, once typed | Customer.io, EU region | Forwarded when the question is answered, before any submission, so a reminder can be sent. The e-mail and a stage marker, nothing else: no answer, no uid, no name, no telephone number |
+| Visitor contact details, once typed | Mixpanel, EU region, from feature 29a | The same moment and the same fields the reminder carries: the e-mail, the first name, the last name, and the telephone number when it was given. They become profile properties, and the e-mail becomes the identity the anonymous session is merged into |
 | Order, payment, prescription, delivery | RxScale and Shopify | Not modelled here |
 
 **Editorial content lives in Sanity.** From feature 20 the Learn article and its

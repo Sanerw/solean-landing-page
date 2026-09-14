@@ -11,6 +11,7 @@
 	import ConsentBanner from '$lib/analytics/ConsentBanner.svelte';
 	import { analyticsConsent } from '$lib/analytics/consent.svelte';
 	import { trackPageView } from '$lib/analytics/events';
+	import { recordFirstVisit } from '$lib/analytics/identity';
 	import { entersQuestionnaire } from '$lib/navigation/view-transition';
 	import { sharingTags } from '$lib/seo/metadata';
 	import type { LayoutProps } from './$types';
@@ -73,6 +74,11 @@
 	$effect(() => {
 		analyticsConsent.state;
 		trackPageView(page.url.pathname);
+
+		// Queued inside the SDK until an e-mail identifies the session, so this has to run where
+		// the arrival still is: by the time somebody types their address they are several
+		// navigations away, and the profile would remember that screen as the first one.
+		recordFirstVisit(page.url);
 	});
 
 	/**

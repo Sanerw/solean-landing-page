@@ -1,5 +1,39 @@
-import { describe, expect, it } from 'vitest';
+import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { consentTransition, mixpanelInitOptions } from './client';
+
+/**
+ * The SDK, `$app/environment` and the token are all stubbed so the consent gate can be
+ * exercised at all: `analyticsEnabled()` is false on the server, so without `browser` every
+ * call would be refused for the wrong reason and the test would prove nothing.
+ *
+ * The replay share is zero so no recording is started here. This file is about the gate, and
+ * `config.test.ts` already owns the sampling.
+ */
+const sdk = vi.hoisted(() => ({
+	init: vi.fn(),
+	register: vi.fn(),
+	track: vi.fn(),
+	identify: vi.fn(),
+	people: { set: vi.fn(), set_once: vi.fn() },
+	opt_in_tracking: vi.fn(),
+	opt_out_tracking: vi.fn(),
+	set_config: vi.fn(),
+	start_session_recording: vi.fn(() => Promise.resolve()),
+	stop_session_recording: vi.fn()
+}));
+
+vi.mock('mixpanel-browser/dist/mixpanel-with-async-recorder.cjs', () => ({ default: sdk }));
+vi.mock('$app/environment', () => ({ browser: true, dev: false }));
+vi.mock('$env/dynamic/public', () => ({
+	env: { PUBLIC_MIXPANEL_TOKEN: 'token', PUBLIC_MIXPANEL_REPLAY_PERCENT: '0' }
+}));
+
+/** The SDK is loaded once per module instance, so each case starts from a fresh one. */
+async function freshClient() {
+	vi.resetModules();
+
+	return import('./client');
+}
 
 /**
  * A regression harness rather than a unit test of behaviour. Each assertion here stands for a
@@ -88,5 +122,74 @@ describe('consentTransition', () => {
 		for (const previous of ['granted', 'denied', null] as const) {
 			expect(consentTransition(previous, null)).toBe('none');
 		}
+	});
+});
+
+/**
+ * The identity seam. Every assertion here stands for the decision of 2026-09-14 that put a
+ * real e-mail address into analytics: it may travel only behind the same gate an event does,
+ * and the decision that counts is the one in force at delivery, not at the call.
+ */
+describe('identity', () => {
+	beforeEach(() => {
+		vi.clearAllMocks();
+	});
+
+	it('sends nothing before anyone has consented', async () => {
+		const { identifyVisitor, setProfileOnce } = await freshClient();
+
+		expect(identifyVisitor('jonas@example.com', { $email: 'jonas@example.com' })).toBe(false);
+		expect(setProfileOnce({ first_locale: 'de' })).toBe(false);
+		expect(sdk.init).not.toHaveBeenCalled();
+	});
+
+	it('sends nothing after a refusal', async () => {
+		const { identifyVisitor, setAnalyticsConsent } = await freshClient();
+
+		setAnalyticsConsent('denied');
+
+		expect(identifyVisitor('jonas@example.com', { $email: 'jonas@example.com' })).toBe(false);
+	});
+
+	it('names the person and writes the traits once consent is granted', async () => {
+		const { identifyVisitor, setAnalyticsConsent } = await freshClient();
+
+		setAnalyticsConsent('granted');
+
+		expect(identifyVisitor('jonas@example.com', { $email: 'jonas@example.com' })).toBe(true);
+
+		await vi.waitFor(() => expect(sdk.identify).toHaveBeenCalledWith('jonas@example.com'));
+		// `identify` first, because it is what flushes the People queue `set_once` fills.
+		expect(sdk.people.set).toHaveBeenCalledWith({ $email: 'jonas@example.com' });
+	});
+
+	it('drops a call whose consent was withdrawn while the SDK was still importing', async () => {
+		const { identifyVisitor, setAnalyticsConsent } = await freshClient();
+
+		setAnalyticsConsent('granted');
+		expect(identifyVisitor('jonas@example.com', { $email: 'jonas@example.com' })).toBe(true);
+
+		// The import has not resolved yet, so this is the realistic race: the banner answered a
+		// moment after a screen that identified.
+		setAnalyticsConsent('denied');
+
+		await vi.waitFor(() => expect(sdk.opt_out_tracking).toHaveBeenCalled());
+		expect(sdk.identify).not.toHaveBeenCalled();
+		expect(sdk.people.set).not.toHaveBeenCalled();
+	});
+
+	it('queues first-visit properties behind the same gate', async () => {
+		const { setProfileOnce, setAnalyticsConsent } = await freshClient();
+
+		setAnalyticsConsent('granted');
+
+		expect(setProfileOnce({ first_locale: 'de', first_landing_path: '/' })).toBe(true);
+
+		await vi.waitFor(() =>
+			expect(sdk.people.set_once).toHaveBeenCalledWith({
+				first_locale: 'de',
+				first_landing_path: '/'
+			})
+		);
 	});
 });

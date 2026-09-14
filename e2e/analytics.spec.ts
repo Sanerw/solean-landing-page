@@ -24,7 +24,7 @@ interface Captured {
  * and JSON when the payload format is set. Both are decoded, because which one is used is the
  * library's choice rather than ours and a spec that assumed one would break on an upgrade.
  */
-function decode(body: string | null): Captured[] {
+function payloads(body: string | null): Record<string, unknown>[] {
 	if (!body) return [];
 
 	const raw = new URLSearchParams(body).get('data') ?? body;
@@ -41,9 +41,13 @@ function decode(body: string | null): Captured[] {
 
 	const batch = Array.isArray(parsed) ? parsed : [parsed];
 
-	return batch.map((entry) => ({
-		event: String((entry as { event?: unknown }).event ?? ''),
-		properties: ((entry as { properties?: Record<string, unknown> }).properties ?? {})
+	return batch as Record<string, unknown>[];
+}
+
+function decode(body: string | null): Captured[] {
+	return payloads(body).map((entry) => ({
+		event: String(entry.event ?? ''),
+		properties: (entry.properties as Record<string, unknown>) ?? {}
 	}));
 }
 
@@ -64,11 +68,18 @@ interface Traffic {
 	recorder: string[];
 	/** Posts to `record/`, which is session replay data and nothing else. */
 	replay: string[];
+	/**
+	 * Posts to `engage/`, which is the profile rather than the funnel: the identify's `$set` and
+	 * the queued `$set_once` the SDK flushes with it. Kept apart from `events` because they are
+	 * a different privacy question. An event property is repeated on every row; a profile is one
+	 * row about a person, and from 2026-09-14 it is the one place the address may appear.
+	 */
+	profiles: Record<string, unknown>[];
 }
 
 /** Intercepts Mixpanel's hosts, and watches our own origin for the recorder. */
 async function captureMixpanel(page: Page): Promise<Traffic> {
-	const traffic: Traffic = { events: [], recorder: [], replay: [] };
+	const traffic: Traffic = { events: [], recorder: [], replay: [], profiles: [] };
 
 	page.on('response', (response) => {
 		const url = response.url();
@@ -83,6 +94,8 @@ async function captureMixpanel(page: Page): Promise<Traffic> {
 
 			if (url.includes('/record')) {
 				traffic.replay.push(url);
+			} else if (url.includes('/engage')) {
+				traffic.profiles.push(...payloads(route.request().postData()));
 			} else if (url.includes('/track')) {
 				traffic.events.push(...decode(route.request().postData()));
 			}
@@ -222,11 +235,26 @@ test('the funnel sends its three events, carrying nothing about the person', asy
 	expect(checkout?.properties.plan_mode).toBe('prescription');
 	expect(checkout?.properties.has_recommendation).toBe(true);
 
-	// The privacy boundary, asserted against what actually left the browser rather than
-	// against the module that built it. The answers, the address and the uid stay here.
-	const payload = JSON.stringify(traffic.events).toLowerCase();
-	for (const leak of ['jonas@example.com', 'anamnesis_uid', 'anam-', 'variant']) {
-		expect(payload).not.toContain(leak);
+	/**
+	 * The privacy boundary, asserted against what actually left the browser rather than against
+	 * the module that built it. The answers, the uid and the variant stay here.
+	 *
+	 * **The address is no longer among them, and that is the 2026-09-14 decision arriving.**
+	 * `identify` makes the e-mail the `distinct_id`, and the SDK stamps that plus `$user_id`
+	 * onto every event the session sends afterwards. So this asserts what this app chooses to
+	 * send: no property built here may carry the address, while the identity Mixpanel attaches
+	 * is expected and named.
+	 */
+	const identityKeys = ['distinct_id', '$user_id', '$identified_id'];
+	for (const entry of traffic.events) {
+		const chosen = Object.fromEntries(
+			Object.entries(entry.properties).filter(([key]) => !identityKeys.includes(key))
+		);
+		const payload = JSON.stringify(chosen).toLowerCase();
+
+		for (const leak of ['jonas@example.com', 'anamnesis_uid', 'anam-', 'variant']) {
+			expect(payload, `${entry.event} must not carry ${leak}`).not.toContain(leak);
+		}
 	}
 });
 
@@ -313,5 +341,54 @@ test('the phone country list is portalled, and carries the class that keeps it q
 		const attrs = elements.flatMap((el) => Object.keys(el).filter((k) => k.startsWith('$attr-')));
 
 		expect(attrs, `${entry.event} reported element attributes`).toEqual([]);
+	}
+});
+
+test('the address identifies the visitor, and the arrival travels with it', async ({ page }) => {
+	const traffic = await captureMixpanel(page);
+
+	// The campaign parameter is the point of arriving this way: the SDK queues the initial UTM
+	// tuple on the profile at `init` and it has never been delivered, because this project had
+	// no `identify` to flush the queue until 2026-09-14.
+	await page.goto('/?utm_source=spec');
+	await expect(page.getByRole('button', { name: 'Einverstanden' })).toBeEnabled();
+	await page.getByRole('button', { name: 'Einverstanden' }).click();
+	await awaitEvent(traffic, 'page_viewed');
+
+	// Past `your-details`, which is the screen that asks for the address and the earliest moment
+	// an identity exists.
+	await walkTo(page, 'medical-conditions');
+	await expect.poll(() => traffic.profiles.length, FLUSH).toBeGreaterThan(0);
+
+	const set = traffic.profiles.find((entry) => entry.$set);
+	expect(set?.$distinct_id).toBe('jonas@example.com');
+
+	// `toMatchObject` rather than equality, because the SDK adds `$browser`, `$browser_version`
+	// and `$os` of its own to every People call. The exact key set of what this app builds is
+	// asserted in `identity.test.ts`, where nothing else can join it.
+	expect(set?.$set).toMatchObject({
+		$email: 'jonas@example.com',
+		$first_name: 'Jonas',
+		$last_name: 'Weber'
+	});
+	// Left blank by the walk, and an unanswered field is omitted rather than sent empty.
+	expect(set?.$set).not.toHaveProperty('$phone');
+
+	/**
+	 * The queue, flushed. Both halves matter: `first_landing_path` proves the properties were
+	 * taken on the landing page rather than on the screen that identified, and
+	 * `initial_utm_source` proves the SDK's own first-touch call was delivered rather than
+	 * assumed. The phone is absent because the walk leaves it blank, which is the rule that an
+	 * unanswered field is omitted rather than sent empty.
+	 */
+	const once = traffic.profiles.find((entry) => entry.$set_once);
+	expect(once?.$set_once).toMatchObject({ first_landing_path: '/', initial_utm_source: 'spec' });
+
+	// The address may be here and nowhere else. No answer, no uid, and no questionnaire path:
+	// a profile property is written once and kept, so a landing path naming a step would report
+	// an answer for as long as the profile exists.
+	const payload = JSON.stringify(traffic.profiles).toLowerCase();
+	for (const leak of ['nierenerkrankung', 'anam-', '/questionnaire']) {
+		expect(payload).not.toContain(leak);
 	}
 });

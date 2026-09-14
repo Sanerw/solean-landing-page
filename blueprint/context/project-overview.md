@@ -45,10 +45,11 @@ happens inside RxScale, not on a Solean screen.
 
 ## Features
 
-Twenty-eight in build-plan order, **all complete**. Feature 28 delivered technical
-SEO/GEO without changing visible content or UI/UX. What remains before launch is
-not a build item: choosing the domain, setting the variables in Vercel, deploying,
-and following `blueprint/reference/seo-launch.md`.
+Twenty-nine in build-plan order, **one to twenty-eight complete**. Feature 28
+delivered technical SEO/GEO without changing visible content or UI/UX. Feature 29
+is the one in progress. What remains before launch is not a build item: choosing
+the domain, setting the variables in Vercel, deploying, and following
+`blueprint/reference/seo-launch.md`.
 
 1. **Design system and core UI components** (done) - semantic tokens, two fonts,
    radii, brand foundations, thirteen adapted shadcn primitives on a showcase at
@@ -271,6 +272,48 @@ and following `blueprint/reference/seo-launch.md`.
       translate; the assertion was wrong, not the site, and uniqueness is now
       asserted within a language.
 
+29. **Mixpanel: identity, funnel visibility and experiments** (in progress) - the
+    analytics that has been running since the heatmap fix stops being anonymous
+    counting and starts answering who and what converts. Four sub-features.
+    - **29a** the identity: a People profile from the first consented event, and
+      `identify()` with the **full e-mail address** at the screen that asks for
+      it, with the first name, the last name and the telephone number as profile
+      properties. It reverses two rules this repository documented as settled,
+      `no identify() anywhere` and `no e-mail in analytics`, so it rewrites both
+      rather than leaving them contradicted. The cost is named in the data model
+      below: replay is on for the questionnaire, so recordings of somebody
+      answering medical questions become searchable by their address. Decided by
+      the user on 2026-09-14, against the recommendation to identify by a hash.
+      It also fixes the identity key a Mixpanel cohort needs to drive a
+      Customer.io campaign, which is the same e-mail Customer.io already keys on.
+      First-touch attribution was expected to arrive with it for free and does
+      not: the SDK's own `people.set_once` of the initial UTM parameters is made
+      while the SDK is still opted out, so it is dropped rather than queued, and
+      `firstVisitProperties` records the five parameters itself. A browser run
+      found that, not a reading of the SDK.
+    - **29b** the drop-off: `questionnaire_progressed` carrying the screen number
+      and the screen total, never a screen id and never an answer. The funnel has
+      four events today and a dozen screens, so nothing shows where people leave.
+      The index is the compromise `isTrackablePath` implies: position travels,
+      the branching path does not.
+    - **29c** the join key: a second order attribute beside `_anamnesis_uid`
+      carrying the Mixpanel distinct id. Additive, invisible to a visitor, and
+      deliberately ahead of its consumer, so orders placed from now on can be
+      imported later.
+    - **29d** the experiments: the SDK's own feature flags, fetched **before the
+      consent banner is answered**, in a narrow form that asks for a variant and
+      sends nothing. A test that only covered consenting visitors would measure a
+      subset, which is why; what it costs is stated in the data model. Every
+      variant defaults to the current UI so server rendering cannot flicker.
+      Questionnaire wording is excluded: it is medical copy with no clinical
+      sign-off, which is open question 14.
+
+**Deferred with feature 29, on 2026-09-14:** the Shopify `orders/paid` webhook
+that would feed purchases and revenue into the Mixpanel Import API. Without it the
+funnel still ends at `checkout_started`, the moment of the redirect, so what an
+experiment optimises is the click rather than the money. 29c leaves the join key
+on every order so the import can reach them retroactively.
+
 Dropped to the deferred backlog with this plan change: Solean's own checkout
 (account, shipping, payment), the pricing engine, add-on selection, and the
 doctor review and order status screens.
@@ -313,6 +356,24 @@ cannot be amended here.
 feature 23 moves it to Customer.io, EU region. Only one processor is ever
 configured, and what may travel was not re-opened.
 
+**Analytics joins the exception, decided 2026-09-14.** From feature 29a Mixpanel
+receives the same four fields at the same moment, and the e-mail becomes the
+identity the anonymous session is merged into. The answers still never reach
+analytics, and no uid, medication or dose does either. What changed is what an
+analytics profile means here: session replay is on for every page including the
+questionnaire, so a recording of somebody answering questions about their health
+becomes searchable by their address rather than only by an anonymous id. Named
+before the decision and taken knowingly, against the recommendation to identify
+by a hash of the address instead.
+
+**And the refusal weakens, from 29d.** The flag fetch runs before the consent
+banner is answered, so a visitor who declines contacts Mixpanel once, to ask which
+variant to render. Nothing is measured and nothing is recorded until consent, and
+`opt_out_tracking_by_default` still holds. But the stronger claim, that a refusal
+is honoured by the network tab and not only by a flag inside a script that already
+ran, no longer holds in full. The reason is that a test covering only the
+consenting subset measures a subset.
+
 ### Ownership
 
 | Data | Owner | Notes |
@@ -328,6 +389,7 @@ configured, and what may travel was not re-opened.
 | Learn article and its reviewer | Sanity | Published editorial copy, one document per language. Read at request time, never cached past the response |
 | Treatment page copy and prices | Sanity, from feature 27 | Copy, photographs, doses and prices per language, keyed by `treatmentId` to the catalogue. Feature 25 held them as a typed fixture where a price change was a deploy; 27 reverses that at the user's decision. Display copy either way: Shopify still owns the amount charged, and nothing detects a divergence between the two |
 | Visitor contact details, once typed | Customer.io, EU region | Forwarded when the question is answered, before any submission, so a reminder can be sent. The e-mail, the name, the telephone number when given, a stage marker and the locale. Nothing else |
+| Visitor contact details and identity | Mixpanel, EU region, from feature 29a | The same four fields, as profile properties, plus the e-mail as the `distinct_id` every earlier anonymous event is merged onto. Never an answer, a uid, a medication or a dose |
 
 ### steps[] (Solean)
 

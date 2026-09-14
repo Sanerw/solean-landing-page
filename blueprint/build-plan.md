@@ -609,6 +609,31 @@ claims are not approved production content.
     test harness, one Verify command and matching GitHub checks through /ci, a measured
     performance baseline and a domain-launch/search-console runbook.
 
+- [ ] 29. **Mixpanel: identity, funnel visibility and experiments** - the visitor stops
+  being an anonymous id and becomes a profile the moment an e-mail is typed, the
+  questionnaire reports how far people get without reporting what they answered, and
+  marketing copy becomes testable from the Mixpanel panel without a deploy. Four
+  sub-features, each leaving a working app.
+  - [x] 29a. **Profiles and identity** - a People profile from the first consented
+    event, `identify()` with the full e-mail address on the screen that asks for it, and
+    the contact details as profile properties. Reverses two rules this repository
+    documents as settled, so it rewrites both rather than leaving them contradicted.
+    Establishes the identity key Customer.io already uses, which is what lets a Mixpanel
+    cohort drive one of its campaigns.
+  - [ ] 29b. **Questionnaire drop-off** - `questionnaire_progressed` carrying the screen
+    number and the screen total, never a screen id and never an answer, so a funnel
+    report can show where people leave a flow whose paths are derived from what they
+    answered.
+  - [ ] 29c. **The distinct id on the cart** - a second order attribute beside
+    `_anamnesis_uid` carrying the Mixpanel distinct id. Additive and invisible to a
+    visitor: it makes an order joinable to the person who walked the funnel, so the
+    deferred revenue import can be built later and still reach orders placed before it.
+  - [ ] 29d. **Experiments** - the SDK's feature flags, fetched before the consent banner
+    is answered in a narrow form that asks for a variant and sends nothing, so a test
+    covers all traffic rather than the consenting subset. One real experiment on
+    marketing copy. Questionnaire wording is excluded: it is medical copy with no
+    clinical sign-off.
+
 ## Testing
 
 **Decided, then deferred at 9a.** The plan was to run `/tests` before feature 9;
@@ -644,3 +669,6 @@ Not in scope. Listed without checkboxes so `/feature` never selects them.
 - Undesigned routes: treatments index, about, contact, clinician profile pages
 - Dark mode
 - Clinician-facing tooling
+- Shopify `orders/paid` webhook feeding purchase and revenue events into the
+  Mixpanel Import API, which is what would make the funnel end at money rather than at
+  the redirect. Dropped from 29 on 2026-09-14; 29c leaves the join key in place for it

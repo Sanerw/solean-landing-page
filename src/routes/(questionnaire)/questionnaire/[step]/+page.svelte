@@ -20,6 +20,7 @@
 		endReminderWatch,
 		startReminderWatch
 	} from '$lib/features/questionnaire/reminder-client';
+	import { identifyFromAnswers } from '$lib/features/questionnaire/identity-client';
 	import { questionnaireUid } from '$lib/config/rxscale';
 	import { buildWalk } from '$lib/features/questionnaire/definition/screens';
 	import { progressFor, resolveStepEntry } from '$lib/features/questionnaire/definition/position';
@@ -153,6 +154,10 @@
 		// earliest the address can exist. Deliberately not awaited: a reminder must never hold
 		// up the walk.
 		startReminderWatch(answers);
+
+		// The same moment, for the same reason, and guarded to retry rather than to fire once:
+		// somebody who answers the consent banner later is identified on a later Continue.
+		identifyFromAnswers(answers);
 
 		const next = neighbourHref(1);
 

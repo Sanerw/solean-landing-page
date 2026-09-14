@@ -274,36 +274,85 @@ async function load(): Promise<Mixpanel | null> {
 }
 
 /**
- * Send an event, or do nothing at all. Nothing at all is the common case: no token, no
+ * Reach the SDK, or do nothing at all. Nothing at all is the common case: no token, no
  * consent, or the server, and each of those is an ordinary state rather than a failure.
+ *
+ * Returns whether the call was accepted for delivery, which is what lets a caller tell a sent
+ * one from one the gate dropped. A one-shot spent on a visitor who had not consented yet could
+ * never be sent again.
+ *
+ * The gate is checked twice on purpose. Once here, so a refused caller learns it immediately,
+ * and once at delivery, because consent can be withdrawn while the SDK is still importing and
+ * the decision at delivery is the one that counts.
+ */
+function deliver(action: (mixpanel: Mixpanel) => void): boolean {
+	if (!analyticsEnabled() || !mayTrack(consent)) return false;
+
+	loading ??= load().catch(() => null);
+
+	void loading.then((mixpanel) => {
+		if (!mixpanel || !mayTrack(consent)) return;
+
+		action(mixpanel);
+	});
+
+	return true;
+}
+
+/**
+ * Send an event.
  *
  * `immediate` exists for the events fired on the way out of the app. Mixpanel batches by
  * default, and a batched event queued a moment before `location.assign` never leaves.
- *
- * Returns whether the event was accepted for delivery, which is what lets a caller tell a
- * sent event from one the gate dropped. A one-shot event that spent itself on a visitor who
- * had not consented yet could never be sent again.
  */
 export function track(
 	event: string,
 	properties: Record<string, string | number | boolean> = {},
 	immediate = false
 ): boolean {
-	if (!analyticsEnabled() || !mayTrack(consent)) return false;
-
-	loading ??= load().catch(() => null);
-
-	void loading.then((mixpanel) => {
-		// Consent can be withdrawn while the SDK is still loading; the decision at delivery is
-		// the one that counts.
-		if (!mixpanel || !mayTrack(consent)) return;
-
+	return deliver((mixpanel) => {
 		mixpanel.track(
 			event,
 			properties,
 			immediate ? { send_immediately: true, transport: 'sendBeacon' } : {}
 		);
 	});
+}
 
-	return true;
+/**
+ * A profile's properties. Optional, because an unanswered field is omitted rather than sent
+ * empty, and the builders in `identity.ts` never assign a key they have no value for.
+ */
+export type ProfileProperties = Record<string, string | undefined>;
+
+/**
+ * Name the person this session belongs to, and write what is known about them.
+ *
+ * The identity is the e-mail address, decided on 2026-09-14, so it is the same key Customer.io
+ * holds the person under. `identify` goes first: every People call the SDK has taken until now
+ * sits in a queue waiting for one, and this is what flushes it, which is how the first visit's
+ * properties and the SDK's own first-touch campaign parameters ever reach the profile.
+ *
+ * There is still no `reset()` anywhere, and there should not be: this app has no accounts, no
+ * login and no logout, so nothing legitimately ends one person's session and begins another's.
+ * Withdrawn consent is the one thing that clears an identity, and `opt_out_tracking` does it.
+ */
+export function identifyVisitor(distinctId: string, traits: ProfileProperties): boolean {
+	return deliver((mixpanel) => {
+		mixpanel.identify(distinctId);
+		mixpanel.people.set(traits);
+	});
+}
+
+/**
+ * Write profile properties that describe a first visit, keeping any value already there.
+ *
+ * These queue inside the SDK until `identifyVisitor` runs, so a visitor who never types an
+ * e-mail never gets a profile at all. That is the SDK's shape rather than a choice here, and
+ * it is the reason this is worth calling early: the queued values are the arrival's.
+ */
+export function setProfileOnce(properties: ProfileProperties): boolean {
+	return deliver((mixpanel) => {
+		mixpanel.people.set_once(properties);
+	});
 }

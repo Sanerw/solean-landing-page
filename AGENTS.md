@@ -199,6 +199,7 @@ Everything lives in `src/lib/analytics/`:
 | `consent.svelte.ts` | the decision as rune state, seeded from the server's read of the cookie |
 | `client.ts` | the single Mixpanel instance, its config, and `track` |
 | `events.ts` | **every event name and property in the app** |
+| `identity.ts` | **every profile property, and the one `identify`** |
 | `ConsentBanner.svelte` | the banner, rendered from the root layout |
 
 ### Adding an event
@@ -217,9 +218,13 @@ This is a medical funnel, and `project-overview.md` states that the answers neve
 analytics. No event property may carry:
 
 - an answer value, or anything derived from one
-- the visitor's e-mail, name, or telephone number
 - the anamnesis uid
 - the medication, the dose, or the Shopify variant
+
+**The contact details left this list on 2026-09-14**, and only for the profile. They travel
+through `identity.ts`, never as an event property, and the Identity section below is the whole
+of what changed. `events.ts` still carries position in the funnel and nothing that describes
+the human walking it.
 
 Three consequences that are easy to undo by accident:
 
@@ -236,6 +241,66 @@ Three consequences that are easy to undo by accident:
   full URL, which the Heatmaps section below explains and which was accepted with it.
 - **Every questionnaire surface carries `mp-sensitive`.** See Heatmaps below. Without it a
   click sends the answer's own wording as an event property.
+
+### Identity
+
+**The visitor's e-mail address is the `distinct_id`, and the profile carries their name and
+telephone number.** Decided by the user on 2026-09-14, against the recommendation recorded
+here, which was to identify by a hash of the address instead. The four fields are the ones
+answered on `your-details`, the same four the Customer.io reminder already carries, read from
+the same closed `ReminderContact` record so the two cannot disagree about what may leave.
+
+That the key is the plain address is the point rather than an implementation detail: it is
+what Customer.io holds the person under, so a Mixpanel cohort can drive a campaign there
+without anything in between.
+
+**What it costs, stated because it was the reason this needed a decision.** Replay is on for
+every page including the questionnaire, so once a session is identified a recording of
+somebody answering questions about their health is searchable in the panel by their e-mail
+address. Funnel replays were already to be treated as medical records; now they are
+attributable ones. Access restricted, retention short, and the privacy policy still describes
+none of it for the reason below.
+
+**And it reaches further than the profile, which is worth stating plainly.** `identify` sets
+the `distinct_id`, so the SDK stamps the address onto **every event the session sends
+afterwards**, as `distinct_id` and `$user_id`. That includes the heatmap's `$mp_click` and
+`$mp_web_page_view` from questionnaire paths. Those paths were already reaching Mixpanel and
+were accepted with the replay on 2026-09-03, on the reasoning that the branching model is
+public; what changes now is that they are attributable to a named person rather than to an
+anonymous id. It follows from choosing the plain address as the identity and there is no way
+to keep one without the other. Proven in `analytics.spec.ts`, which asserts that no property
+*this app builds* carries the address while naming those three keys as the identity.
+
+Five mechanics, each one a way to get this wrong quietly.
+
+- **The profile does not exist until the address does.** Every People call the SDK takes is
+  held in a queue until an `identify` flushes it (`MixpanelPeople.prototype.set` checks
+  `_identify_called()`). So "create the user on arrival" is not something the SDK offers: an
+  anonymous visitor appears through their events, and the profile materialises at the e-mail.
+  `recordFirstVisit` runs on the landing page anyway, because the queued values are the
+  arrival's and would otherwise be lost. Never force a profile by identifying an anonymous id;
+  that defeats the merge the whole feature rests on.
+- **First-touch attribution is ours to write, and this was expected to be free.** `mixpanel.init`
+  does call `people.set_once` with the initial UTM parameters, but `set_once` is wrapped in an
+  opt-out check and `opt_out_tracking_by_default` is on, so at that moment the call returns
+  early and is never even queued; `opt_in_tracking()` runs one line later and cannot recover it.
+  A consent-gated SDK and the vendor's own first-touch capture simply do not combine. So
+  `firstVisitProperties` reads the five `utm_*` parameters itself, one named line each, under
+  the SDK's own `initial_utm_*` keys. **A browser run found this and reading the SDK did not**,
+  which is why `analytics.spec.ts` asserts `initial_utm_source` rather than assuming it.
+- **Identify once, with the first address, and never again.** Somebody who goes back and edits
+  their e-mail keeps the identity they were given. A second `distinct_id` in one session is the
+  standard way to corrupt a profile.
+- **The one-shot is spent only when the gate accepted it**, the rule `events.ts` follows, and
+  it matters more here: `your-details` is the second screen of twelve, so a visitor who answers
+  the banner later is identified on a later Continue. The residual gap is somebody who consents
+  only on the final screen, and it is accepted rather than closed.
+
+**What may never reach a profile** is what may never reach an event: no answer value, no
+anamnesis uid, no medication, no dose. `firstVisitProperties` drops the landing path entirely
+on a `/questionnaire` URL, because a profile property is written once and kept, so a path
+naming the step somebody deep-linked into would report an answer for as long as the profile
+exists.
 
 ### Session replay
 
@@ -327,8 +392,10 @@ the banner is answered on the page the visitor is standing on, and an effect tha
 the path will have already run and been dropped. `track` returns whether the event was
 accepted for exactly this reason, so a one-shot event is not spent on a gate that refused it.
 
-There is no `identify()` or `reset()` anywhere, and there should not be: this app has no
-accounts, no login, and no logout. Every visitor is an anonymous `distinct_id`.
+There is an `identify()` from 2026-09-14, in `identity.ts` and nowhere else. There is still
+no `reset()`, and there should not be: this app has no accounts, no login and no logout, so
+nothing legitimately ends one person's session and begins another's. Withdrawing consent is
+the one thing that clears an identity, and `opt_out_tracking` already does it.
 
 **The privacy policy does not yet say any of this, and that gap is open on purpose.**
 `src/lib/features/legal/content/privacy.ts` names Google Analytics, Google Ads and Google Tag

@@ -5,11 +5,21 @@ import { track } from './client';
  * Mixpanel is case-sensitive and treats a typo as a new event forever, so no caller composes
  * one.
  *
- * **What may never appear in a property.** No answer value, no e-mail, no anamnesis uid, no
- * medication or dose. `project-overview.md` states that the answers never reach analytics,
- * and the funnel is medical: "this visitor ordered Mounjaro 5 mg" is health data about a
- * person even when the person is an anonymous id. These events carry position in the funnel
- * and nothing that describes the human walking it.
+ * **What may never appear in a property.** No answer value, no anamnesis uid, no medication
+ * or dose. `project-overview.md` states that the answers never reach analytics, and the funnel
+ * is medical: "this visitor ordered Mounjaro 5 mg" is health data about a person even when the
+ * person is an anonymous id. These events carry position in the funnel and nothing that
+ * describes the human walking it.
+ *
+ * **Nor the contact details, which is a narrower rule than it was.** From 2026-09-14 the
+ * e-mail, the name and the telephone number do reach Mixpanel, through `identity.ts`. None of
+ * them may be a property *built here*: the profile is where a person is described, and a
+ * property repeated on every event would be a second, uncontrolled copy of that.
+ *
+ * Which is not the same as saying an event never carries the address. Once `identify` has run,
+ * the SDK stamps the e-mail onto every later event as `distinct_id` and `$user_id`, because
+ * that is what an identity is. `analytics.spec.ts` asserts the rule this comment states, the
+ * properties, and names those keys as the identity rather than a leak.
  */
 
 /**
