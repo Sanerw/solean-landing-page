@@ -70,8 +70,12 @@ describe('mixpanelInitOptions', () => {
 		expect(options.record_block_selector).toBe('img, video, audio');
 	});
 
-	it('forwards no IP', () => {
-		expect(options.ip).toBe(false);
+	it('forwards the IP, which is the only thing a location comes from', () => {
+		// Reversed on 2026-09-14 and still a guard rather than a preference: flipping it back
+		// empties every country, region and city in the panel, silently and with no error
+		// anywhere. It is asserted in this direction for the same reason it was asserted in the
+		// other one.
+		expect(options.ip).toBe(true);
 	});
 
 	it('starts opted out, so consent cannot be skipped by a future caller', () => {

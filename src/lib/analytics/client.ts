@@ -129,10 +129,19 @@ export function mixpanelInitOptions(recorderSrc: string): MixpanelInitOptions {
 		record_console: false,
 
 		/**
-		 * No IP is forwarded, so Mixpanel derives no location from it. The site is single-market
-		 * anyway, which makes geo resolution worth nothing and worth not collecting.
+		 * The IP is forwarded, so Mixpanel resolves a country, a region and a city from it. On
+		 * 2026-09-14 this was the opposite, and the reversal is the user's: Solean will target
+		 * markets beyond Germany, so where somebody converts from stops being a curiosity and
+		 * becomes a dimension to compare. Without this every geo field is empty, because the
+		 * address is the only thing Mixpanel derives a location from.
+		 *
+		 * It is the one setting here that sends a new kind of personal data rather than
+		 * withholding one. Sending the country from the server instead, out of Vercel's
+		 * `x-vercel-ip-country`, was offered and declined: it keeps the address away from the
+		 * vendor but yields the country alone. The gate did not move, and nothing is sent before
+		 * an explicit yes.
 		 */
-		ip: false,
+		ip: true,
 
 		// `localStorage` rather than the SDK's default cookie, so the only cookie this feature
 		// sets is the consent record itself and the policy has one thing to describe.

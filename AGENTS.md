@@ -380,6 +380,35 @@ Three mechanics, each one a way to get this wrong quietly.
   replay trade rather than a new one: the branching model is public, so the steps a person was
   shown are derived from what they answered either way. Accepted knowingly with the replay.
 
+### Location
+
+`ip: true` in `client.ts`, so Mixpanel resolves a country, a region and a city from the
+address. **Reversed on 2026-09-14**, at the user's decision: this was `ip: false` with a
+comment arguing that a single-market site makes geo resolution worth nothing, and Solean is
+no longer single-market. Without the flag every geo field in the panel reads `undefined`,
+because the IP is the only thing a location is derived from, and nothing reports that as an
+error.
+
+It is the one setting in `mixpanelInitOptions` that sends personal data rather than withholds
+it, so it is worth stating what did and did not move. The gate did not: nothing is sent
+before an explicit yes, `opt_out_tracking_by_default` is still on, and somebody who declines
+still never downloads the SDK. What grew is the privacy policy gap described below, which now
+also fails to mention that IP addresses reach an analytics provider.
+
+Sending the country from the server instead, out of Vercel's `x-vercel-ip-country`, was
+offered and declined. It would keep the address away from the vendor entirely, at the cost of
+the country alone with no region or city, and only on a deployed build, because the header
+does not exist locally.
+
+**A local check proves less than it appears to.** A request from `localhost` still leaves the
+machine for Mixpanel's EU host, so the address resolved is the developer's own: the country
+is real and says nothing about what a visitor in another market produces.
+
+Unrelated and deliberately untouched: `CHECKOUT_COUNTRY_CODE` is still `DE`, so the Shopify
+cart and the RxScale recommendation ship as the German market whatever this reports. That one
+decides currency and tax and needs a product decision, which is open question 5 in
+`project-overview.md`.
+
 ### Consent
 
 `opt_out_tracking_by_default` is on, and the SDK is behind a dynamic import, so a visitor who
